@@ -19,6 +19,7 @@ from app.llm.runner import run
 from app.llm.validation import ValidationFailure
 from app.mapping.batching import (
     build_batches,
+    chunk_items,
     render_controls,
     render_controls_unchecked,
     render_items,
@@ -110,7 +111,11 @@ async def run_mapping(
         return len(render_controls_unchecked([by_id[cid] for cid in control_ids]))
 
     batches = []
-    for batch in raw_batches:
+    # 控制点不多于 TOP_K 时没有预筛，保持原来的分批（全库上下文，与旧行为一致）。
+    sized = raw_batches if len(controls) <= TOP_K else [
+        piece for batch in raw_batches for piece in chunk_items(batch)
+    ]
+    for batch in sized:
         for piece, control_ids in split_to_fit(batch, candidates, _size):
             if not control_ids:
                 continue

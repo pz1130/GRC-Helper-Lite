@@ -56,3 +56,6 @@ csf-flagged-mappings.md
 # 直连生产栈的一次性脚本（绕开 make e2e 的隔离栈，见 OQ-3）
 frontend/*.cjs
 frontend/sample_*.xlsx
+
+# 评估缓存（向量、生成的语料）
+backend/evals/.cache/

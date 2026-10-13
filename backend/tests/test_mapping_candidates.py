@@ -40,3 +40,13 @@ def test_split_to_fit_halves_until_the_candidates_fit():
     pieces = split_to_fit(batch, candidates, lambda ids: 100 * len(ids), max_chars=400)
     assert [sorted(p.mappable_ids) for p, _ in pieces] == [[1, 2], [3, 4]]
     assert pieces[0][1] == [10, 11, 20, 21]
+
+
+def test_chunk_items_caps_targets_per_batch_and_keeps_containers_as_context():
+    from app.mapping.batching import chunk_items
+
+    items = [SimpleNamespace(id=0, code="PR")] + [SimpleNamespace(id=i, code=f"PR.{i}") for i in range(1, 7)]
+    batch = Batch(items, "PR", frozenset(range(1, 7)))
+    pieces = chunk_items(batch, max_items=4)
+    assert [sorted(p.mappable_ids) for p in pieces] == [[1, 2, 3, 4], [5, 6]]
+    assert pieces[0].items[0].id == 0

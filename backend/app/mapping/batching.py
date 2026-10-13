@@ -66,6 +66,35 @@ def build_batches(items: list[Any], *, max_chars: int = MAX_BATCH_CHARS) -> list
     return batches
 
 
+# 有候选预筛后，上下文不再是瓶颈，瓶颈变成**输出**：每批最多 25 条映射
+# （MAPPING_SCHEMA maxItems），29 个框架项一批时平均每项分不到 1 条。OLIR 评估
+# （evals/，MiniMax M3）：全库上下文 0.71/0.14（精确率/召回）；只加预筛不拆批
+# 0.70/0.14——召回纹丝不动。所以预筛之后每批只放少量框架项。
+MAX_ITEMS_PER_BATCH = 4
+
+
+def chunk_items(batch: Batch, *, max_items: int = MAX_ITEMS_PER_BATCH) -> list[Batch]:
+    """按要求项个数切小批；容器跟在它后面的要求项一起走，作上下文。"""
+    pieces: list[Batch] = []
+    current: list[Any] = []
+    count = 0
+    for item in batch.items:
+        is_target = item.id in batch.mappable_ids
+        if is_target and count == max_items:
+            pieces.append(current)
+            current, count = [], 0
+        current.append(item)
+        count += is_target
+    if current:
+        pieces.append(current)
+    out = []
+    for part in pieces:
+        mappable = frozenset(item.id for item in part if item.id in batch.mappable_ids)
+        if mappable:
+            out.append(Batch(part, part[0].code, mappable))
+    return out
+
+
 def split_to_fit(
     batch: Batch,
     candidates: dict[int, list[int]],
