@@ -1,0 +1,23 @@
+{
+  "model": "jev-1.13.0",
+  "tokens": 2054268,
+  "elapsed_s": 15.7,
+  "recall@10": {
+    "k": 10,
+    "hit": 300,
+    "positives": 716,
+    "recall": 0.419
+  },
+  "recall@20": {
+    "k": 20,
+    "hit": 408,
+    "positives": 716,
+    "recall": 0.5698
+  },
+  "recall@40": {
+    "k": 40,
+    "hit": 524,
+    "positives": 716,
+    "recall": 0.7318
+  }
+}
