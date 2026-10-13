@@ -111,6 +111,29 @@ async def clear(email: str) -> None:
         await _close(redis)
 
 
+async def allow(key: str, *, limit: int, window_seconds: int) -> bool:
+    """通用固定窗口计数：本窗口内第 `limit` 次以内返回 True，之后返回 False。
+
+    给登录以外的"按用户限频"用（如搜索的查询扩展）。与登录限流同一取舍：
+    Redis 不可用时放行——调用方仍有预算闸门兜底。
+    """
+    try:
+        redis = await _client()
+    except Exception:  # noqa: BLE001
+        logger.warning("限流不可用（Redis 连不上），本次放行: %s", key)
+        return True
+    try:
+        count = await redis.incr(key)
+        if count == 1:
+            await redis.expire(key, window_seconds)
+        return int(count) <= limit
+    except Exception:  # noqa: BLE001
+        logger.warning("限流计数失败，本次放行: %s", key)
+        return True
+    finally:
+        await _close(redis)
+
+
 async def _close(redis: Any) -> None:
     close = getattr(redis, "aclose", None) or getattr(redis, "close", None)
     if close is not None:
