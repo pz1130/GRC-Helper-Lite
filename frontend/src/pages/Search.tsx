@@ -128,6 +128,7 @@ export function Search() {
           </svg>
         </div>
         <input
+          maxLength={500}
           aria-label={t("search.title")}
           placeholder={t("search.placeholder")}
           value={draft}
