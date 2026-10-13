@@ -17,6 +17,7 @@ from app.llm.providers.base import ProviderError
 from app.llm.routing import routed_model
 from app.llm.runner import run
 from app.llm.validation import ValidationFailure
+from app.mapping import jev_prefilter
 from app.mapping.batching import (
     build_batches,
     chunk_items,
@@ -94,18 +95,30 @@ async def run_mapping(
         (item.id, item_text(item))
         for batch in raw_batches for item in batch.items if item.id in batch.mappable_ids
     ]
+    vector_used = False
+    candidate_source = "all"
+    fallback_reason: str | None = None
     if len(controls) <= TOP_K:
         candidates = {item_id: list(by_id) for item_id, _ in mappable}
-        vector_used = False
     else:
-        item_vectors, control_vectors = await load_vectors(session, mappable, list(by_id))
-        vector_used = bool(item_vectors and control_vectors)
-        candidates = rank_candidates(
-            mappable,
-            [(control.id, control_text(control)) for control in controls],
-            item_vectors=item_vectors,
-            control_vectors=control_vectors,
+        control_docs = [(control.id, control_text(control)) for control in controls]
+        # 默认关闭；打开后失败一律回退（见 jev_prefilter 模块说明与 K17）。
+        jev_candidates, fallback_reason = await jev_prefilter.rank(
+            session, mappable, control_docs, top_k=TOP_K,
         )
+        if jev_candidates is not None:
+            candidates, candidate_source = jev_candidates, "jev"
+        else:
+            item_vectors, control_vectors = await load_vectors(session, mappable, list(by_id))
+            vector_used = bool(item_vectors and control_vectors)
+            candidates = rank_candidates(
+                mappable, control_docs,
+                item_vectors=item_vectors,
+                control_vectors=control_vectors,
+            )
+            candidate_source = "keyword_vector"
+        # 预筛的调用与回退记录与后续批次一起提交；批次各自 commit，先落地这一段。
+        await session.commit()
 
     def _size(control_ids: list[int]) -> int:
         return len(render_controls_unchecked([by_id[cid] for cid in control_ids]))
@@ -127,6 +140,8 @@ async def run_mapping(
     summary: dict[str, Any] = {
         "batches": len(batches),
         "candidate_vector_used": vector_used,
+        "candidate_source": candidate_source,
+        "candidate_fallback_reason": fallback_reason if fallback_reason != "disabled" else None,
         "proposals": 0,
         "rejected": 0,
         "failed": 0,

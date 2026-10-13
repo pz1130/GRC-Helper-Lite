@@ -285,3 +285,45 @@ async def test_no_transaction_is_held_across_the_model_call(harness, monkeypatch
     assert order.index("commit") < order.index("llm"), (
         f"检查点之后、调用模型之前必须先提交释放锁；实际顺序 {order}"
     )
+
+
+def _big_library():
+    return [
+        SimpleNamespace(id=n, code=f"C-{n:04d}", title="Identity management" if n % 7 == 0 else "Backup",
+                        statement="Identities are managed." if n % 7 == 0 else "Backups run.")
+        for n in range(1, 60)
+    ]
+
+
+async def test_flag_on_uses_jev_candidates(harness, monkeypatch):
+    async def jev_rank(session, items, controls, *, top_k):
+        return {item_id: [3, 5] for item_id, _ in items}, None
+
+    load_vectors = AsyncMock(return_value=({}, {}))
+    monkeypatch.setattr(tasks.jev_prefilter, "rank", jev_rank)
+    monkeypatch.setattr(tasks, "load_vectors", load_vectors)
+    harness.session.scalars = AsyncMock(side_effect=[_big_library(), harness.items])
+    summary = await tasks.run_mapping(harness.session, 3)
+    prompt = harness.run.await_args.kwargs["prompt"]
+    assert summary["candidate_source"] == "jev"
+    assert prompt.count("[control_id=") == 2 and "[control_id=3]" in prompt
+    load_vectors.assert_not_awaited()
+
+
+async def test_jev_fallback_uses_keyword_vector_candidates(harness, monkeypatch):
+    monkeypatch.setattr(tasks.jev_prefilter, "rank", AsyncMock(return_value=(None, "call_failed")))
+    monkeypatch.setattr(tasks, "load_vectors", AsyncMock(return_value=({}, {})))
+    harness.session.scalars = AsyncMock(side_effect=[_big_library(), harness.items])
+    summary = await tasks.run_mapping(harness.session, 3)
+    prompt = harness.run.await_args.kwargs["prompt"]
+    assert summary["candidate_source"] == "keyword_vector"
+    assert summary["candidate_fallback_reason"] == "call_failed"
+    assert "[control_id=7]" in prompt and "[control_id=1]" not in prompt
+
+
+async def test_flag_off_reports_no_fallback_reason(harness, monkeypatch):
+    monkeypatch.setattr(tasks, "load_vectors", AsyncMock(return_value=({}, {})))
+    harness.session.scalars = AsyncMock(side_effect=[_big_library(), harness.items])
+    summary = await tasks.run_mapping(harness.session, 3)
+    assert summary["candidate_source"] == "keyword_vector"
+    assert summary["candidate_fallback_reason"] is None
