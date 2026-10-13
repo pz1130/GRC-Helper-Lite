@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # CI 里的 action 固定在提交哈希上，靠这里每周提一次更新。
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      python-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    # 必须一起升级的包放进同一组：React 与 React DOM 分成两个 PR 时，各自都装不上。
+    groups:
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+      vite:
+        patterns: ["vite", "@vitejs/*"]
+      npm-minor-and-patch:
+        update-types: [minor, patch]

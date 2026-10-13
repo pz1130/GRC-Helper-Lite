@@ -1,0 +1,17 @@
+[
+  {
+    "query": "where do visitors sign in",
+    "expect_document": "Example Visitor Access Policy",
+    "expect_citation_prefix": "2"
+  },
+  {
+    "query": "访客如何登记",
+    "expect_document": "Example Visitor Access Policy",
+    "expect_citation_prefix": "2"
+  },
+  {
+    "query": "how long is a visitor badge valid",
+    "expect_document": "Example Visitor Access Policy",
+    "expect_citation_prefix": "3"
+  }
+]

@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+# 只放行这一个合成密钥和所在测试文件，不豁免其他夹具或测试目录。
+[[allowlists]]
+description = "Synthetic provider masking fixture"
+condition = "AND"
+paths = ['''^backend/tests/test_settings_router\.py$''']
+regexTarget = "secret"
+regexes = ['''^sk-abcdefgh1234$''']

@@ -1,0 +1,13 @@
+# 生产镜像：构建静态产物，交给 nginx。
+# 开发用的那个 Dockerfile 跑的是 vite 开发服务器——带热重载、不压缩、
+# 把源码挂进容器，任何一条都不该出现在生产环境里。
+FROM node:22-slim AS build
+WORKDIR /srv
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY --from=build /srv/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf

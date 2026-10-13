@@ -1,0 +1,1252 @@
+{
+  "source": "NIST OLIR: SP 800-53 Rev 5.1.1 to Cybersecurity Framework v2.0",
+  "relationship": "SP-800-53-Rev-5-to-Cybersecurity-Framework-v2.0",
+  "pairs": [
+    {
+      "csf": "GV.OC-01",
+      "controls": [
+        "PM-11"
+      ]
+    },
+    {
+      "csf": "GV.OC-02",
+      "controls": [
+        "PM-18",
+        "PM-30",
+        "PM-9",
+        "SR-3",
+        "SR-5",
+        "SR-6",
+        "SR-8"
+      ]
+    },
+    {
+      "csf": "GV.OC-03",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CM-1",
+        "CP-1",
+        "IA-1",
+        "IR-1",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PM-1",
+        "PM-28",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "SA-1",
+        "SC-1",
+        "SI-1",
+        "SR-1"
+      ]
+    },
+    {
+      "csf": "GV.OC-04",
+      "controls": [
+        "PM-11",
+        "PM-8",
+        "RA-9"
+      ]
+    },
+    {
+      "csf": "GV.OC-05",
+      "controls": [
+        "PM-11",
+        "PM-30",
+        "RA-7",
+        "SA-9",
+        "SR-5"
+      ]
+    },
+    {
+      "csf": "GV.RM-01",
+      "controls": [
+        "PM-9",
+        "RA-7",
+        "SR-2"
+      ]
+    },
+    {
+      "csf": "GV.RM-02",
+      "controls": [
+        "PM-9"
+      ]
+    },
+    {
+      "csf": "GV.RM-03",
+      "controls": [
+        "PM-3",
+        "PM-30",
+        "PM-9",
+        "RA-7",
+        "SR-2"
+      ]
+    },
+    {
+      "csf": "GV.RM-04",
+      "controls": [
+        "PM-28",
+        "PM-30",
+        "PM-9",
+        "SR-2"
+      ]
+    },
+    {
+      "csf": "GV.RM-05",
+      "controls": [
+        "PM-30",
+        "PM-9"
+      ]
+    },
+    {
+      "csf": "GV.RM-06",
+      "controls": [
+        "PM-18",
+        "PM-28",
+        "PM-30",
+        "PM-9",
+        "RA-3"
+      ]
+    },
+    {
+      "csf": "GV.RM-07",
+      "controls": [
+        "PM-18",
+        "PM-28",
+        "PM-30",
+        "PM-9",
+        "RA-3"
+      ]
+    },
+    {
+      "csf": "GV.RR-01",
+      "controls": [
+        "PM-19",
+        "PM-2",
+        "PM-23",
+        "PM-24",
+        "PM-29"
+      ]
+    },
+    {
+      "csf": "GV.RR-02",
+      "controls": [
+        "PM-13",
+        "PM-19",
+        "PM-2",
+        "PM-23",
+        "PM-24",
+        "PM-29"
+      ]
+    },
+    {
+      "csf": "GV.RR-03",
+      "controls": [
+        "PM-3"
+      ]
+    },
+    {
+      "csf": "GV.RR-04",
+      "controls": [
+        "PM-13",
+        "PS-1",
+        "PS-7",
+        "PS-9"
+      ]
+    },
+    {
+      "csf": "GV.PO-01",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CM-1",
+        "CP-1",
+        "IA-1",
+        "IR-1",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PM-1",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "SA-1",
+        "SC-1",
+        "SI-1",
+        "SR-1"
+      ]
+    },
+    {
+      "csf": "GV.PO-02",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CM-1",
+        "CP-1",
+        "IA-1",
+        "IR-1",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PM-1",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "SA-1",
+        "SC-1",
+        "SI-1",
+        "SR-1"
+      ]
+    },
+    {
+      "csf": "GV.OV-01",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CM-1",
+        "CP-1",
+        "IA-1",
+        "IR-1",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PM-1",
+        "PM-18",
+        "PM-30",
+        "PM-31",
+        "PM-9",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "RA-7",
+        "SA-1",
+        "SC-1",
+        "SI-1",
+        "SR-1",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.OV-02",
+      "controls": [
+        "PM-19",
+        "PM-30",
+        "PM-31",
+        "PM-9",
+        "RA-7",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.OV-03",
+      "controls": [
+        "PM-4",
+        "PM-6",
+        "RA-7",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.SC-01",
+      "controls": [
+        "PM-30",
+        "SR-2",
+        "SR-3"
+      ]
+    },
+    {
+      "csf": "GV.SC-02",
+      "controls": [
+        "SR-2",
+        "SR-3",
+        "SR-5"
+      ]
+    },
+    {
+      "csf": "GV.SC-03",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CM-1",
+        "CP-1",
+        "IA-1",
+        "IR-1",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PM-1",
+        "PM-18",
+        "PM-30",
+        "PM-31",
+        "PM-9",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "RA-3",
+        "RA-7",
+        "SA-1",
+        "SC-1",
+        "SI-1",
+        "SR-1",
+        "SR-2",
+        "SR-3"
+      ]
+    },
+    {
+      "csf": "GV.SC-04",
+      "controls": [
+        "RA-9",
+        "SA-9",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.SC-05",
+      "controls": [
+        "SA-4",
+        "SA-9",
+        "SR-10",
+        "SR-3",
+        "SR-5",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.SC-06",
+      "controls": [
+        "SA-4",
+        "SA-9",
+        "SR-5",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.SC-07",
+      "controls": [
+        "RA-9",
+        "SA-4",
+        "SA-9",
+        "SR-3",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.SC-08",
+      "controls": [
+        "CP-1",
+        "IR-1",
+        "SA-4",
+        "SA-9",
+        "SR-2",
+        "SR-3",
+        "SR-8"
+      ]
+    },
+    {
+      "csf": "GV.SC-09",
+      "controls": [
+        "PM-19",
+        "PM-28",
+        "PM-30",
+        "PM-31",
+        "PM-9",
+        "RA-3",
+        "RA-7",
+        "SA-4",
+        "SA-9",
+        "SR-2",
+        "SR-3",
+        "SR-5",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "GV.SC-10",
+      "controls": [
+        "PM-31",
+        "RA-3",
+        "RA-5",
+        "RA-7",
+        "SA-4",
+        "SA-9",
+        "SR-2",
+        "SR-3",
+        "SR-5",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "ID.AM-01",
+      "controls": [
+        "CM-8",
+        "PM-5"
+      ]
+    },
+    {
+      "csf": "ID.AM-02",
+      "controls": [
+        "AC-20",
+        "CM-8",
+        "PM-5",
+        "SA-5",
+        "SA-9"
+      ]
+    },
+    {
+      "csf": "ID.AM-03",
+      "controls": [
+        "AC-4",
+        "CA-3",
+        "CA-9",
+        "PL-2",
+        "PL-8",
+        "PM-7"
+      ]
+    },
+    {
+      "csf": "ID.AM-04",
+      "controls": [
+        "AC-20",
+        "SA-9",
+        "SR-2"
+      ]
+    },
+    {
+      "csf": "ID.AM-05",
+      "controls": [
+        "RA-2",
+        "RA-3",
+        "RA-9"
+      ]
+    },
+    {
+      "csf": "ID.AM-07",
+      "controls": [
+        "CM-12",
+        "CM-13",
+        "SI-12"
+      ]
+    },
+    {
+      "csf": "ID.AM-08",
+      "controls": [
+        "CM-13",
+        "CM-9",
+        "MA-2",
+        "MA-6",
+        "PL-2",
+        "PM-22",
+        "PM-23",
+        "SA-22",
+        "SA-3",
+        "SA-4",
+        "SA-8",
+        "SI-12",
+        "SI-18",
+        "SR-12",
+        "SR-5"
+      ]
+    },
+    {
+      "csf": "ID.RA-01",
+      "controls": [
+        "CA-2",
+        "CA-7",
+        "CA-8",
+        "RA-3",
+        "RA-5",
+        "SI-4",
+        "SI-5"
+      ]
+    },
+    {
+      "csf": "ID.RA-02",
+      "controls": [
+        "PM-15",
+        "PM-16",
+        "SI-5"
+      ]
+    },
+    {
+      "csf": "ID.RA-03",
+      "controls": [
+        "PM-12",
+        "PM-16",
+        "RA-3",
+        "SI-5"
+      ]
+    },
+    {
+      "csf": "ID.RA-04",
+      "controls": [
+        "PM-11",
+        "PM-9",
+        "RA-2",
+        "RA-3",
+        "RA-8",
+        "RA-9"
+      ]
+    },
+    {
+      "csf": "ID.RA-05",
+      "controls": [
+        "PM-16",
+        "RA-2",
+        "RA-3",
+        "RA-7"
+      ]
+    },
+    {
+      "csf": "ID.RA-06",
+      "controls": [
+        "PM-18",
+        "PM-30",
+        "PM-9",
+        "RA-7"
+      ]
+    },
+    {
+      "csf": "ID.RA-07",
+      "controls": [
+        "CA-7",
+        "CM-3",
+        "CM-4"
+      ]
+    },
+    {
+      "csf": "ID.RA-08",
+      "controls": [
+        "RA-5"
+      ]
+    },
+    {
+      "csf": "ID.RA-09",
+      "controls": [
+        "SA-10",
+        "SA-11",
+        "SA-15",
+        "SA-17",
+        "SA-4",
+        "SA-5",
+        "SI-7",
+        "SR-10",
+        "SR-11",
+        "SR-5",
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "ID.RA-10",
+      "controls": [
+        "SR-6"
+      ]
+    },
+    {
+      "csf": "ID.IM-01",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CA-2",
+        "CA-5",
+        "CA-7",
+        "CA-8",
+        "CM-1",
+        "CP-1",
+        "CP-2",
+        "IA-1",
+        "IR-1",
+        "IR-4",
+        "IR-8",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PL-2",
+        "PM-1",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "RA-3",
+        "RA-5",
+        "RA-7",
+        "SA-1",
+        "SA-11",
+        "SA-8",
+        "SC-1",
+        "SI-1",
+        "SI-2",
+        "SI-4",
+        "SR-1",
+        "SR-5"
+      ]
+    },
+    {
+      "csf": "ID.IM-02",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CA-2",
+        "CA-5",
+        "CA-7",
+        "CA-8",
+        "CM-1",
+        "CP-1",
+        "CP-2",
+        "CP-4",
+        "IA-1",
+        "IR-1",
+        "IR-3",
+        "IR-4",
+        "IR-8",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PL-2",
+        "PM-1",
+        "PM-31",
+        "PM-4",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "RA-3",
+        "RA-5",
+        "RA-7",
+        "SA-1",
+        "SA-11",
+        "SA-8",
+        "SC-1",
+        "SI-1",
+        "SI-2",
+        "SI-4",
+        "SR-1",
+        "SR-5"
+      ]
+    },
+    {
+      "csf": "ID.IM-03",
+      "controls": [
+        "AC-1",
+        "AT-1",
+        "AU-1",
+        "CA-1",
+        "CA-2",
+        "CA-5",
+        "CA-7",
+        "CA-8",
+        "CM-1",
+        "CP-1",
+        "CP-2",
+        "IA-1",
+        "IR-1",
+        "IR-4",
+        "IR-8",
+        "MA-1",
+        "MP-1",
+        "PE-1",
+        "PL-1",
+        "PL-2",
+        "PM-1",
+        "PM-31",
+        "PM-4",
+        "PS-1",
+        "PT-1",
+        "RA-1",
+        "RA-3",
+        "RA-5",
+        "RA-7",
+        "SA-1",
+        "SA-11",
+        "SA-4",
+        "SA-8",
+        "SC-1",
+        "SI-1",
+        "SI-2",
+        "SI-4",
+        "SR-1",
+        "SR-5"
+      ]
+    },
+    {
+      "csf": "ID.IM-04",
+      "controls": [
+        "CP-2",
+        "IR-8",
+        "PL-2",
+        "SR-2"
+      ]
+    },
+    {
+      "csf": "PR.AA-01",
+      "controls": [
+        "AC-1",
+        "AC-14",
+        "AC-2",
+        "IA-1",
+        "IA-10",
+        "IA-11",
+        "IA-2",
+        "IA-3",
+        "IA-4",
+        "IA-5",
+        "IA-6",
+        "IA-7",
+        "IA-8",
+        "IA-9"
+      ]
+    },
+    {
+      "csf": "PR.AA-02",
+      "controls": [
+        "IA-12"
+      ]
+    },
+    {
+      "csf": "PR.AA-03",
+      "controls": [
+        "AC-12",
+        "AC-7",
+        "IA-10",
+        "IA-11",
+        "IA-2",
+        "IA-3",
+        "IA-5",
+        "IA-7",
+        "IA-8",
+        "IA-9"
+      ]
+    },
+    {
+      "csf": "PR.AA-04",
+      "controls": [
+        "IA-13"
+      ]
+    },
+    {
+      "csf": "PR.AA-05",
+      "controls": [
+        "AC-1",
+        "AC-10",
+        "AC-16",
+        "AC-17",
+        "AC-18",
+        "AC-19",
+        "AC-2",
+        "AC-24",
+        "AC-3",
+        "AC-5",
+        "AC-6",
+        "IA-13"
+      ]
+    },
+    {
+      "csf": "PR.AA-06",
+      "controls": [
+        "PE-18",
+        "PE-19",
+        "PE-2",
+        "PE-20",
+        "PE-3",
+        "PE-4",
+        "PE-5",
+        "PE-6",
+        "PE-8"
+      ]
+    },
+    {
+      "csf": "PR.AT-01",
+      "controls": [
+        "AT-2",
+        "AT-3"
+      ]
+    },
+    {
+      "csf": "PR.AT-02",
+      "controls": [
+        "AT-3"
+      ]
+    },
+    {
+      "csf": "PR.DS-01",
+      "controls": [
+        "CA-3",
+        "CP-9",
+        "MP-8",
+        "SC-12",
+        "SC-13",
+        "SC-28",
+        "SC-32",
+        "SC-39",
+        "SC-4",
+        "SC-43",
+        "SC-7",
+        "SI-3",
+        "SI-4",
+        "SI-7"
+      ]
+    },
+    {
+      "csf": "PR.DS-02",
+      "controls": [
+        "AU-16",
+        "CA-3",
+        "SC-11",
+        "SC-12",
+        "SC-13",
+        "SC-16",
+        "SC-4",
+        "SC-40",
+        "SC-43",
+        "SC-7",
+        "SC-8",
+        "SI-3",
+        "SI-4",
+        "SI-7"
+      ]
+    },
+    {
+      "csf": "PR.DS-10",
+      "controls": [
+        "AC-2",
+        "AC-3",
+        "AC-4",
+        "AU-13",
+        "AU-9",
+        "CA-3",
+        "CP-9",
+        "SA-8",
+        "SC-11",
+        "SC-13",
+        "SC-24",
+        "SC-32",
+        "SC-39",
+        "SC-4",
+        "SC-40",
+        "SC-43",
+        "SC-7",
+        "SI-10",
+        "SI-16",
+        "SI-3",
+        "SI-4",
+        "SI-7"
+      ]
+    },
+    {
+      "csf": "PR.DS-11",
+      "controls": [
+        "CP-6",
+        "CP-9"
+      ]
+    },
+    {
+      "csf": "PR.PS-01",
+      "controls": [
+        "CM-1",
+        "CM-10",
+        "CM-11",
+        "CM-2",
+        "CM-3",
+        "CM-4",
+        "CM-5",
+        "CM-6",
+        "CM-7",
+        "CM-8",
+        "CM-9"
+      ]
+    },
+    {
+      "csf": "PR.PS-02",
+      "controls": [
+        "CM-11",
+        "SI-2",
+        "SI-7"
+      ]
+    },
+    {
+      "csf": "PR.PS-03",
+      "controls": [
+        "SC-49",
+        "SC-51"
+      ]
+    },
+    {
+      "csf": "PR.PS-04",
+      "controls": [
+        "AU-11",
+        "AU-12",
+        "AU-2",
+        "AU-3",
+        "AU-6",
+        "AU-7"
+      ]
+    },
+    {
+      "csf": "PR.PS-05",
+      "controls": [
+        "SC-34"
+      ]
+    },
+    {
+      "csf": "PR.PS-06",
+      "controls": [
+        "SA-10",
+        "SA-11",
+        "SA-15",
+        "SA-17",
+        "SA-3",
+        "SA-8"
+      ]
+    },
+    {
+      "csf": "PR.IR-01",
+      "controls": [
+        "AC-3",
+        "AC-4",
+        "SC-4",
+        "SC-5",
+        "SC-7"
+      ]
+    },
+    {
+      "csf": "PR.IR-02",
+      "controls": [
+        "CP-2",
+        "PE-10",
+        "PE-11",
+        "PE-12",
+        "PE-13",
+        "PE-14",
+        "PE-15",
+        "PE-18",
+        "PE-23",
+        "PE-9"
+      ]
+    },
+    {
+      "csf": "PR.IR-03",
+      "controls": [
+        "SA-8",
+        "SC-24",
+        "SC-36",
+        "SC-39",
+        "SC-6",
+        "SI-13"
+      ]
+    },
+    {
+      "csf": "PR.IR-04",
+      "controls": [
+        "CP-6",
+        "CP-7",
+        "CP-8",
+        "PM-3",
+        "PM-9"
+      ]
+    },
+    {
+      "csf": "DE.CM-01",
+      "controls": [
+        "AC-2",
+        "AU-12",
+        "CA-7",
+        "CM-3",
+        "SC-5",
+        "SC-7",
+        "SI-4"
+      ]
+    },
+    {
+      "csf": "DE.CM-02",
+      "controls": [
+        "CA-7",
+        "PE-20",
+        "PE-3",
+        "PE-6"
+      ]
+    },
+    {
+      "csf": "DE.CM-03",
+      "controls": [
+        "AC-2",
+        "AU-12",
+        "AU-13",
+        "CA-7",
+        "CM-10",
+        "CM-11"
+      ]
+    },
+    {
+      "csf": "DE.CM-06",
+      "controls": [
+        "CA-7",
+        "PS-7",
+        "SA-4",
+        "SA-9",
+        "SI-4"
+      ]
+    },
+    {
+      "csf": "DE.CM-09",
+      "controls": [
+        "AC-4",
+        "AC-9",
+        "AU-12",
+        "CA-7",
+        "CM-10",
+        "CM-11",
+        "CM-3",
+        "CM-6",
+        "SC-34",
+        "SC-35",
+        "SI-4",
+        "SI-7"
+      ]
+    },
+    {
+      "csf": "DE.AE-02",
+      "controls": [
+        "AU-6",
+        "CA-7",
+        "IR-4",
+        "SI-4"
+      ]
+    },
+    {
+      "csf": "DE.AE-03",
+      "controls": [
+        "AU-6",
+        "CA-7",
+        "IR-4",
+        "IR-5",
+        "IR-8",
+        "PM-16",
+        "SI-4"
+      ]
+    },
+    {
+      "csf": "DE.AE-04",
+      "controls": [
+        "PM-11",
+        "PM-18",
+        "PM-28",
+        "PM-30",
+        "PM-9"
+      ]
+    },
+    {
+      "csf": "DE.AE-06",
+      "controls": [
+        "IR-4",
+        "PM-15",
+        "PM-16",
+        "RA-10",
+        "RA-3"
+      ]
+    },
+    {
+      "csf": "DE.AE-07",
+      "controls": [
+        "PM-16",
+        "RA-10",
+        "RA-3"
+      ]
+    },
+    {
+      "csf": "DE.AE-08",
+      "controls": [
+        "IR-4",
+        "IR-8"
+      ]
+    },
+    {
+      "csf": "RS.MA-01",
+      "controls": [
+        "IR-6",
+        "IR-7",
+        "IR-8",
+        "SR-3",
+        "SR-8"
+      ]
+    },
+    {
+      "csf": "RS.MA-02",
+      "controls": [
+        "IR-4",
+        "IR-5",
+        "IR-6"
+      ]
+    },
+    {
+      "csf": "RS.MA-03",
+      "controls": [
+        "IR-4",
+        "IR-5",
+        "IR-6"
+      ]
+    },
+    {
+      "csf": "RS.MA-04",
+      "controls": [
+        "IR-4",
+        "IR-5",
+        "IR-6",
+        "IR-7"
+      ]
+    },
+    {
+      "csf": "RS.MA-05",
+      "controls": [
+        "IR-4",
+        "IR-8"
+      ]
+    },
+    {
+      "csf": "RS.AN-03",
+      "controls": [
+        "AU-7",
+        "IR-4"
+      ]
+    },
+    {
+      "csf": "RS.AN-06",
+      "controls": [
+        "AU-7",
+        "IR-4",
+        "IR-6"
+      ]
+    },
+    {
+      "csf": "RS.AN-07",
+      "controls": [
+        "AU-7",
+        "IR-4",
+        "IR-6"
+      ]
+    },
+    {
+      "csf": "RS.AN-08",
+      "controls": [
+        "IR-4",
+        "IR-8",
+        "RA-3",
+        "RA-7"
+      ]
+    },
+    {
+      "csf": "RS.CO-02",
+      "controls": [
+        "IR-4",
+        "IR-6",
+        "IR-7",
+        "SR-3",
+        "SR-8"
+      ]
+    },
+    {
+      "csf": "RS.CO-03",
+      "controls": [
+        "IR-4",
+        "IR-6",
+        "IR-7",
+        "SR-3",
+        "SR-8"
+      ]
+    },
+    {
+      "csf": "RS.MI-01",
+      "controls": [
+        "IR-4"
+      ]
+    },
+    {
+      "csf": "RS.MI-02",
+      "controls": [
+        "IR-4"
+      ]
+    },
+    {
+      "csf": "RC.RP-01",
+      "controls": [
+        "CP-10",
+        "IR-4",
+        "IR-8"
+      ]
+    },
+    {
+      "csf": "RC.RP-02",
+      "controls": [
+        "CP-10",
+        "IR-4",
+        "IR-8"
+      ]
+    },
+    {
+      "csf": "RC.RP-03",
+      "controls": [
+        "CP-2",
+        "CP-4",
+        "CP-9"
+      ]
+    },
+    {
+      "csf": "RC.RP-04",
+      "controls": [
+        "IR-1",
+        "IR-8",
+        "PM-11",
+        "PM-8",
+        "PM-9"
+      ]
+    },
+    {
+      "csf": "RC.RP-05",
+      "controls": [
+        "CP-10"
+      ]
+    },
+    {
+      "csf": "RC.RP-06",
+      "controls": [
+        "IR-4",
+        "IR-8"
+      ]
+    },
+    {
+      "csf": "RC.CO-03",
+      "controls": [
+        "IR-4",
+        "IR-6",
+        "SR-8"
+      ]
+    },
+    {
+      "csf": "RC.CO-04",
+      "controls": [
+        "CP-2",
+        "IR-4"
+      ]
+    }
+  ]
+}

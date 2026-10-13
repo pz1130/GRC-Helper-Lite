@@ -1,0 +1,321 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router-dom";
+
+import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } from "../api";
+import { useAuth } from "../auth";
+import i18n, { renderParams } from "../i18n";
+
+interface Framework {
+  id: number; key: string; name_zh: string; name_en: string;
+  version: string; source: string; item_count: number; imported_at: string;
+}
+interface FrameworkItem {
+  id: number; parent_id: number | null; code: string; title: string;
+  description: string; level: number; order_index: number; attributes: Record<string, unknown> | null;
+}
+interface CoverageRow {
+  item_id: number; code: string; title: string; level: number;
+  parent_id: number | null; requirements: number; covered: number;
+  /** 已覆盖的要求里，关上它的控制点出处全在已替换文档里的条数。仍计入 covered。 */
+  superseded_only?: number;
+}
+interface SupersededRow { item_id: number; code: string; title: string; controls: string[] }
+interface GapRow { item_id: number; code: string; title: string; has_supporting: boolean; }
+
+function filenameFromDisposition(header: string | null): string {
+  const match = header?.match(/filename\*?=(?:UTF-8'')?["']?([^";]+)/i);
+  return match?.[1] ? decodeURIComponent(match[1]) : "readiness.zip";
+}
+
+async function downloadReadinessPackage(frameworkId: string): Promise<{ blob: Blob; filename: string }> {
+  // 上传/下载不走 request()，所以演示拦截也管不到这里——**必须自己挡一次**。
+  // 不挡就会带着 demo-mock-token 打到真后端，401 之后 token 被清掉，人被踢回
+  // 登录页（2026-09-20 测试报告的 BUG-21，以及那句"令牌无效或已过期"）。
+  if (isDemoSession()) throw demoNotCovered();
+  const token = getToken();
+  const response = await fetch(`/api/frameworks/${frameworkId}/readiness-package?language=en`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (response.status === 401) {
+    setToken(null);
+    throw new ApiError(401, "unauthorized", i18n.t("common.unauthorized"));
+  }
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new ApiError(response.status, body.code ?? "error", body.message ?? i18n.t("common.requestFailed"), body.params);
+  }
+  return {
+    blob: await response.blob(),
+    filename: filenameFromDisposition(response.headers.get("Content-Disposition")),
+  };
+}
+
+export function FrameworkDetail() {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const { id } = useParams();
+  const [baseline, setBaseline] = useState("");
+  const canWrite = user?.role === "admin" || user?.role === "grc_lead";
+  const suffix = baseline ? `?baseline=${encodeURIComponent(baseline)}` : "";
+  const framework = useQuery({
+    queryKey: ["frameworks"], queryFn: () => request<Framework[]>("/api/frameworks"),
+  });
+  const tree = useQuery({
+    queryKey: ["framework-tree", id], queryFn: () => request<FrameworkItem[]>(`/api/frameworks/${id}/tree`),
+    enabled: Boolean(id),
+  });
+  const coverage = useQuery({
+    queryKey: ["framework-coverage", id, baseline],
+    queryFn: () => request<CoverageRow[]>(`/api/frameworks/${id}/coverage${suffix}`),
+    enabled: Boolean(id),
+  });
+  const gaps = useQuery({
+    queryKey: ["framework-gaps", id, baseline],
+    queryFn: () => request<GapRow[]>(`/api/frameworks/${id}/gaps${suffix}`),
+    enabled: Boolean(id),
+  });
+  const superseded = useQuery({
+    queryKey: ["framework-superseded", id, baseline],
+    queryFn: () => request<SupersededRow[]>(`/api/frameworks/${id}/superseded-support${suffix}`),
+    enabled: Boolean(id),
+  });
+  const runMapping = useMutation({
+    mutationFn: () => request<{ job_id: string }>(`/api/mapping/frameworks/${id}`, { method: "POST" }),
+  });
+  const exportPackage = useMutation({
+    mutationFn: () => downloadReadinessPackage(id!),
+    onSuccess: ({ blob, filename }) => {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    },
+  });
+  const current = framework.data?.find((item) => String(item.id) === id);
+
+  return (
+    <section>
+      <p style={{ marginBottom: 16 }}>
+        <Link to="/frameworks" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.875rem" }}>
+          ← {t("frameworks.title")}
+        </Link>
+      </p>
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
+        <div>
+          <h2>
+            {current ? current.name_en || current.name_zh : id}
+            {current && <small style={{ color: "var(--text-secondary)", fontSize: "1.0625rem", marginLeft: 8 }}>· {current.version}</small>}
+          </h2>
+          {current && (
+            <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+              {t("frameworks.source")}: {current.source}
+            </p>
+          )}
+        </div>
+
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button
+            className="kn-btn-secondary"
+            disabled={exportPackage.isPending}
+            onClick={() => exportPackage.mutate()}
+          >
+            {t("frameworks.exportPackage")}
+          </button>
+          {canWrite && (
+            <button
+              className="kn-btn-primary"
+              disabled={runMapping.isPending}
+              onClick={() => runMapping.mutate()}
+            >
+              {t("frameworks.runMapping")}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {runMapping.isPending && <p role="status">{t("common.loading")}</p>}
+      {runMapping.error && <p role="alert"><span>⚠️</span> {runMapping.error.message}</p>}
+      {runMapping.data && <p role="status">{t("frameworks.mappingQueued", { id: runMapping.data.job_id })}</p>}
+      {exportPackage.isPending && <p role="status">{t("common.loading")}</p>}
+      {/* 带上原因：只说「导出失败」，人不知道是权限、数据还是服务的问题 */}
+      {exportPackage.error && <p role="alert"><span>⚠️</span> {t("frameworks.exportFailed")}: {exportPackage.error.message}</p>}
+
+      {/* Coverage & Gap Analysis Section */}
+      <div className="kn-card" style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+          <h3 style={{ margin: 0 }}>{t("frameworks.coverage")}</h3>
+          <label style={{ flexDirection: "row", alignItems: "center", gap: 8, margin: 0 }}>
+            <span>{t("frameworks.baseline")}</span>
+            <select
+              value={baseline}
+              onChange={(event) => setBaseline(event.target.value)}
+              style={{ padding: "5px 28px 5px 12px" }}
+            >
+              <option value="">{t("frameworks.baselineAll")}</option>
+              <option value="low">{t("frameworks.baselines.low")}</option>
+              <option value="moderate">{t("frameworks.baselines.moderate")}</option>
+              <option value="high">{t("frameworks.baselines.high")}</option>
+            </select>
+          </label>
+        </div>
+
+        {coverage.isPending && <p role="status">{t("common.loading")}</p>}
+        {coverage.error && <p role="alert"><span>⚠️</span> {coverage.error.message}</p>}
+
+        <div className="kn-table-container" style={{ margin: 0 }}>
+          <table>
+            <thead>
+              <tr>
+                <th>{t("frameworks.item")}</th>
+                <th>{t("frameworks.coverage")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {coverage.data?.map((row) => {
+                const ratio = row.requirements ? row.covered / row.requirements : null;
+                const badgeClass =
+                  ratio === null
+                    ? ""
+                    : ratio >= 1
+                    ? "kn-badge-emerald"
+                    : ratio > 0
+                    ? "kn-badge-amber"
+                    : "kn-badge-ruby";
+
+                return (
+                  <tr key={row.item_id}>
+                    <td style={{ paddingLeft: 18 + Math.max(0, row.level - 1) * 20 }}>
+                      <code style={{ marginRight: 8 }}>{row.code}</code>
+                      <span style={{ fontWeight: row.level === 1 ? 600 : 400 }}>{row.title}</span>
+                    </td>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span className={`kn-badge ${badgeClass}`}>
+                          {row.covered} / {row.requirements}
+                        </span>
+                        {!!row.superseded_only && (
+                          <span className="kn-badge kn-badge-amber" title={t("frameworks.supersededOnlyHint")}>
+                            {t("frameworks.supersededOnlyCount", { count: row.superseded_only })}
+                          </span>
+                        )}
+                        {ratio !== null && (
+                          <div style={{ width: 90 }}>
+                            <div className="kn-progress-bar">
+                              <div
+                                className="kn-progress-fill"
+                                style={{
+                                  width: `${Math.round(ratio * 100)}%`,
+                                  background:
+                                    ratio >= 1
+                                      ? "var(--accent-emerald)"
+                                      : ratio > 0
+                                      ? "var(--accent-amber)"
+                                      : "var(--accent-ruby)",
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* 仍算覆盖、但依据已作废：不自动降级（已确认的数据只由人改），而是单独列出来 */}
+      {!!superseded.data?.length && (
+        <div className="kn-card" style={{ marginBottom: 24, border: "1px solid var(--accent-amber-border)" }} data-card="superseded-support">
+          <h3 style={{ margin: "0 0 6px 0" }}>{t("frameworks.supersededOnly")}</h3>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: "0 0 14px 0" }}>
+            {t("frameworks.supersededOnlyHint")}
+          </p>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {superseded.data.map((row) => (
+              <li key={row.item_id} style={{ padding: "8px 0", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "baseline" }}>
+                <code>{row.code}</code>
+                <span>{row.title}</span>
+                <span style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem" }}>
+                  {t("frameworks.supersededOnlyControls", renderParams({ controls: row.controls }))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {superseded.error && <p role="alert"><span>⚠️</span> {superseded.error.message}</p>}
+
+      {/* Gaps Checklist */}
+      <div className="kn-card" style={{ marginBottom: 24 }}>
+        <h3 style={{ margin: "0 0 14px 0" }}>{t("frameworks.gaps")}</h3>
+        {gaps.isPending && <p role="status">{t("common.loading")}</p>}
+        {gaps.error && <p role="alert"><span>⚠️</span> {gaps.error.message}</p>}
+        {gaps.data?.length === 0 && (
+          <p style={{ color: "var(--accent-emerald)", margin: 0 }}>✓ {t("common.empty")}</p>
+        )}
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {gaps.data?.map((gap) => (
+            <li
+              key={gap.item_id}
+              style={{
+                padding: "10px 14px",
+                background: "var(--stage-card-subtle)",
+                borderRadius: "var(--radius-sm)",
+                marginBottom: 8,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <span className="kn-badge kn-badge-ruby">{t("frameworks.gap")}</span>
+              <code>{gap.code}</code>
+              <span style={{ color: "var(--text-primary)" }}>{gap.title}</span>
+              {gap.has_supporting && (
+                <small style={{ marginLeft: "auto", color: "var(--accent-amber)" }}>
+                  {t("frameworks.hasSupporting")}
+                </small>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Framework Tree */}
+      <div className="kn-card">
+        <h3 style={{ margin: "0 0 14px 0" }}>{t("frameworks.tree")}</h3>
+        {tree.isPending && <p role="status">{t("common.loading")}</p>}
+        {tree.error && <p role="alert"><span>⚠️</span> {tree.error.message}</p>}
+        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          {tree.data?.map((item) => (
+            <li
+              key={item.id}
+              style={{
+                paddingLeft: Math.max(0, item.level - 1) * 20,
+                paddingTop: 6,
+                paddingBottom: 6,
+                borderLeft: item.level > 1 ? "1px solid var(--stage-border-subtle)" : undefined,
+                marginLeft: item.level > 1 ? 8 : 0,
+              }}
+            >
+              <code style={{ marginRight: 8 }}>{item.code}</code>
+              <span style={{ fontWeight: item.level === 1 ? 600 : 400 }}>{item.title}</span>
+              {item.description && (
+                <span style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem", marginLeft: 8 }}>
+                  — {item.description}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}

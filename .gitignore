@@ -1,0 +1,58 @@
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+node_modules/
+dist/
+build/
+.venv/
+*.egg-info/
+.pytest_cache/
+data/
+uploads/
+*.db
+.DS_Store
+.worktrees/
+test-results/
+playwright-report/
+.playwright/
+*.tsbuildinfo
+
+# 真实的内部制度文件——只在本地用于验证解析器，绝不进版本库
+sample docs/
+
+# 黄金集是**按某一批具体文档**写出来的：查询的期望命中、控制点的期望主题，
+# 全部来自读那些文件。所以本地用的那份不进库，只留一份 .example 说明格式。
+# 换一批语料就照着 .example 重写一份 .local.json。
+backend/tests/fixtures/*.local.json
+
+# 本地的完整历史 bundle 与数据库导出：里面是**剥离前**的内容（机构名、制度原句、
+# 开发库全量）。它们该留在本地文件夹里，永远不该进这个要推到 GitHub 的仓库——
+# 万一哪天被挪进项目目录，这两条挡一下。
+*.bundle
+*.sql
+backups/
+samples/
+*.docx
+*.pdf
+
+# 设计文档、实施计划与遗留问题清单里有制度原文的逐字引用和机构名，
+# 所以不进这个（要推到 GitHub 的）仓库。它们仍然在 docs/ 下，由**它自己的
+# 本地 git 仓库**版本管理（2026-09-12 从本仓库历史中剥离），一行没丢。
+# 要给 docs 配远端的话，配一个机构内部的，不要配公共托管。
+docs/
+
+# eval 报告是机器产物：数值写进计划文档的验收记录，报告本身不入库。
+# 由 RELATION_REPORT_PATH / 同类环境变量按需生成。
+backend/relation-report.json
+
+# 审阅用的导出清单，同 relation-report.json：是查询产物，不入库。
+csf-flagged-mappings.md
+
+# playwright MCP 的中间产物（截图、快照、控制台日志）
+.playwright-mcp/
+
+# 直连生产栈的一次性脚本（绕开 make e2e 的隔离栈，见 OQ-3）
+frontend/*.cjs
+frontend/sample_*.xlsx

@@ -1,0 +1,14 @@
+[
+  {
+    "document": "Example Visitor Access Policy",
+    "must_find": [
+      "visitors are signed in at reception",
+      "visitor badges expire the same day"
+    ],
+    "keyword_groups": [
+      [["visitor"], ["sign", "log", "register"], ["reception", "front desk"]],
+      [["visitor", "badge"], ["expir", "same day", "end of day"]]
+    ],
+    "min_controls": 2
+  }
+]

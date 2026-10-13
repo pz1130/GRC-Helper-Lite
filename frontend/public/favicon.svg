@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1f5f9"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.5"/>
+      <stop offset="50%" stop-color="#cbd5e1" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#94a3b8" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="g-spine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="60%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Light Squircle Base Tile -->
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" stroke="url(#rim)" stroke-width="1.5"/>
+
+  <!-- Outer Hexagonal Shield Outline -->
+  <path d="M 32 11 L 51 20 L 51 40 L 32 53 L 13 40 L 13 20 Z" 
+        stroke="#10b981" stroke-opacity="0.65" stroke-width="1.6" stroke-linejoin="round" fill="rgba(16, 185, 129, 0.08)"/>
+
+  <!-- Interlocking G-Spine (Deep Slate) -->
+  <path d="M 44 24 L 32 17 L 19 24 L 19 41 L 32 49 L 45 41 L 45 32 L 32 32" 
+        stroke="url(#g-spine)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Emerald Diamond Core -->
+  <polygon points="32,25.5 38.5,32 32,38.5 25.5,32" fill="url(#core)"/>
+  <circle cx="32" cy="32" r="2" fill="#ffffff"/>
+</svg>
