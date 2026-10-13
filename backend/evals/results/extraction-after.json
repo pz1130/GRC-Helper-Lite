@@ -1,0 +1,30 @@
+{
+  "suite": "extraction",
+  "label": "after",
+  "chat_model": "MiniMax-M3",
+  "embed_model": "embo-01",
+  "max_tokens": 16384,
+  "clauses": 21,
+  "batches": 9,
+  "attempted": 9,
+  "rejected": 2,
+  "batch_validation_pass_rate": 0.7778,
+  "proposals": 45,
+  "citations": 44,
+  "citations_verbatim_after_gate": 1.0,
+  "citation_repairs": 0,
+  "max_correction_retries": 2,
+  "usage": {
+    "control_extract:error": {
+      "calls": 2,
+      "tokens_in": 56481,
+      "tokens_out": 72854
+    },
+    "control_extract:ok": {
+      "calls": 20,
+      "tokens_in": 116131,
+      "tokens_out": 122422
+    }
+  },
+  "elapsed_s": 1729.0
+}

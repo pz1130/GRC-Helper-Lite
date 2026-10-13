@@ -1,0 +1,37 @@
+{
+  "suite": "mapping",
+  "label": "after",
+  "chat_model": "MiniMax-M3",
+  "embed_model": "embo-01",
+  "max_tokens": 16384,
+  "batches": 7,
+  "attempted": 7,
+  "rejected": 0,
+  "failed": 0,
+  "dropped_mappings": 0,
+  "batch_validation_pass_rate": 1.0,
+  "candidate_vector_used": true,
+  "mapping": {
+    "tp": 98,
+    "predicted": 140,
+    "expected": 716,
+    "precision": 0.7,
+    "recall": 0.1369,
+    "f1": 0.229
+  },
+  "citation_repairs": 0,
+  "proposals": 140,
+  "usage": {
+    "framework_mapping:ok": {
+      "calls": 7,
+      "tokens_in": 45944,
+      "tokens_out": 53369
+    },
+    "embedding:ok": {
+      "calls": 3,
+      "tokens_in": 22320,
+      "tokens_out": 0
+    }
+  },
+  "elapsed_s": 359.1
+}

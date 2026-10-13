@@ -1,0 +1,70 @@
+{
+  "suite": "prefilter",
+  "label": "vectors",
+  "chat_model": "MiniMax-M3",
+  "embed_model": "embo-01",
+  "max_tokens": 16384,
+  "items": 106,
+  "controls": 191,
+  "positives": 716,
+  "keyword": {
+    "recall@10": {
+      "k": 10,
+      "hit": 196,
+      "positives": 716,
+      "recall": 0.2737
+    },
+    "recall@20": {
+      "k": 20,
+      "hit": 281,
+      "positives": 716,
+      "recall": 0.3925
+    },
+    "recall@40": {
+      "k": 40,
+      "hit": 367,
+      "positives": 716,
+      "recall": 0.5126
+    }
+  },
+  "vector": {
+    "recall@10": {
+      "k": 10,
+      "hit": 103,
+      "positives": 716,
+      "recall": 0.1439
+    },
+    "recall@20": {
+      "k": 20,
+      "hit": 162,
+      "positives": 716,
+      "recall": 0.2263
+    },
+    "recall@40": {
+      "k": 40,
+      "hit": 262,
+      "positives": 716,
+      "recall": 0.3659
+    }
+  },
+  "hybrid": {
+    "recall@10": {
+      "k": 10,
+      "hit": 207,
+      "positives": 716,
+      "recall": 0.2891
+    },
+    "recall@20": {
+      "k": 20,
+      "hit": 287,
+      "positives": 716,
+      "recall": 0.4008
+    },
+    "recall@40": {
+      "k": 40,
+      "hit": 377,
+      "positives": 716,
+      "recall": 0.5265
+    }
+  }
+}
