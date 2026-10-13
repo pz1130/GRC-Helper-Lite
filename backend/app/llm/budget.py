@@ -1,7 +1,7 @@
 import logging
 from datetime import UTC, datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.errors import AppError
@@ -10,6 +10,12 @@ from app.llm.models import AppSetting, LLMCall, LLMProviderConfig
 logger = logging.getLogger(__name__)
 
 WARN_RATIO = 0.8
+# K5：批量任务的「检查 → 调模型 → 记账」原先不是原子的，并发批次都能在同一刻看到
+# 「还没超」，一起放行。接近上限（≥ WARN_RATIO）后，批量调用改为排队：检查前先拿
+# 事务级 advisory lock，锁一直持有到本批次提交（成本行随之可见），下一个批次再读到的
+# 就是已经记上账的花费。远低于上限时不加锁，免得把所有批量任务串行化。
+# 剩余误差：持锁期间单个批次自身的花费仍可能越过上限（最多超一个批次的成本）。
+BUDGET_LOCK_KEY = 0x6772635F62756467  # "grc_budg"
 
 
 class BudgetExceeded(AppError):
@@ -100,18 +106,36 @@ async def check(
     实际却从不生效，这比没有更糟。
     """
     global_budget = await _budget(session)
-    if global_budget is not None and global_budget > 0:
-        _enforce(
-            None,
-            global_budget,
-            await month_to_date_cost(session),
-            interactive=interactive,
-        )
+    provider_budget = (
+        float(provider.monthly_budget)
+        if provider is not None and provider.monthly_budget and provider.monthly_budget > 0
+        else None
+    )
+    if global_budget is not None and global_budget <= 0:
+        global_budget = None
+    if global_budget is None and provider_budget is None:
+        return
 
-    if provider is not None and provider.monthly_budget and provider.monthly_budget > 0:
-        _enforce(
-            provider.name,
-            float(provider.monthly_budget),
-            await month_to_date_cost(session, provider_config_id=provider.id),
-            interactive=interactive,
-        )
+    spent = await month_to_date_cost(session) if global_budget is not None else 0.0
+    provider_spent = (
+        await month_to_date_cost(session, provider_config_id=provider.id)
+        if provider_budget is not None and provider is not None
+        else 0.0
+    )
+
+    near_limit = (global_budget is not None and spent >= global_budget * WARN_RATIO) or (
+        provider_budget is not None and provider_spent >= provider_budget * WARN_RATIO
+    )
+    if near_limit and not interactive:
+        await session.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": BUDGET_LOCK_KEY})
+        # 拿到锁后重读：排在前面的批次可能刚提交了它的花费。
+        if global_budget is not None:
+            spent = await month_to_date_cost(session)
+        if provider_budget is not None and provider is not None:
+            provider_spent = await month_to_date_cost(session, provider_config_id=provider.id)
+
+    if global_budget is not None:
+        _enforce(None, global_budget, spent, interactive=interactive)
+    if provider_budget is not None and provider is not None:
+        _enforce(provider.name, provider_budget, provider_spent, interactive=interactive)
+
