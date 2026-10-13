@@ -87,10 +87,10 @@ def verify(db: str) -> dict:
     out = subprocess.run(
         ["psql", "-h", "localhost", "-p", os.environ.get("GRC_EVAL_PG_PORT", "55432"), "-U", "grc",
          "-d", db, "-tA", "-F", ",", "-c",
-         "select fi.code, c.code from proposals p "
-         "join framework_items fi on fi.id = (p.payload->>'framework_item_id')::int "
-         "join controls c on c.id = (p.payload->>'control_id')::int "
-         "where p.kind = 'mapping'"],
+         ("select fi.code, c.code from proposals p "
+          "join framework_items fi on fi.id = (p.payload->>'framework_item_id')::int "
+          "join controls c on c.id = (p.payload->>'control_id')::int "
+          "where p.kind = 'mapping'")],
         capture_output=True, text=True, check=True, env={**os.environ, "PGPASSWORD": "grc"},
     ).stdout
     rows = [line.split(",") for line in out.splitlines() if line]
