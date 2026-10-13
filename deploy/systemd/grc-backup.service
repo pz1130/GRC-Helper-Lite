@@ -1,0 +1,16 @@
+# 定时备份（G2）。安装：
+#   sudo cp deploy/systemd/grc-backup.{service,timer} /etc/systemd/system/
+#   # 按实际路径改 WorkingDirectory / ExecStart；运行用户需能用 docker
+#   sudo systemctl daemon-reload && sudo systemctl enable --now grc-backup.timer
+# 失败时 systemctl --failed / journalctl -u grc-backup 可见；建议接 OnFailure= 告警。
+[Unit]
+Description=GRC Helper backup (db + documents, verify, offsite)
+Wants=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/srv/grc-helper
+ExecStart=/srv/grc-helper/scripts/backup.sh
+Nice=10
+IOSchedulingClass=idle
