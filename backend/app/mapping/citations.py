@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.controls.models import Control
 from app.frameworks.models import FrameworkItem, MappingStrength
+from app.iam import audit
+from app.llm.citation_repair import repair_quote
 from app.llm.validation import normalize
 
 _STRENGTHS = {strength.value for strength in MappingStrength}
@@ -24,6 +26,7 @@ class MappingCitationValidator:
         self._session = session
         self._item_ids = frozenset(item_ids)
         self._item_key = item_key
+        self.repairs: list[dict[str, Any]] = []
 
     async def check(self, payload: dict[str, Any]) -> str | None:
         items = payload.get(self._item_key)
@@ -72,5 +75,20 @@ class MappingCitationValidator:
             if control_id not in known_controls:
                 return f"control {control_id} does not exist"
             if normalize(entry["framework_item_quote"]) not in normalize(descriptions[item_id]):
-                return f"the quote was not found in the text of framework item {item_id}"
+                fixed = repair_quote(entry["framework_item_quote"], descriptions[item_id])
+                if fixed is None:
+                    return f"the quote was not found in the text of framework item {item_id}"
+                self.repairs.append({
+                    "entity": "framework_item", "entity_id": item_id,
+                    "original": entry["framework_item_quote"], "repaired": fixed.quote,
+                    "ratio": fixed.ratio, "edited_tokens": fixed.edited_tokens,
+                })
+                await audit.record(
+                    self._session, user=None, action="citation.repair",
+                    entity_type="framework_item", entity_id=item_id,
+                    before={"quote": entry["framework_item_quote"]},
+                    after={"quote": fixed.quote, "ratio": fixed.ratio,
+                           "edited_tokens": fixed.edited_tokens},
+                )
+                entry["framework_item_quote"] = fixed.quote
         return None
