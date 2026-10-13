@@ -55,12 +55,11 @@ async def test_viewer_can_search(client, db_session):
     await _seed_user(db_session, Role.VIEWER, "v@example.com")
     await _corpus(db_session)
     headers = await _auth(client, "v@example.com")
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-        ):
-            resp = await client.get("/api/search?q=privileged accounts", headers=headers)
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        resp = await client.get("/api/search?q=privileged accounts", headers=headers)
     assert resp.status_code == 200
     body = resp.json()
     assert body["hits"][0]["citation_label"] == "3.5"

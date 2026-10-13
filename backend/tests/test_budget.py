@@ -1,7 +1,7 @@
 import pytest
 
-from app.llm.budget import BudgetExceeded, check, month_to_date_cost
 from app.crypto import encrypt
+from app.llm.budget import BudgetExceeded, check, month_to_date_cost
 from app.llm.models import (
     AppSetting,
     LLMCall,
