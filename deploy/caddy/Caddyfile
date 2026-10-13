@@ -1,0 +1,40 @@
+# HTTPS 入口（KNOWN_ISSUES G1）。由 docker-compose.prod.yml 的 proxy 服务加载。
+#
+# SITE_ADDRESS  对外域名，如 grc.example.org；内网可填主机名或 IP。
+# TLS_ISSUER    证书来源，二选一：
+#               · internal          —— Caddy 自建 CA 签发（内网、无公网 DNS 时用）。
+#                                      根证书在 caddy_data 卷里，需分发给客户端信任。
+#               · 一个邮箱地址       —— 走 ACME（Let's Encrypt）自动签发与续期，
+#                                      要求域名解析到本机且 80/443 可从公网到达。
+{
+	# 管理接口只在容器内，不对外
+	admin 127.0.0.1:2019
+}
+
+{$SITE_ADDRESS:localhost} {
+	tls {$TLS_ISSUER:internal}
+
+	encode zstd gzip
+
+	# nginx（web 容器）已设置 CSP / X-Frame-Options / nosniff / Referrer-Policy；
+	# 这里只补只有 HTTPS 层才该发的头，并去掉暴露版本的头。
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		-Server
+		-Via
+	}
+
+	# 上传的制度文件可能有几十 MB，与 nginx 的 client_max_body_size 64m 对齐
+	request_body {
+		max_size 64MB
+	}
+
+	reverse_proxy web:80 {
+		# 导出准备包是同步的，给足时间（与 nginx 的 proxy_read_timeout 一致）
+		transport http {
+			read_timeout 300s
+		}
+	}
+}
