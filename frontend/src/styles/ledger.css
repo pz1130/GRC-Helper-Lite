@@ -210,7 +210,6 @@ details[open] > summary::before { transform: rotate(45deg); }
   background: var(--sidebar-nav-active-bg);
   color: var(--sidebar-nav-active-color);
   border-color: transparent;
-  box-shadow: inset 3px 0 0 var(--accent-blue);
 }
 .kn-sidebar-nav-item.active .kn-sidebar-nav-item-icon { color: var(--accent-blue); }
 .kn-nav-group-header { letter-spacing: 0.06em; color: var(--text-tertiary); }

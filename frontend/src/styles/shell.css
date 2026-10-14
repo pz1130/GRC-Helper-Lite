@@ -135,8 +135,7 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 .kn-page-overview .kn-cockpit-metric:last-child { border-right: 0; }
 .kn-page-overview .kn-bento-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 
-/* 确认队列：提案卡片像 issue 列表——紧凑头部、左侧状态条 */
-.kn-page-review > .kn-card { border-left: 3px solid var(--accent-blue); }
+/* 确认队列：提案卡片用统一边框，不再加左侧色条 */
 /* 控制点：操作面板收成一行工具区 */
 .kn-page-controls > .kn-mb-5:has(> details) { display: flex; gap: 8px; flex-wrap: wrap; }
 .kn-page-controls > .kn-mb-5 > details { margin: 0; flex: 1 1 320px; padding: 10px 14px; }
@@ -537,7 +536,7 @@ pre.kn-clause-body { min-height: 0; resize: none; }
 .kn-callout-note {
   margin-top: 16px; padding: 10px 14px; font-size: 0.875rem; line-height: 1.6;
   color: var(--text-secondary); background: var(--stage-card-subtle);
-  border-left: 3px solid var(--accent-blue); border-radius: var(--radius-xs);
+  border: 1px solid var(--stage-border); border-radius: var(--radius-xs);
 }
 .kn-callout-amber {
   margin: 0 0 16px; padding: 10px 14px; font-size: 0.875rem; line-height: 1.6;
@@ -559,7 +558,8 @@ pre.kn-clause-body { min-height: 0; resize: none; }
 .kn-cite-path { font-size: 0.75rem; color: var(--text-tertiary); margin: 2px 0 4px; }
 .kn-cite-quote {
   margin: 8px 0 0; white-space: pre-wrap; font-size: 0.8125rem; line-height: 1.5;
-  color: var(--text-secondary); border-left: 2px solid var(--accent-blue); padding-left: 10px;
+  color: var(--text-secondary); border: 1px solid var(--stage-border-subtle);
+  border-radius: var(--radius-xs); padding: 8px 10px; background: var(--stage-card-subtle);
 }
 .kn-proposal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--stage-border); }
 .kn-reason-input { flex: 1; min-width: 220px; }

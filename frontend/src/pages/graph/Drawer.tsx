@@ -184,15 +184,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
             <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: "4px 0 0" }}>{control.title}</p>
           </div>
 
-          <div
-            style={{
-              background: "var(--stage-card-subtle)",
-              border: "1px solid var(--stage-border)",
-              borderLeft: "3px solid var(--accent-blue)",
-              borderRadius: "var(--radius-sm)",
-              padding: "12px 14px",
-            }}
-          >
+          <div className="kn-well kn-m-0">
             <p className="kn-primary-text kn-text-xs kn-m-0">
               {control.statement}
             </p>
