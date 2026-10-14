@@ -232,11 +232,11 @@ export function Users() {
 
       {/* Add User Card */}
       <div className="kn-max-w-md kn-card">
-        <h4 style={{ margin: "0 0 4px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 16 }}>
+        <h4 className="kn-m-0 kn-mb-1 kn-text-md">{t("common.add")}</h4>
+        <p className="kn-secondary kn-text-xs kn-mb-4">
           {t("settings.usersConfig.auditorHint")}
         </p>
-        <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
+        <form onSubmit={submit} className="kn-stack-3">
           <input
             type="email"
             placeholder={t("settings.usersConfig.email")}

@@ -295,8 +295,8 @@ export function DocumentDetail() {
 
       {importing && (
         <div className="kn-card" style={{ marginBottom: 20, border: "1px solid var(--accent-blue)" }}>
-          <h4 style={{ margin: "0 0 8px 0" }}>{t("impact.importNewVersion")}</h4>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 12 }}>
+          <h4 className="kn-m-0 kn-mb-2">{t("impact.importNewVersion")}</h4>
+          <p className="kn-secondary kn-text-xs kn-mb-3">
             {t("documents.dropHint")}
           </p>
           <input type="hidden" name="supersedes_id" value={id ?? ""} />
@@ -363,7 +363,7 @@ export function DocumentDetail() {
             {!!coverage.data.reference_issues?.length && <div>
               <strong>{t("documents.referenceIssuesTitle")}</strong>
               <p>{t("documents.referenceIssuesExplanation")}</p>
-              <ul style={{ maxHeight: 240, overflow: "auto" }}>
+              <ul className="kn-scroll-240">
                 {coverage.data.reference_issues.map((issue) => (
                   <li key={`${issue.source_clause_id}:${issue.label}:${issue.status}`}>
                     <button type="button" className="kn-btn-secondary" onClick={() => {
@@ -379,7 +379,7 @@ export function DocumentDetail() {
             </div>}
             <details>
               <summary>{t("documents.coverageInspect")}</summary>
-              <ul style={{ maxHeight: 240, overflow: "auto" }}>
+              <ul className="kn-scroll-240">
                 {coverage.data.clauses.filter((row) => row.status !== "cited").map((row) => (
                   <li key={row.clause_id}>
                     <button type="button" className="kn-btn-secondary" onClick={() => {

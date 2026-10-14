@@ -58,17 +58,22 @@ export function StatCard({
   value,
   hint,
   tone,
+  footer,
 }: {
   label: ReactNode;
   value: ReactNode;
   hint?: ReactNode;
   tone?: "danger" | "warning" | "success";
+  footer?: ReactNode;
 }) {
   return (
     <div className={cx("kn-card kn-stat-card", tone && `kn-tone-${tone}`)}>
-      <div className="kn-stat-label">{label}</div>
-      <div className="kn-stat-number">{value}</div>
-      {hint ? <div className="kn-stat-sub">{hint}</div> : null}
+      <div>
+        <span className="kn-stat-label">{label}</span>
+        <div className="kn-stat-number kn-primary-text">{value}</div>
+        {hint ? <div className="kn-stat-sub">{hint}</div> : null}
+      </div>
+      {footer}
     </div>
   );
 }

@@ -28,7 +28,8 @@
     "audit": "Audit Assistant",
     "maturity": "Maturity Model",
     "risks": "Risk Register",
-    "openMenu": "Open navigation"
+    "openMenu": "Open navigation",
+    "menu": "Menu"
   },
   "topbar": {
     "searchPlaceholder": "Search controls, documents, frameworks... (⌘K)",
@@ -38,6 +39,8 @@
     "systemDegradedHint": "The backend health check is failing; data may be stale",
     "pendingReviews": "{{count}} pending reviews",
     "noPendingReviews": "Queue cleared",
+    "paletteControls": "Controls",
+    "paletteRisks": "Risks",
     "quickSearch": "Quick Search"
   },
   "login": {

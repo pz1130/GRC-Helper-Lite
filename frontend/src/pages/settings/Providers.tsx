@@ -188,7 +188,7 @@ export function Providers() {
                 <tr key={p.id}>
                   <td>
                     <span className="kn-strong kn-primary-text">{p.name}</span>
-                    {p.is_fallback && <span className="kn-badge kn-badge-purple" style={{ marginLeft: 8 }}>{t("settings.providersConfig.fallback")}</span>}
+                    {p.is_fallback && <span className="kn-ml-2 kn-badge kn-badge-purple">{t("settings.providersConfig.fallback")}</span>}
                   </td>
                   <td>
                     <span className="kn-badge">{p.kind}</span>
@@ -271,8 +271,8 @@ export function Providers() {
 
       {/* Add Provider Card */}
       <div className="kn-card kn-mb-6">
-        <h4 style={{ margin: "0 0 14px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
-        <form onSubmit={submit} style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+        <h4 className="kn-m-0 kn-mb-3 kn-text-md">{t("common.add")}</h4>
+        <form onSubmit={submit} className="kn-stack-3 kn-max-w-md">
           <input
             placeholder={t("settings.providersConfig.name")}
             value={form.name}

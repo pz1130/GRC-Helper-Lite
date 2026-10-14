@@ -164,3 +164,39 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
   .ws-main { padding: 18px 16px 40px; }
   .kn-page-overview .kn-bento-grid { grid-template-columns: 1fr; }
 }
+
+/* ---- 面板：宽屏只显示当前域 ---- */
+.ws-panel-list { display: none; }
+.ws-panel-list--active { display: flex; }
+.ws-panel-list--active .ws-panel-group-title { display: none; }
+.ws-panel-group-title { padding: 10px 8px 4px; }
+.ws-bottom-nav { display: none; }
+
+@media (max-width: 900px) {
+  .ws-shell, .ws-shell--collapsed { grid-template-columns: minmax(0, 1fr); }
+  .ws-rail { display: none; }
+  .ws-content { grid-column: 1; }
+  .ws-panel { left: 0; width: min(300px, 86vw); overflow-y: auto; box-shadow: 0 0 40px rgba(0,0,0,.25); }
+  .ws-panel-list { display: flex; }
+  .ws-panel-list--active .ws-panel-group-title { display: block; }
+  .ws-panel-head { display: none; }
+  .ws-main { padding-bottom: 88px; }
+  .ws-drawer-toggle { display: none; }
+  .ws-bottom-nav {
+    display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    background: var(--topbar-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--stage-border);
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  .ws-bottom-item {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0;
+    font-size: 0.6875rem; font-weight: 500; color: var(--text-tertiary); text-decoration: none;
+    background: none; border: 0; box-shadow: none; min-height: 44px;
+  }
+  .ws-bottom-item.active { color: var(--accent-blue); }
+  .ws-bottom-icon svg { width: 20px; height: 20px; display: block; }
+  .ws-bottom-icon { font-size: 18px; line-height: 20px; }
+  .ws-bottom-item .ws-rail-badge { top: 0; right: calc(50% - 20px); }
+  .ws-bottom-item span:not(.ws-bottom-icon):not(.ws-rail-badge) { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+.ws-palette-icon code { font-size: 0.6875rem; padding: 1px 5px; }
+.ws-palette-score { display: inline-flex; min-width: 22px; justify-content: center; font-size: 0.6875rem; font-weight: 700; border-radius: 4px; background: var(--accent-ruby-bg); color: var(--accent-ruby); }

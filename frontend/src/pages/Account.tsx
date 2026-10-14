@@ -54,14 +54,14 @@ export function Account() {
 
   return (
     <div className="kn-max-w-md">
-      <h2 style={{ marginBottom: 4 }}>{t("account.title")}</h2>
+      <h2 className="kn-page-title">{t("account.title")}</h2>
       <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginTop: 0 }}>
         {user?.email}
       </p>
 
       <div className="kn-card">
         <h3 style={{ margin: "0 0 4px 0", fontSize: "1.0625rem" }}>{t("account.changePassword")}</h3>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 16 }}>
+        <p className="kn-secondary kn-text-xs kn-mb-4">
           {t("account.changePasswordHint")}
         </p>
         {error && (
@@ -74,7 +74,7 @@ export function Account() {
             <span>✅</span> {notice}
           </p>
         )}
-        <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
+        <form onSubmit={submit} className="kn-stack-3">
           <label>
             {t("account.currentPassword")}
             <input

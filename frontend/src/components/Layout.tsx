@@ -9,6 +9,8 @@ import { useNavModel } from "./nav";
 import { HealthPill, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
 
 const PANEL_KEY = "grc.ws.panel";
+// 窄屏底部标签栏放最常用的四页，其余进抽屉。
+const BOTTOM_TABS = ["/", "/controls", "/review", "/risks"];
 
 /**
  * 外壳 C · Workspace：图标轨 + 可收起的上下文面板 + 命令面板。
@@ -94,15 +96,20 @@ export function Layout() {
           <span>{t("topbar.quickSearch")}</span>
           <kbd className="kn-cmd-kbd">⌘K</kbd>
         </button>
-        <div className="ws-panel-list">
-          {activeGroup.items.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `ws-panel-item${isActive ? " active" : ""}`}>
-              <span className="ws-panel-icon" aria-hidden="true">{item.icon}</span>
-              <span className="ws-panel-label">{item.label}</span>
-              {item.badge != null ? <span className="ws-panel-count">{item.badge}</span> : null}
-            </NavLink>
-          ))}
-        </div>
+        {/* 所有业务域都渲染：宽屏只显示当前域（其余由 CSS 隐藏，图标轨负责切换）；
+            窄屏图标轨隐藏，抽屉里就要能看到全部域。 */}
+        {navGroups.map((group) => (
+          <div key={group.id} className={`ws-panel-list${group.id === activeGroup.id ? " ws-panel-list--active" : ""}`}>
+            <span className="ws-panel-subtitle ws-panel-group-title">{group.title}</span>
+            {group.items.map((item) => (
+              <NavLink key={item.to} to={item.to} end={item.to === "/"} className={({ isActive }) => `ws-panel-item${isActive ? " active" : ""}`}>
+                <span className="ws-panel-icon" aria-hidden="true">{item.icon}</span>
+                <span className="ws-panel-label">{item.label}</span>
+                {item.badge != null ? <span className="ws-panel-count">{item.badge}</span> : null}
+              </NavLink>
+            ))}
+          </div>
+        ))}
         <div className="ws-panel-section">
           <span className="ws-panel-subtitle">{t("nav.review")}</span>
           <PendingPill count={pendingCount} />
@@ -154,6 +161,23 @@ export function Layout() {
           </PageErrorBoundary>
         </main>
       </div>
+      <nav className="ws-bottom-nav" aria-label={t("app.name")}>
+        {BOTTOM_TABS.map((to) => {
+          const item = navGroups.flatMap((group) => group.items).find((entry) => entry.to === to);
+          if (!item) return null;
+          return (
+            <NavLink key={to} to={to} end={to === "/"} className={({ isActive }) => `ws-bottom-item${isActive ? " active" : ""}`}>
+              <span className="ws-bottom-icon" aria-hidden="true">{item.icon}</span>
+              <span>{item.label}</span>
+              {item.badge != null ? <span className="ws-rail-badge">{item.badge}</span> : null}
+            </NavLink>
+          );
+        })}
+        <button type="button" className="ws-bottom-item" onClick={() => setDrawerOpen(true)} aria-expanded={drawerOpen}>
+          <span className="ws-bottom-icon" aria-hidden="true">☰</span>
+          <span>{t("nav.menu")}</span>
+        </button>
+      </nav>
       {drawerOpen ? <div className="kn-drawer-backdrop" onClick={() => setDrawerOpen(false)} /> : null}
       <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} groups={navGroups} />
     </div>

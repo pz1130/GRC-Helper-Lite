@@ -76,7 +76,7 @@ export function AuditLog() {
                     </div>
                   )}
                   {e.after && (
-                    <div style={{ color: "var(--accent-emerald)" }}>
+                    <div className="kn-ok-text">
                       + {JSON.stringify(e.after)}
                     </div>
                   )}

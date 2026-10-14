@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "../components/ui";
 import { Link } from "react-router-dom";
 
 import { request } from "../api";
@@ -68,12 +69,7 @@ export function Search() {
 
   return (
     <section>
-      <div className="kn-mb-6">
-        <h2>{t("search.title")}</h2>
-        <p className="kn-page-subtitle">
-          {t("search.subtitle")}
-        </p>
-      </div>
+      <PageHeader title={t("search.title")} subtitle={t("search.subtitle")} />
 
       {canWrite && (
         <p>
@@ -161,7 +157,7 @@ export function Search() {
 
       {results.data && results.data.expanded_terms.length > 1 && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-tertiary)" }}>
+          <span className="kn-muted kn-text-xs">
             {t("search.expanded")}:
           </span>
           {results.data.expanded_terms.slice(1).map((term) => (
@@ -191,7 +187,7 @@ export function Search() {
                   <code>{hit.citation_label}</code>
                 </Link>
               </div>
-              <span className="kn-badge kn-badge-cyan" style={{ fontSize: "0.6875rem" }}>
+              <span className="kn-text-3xs kn-badge kn-badge-cyan">
                 Score: {hit.score.toFixed(3)}
               </span>
             </div>
@@ -211,7 +207,7 @@ export function Search() {
               ]
                 .filter(Boolean)
                 .map((m) => (
-                  <span key={m} className="kn-badge" style={{ fontSize: "0.6875rem" }}>
+                  <span key={m} className="kn-text-3xs kn-badge">
                     {m}
                   </span>
                 ))}

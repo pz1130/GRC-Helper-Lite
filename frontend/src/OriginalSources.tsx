@@ -71,7 +71,7 @@ export function OriginalSources({ documentId, clauseId }: { documentId: string; 
           </label>}
           {sources.data.blocks.length === 0 && <EmptyState compact title={t("sources.empty")} />}
           {sources.data.blocks.map((block) => (
-            <div key={block.id} style={{ borderTop: "1px solid var(--stage-border)", padding: "12px 0" }}>
+            <div key={block.id} className="kn-divider-row">
               <small>{t(`sources.origin.${block.origin}`, { defaultValue: block.origin })} · {position(block)}</small>
               <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", font: "inherit" }}>{block.text}</pre>
             </div>

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { download, request } from "../api";
 import { useAuth } from "../auth";
-import { LoadingState } from "../components/ui";
+import { LoadingState, PageHeader } from "../components/ui";
 
 interface Engagement { id: number; name: string; audit_type: string; status: string; framework_id?: number | null }
 interface Question { id: number; seq: number; question_text: string; language: string; status: string }
@@ -193,8 +193,7 @@ export function AuditAssistant() {
 
   return (
     <section>
-      <h2>{t("audit.title")}</h2>
-      <p className="kn-secondary">{t("audit.subtitle")}</p>
+      <PageHeader title={t("audit.title")} subtitle={t("audit.subtitle")} />
       {notice && <p role="status">{notice}</p>}
       {error && <p role="alert">⚠️ {error}</p>}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, .8fr) minmax(260px, 1fr) minmax(360px, 1.5fr)", gap: 16, alignItems: "start" }}>
@@ -210,8 +209,8 @@ export function AuditAssistant() {
             <button className="kn-mt-2 kn-btn-primary" disabled={busy || !engagementName.trim()} onClick={() => createEngagement.mutate()}>{t("common.create")}</button>
           </div>}
           {engagementId && <button className="kn-btn-secondary" disabled={busy} style={{ width: "100%", marginTop: 12 }} onClick={() => exportWord.mutate()}>{t("audit.exportWord")}</button>}
-          {engagementId && canDraft && <button className="kn-btn-primary" disabled={busy || !questions.data?.some((row) => row.status === "pending")} style={{ width: "100%", marginTop: 8 }} onClick={() => generateAll.mutate()}>{t("audit.generateAll")}</button>}
-          {engagementId && <button className="kn-btn-secondary" disabled={busy} style={{ width: "100%", marginTop: 8 }} onClick={() => setPreflightOpen((value) => !value)}>{t("audit.preflight")}</button>}
+          {engagementId && canDraft && <button className="kn-w-full kn-mt-2 kn-btn-primary" disabled={busy || !questions.data?.some((row) => row.status === "pending")} onClick={() => generateAll.mutate()}>{t("audit.generateAll")}</button>}
+          {engagementId && <button className="kn-w-full kn-mt-2 kn-btn-secondary" disabled={busy} onClick={() => setPreflightOpen((value) => !value)}>{t("audit.preflight")}</button>}
         </aside>
 
         <div className="kn-card">
@@ -247,16 +246,16 @@ export function AuditAssistant() {
           {answer.data && <>
             <textarea aria-label={t("audit.answer")} rows={16} className="kn-w-full" value={draft} disabled={!!answer.data.finalized_at || !canDraft} onChange={(event) => setDraft(event.target.value)} />
             {incoming !== null && (
-              <p role="status" style={{ color: "var(--accent-amber)", fontSize: "0.8125rem" }}>
+              <p role="status" className="kn-warn kn-text-xs">
                 {t("audit.newerVersion")}{" "}
                 <button type="button" className="kn-btn-secondary kn-btn-sm" onClick={takeIncoming}>{t("audit.loadNewerVersion")}</button>
               </p>
             )}
             {answer.data.gap_notes && <p className="kn-warn">⚠️ {answer.data.gap_notes}</p>}
-            <p style={{ fontSize: "0.8125rem", color: "var(--text-tertiary)" }}>{t("audit.references", { clauses: answer.data.cited_clause_ids.length, controls: answer.data.cited_control_ids.length, evidence: answer.data.suggested_evidence_ids.length })}</p>
+            <p className="kn-muted kn-text-xs">{t("audit.references", { clauses: answer.data.cited_clause_ids.length, controls: answer.data.cited_control_ids.length, evidence: answer.data.suggested_evidence_ids.length })}</p>
             {!answer.data.finalized_at && canDraft && <button className="kn-btn-secondary" disabled={busy || !draft.trim()} onClick={() => save.mutate()}>{t("common.save")}</button>}
-            {!answer.data.finalized_at && canFinalize && <button className="kn-btn-primary" disabled={busy || !draft.trim() || unsaved} style={{ marginLeft: 8 }} onClick={() => finalize.mutate()}>{t("audit.finalize")}</button>}
-            {!answer.data.finalized_at && canFinalize && unsaved && <p style={{ fontSize: "0.8125rem", color: "var(--accent-amber)" }}>{t("audit.unsavedBeforeFinalize")}</p>}
+            {!answer.data.finalized_at && canFinalize && <button className="kn-ml-2 kn-btn-primary" disabled={busy || !draft.trim() || unsaved} onClick={() => finalize.mutate()}>{t("audit.finalize")}</button>}
+            {!answer.data.finalized_at && canFinalize && unsaved && <p className="kn-warn kn-text-xs">{t("audit.unsavedBeforeFinalize")}</p>}
             {answer.data.finalized_at && <span className="kn-badge kn-badge-emerald">{t("audit.finalized")}</span>}
           </>}
           {selected && <div style={{ borderTop: "1px solid var(--stage-border)", marginTop: 20, paddingTop: 12 }}>
@@ -270,12 +269,12 @@ export function AuditAssistant() {
           </div>}
         </main>
       </div>
-      <div className="kn-card" style={{ marginTop: 20 }}>
+      <div className="kn-mt-5 kn-card">
         <h3>{t("audit.history")}</h3>
-        {history.data?.map((row) => <div key={row.id} style={{ borderTop: "1px solid var(--stage-border)", padding: "12px 0" }}><strong>{row.question_text}</strong><div className="kn-muted kn-text-2xs">{row.engagement_name}</div><p>{row.final_body}</p></div>)}
+        {history.data?.map((row) => <div key={row.id} className="kn-divider-row"><strong>{row.question_text}</strong><div className="kn-muted kn-text-2xs">{row.engagement_name}</div><p>{row.final_body}</p></div>)}
         {history.data?.length === 0 && <p className="kn-muted">{t("audit.noHistory")}</p>}
       </div>
-      {preflightOpen && <div className="kn-card" style={{ marginTop: 20 }}>
+      {preflightOpen && <div className="kn-mt-5 kn-card">
         <h3>{t("audit.preflightTitle")}</h3>
         {preflight.isLoading && <LoadingState />}
         {preflight.error && <p role="alert">⚠️ {(preflight.error as Error).message}</p>}

@@ -156,8 +156,8 @@ function GapRiskButton({ item, assessment }: { item: MaturityItem; assessment: A
   return (
     <>
       <button className="kn-btn-sm" onClick={() => create.mutate()} disabled={create.isPending || risks.isPending} style={{ marginTop: 7 }}>{t("maturity.createRisk")}</button>
-      {create.isSuccess && <small role="status" style={{ display: "block", color: "var(--accent-emerald)", marginTop: 5 }}>{t("maturity.riskCreated")}</small>}
-      {create.error && <small role="alert" style={{ display: "block", color: "var(--accent-ruby)", marginTop: 5 }}>{create.error.message}</small>}
+      {create.isSuccess && <small role="status" className="kn-block kn-ok-text kn-mt-1">{t("maturity.riskCreated")}</small>}
+      {create.error && <small role="alert" className="kn-block kn-danger-text kn-mt-1">{create.error.message}</small>}
     </>
   );
 }
@@ -211,7 +211,7 @@ function ScoreEditor({ item, assessment, canWrite }: { item: MaturityItem; asses
         {locked ? (
           <small className="kn-secondary">{item.doc_rationale || item.impl_rationale || t("maturity.noRationale")}</small>
         ) : (
-          <div style={{ display: "grid", gap: 6 }}>
+          <div className="kn-stack-1">
             <input aria-label={`${item.code} ${t("maturity.docRationale")}`} value={docRationale} onChange={(event) => setDocRationale(event.target.value)} placeholder={t("maturity.docRationale")} />
             <input aria-label={`${item.code} ${t("maturity.implRationale")}`} value={implRationale} onChange={(event) => setImplRationale(event.target.value)} placeholder={t("maturity.implRationale")} />
           </div>
@@ -220,8 +220,8 @@ function ScoreEditor({ item, assessment, canWrite }: { item: MaturityItem; asses
       {canWrite && (
         <td>
           {!locked && <button className="kn-btn-sm" disabled={!docScore || !implScore || save.isPending} onClick={() => save.mutate()}>{t("common.save")}</button>}
-          {!locked && save.isSuccess && <small role="status" style={{ display: "block", color: "var(--accent-emerald)", marginTop: 5 }}>{t("common.saved")}</small>}
-          {!locked && save.error && <small role="alert" style={{ display: "block", color: "var(--accent-ruby)", marginTop: 5 }}>{save.error.message}</small>}
+          {!locked && save.isSuccess && <small role="status" className="kn-block kn-ok-text kn-mt-1">{t("common.saved")}</small>}
+          {!locked && save.error && <small role="alert" className="kn-block kn-danger-text kn-mt-1">{save.error.message}</small>}
           <GapRiskButton item={item} assessment={assessment} />
         </td>
       )}
@@ -288,8 +288,8 @@ export function Maturity() {
 
   return (
     <section>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
-        <div><h2 className="kn-mb-2">{t("maturity.title")}</h2><p className="kn-secondary kn-m-0">{t("maturity.subtitle")}</p></div>
+      <div className="kn-page-header">
+        <div><h2>{t("maturity.title")}</h2><p className="kn-page-subtitle">{t("maturity.subtitle")}</p></div>
         {selected?.status === "draft" && canWrite && (
           <div className="kn-row kn-wrap">
             <button disabled={suggest.isPending} onClick={() => suggest.mutate()}>
@@ -320,7 +320,7 @@ export function Maturity() {
               items={[{ satisfied: (frameworks.data?.length ?? 0) > 0, label: t("maturity.prereqFrameworks"), to: "/frameworks" }]}
             />
           </div>
-          {create.error && <p role="alert" style={{ gridColumn: "1 / -1", color: "var(--accent-ruby)", margin: 0 }}>{create.error.message}</p>}
+          {create.error && <p role="alert" className="kn-col-span-all kn-danger-text kn-m-0">{create.error.message}</p>}
         </form>
       )}
 

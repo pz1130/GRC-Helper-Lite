@@ -130,13 +130,13 @@ function ControlContent({ id }: { id: string }) {
             </p>
           )}
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20, gap: 12 }}>
+          <div className="kn-page-header">
             <div>
               <h2>
-                <code style={{ fontSize: "1.25rem", marginRight: 10 }}>{data.code}</code>
+                <code className="kn-title-code">{data.code}</code>
                 {data.title}
               </h2>
-              <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 6 }}>
+              <div className="kn-row kn-wrap kn-mt-1">
                 <span className="kn-badge">
                   {t("controls.category")}: {data.category ?? "—"}
                 </span>
@@ -168,8 +168,7 @@ function ControlContent({ id }: { id: string }) {
                 onSubmit={(e) => {
                   e.preventDefault();
                   setMergeSearch(mergeQ.trim());
-                }}
-                style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}
+                }} className="kn-row kn-wrap kn-mb-3"
               >
                 <input
                   aria-label={t("controls.search")}
@@ -449,7 +448,7 @@ function ControlContent({ id }: { id: string }) {
                   {t("controls.mergePreview", { loser: preview.loser_code, winner: preview.winner_code })}
                 </h3>
                 {preview.blockers.length > 0 && (
-                  <div style={{ marginBottom: 12 }}>
+                  <div className="kn-mb-3">
                     <h4 className="kn-text-sm kn-mb-2">{t("controls.mergeBlockers")}</h4>
                     <ul className="kn-list">
                       {preview.blockers.map((reason) => (

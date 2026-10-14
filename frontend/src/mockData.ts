@@ -1,3 +1,4 @@
+import { getMockDetail } from "./mockDetail";
 // 离线演示模式的 mock 数据：形状必须与真实接口一致，否则页面会在演示里塌掉。
 
 export interface MockUser {
@@ -18,6 +19,8 @@ export const DEMO_TOKEN = "demo-mock-token";
 
 export function getMockResponse(path: string, _init: RequestInit = {}): unknown {
   const url = path.split("?")[0];
+  const detail = getMockDetail(url, _init);
+  if (detail !== undefined) return detail;
 
   // 离线演示没有后端可问。返回 ok 是为了不在演示里挂一盏假的红灯——
   // 演示模式本来就整套是示例数据，这里跟着示例走是一致的，不是在骗人。

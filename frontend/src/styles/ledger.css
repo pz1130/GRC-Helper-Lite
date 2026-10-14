@@ -336,3 +336,18 @@ details[open] > summary::before { transform: rotate(45deg); }
 @keyframes kn-spin { to { transform: rotate(360deg); } }
 .kn-risk-layout { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 20px; }
 @media (max-width: 1200px) { .kn-risk-layout { grid-template-columns: 1fr; } }
+.kn-title-code { font-size: 1.05rem; margin-right: 4px; vertical-align: middle; }
+.kn-title-meta { color: var(--text-secondary); font-size: 1rem; font-weight: 500; }
+.kn-stat-links { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.kn-stat-link { color: var(--text-primary); font-weight: 600; text-decoration: none; }
+.kn-tone-danger .kn-stat-number.kn-primary-text { color: var(--accent-ruby); }
+.kn-text-center { text-align: center; } .kn-text-3xs { font-size: 0.6875rem; } .kn-text-xl { font-size: 1.25rem; }
+.kn-mt-5 { margin-top: 20px; } .kn-mt-6 { margin-top: 24px; } .kn-mb-1 { margin-bottom: 4px; } .kn-mb-3 { margin-bottom: 12px; }
+.kn-mr-1 { margin-right: 4px; } .kn-mr-2 { margin-right: 8px; } .kn-ml-2 { margin-left: 8px; }
+.kn-ok-text { color: var(--accent-emerald); }
+.kn-stack-1 { display: grid; gap: 6px; } .kn-stack-2 { display: flex; flex-direction: column; gap: 10px; } .kn-stack-3 { display: grid; gap: 12px; }
+.kn-between { justify-content: space-between; }
+.kn-hint { margin: 8px 0 16px; }
+.kn-auto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.kn-scroll-240 { max-height: 240px; overflow: auto; }
+.kn-divider-row { border-top: 1px solid var(--stage-border); padding: 12px 0; }

@@ -106,11 +106,11 @@ export function FrameworkDetail() {
         </Link>
       </p>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 16, marginBottom: 24 }}>
+      <div className="kn-page-header">
         <div>
           <h2>
             {current ? current.name_en || current.name_zh : id}
-            {current && <small style={{ color: "var(--text-secondary)", fontSize: "1.0625rem", marginLeft: 8 }}>· {current.version}</small>}
+            {current && <small className="kn-title-meta">· {current.version}</small>}
           </h2>
           {current && (
             <p className="kn-page-subtitle">
@@ -150,7 +150,7 @@ export function FrameworkDetail() {
       <div className="kn-card kn-mb-6">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
           <h3 className="kn-m-0">{t("frameworks.coverage")}</h3>
-          <label style={{ flexDirection: "row", alignItems: "center", gap: 8, margin: 0 }}>
+          <label className="kn-inline-label kn-m-0">
             <span>{t("frameworks.baseline")}</span>
             <select
               value={baseline}
@@ -191,7 +191,7 @@ export function FrameworkDetail() {
                 return (
                   <tr key={row.item_id}>
                     <td style={{ paddingLeft: 18 + Math.max(0, row.level - 1) * 20 }}>
-                      <code style={{ marginRight: 8 }}>{row.code}</code>
+                      <code className="kn-mr-2">{row.code}</code>
                       <span style={{ fontWeight: row.level === 1 ? 600 : 400 }}>{row.title}</span>
                     </td>
                     <td>
@@ -256,7 +256,7 @@ export function FrameworkDetail() {
 
       {/* Gaps Checklist */}
       <div className="kn-card kn-mb-6">
-        <h3 style={{ margin: "0 0 14px 0" }}>{t("frameworks.gaps")}</h3>
+        <h3 className="kn-m-0 kn-mb-3">{t("frameworks.gaps")}</h3>
         {gaps.isPending && <LoadingState />}
         {gaps.error && <p role="alert"><span>⚠️</span> {gaps.error.message}</p>}
         {gaps.data?.length === 0 && (
@@ -291,7 +291,7 @@ export function FrameworkDetail() {
 
       {/* Framework Tree */}
       <div className="kn-card">
-        <h3 style={{ margin: "0 0 14px 0" }}>{t("frameworks.tree")}</h3>
+        <h3 className="kn-m-0 kn-mb-3">{t("frameworks.tree")}</h3>
         {tree.isPending && <LoadingState />}
         {tree.error && <p role="alert"><span>⚠️</span> {tree.error.message}</p>}
         <ul className="kn-list-plain">
@@ -306,7 +306,7 @@ export function FrameworkDetail() {
                 marginLeft: item.level > 1 ? 8 : 0,
               }}
             >
-              <code style={{ marginRight: 8 }}>{item.code}</code>
+              <code className="kn-mr-2">{item.code}</code>
               <span style={{ fontWeight: item.level === 1 ? 600 : 400 }}>{item.title}</span>
               {item.description && (
                 <span style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem", marginLeft: 8 }}>

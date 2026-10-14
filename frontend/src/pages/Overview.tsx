@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { StatCard } from "../components/ui";
 import { Link } from "react-router-dom";
 
 import { request } from "../api";
@@ -166,31 +167,28 @@ export function Overview() {
           )}
         </div>
 
-        <div className="kn-card kn-stat-card">
-          <div>
-            <span className="kn-stat-label">{t("overview.expiredEvidence")}</span>
-            <div className="kn-stat-number" style={{ color: evidenceStats.data?.expired ? "var(--accent-ruby)" : undefined }}>
-              {evidenceStats.data?.expired ?? "—"}
-            </div>
-            <div className="kn-stat-sub">{t("overview.expiredEvidenceHint")}</div>
-          </div>
-          {/* 没拿到数据时不能显示「当前有效」：加载失败读起来成了「一切正常」 */}
-          <StatusBadge loaded={!!evidenceStats.data} failed={!!evidenceStats.error} attention={!!evidenceStats.data?.expired} />
-        </div>
+        {/* 没拿到数据时不能显示「当前有效」：加载失败读起来成了「一切正常」 */}
+        <StatCard
+          label={t("overview.expiredEvidence")}
+          value={evidenceStats.data?.expired ?? "—"}
+          hint={t("overview.expiredEvidenceHint")}
+          tone={evidenceStats.data?.expired ? "danger" : undefined}
+          footer={<StatusBadge loaded={!!evidenceStats.data} failed={!!evidenceStats.error} attention={!!evidenceStats.data?.expired} />}
+        />
 
         <div className="kn-card kn-stat-card" data-card="review-due">
           <div>
             <span className="kn-stat-label">{t("documents.reviewDue")}</span>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
+            <div className="kn-stat-links">
               <Link
                 to="/documents?review=overdue"
-                style={{ color: overdue ? "var(--accent-ruby)" : "var(--text-primary)", fontWeight: 600, textDecoration: "none" }}
+                className={`kn-stat-link${overdue ? " kn-danger-text" : ""}`}
               >
                 {t("documents.reviewOverdue", { count: overdue })}
               </Link>
               <Link
                 to="/documents?review=soon"
-                style={{ color: soon ? "var(--accent-amber)" : "var(--text-primary)", fontWeight: 600, textDecoration: "none" }}
+                className={`kn-stat-link${soon ? " kn-warn" : ""}`}
               >
                 {t("documents.reviewSoon", { count: soon })}
               </Link>
@@ -199,17 +197,11 @@ export function Overview() {
           <StatusBadge loaded={!!documents.data} failed={!!documents.error} attention={overdue + soon > 0} />
         </div>
 
-        <div className="kn-card kn-stat-card">
-          <div>
-            <span className="kn-stat-label">{t("overview.calls")}</span>
-            <div className="kn-stat-number kn-primary-text">
-              {totalCalls.toLocaleString()}
-            </div>
-            <div className="kn-stat-sub">
-              {t("overview.taskTypes", { count: data?.by_task.length ?? 0 })}
-            </div>
-          </div>
-        </div>
+        <StatCard
+          label={t("overview.calls")}
+          value={totalCalls.toLocaleString()}
+          hint={t("overview.taskTypes", { count: data?.by_task.length ?? 0 })}
+        />
       </div>
 
       <div className="kn-card" style={{ padding: 0 }}>

@@ -8,7 +8,7 @@ import { useAuth } from "../auth";
 import { PrerequisiteNotice } from "../components/PrerequisiteNotice";
 import { CONTROL_SEARCH_LIMIT, useControlSearch, withSelected } from "../controlSearch";
 import type { ControlOption } from "../controlSearch";
-import { EmptyState, LoadingState } from "../components/ui";
+import { EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface EvidenceType {
   id: number;
@@ -231,13 +231,10 @@ export function Evidence() {
 
   return (
     <section>
-      <div className="kn-page-header">
-        <div>
-          <h2>{t("evidence.title")}</h2>
-          <p className="kn-page-subtitle">{t("evidence.subtitle")}</p>
-        </div>
-        {canWrite && <button className="kn-btn-primary kn-btn-sm" onClick={beginCreate}>{t("common.add")}</button>}
-      </div>
+      <PageHeader
+        title={t("evidence.title")} subtitle={t("evidence.subtitle")}
+        actions={canWrite && <button className="kn-btn-primary kn-btn-sm" onClick={beginCreate}>{t("common.add")}</button>}
+      />
 
       <div className="kn-card kn-mb-5">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, alignItems: "end" }}>
@@ -277,7 +274,7 @@ export function Evidence() {
       {form && canWrite && (
         <form className="kn-card" onSubmit={submit} style={{ marginBottom: 20, maxWidth: 960 }}>
           <h3 className="kn-mb-4">{t(editingId === null ? "evidence.add" : "evidence.edit")}</h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14 }}>
+          <div className="kn-auto-grid">
             <label>
               {t("evidence.type")}
               <select required value={form.evidence_type_id} disabled={save.isPending} onChange={(e) => setForm({ ...form, evidence_type_id: e.target.value })}>
@@ -285,7 +282,7 @@ export function Evidence() {
                 {types.data?.map((type) => <option key={type.id} value={type.id}>{type.name_en || type.name_zh}</option>)}
               </select>
             </label>
-            <div style={{ display: "grid", gap: 6 }}>
+            <div className="kn-stack-1">
               <input
                 type="search"
                 aria-label={t("evidence.searchControls")}

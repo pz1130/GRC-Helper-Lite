@@ -29,8 +29,7 @@ export function BrandLogo({ size = 32, variant = "tile", className, style }: Bra
           height={size}
           viewBox="0 0 64 64"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ display: "block" }}
+          xmlns="http://www.w3.org/2000/svg" className="kn-block"
         >
           {/* Outer Hexagonal Shield Outline */}
           <path
@@ -84,8 +83,7 @@ export function BrandLogo({ size = 32, variant = "tile", className, style }: Bra
         height={size}
         viewBox="0 0 64 64"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ display: "block" }}
+        xmlns="http://www.w3.org/2000/svg" className="kn-block"
       >
         <defs>
           {/* Light Ceramic Studio White Background (matching current UI) */}

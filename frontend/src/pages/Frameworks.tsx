@@ -7,7 +7,7 @@ import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } 
 import { useAuth } from "../auth";
 import { type Issue, issueText } from "../i18n";
 import i18n from "../i18n";
-import { EmptyState, LoadingState } from "../components/ui";
+import { EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Framework {
   id: number;
@@ -102,14 +102,7 @@ export function Frameworks() {
 
   return (
     <section className="kn-page kn-page-frameworks">
-      <div className="kn-page-header">
-        <div>
-          <h2>{t("frameworks.title")}</h2>
-          <p className="kn-page-subtitle">
-            {t("frameworks.subtitle")}
-          </p>
-        </div>
-      </div>
+      <PageHeader title={t("frameworks.title")} subtitle={t("frameworks.subtitle")} />
 
       {frameworks.isPending && <LoadingState />}
       {frameworks.error && <p role="alert"><span>⚠️</span> {frameworks.error.message}</p>}
@@ -159,11 +152,11 @@ export function Frameworks() {
       )}
 
       {canWrite && (
-        <details className="kn-card" open style={{ marginTop: 24 }}>
+        <details className="kn-mt-6 kn-card" open>
           <summary className="kn-text-md kn-primary-text">
             {t("frameworks.import")}
           </summary>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", margin: "8px 0 16px 0" }}>
+          <p className="kn-secondary kn-text-sm kn-hint">
             {t("frameworks.importHint")}
           </p>
 
@@ -203,7 +196,7 @@ export function Frameworks() {
             </label>
           </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+          <div className="kn-row kn-wrap kn-mb-3">
             <button
               className="kn-btn-secondary kn-btn-sm"
               disabled={!file || busy}

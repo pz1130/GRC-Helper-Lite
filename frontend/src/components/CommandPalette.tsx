@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+
+import { request } from "../api";
 import { useTranslation } from "react-i18next";
 
 import type { NavGroup } from "./nav";
@@ -16,12 +19,36 @@ export function CommandPalette({ open, onClose, groups }: { open: boolean; onClo
   const [cursor, setCursor] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // 控制点与风险用页面本来就在调的列表接口，只在面板打开时取、缓存 60 秒；
+  // 过滤在客户端做——条目量是一个机构的控制目录，几百条以内。
+  const controls = useQuery({
+    queryKey: ["palette", "controls"],
+    queryFn: () => request<{ id: number; code: string; title: string }[]>("/api/controls"),
+    enabled: open,
+    staleTime: 60_000,
+  });
+  const risks = useQuery({
+    queryKey: ["palette", "risks"],
+    queryFn: () => request<{ id: number; title: string; inherent_score: number }[]>("/api/risks"),
+    enabled: open,
+    staleTime: 60_000,
+  });
+
   const items = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const all = groups.flatMap((group) => group.items.map((item) => ({ ...item, group: group.title })));
-    const hits = q ? all.filter((item) => item.label.toLowerCase().includes(q) || item.group.toLowerCase().includes(q)) : all;
-    return hits;
-  }, [groups, query]);
+    const pages = groups.flatMap((group) => group.items.map((item) => ({ key: item.to, to: item.to, icon: item.icon, label: item.label, group: group.title })));
+    if (!q) return pages;
+    const hits = pages.filter((item) => item.label.toLowerCase().includes(q) || item.group.toLowerCase().includes(q));
+    const controlHits = (controls.data ?? [])
+      .filter((c) => c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q))
+      .slice(0, 6)
+      .map((c) => ({ key: `control-${c.id}`, to: `/controls/${c.id}`, icon: <code>{c.code}</code>, label: c.title, group: t("topbar.paletteControls") }));
+    const riskHits = (risks.data ?? [])
+      .filter((r) => r.title.toLowerCase().includes(q))
+      .slice(0, 6)
+      .map((r) => ({ key: `risk-${r.id}`, to: "/risks", icon: <span className="ws-palette-score">{r.inherent_score}</span>, label: r.title, group: t("topbar.paletteRisks") }));
+    return [...hits, ...controlHits, ...riskHits];
+  }, [groups, query, controls.data, risks.data, t]);
 
   useEffect(() => {
     if (open) {
@@ -84,7 +111,7 @@ export function CommandPalette({ open, onClose, groups }: { open: boolean; onClo
         <ul className="ws-palette-list" role="listbox">
           {items.map((item, index) => (
             <li
-              key={item.to}
+              key={item.key}
               id={`ws-cmd-${index}`}
               role="option"
               aria-selected={cursor === index}

@@ -73,7 +73,7 @@ export function Redaction() {
               {t("settings.redactionConfig.subtitle")}
             </p>
           </div>
-          <label style={{ flexDirection: "row", alignItems: "center", gap: 8, margin: 0 }}>
+          <label className="kn-inline-label kn-m-0">
             <span>{t("settings.redactionConfig.ruleset")}</span>
             <select
               value={ruleset}
@@ -130,8 +130,8 @@ export function Redaction() {
 
       {/* Add Rule Card */}
       <div className="kn-card kn-mb-6">
-        <h4 style={{ margin: "0 0 14px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
-        <form onSubmit={submit} style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+        <h4 className="kn-m-0 kn-mb-3 kn-text-md">{t("common.add")}</h4>
+        <form onSubmit={submit} className="kn-stack-3 kn-max-w-md">
           <select
             aria-label={t("settings.redactionConfig.type")}
             value={form.pattern_type}
@@ -171,7 +171,7 @@ export function Redaction() {
 
       {/* Live Preview Sandbox Card */}
       <div className="kn-card">
-        <h4 style={{ margin: "0 0 4px 0", fontSize: "1rem" }}>{t("settings.redactionConfig.sendPreview")}</h4>
+        <h4 className="kn-m-0 kn-mb-1 kn-text-md">{t("settings.redactionConfig.sendPreview")}</h4>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 14 }}>
           {t("settings.redactionConfig.sendPreviewHint")}
         </p>

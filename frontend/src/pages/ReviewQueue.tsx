@@ -260,7 +260,7 @@ function MappingPreview({
             <HighlightQuote text={itemDescription} quote={quote} />
           </p>
           <div className="kn-callout-warn kn-mt-3">
-            <strong style={{ fontSize: "0.8125rem", color: "var(--accent-amber)" }}>{t("mapping.quote")}: </strong>
+            <strong className="kn-warn kn-text-xs">{t("mapping.quote")}: </strong>
             <mark>{quote}</mark>
           </div>
         </div>
@@ -422,7 +422,7 @@ function ConflictClausePane({
       )}
       {/* 审的就是这段原文。加载失败必须说出来，否则看着像一条空条款。 */}
       {error && (
-        <p role="alert" style={{ fontSize: "0.875rem" }}>
+        <p role="alert" className="kn-text-sm">
           <span>⚠️</span> {error.message}
         </p>
       )}
@@ -876,7 +876,7 @@ export function ReviewQueue() {
               </p>
               {/* 扫描有上限：到了上限，上面的数字只是一部分。执行只处理清单里列出的那些。 */}
               {automationPreview.data.truncated && (
-                <p role="note" style={{ color: "var(--accent-amber)", fontSize: "0.8125rem" }}>
+                <p role="note" className="kn-warn kn-text-xs">
                   {t("review.previewTruncated", { count: automationPreview.data.scanned })}
                 </p>
               )}

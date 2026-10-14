@@ -6,7 +6,7 @@ import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } 
 import { type Issue, issueText } from "../i18n";
 import { useAuth } from "../auth";
 import type { Proposal } from "./ReviewQueue";
-import { EmptyState, LoadingState } from "../components/ui";
+import { DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 export interface Control {
   id: number;
@@ -91,7 +91,7 @@ function MatrixImport() {
   const headers = Array.isArray(proposal?.payload.source_headers) ? proposal.payload.source_headers.filter((h): h is string => typeof h === "string") : [];
   return <details className="kn-card kn-mb-5">
     <summary className="kn-text-md kn-primary-text">{t("matrix.title")}</summary>
-    <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", margin: "8px 0 16px 0" }}>{t("matrix.flow")}</p>
+    <p className="kn-secondary kn-text-sm kn-hint">{t("matrix.flow")}</p>
     
     <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
       <label className="kn-inline-label">
@@ -158,46 +158,45 @@ function MatrixImport() {
           {t("matrix.rows", { count: typeof proposal.payload.source_rows === "number" ? proposal.payload.source_rows : report?.rows ?? 0 })}
         </p>
 
-        <div className="kn-table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>{t("matrix.target")}</th>
-                <th>{t("matrix.source")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {MAPPING_FIELDS.map((field) => (
-                <tr key={field}>
-                  <td className="kn-medium">
-                    {t(`matrix.fields.${field}`)}{field === "title" || field === "statement" ? " *" : ""}
-                  </td>
-                  <td>
-                    <select
-                      aria-label={t(`matrix.fields.${field}`)}
-                      value={mapping[field] ?? ""}
-                      disabled={busy || approved}
-                      onChange={(e) => {
-                        const next = { ...mapping };
-                        if (e.target.value) next[field] = e.target.value;
-                        else delete next[field];
-                        setMapping(next);
-                        setReport(null);
-                        setError("");
-                      }}
-                      style={{ padding: "6px 28px 6px 12px", width: "100%", maxWidth: 280 }}
-                    >
-                      <option value="">{t("matrix.unmapped")}</option>
-                      {[...new Set([...headers, ...Object.values(mapping)])].map((header) => (
-                        <option key={header} value={header}>{header}</option>
-                      ))}
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          head={
+            <>
+          <tr>
+            <th>{t("matrix.target")}</th>
+            <th>{t("matrix.source")}</th>
+          </tr>
+            </>
+          }
+        >
+          {MAPPING_FIELDS.map((field) => (
+            <tr key={field}>
+              <td className="kn-medium">
+                {t(`matrix.fields.${field}`)}{field === "title" || field === "statement" ? " *" : ""}
+              </td>
+              <td>
+                <select
+                  aria-label={t(`matrix.fields.${field}`)}
+                  value={mapping[field] ?? ""}
+                  disabled={busy || approved}
+                  onChange={(e) => {
+                    const next = { ...mapping };
+                    if (e.target.value) next[field] = e.target.value;
+                    else delete next[field];
+                    setMapping(next);
+                    setReport(null);
+                    setError("");
+                  }}
+                  style={{ padding: "6px 28px 6px 12px", width: "100%", maxWidth: 280 }}
+                >
+                  <option value="">{t("matrix.unmapped")}</option>
+                  {[...new Set([...headers, ...Object.values(mapping)])].map((header) => (
+                    <option key={header} value={header}>{header}</option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
           <button
@@ -266,14 +265,7 @@ export function Controls() {
 
   return (
     <section className="kn-page kn-page-controls">
-      <div className="kn-page-header">
-        <div>
-          <h2>{t("controls.title")}</h2>
-          <p className="kn-page-subtitle">
-            {t("controls.subtitle")}
-          </p>
-        </div>
-      </div>
+      <PageHeader title={t("controls.title")} subtitle={t("controls.subtitle")} />
 
       {canWrite && (
         <div className="kn-mb-5">
@@ -349,42 +341,41 @@ export function Controls() {
       )}
 
       {!!controls.data?.length && (
-        <div className="kn-table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>{t("controls.code")}</th>
-                <th>{t("controls.name")}</th>
-                <th>{t("controls.statement")}</th>
-                <th>{t("controls.category")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {controls.data.map((c) => (
-                <tr key={c.id}>
-                  <td>
-                    <Link to={`/controls/${c.id}`}>
-                      <code>{c.code}</code>
-                    </Link>
-                  </td>
-                  <td>
-                    <Link to={`/controls/${c.id}`} className="kn-strong kn-primary-text">
-                      {c.title}
-                    </Link>
-                  </td>
-                  <td style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", maxWidth: 560, lineHeight: 1.5 }}>
-                    {c.statement.slice(0, 150)}{c.statement.length > 150 ? "…" : ""}
-                  </td>
-                  <td>
-                    <span className="kn-badge">
-                      {c.category ?? "—"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          head={
+            <>
+          <tr>
+            <th>{t("controls.code")}</th>
+            <th>{t("controls.name")}</th>
+            <th>{t("controls.statement")}</th>
+            <th>{t("controls.category")}</th>
+          </tr>
+            </>
+          }
+        >
+          {controls.data.map((c) => (
+            <tr key={c.id}>
+              <td>
+                <Link to={`/controls/${c.id}`}>
+                  <code>{c.code}</code>
+                </Link>
+              </td>
+              <td>
+                <Link to={`/controls/${c.id}`} className="kn-strong kn-primary-text">
+                  {c.title}
+                </Link>
+              </td>
+              <td style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", maxWidth: 560, lineHeight: 1.5 }}>
+                {c.statement.slice(0, 150)}{c.statement.length > 150 ? "…" : ""}
+              </td>
+              <td>
+                <span className="kn-badge">
+                  {c.category ?? "—"}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
       )}
     </section>
   );
