@@ -90,3 +90,44 @@ async def test_blank_query_short_circuits(db_session):
     with patch("app.search.expansion.run", new=runner):
         assert await expand(db_session, "  ") == []
     runner.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_expansion_is_skipped_when_budget_is_exhausted(db_session):
+    """K1：预算用尽时不调模型，降级为原查询（全文 + 向量照常）。"""
+    from app.llm.budget import BudgetExceeded
+
+    runner = AsyncMock(side_effect=BudgetExceeded("x", code="budget.exhausted"))
+    with patch("app.search.expansion.run", new=runner):
+        terms = await expand(db_session, "特权访问管理")
+    assert terms == ["特权访问管理"]
+    assert runner.await_args.kwargs["interactive"] is False
+    assert await db_session.scalar(select(QueryExpansionCache)) is None
+
+
+@pytest.mark.asyncio
+async def test_expansion_is_skipped_when_user_is_rate_limited(db_session):
+    runner = AsyncMock(return_value=_result(["PAM"]))
+    with patch("app.search.expansion.run", new=runner), patch(
+        "app.search.expansion.throttle.allow", new=AsyncMock(return_value=False)
+    ) as allow:
+        terms = await expand(db_session, "特权访问管理", user_id=7)
+    assert terms == ["特权访问管理"]
+    runner.assert_not_awaited()
+    assert allow.await_args.args[0] == "search:expand:user:7"
+
+
+@pytest.mark.asyncio
+async def test_cache_hit_does_not_consume_rate_limit(db_session):
+    db_session.add(
+        QueryExpansionCache(
+            query_hash=__import__("app.search.expansion", fromlist=["_hash"])._hash("特权"),
+            query="特权", terms=["PAM"],
+        )
+    )
+    await db_session.flush()
+    allow = AsyncMock(return_value=False)
+    with patch("app.search.expansion.throttle.allow", new=allow):
+        terms = await expand(db_session, "特权", user_id=7)
+    assert terms == ["特权", "PAM"]
+    allow.assert_not_awaited()
