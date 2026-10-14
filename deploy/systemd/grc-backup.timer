@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly GRC Helper backup
+
+[Timer]
+OnCalendar=*-*-* 02:30:00
+RandomizedDelaySec=10m
+# 机器在 02:30 关着的话，开机后补跑
+Persistent=true
+
+[Install]
+WantedBy=timers.target

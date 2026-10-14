@@ -24,13 +24,13 @@ a complete audit conclusion, a multi-tenant service or a portal for external aud
 ## Before using institutional data
 
 - Restrict access to internal IT; do not issue external auditor accounts, including scoped viewers.
-- Configure HTTPS and verify the network boundary. The default web binding is loopback only.
+- Configure HTTPS (`SITE_ADDRESS`, `TLS_ISSUER`; see OPERATIONS.md "HTTPS") and restrict 80/443 in the firewall. Only the Caddy proxy publishes ports.
 - Generate separate deployment keys and passwords; securely retain the encryption key separately
   from backups. Do not reuse development credentials.
 - Approve the selected AI provider under the institution's data policy. Redaction is not a
   guarantee that all confidential text has been removed. Use synthetic data until approval.
-- Schedule database and original-document backups, copy them off-host and verify alerts on failure.
-- Restore onto a different host with the backed-up key and verify documents, login and AI key access.
+- Enable `grc-backup.timer` with an offsite target (`scripts/backup.sh`) and verify alerts on failure.
+- Restore onto a different host with the escrowed key (`scripts/restore-drill.sh`, then OPERATIONS.md "Restoring on a new machine") and verify documents, login and AI key access.
 - Configure log collection, disk-space monitoring and worker/queue failure monitoring.
 - Have 1–2 IT colleagues complete upload, extraction, human review, mapping and export using
   approved documents. Record defects, missed requirements and reviewer effort.
