@@ -213,7 +213,30 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
             await session.commit()
         framework = await session.scalar(select(Framework).where(Framework.key == "nist-csf-2.0"))
 
+        from app.mapping import tasks as mapping_tasks
         from app.mapping.tasks import run_mapping
+        if args.candidates == "jev":
+            # 实验：用 Jev 打分（evals/jev.py 的缓存）替换预筛排序，其余流程不变。
+            from evals.jev import score
+
+            jev = score()["scores"]
+            item_code = {i.id: i.code for i in await session.scalars(
+                select(FrameworkItem).where(FrameworkItem.framework_id == framework.id))}
+            ctl_id = {c.code: c.id for c in await session.scalars(select(Control))}
+
+            def jev_rank(items, controls, **_):
+                out = {}
+                for item_id, _text in items:
+                    scores = jev.get(item_code[item_id], {})
+                    ranked = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))[:20]
+                    out[item_id] = [ctl_id[c] for c, _ in ranked]
+                return out
+
+            async def no_vectors(*_a, **_k):
+                return {}, {}
+
+            mapping_tasks.rank_candidates = jev_rank
+            mapping_tasks.load_vectors = no_vectors
         started = time.time()
         summary = await run_mapping(session, framework.id, run_key=f"eval:{args.label}")
         await session.commit()
@@ -342,6 +365,7 @@ def main() -> None:
     parser.add_argument("--vectors", action="store_true")
     parser.add_argument("--retries", type=int)
     parser.add_argument("--embed-controls", action="store_true", default=True)
+    parser.add_argument("--candidates", choices=["hybrid", "jev"], default="hybrid")
     args = parser.parse_args()
 
     if args.suite == "prefilter":

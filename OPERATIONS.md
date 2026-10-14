@@ -214,6 +214,30 @@ make prod-up && make prod-migrate
 
 ---
 
+## Mapping candidate prefilter with Jev (optional, off by default)
+
+Framework mapping first picks 20 candidate controls per framework item, by default with
+keyword (BM25) and vector ranking. Setting `MAPPING_JEV_PREFILTER=true` in `.env` switches
+this ranking to the Jev judge model (TypeSafe) configured under Settings → Decision model.
+
+**This sends your institution's control titles and statements (after redaction rules) to
+TypeSafe, one request per framework item.** Enable it only after your data policy approves
+that provider (KNOWN_ISSUES K17).
+
+- Requires both the flag and a Jev provider selected in the decision-model settings (the
+  separate "enabled" switch there is for the document requirement scan and is not needed).
+- Each Jev request is logged as an AI call (`task_key=mapping_jev_prefilter`) and counts
+  against the monthly and provider budgets like other batch work.
+- If the flag is on but Jev is not configured, the budget is exhausted, a call fails or
+  times out (30 s), the whole run falls back to keyword + vector ranking; the audit log gets a
+  `mapping.prefilter_fallback` entry with the reason, and the mapping summary reports
+  `candidate_source` and `candidate_fallback_reason`.
+- Measured on public NIST data (`backend/evals/`): top-20 candidate recall 0.40 → 0.57;
+  end-to-end with MiniMax M3, precision 0.51 → 0.54, recall 0.23 → 0.27, F1 0.32 → 0.36
+  (single runs).
+
+---
+
 ## Master key
 
 `APP_SECRET_KEY` is a Fernet key. It encrypts every AI provider API key stored in the database.

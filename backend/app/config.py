@@ -28,6 +28,12 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:5173"]
 
+    # 映射候选预筛改用判断模型（Jev）。默认关闭。打开后**会把本机构控制点的标题与
+    # 陈述（经脱敏规则处理）发给判断模型服务（TypeSafe）**——必须先过数据政策审批
+    # （KNOWN_ISSUES K17）。还需在「判断模型」设置里选好 Jev 服务；任一条件不满足、
+    # 调用失败、超时或预算耗尽，都回退到关键词 + 向量预筛。
+    mapping_jev_prefilter: bool = False
+
     @field_validator("app_secret_key", "jwt_secret")
     @classmethod
     def reject_placeholder_secrets(cls, value: str) -> str:

@@ -22,6 +22,10 @@ GRC_EVAL_LLM_API_KEY=... python -m evals.harness extraction --label after [--ret
 - **改动前后对比**：在旧代码的工作树里跑同一个 harness，
   `cd <旧代码>/backend && PYTHONPATH=<本仓库>/backend python -m evals.harness mapping --label before`。
 
+**Jev（判断模型）实验**：`python -m evals.jev prefilter|verify`，key 读 `JEV_API_KEY`
+（回退 `TYPESAFE_API_KEY`）；端到端用 `python -m evals.harness mapping --candidates jev`
+（复用 `evals/.cache/jev-scores.json`）。只发公开 NIST 文本。
+
 **局限：**
 - OLIR 只收了一部分真实关系，也收了一些牵强的关联，绝对数字偏悲观，适合看方向（同 K17）。
 - 抽取语料是 NIST 原文拼成的，不是真实机构制度；关键要求召回需要人工黄金集
