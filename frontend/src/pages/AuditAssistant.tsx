@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 import { download, request } from "../api";
 import { useAuth } from "../auth";
-import { LoadingState, PageHeader } from "../components/ui";
+import { Card, DataTable, LoadingState, PageHeader } from "../components/ui";
 
 interface Engagement { id: number; name: string; audit_type: string; status: string; framework_id?: number | null }
 interface Question { id: number; seq: number; question_text: string; language: string; status: string }
@@ -208,15 +208,15 @@ export function AuditAssistant() {
             <input aria-label={t("audit.newEngagement")} placeholder={t("audit.newEngagement")} value={engagementName} onChange={(event) => setEngagementName(event.target.value)} />
             <button className="kn-mt-2 kn-btn-primary" disabled={busy || !engagementName.trim()} onClick={() => createEngagement.mutate()}>{t("common.create")}</button>
           </div>}
-          {engagementId && <button className="kn-btn-secondary" disabled={busy} style={{ width: "100%", marginTop: 12 }} onClick={() => exportWord.mutate()}>{t("audit.exportWord")}</button>}
+          {engagementId && <button className="kn-btn-secondary kn-w-full kn-mt-3" disabled={busy} onClick={() => exportWord.mutate()}>{t("audit.exportWord")}</button>}
           {engagementId && canDraft && <button className="kn-w-full kn-mt-2 kn-btn-primary" disabled={busy || !questions.data?.some((row) => row.status === "pending")} onClick={() => generateAll.mutate()}>{t("audit.generateAll")}</button>}
           {engagementId && <button className="kn-w-full kn-mt-2 kn-btn-secondary" disabled={busy} onClick={() => setPreflightOpen((value) => !value)}>{t("audit.preflight")}</button>}
         </aside>
 
-        <div className="kn-card">
+        <Card>
           <h3>{t("audit.questions")}</h3>
           {questions.data?.map((row) => (
-            <button key={row.id} className={row.id === questionId ? "kn-btn-primary" : "kn-btn-secondary"} style={{ display: "block", width: "100%", marginBottom: 8, textAlign: "left" }} onClick={() => setQuestionId(row.id)}>
+            <button key={row.id} className={`kn-question-btn ${row.id === questionId ? "kn-btn-primary" : "kn-btn-secondary"}`} onClick={() => setQuestionId(row.id)}>
               {row.seq}. {row.question_text}<br /><small>{t(`audit.status.${row.status}`)}</small>
             </button>
           ))}
@@ -232,7 +232,7 @@ export function AuditAssistant() {
               <button className="kn-btn-secondary" disabled={busy || !xlsxFile} onClick={() => importXlsx.mutate()}>{t("audit.importXlsx")}</button>
             </div>
           </div>}
-        </div>
+        </Card>
 
         <main className="kn-card">
           <h3>{selected?.question_text ?? t("audit.selectQuestion")}</h3>
@@ -258,44 +258,64 @@ export function AuditAssistant() {
             {!answer.data.finalized_at && canFinalize && unsaved && <p className="kn-warn kn-text-xs">{t("audit.unsavedBeforeFinalize")}</p>}
             {answer.data.finalized_at && <span className="kn-badge kn-badge-emerald">{t("audit.finalized")}</span>}
           </>}
-          {selected && <div style={{ borderTop: "1px solid var(--stage-border)", marginTop: 20, paddingTop: 12 }}>
+          {selected && <div className="kn-similar-history">
             <h4>{t("audit.similarHistory")}</h4>
             {similar.data?.map((row) => <details key={row.answer_id} className="kn-mb-2">
               <summary>{row.question_text} · {Math.round(row.similarity * 100)}%</summary>
-              <p style={{ whiteSpace: "pre-wrap", color: "var(--text-secondary)" }}>{row.answer}</p>
+              <p className="kn-prewrap kn-secondary">{row.answer}</p>
               <small className="kn-muted">{row.engagement_name}</small>
             </details>)}
             {similar.data?.length === 0 && <p className="kn-muted">{t("audit.noSimilarHistory")}</p>}
           </div>}
         </main>
       </div>
-      <div className="kn-mt-5 kn-card">
+      <Card className="kn-mt-5">
         <h3>{t("audit.history")}</h3>
         {history.data?.map((row) => <div key={row.id} className="kn-divider-row"><strong>{row.question_text}</strong><div className="kn-muted kn-text-2xs">{row.engagement_name}</div><p>{row.final_body}</p></div>)}
         {history.data?.length === 0 && <p className="kn-muted">{t("audit.noHistory")}</p>}
-      </div>
-      {preflightOpen && <div className="kn-mt-5 kn-card">
+      </Card>
+      {preflightOpen && <Card className="kn-mt-5">
         <h3>{t("audit.preflightTitle")}</h3>
         {preflight.isLoading && <LoadingState />}
         {preflight.error && <p role="alert">⚠️ {(preflight.error as Error).message}</p>}
         {preflight.data && <>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
+          <div className="kn-row-gap kn-mb-4">
             {(["all", "green", "yellow", "red"] as const).map((value) => <button key={value} className={readinessFilter === value ? "kn-btn-primary" : "kn-btn-secondary"} onClick={() => setReadinessFilter(value)}>
               {t(`audit.readiness.${value}`)}{value === "all" ? ` (${preflight.data!.rows.length})` : ` (${preflight.data!.summary[value]})`}
             </button>)}
           </div>
-          <div className="kn-table-container">
-            <table>
-              <thead><tr><th>{t("audit.readinessLabel")}</th><th>{t("audit.predictedQuestion")}</th><th>{t("audit.support")}</th></tr></thead>
-              <tbody>{preflight.data.rows.filter((row) => readinessFilter === "all" || row.readiness === readinessFilter).map((row) => <tr key={row.framework_item_id}>
-                <td><span className={`kn-badge kn-badge-${row.readiness === "green" ? "emerald" : row.readiness === "yellow" ? "amber" : "danger"}`}>{t(`audit.readiness.${row.readiness}`)}</span><div style={{ marginTop: 6, fontSize: "0.75rem", color: "var(--text-tertiary)" }}>{row.reason}</div></td>
-                <td><strong>{row.code} {row.title}</strong><p>{row.likely_question}</p></td>
-                <td>{t("audit.supportCounts", { controls: row.control_count, implementations: row.implementation_count, evidence: row.valid_evidence_count })}<div className="kn-muted kn-text-2xs">{row.tool_names.join(", ") || "—"}</div></td>
-              </tr>)}</tbody>
-            </table>
-          </div>
+          <DataTable
+            head={
+              <tr>
+                <th>{t("audit.readinessLabel")}</th>
+                <th>{t("audit.predictedQuestion")}</th>
+                <th>{t("audit.support")}</th>
+              </tr>
+            }
+          >
+            {preflight.data.rows
+              .filter((row) => readinessFilter === "all" || row.readiness === readinessFilter)
+              .map((row) => (
+                <tr key={row.framework_item_id}>
+                  <td>
+                    <span className={`kn-badge kn-badge-${row.readiness === "green" ? "emerald" : row.readiness === "yellow" ? "amber" : "danger"}`}>
+                      {t(`audit.readiness.${row.readiness}`)}
+                    </span>
+                    <div className="kn-reason-note">{row.reason}</div>
+                  </td>
+                  <td>
+                    <strong>{row.code} {row.title}</strong>
+                    <p>{row.likely_question}</p>
+                  </td>
+                  <td>
+                    {t("audit.supportCounts", { controls: row.control_count, implementations: row.implementation_count, evidence: row.valid_evidence_count })}
+                    <div className="kn-muted kn-text-2xs">{row.tool_names.join(", ") || "—"}</div>
+                  </td>
+                </tr>
+              ))}
+          </DataTable>
         </>}
-      </div>}
+      </Card>}
     </section>
   );
 }

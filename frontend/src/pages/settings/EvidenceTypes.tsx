@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
+import { Card, DataTable } from "../../components/ui";
 
 const CADENCES = ["monthly", "quarterly", "semiannual", "annual", "ad_hoc"] as const;
 type Cadence = (typeof CADENCES)[number];
@@ -80,24 +81,16 @@ export function EvidenceTypes() {
   }
 
   return (
-    <div style={{ display: "grid", gap: 20 }}>
-      <div className="kn-card">
-        <h3 className="kn-mt-0">{t("evidenceTypes.title")}</h3>
-        <p style={{ margin: "0 0 16px", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-          {t("evidenceTypes.subtitle")}
-        </p>
-        <div className="kn-table-container kn-m-0">
-          <table>
-            <thead>
-              <tr>
+    <div className="kn-stack-5">
+      <Card title={t("evidenceTypes.title")}>
+        <p className="kn-card-note">{t("evidenceTypes.subtitle")}</p>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("evidenceTypes.nameEn")}</th>
                 <th>{t("evidenceTypes.format")}</th>
                 <th>{t("evidenceTypes.cadence")}</th>
                 <th>{t("evidenceTypes.source")}</th>
                 <th className="kn-text-right">{t("common.actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {types.data?.length === 0 && (
                 <tr>
                   <td colSpan={5} className="kn-muted">
@@ -142,10 +135,8 @@ export function EvidenceTypes() {
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
 
       <form className="kn-card" onSubmit={submit}>
         <h3 className="kn-mt-0">

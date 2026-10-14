@@ -6,7 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } from "../api";
 import { useAuth } from "../auth";
 import i18n, { renderParams } from "../i18n";
-import { EmptyState, LoadingState } from "../components/ui";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Framework {
   id: number; key: string; name_zh: string; name_en: string;
@@ -106,20 +106,16 @@ export function FrameworkDetail() {
         </Link>
       </p>
 
-      <div className="kn-page-header">
-        <div>
-          <h2>
+      <PageHeader
+        title={
+          <>
             {current ? current.name_en || current.name_zh : id}
             {current && <small className="kn-title-meta">· {current.version}</small>}
-          </h2>
-          {current && (
-            <p className="kn-page-subtitle">
-              {t("frameworks.source")}: {current.source}
-            </p>
-          )}
-        </div>
-
-        <div className="kn-row kn-wrap">
+          </>
+        }
+        subtitle={current ? `${t("frameworks.source")}: ${current.source}` : undefined}
+        actions={
+          <>
           <button
             className="kn-btn-secondary"
             disabled={exportPackage.isPending}
@@ -136,8 +132,9 @@ export function FrameworkDetail() {
               {t("frameworks.runMapping")}
             </button>
           )}
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {runMapping.isPending && <LoadingState inline />}
       {runMapping.error && <p role="alert"><span>⚠️</span> {runMapping.error.message}</p>}
@@ -147,15 +144,15 @@ export function FrameworkDetail() {
       {exportPackage.error && <p role="alert"><span>⚠️</span> {t("frameworks.exportFailed")}: {exportPackage.error.message}</p>}
 
       {/* Coverage & Gap Analysis Section */}
-      <div className="kn-card kn-mb-6">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
+      <Card className="kn-mb-6">
+        <div className="kn-card-toolbar">
           <h3 className="kn-m-0">{t("frameworks.coverage")}</h3>
           <label className="kn-inline-label kn-m-0">
             <span>{t("frameworks.baseline")}</span>
             <select
               value={baseline}
               onChange={(event) => setBaseline(event.target.value)}
-              style={{ padding: "5px 28px 5px 12px" }}
+              className="kn-select-sm"
             >
               <option value="">{t("frameworks.baselineAll")}</option>
               <option value="low">{t("frameworks.baselines.low")}</option>
@@ -168,15 +165,10 @@ export function FrameworkDetail() {
         {coverage.isPending && <LoadingState />}
         {coverage.error && <p role="alert"><span>⚠️</span> {coverage.error.message}</p>}
 
-        <div className="kn-table-container kn-m-0">
-          <table>
-            <thead>
-              <tr>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("frameworks.item")}</th>
                 <th>{t("frameworks.coverage")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {coverage.data?.map((row) => {
                 const ratio = row.requirements ? row.covered / row.requirements : null;
                 const badgeClass =
@@ -192,7 +184,7 @@ export function FrameworkDetail() {
                   <tr key={row.item_id}>
                     <td style={{ paddingLeft: 18 + Math.max(0, row.level - 1) * 20 }}>
                       <code className="kn-mr-2">{row.code}</code>
-                      <span style={{ fontWeight: row.level === 1 ? 600 : 400 }}>{row.title}</span>
+                      <span className={row.level === 1 ? "kn-weight-1" : "kn-weight-0"}>{row.title}</span>
                     </td>
                     <td>
                       <div className="kn-row">
@@ -205,7 +197,7 @@ export function FrameworkDetail() {
                           </span>
                         )}
                         {ratio !== null && (
-                          <div style={{ width: 90 }}>
+                          <div className="kn-coverage-bar">
                             <div className="kn-progress-bar">
                               <div
                                 className="kn-progress-fill"
@@ -227,21 +219,19 @@ export function FrameworkDetail() {
                   </tr>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
 
       {/* 仍算覆盖、但依据已作废：不自动降级（已确认的数据只由人改），而是单独列出来 */}
       {!!superseded.data?.length && (
-        <div className="kn-card" style={{ marginBottom: 24, border: "1px solid var(--accent-amber-border)" }} data-card="superseded-support">
-          <h3 style={{ margin: "0 0 6px 0" }}>{t("frameworks.supersededOnly")}</h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: "0 0 14px 0" }}>
+        <div className="kn-card kn-card--warn-strong kn-mb-6" data-card="superseded-support">
+          <h3 className="kn-card-title-sm">{t("frameworks.supersededOnly")}</h3>
+          <p className="kn-card-note">
             {t("frameworks.supersededOnlyHint")}
           </p>
           <ul className="kn-list-plain">
             {superseded.data.map((row) => (
-              <li key={row.item_id} style={{ padding: "8px 0", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "baseline" }}>
+              <li key={row.item_id} className="kn-inline-list-row">
                 <code>{row.code}</code>
                 <span>{row.title}</span>
                 <span className="kn-muted kn-text-xs">
@@ -255,8 +245,7 @@ export function FrameworkDetail() {
       {superseded.error && <p role="alert"><span>⚠️</span> {superseded.error.message}</p>}
 
       {/* Gaps Checklist */}
-      <div className="kn-card kn-mb-6">
-        <h3 className="kn-m-0 kn-mb-3">{t("frameworks.gaps")}</h3>
+      <Card className="kn-mb-6" title={t("frameworks.gaps")}>
         {gaps.isPending && <LoadingState />}
         {gaps.error && <p role="alert"><span>⚠️</span> {gaps.error.message}</p>}
         {gaps.data?.length === 0 && (
@@ -264,59 +253,43 @@ export function FrameworkDetail() {
         )}
         <ul className="kn-list-plain">
           {gaps.data?.map((gap) => (
-            <li
-              key={gap.item_id}
-              style={{
-                padding: "10px 14px",
-                background: "var(--stage-card-subtle)",
-                borderRadius: "var(--radius-sm)",
-                marginBottom: 8,
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
+            <li key={gap.item_id} className="kn-gap-row">
               <span className="kn-badge kn-badge-ruby">{t("frameworks.gap")}</span>
               <code>{gap.code}</code>
               <span className="kn-primary-text">{gap.title}</span>
               {gap.has_supporting && (
-                <small style={{ marginLeft: "auto", color: "var(--accent-amber)" }}>
+                <small className="kn-gap-row-note">
                   {t("frameworks.hasSupporting")}
                 </small>
               )}
             </li>
           ))}
         </ul>
-      </div>
+      </Card>
 
       {/* Framework Tree */}
-      <div className="kn-card">
-        <h3 className="kn-m-0 kn-mb-3">{t("frameworks.tree")}</h3>
+      <Card title={t("frameworks.tree")}>
         {tree.isPending && <LoadingState />}
         {tree.error && <p role="alert"><span>⚠️</span> {tree.error.message}</p>}
         <ul className="kn-list-plain">
           {tree.data?.map((item) => (
             <li
               key={item.id}
-              style={{
-                paddingLeft: Math.max(0, item.level - 1) * 20,
-                paddingTop: 6,
-                paddingBottom: 6,
-                borderLeft: item.level > 1 ? "1px solid var(--stage-border-subtle)" : undefined,
-                marginLeft: item.level > 1 ? 8 : 0,
-              }}
+              className={item.level > 1 ? "kn-tree-row kn-tree-row--nested" : "kn-tree-row"}
+              // 缩进随层级变化，只能留在 style 里
+              style={{ paddingLeft: Math.max(0, item.level - 1) * 20 }}
             >
               <code className="kn-mr-2">{item.code}</code>
-              <span style={{ fontWeight: item.level === 1 ? 600 : 400 }}>{item.title}</span>
+              <span className={item.level === 1 ? "kn-weight-1" : "kn-weight-0"}>{item.title}</span>
               {item.description && (
-                <span style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem", marginLeft: 8 }}>
+                <span className="kn-tree-desc">
                   — {item.description}
                 </span>
               )}
             </li>
           ))}
         </ul>
-      </div>
+      </Card>
     </section>
   );
 }

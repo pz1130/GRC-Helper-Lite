@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { StatCard } from "../components/ui";
+import { Card, DataTable, StatCard } from "../components/ui";
 import { Link } from "react-router-dom";
 import { lazy, Suspense, useState } from "react";
 
@@ -103,12 +103,8 @@ export function Overview() {
                 {t("overview.compliancePosture")}
               </span>
             </div>
-            <h2 style={{ margin: 0, fontSize: "1.75rem", letterSpacing: "-0.03em", fontWeight: 700 }}>
-              {t("overview.heroTitle")}
-            </h2>
-            <p style={{ margin: "6px 0 0", color: "var(--text-secondary)", fontSize: "0.875rem" }}>
-              {t("overview.heroSubtitle")}
-            </p>
+            <h2 className="kn-hero-title">{t("overview.heroTitle")}</h2>
+            <p className="kn-hero-subtitle">{t("overview.heroSubtitle")}</p>
           </div>
           {pendingCount > 0 && (
             <Link to="/review" className="kn-btn-primary kn-btn-sm" style={{ textDecoration: "none" }}>
@@ -228,57 +224,42 @@ export function Overview() {
         />
       </div>
 
-      <div className="kn-card" style={{ padding: 0 }}>
-        <div style={{ padding: "18px 24px", borderBottom: "1px solid var(--stage-border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h3 style={{ margin: 0, fontSize: "1.0625rem" }}>{t("overview.calls")}</h3>
+      <Card className="kn-card--flush">
+        <div className="kn-card-section-head">
+          <h3>{t("overview.calls")}</h3>
           <span className="kn-badge kn-badge-emerald">{data?.by_task.length ?? 0}</span>
         </div>
-        <div className="kn-table-container" style={{ margin: 0, border: "none", borderRadius: 0, boxShadow: "none" }}>
-          <table>
-            <thead>
-              <tr>
-                <th>{t("overview.task")}</th>
-                <th>{t("overview.calls")}</th>
-                <th>{t("overview.cost")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.by_task.map((row) => (
-                <tr key={row.task_key}>
-                  <td className="kn-medium">
-                    <code style={{ fontSize: "0.8125rem", color: "var(--accent-emerald)", background: "rgba(16, 185, 129, 0.08)", padding: "2px 6px", borderRadius: 4, border: "1px solid rgba(16, 185, 129, 0.2)" }}>
-                      {t(`taskNames.${row.task_key}`, { defaultValue: row.task_key })}
-                    </code>
-                  </td>
-                  <td>
-                    <div className="kn-row">
-                      <span style={{ minWidth: 40, fontVariantNumeric: "tabular-nums" }}>{row.calls.toLocaleString()}</span>
+        <DataTable
+          className="kn-table-flush"
+          head={
+            <tr>
+              <th>{t("overview.task")}</th>
+              <th>{t("overview.calls")}</th>
+              <th>{t("overview.cost")}</th>
+            </tr>
+          }
+        >
+          {data?.by_task.map((row) => (
+            <tr key={row.task_key}>
+              <td className="kn-medium">
+                <code className="kn-task-code">{t(`taskNames.${row.task_key}`, { defaultValue: row.task_key })}</code>
+              </td>
+              <td className="kn-tabular">{row.calls.toLocaleString()}</td>
+              <td>
+                <div className="kn-cost-row">
+                  <span className="kn-cost-amount">${row.cost.toFixed(4)}</span>
+                  <div className="kn-cost-bar">
+                    <div className="kn-progress-bar">
+                      {/* 宽度随数据变化，只能留在 style 里 */}
+                      <div className="kn-progress-fill" style={{ width: `${Math.max((row.cost / maxTaskCost) * 100, 4)}%` }} />
                     </div>
-                  </td>
-                  <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <span style={{ minWidth: 68, fontVariantNumeric: "tabular-nums", fontWeight: 600 }}>
-                        ${row.cost.toFixed(4)}
-                      </span>
-                      <div style={{ flex: 1, maxWidth: 120 }}>
-                        <div className="kn-progress-bar" style={{ height: 4, borderRadius: 9999 }}>
-                          <div
-                            className="kn-progress-fill"
-                            style={{
-                              width: `${Math.max((row.cost / maxTaskCost) * 100, 4)}%`,
-                              background: "linear-gradient(90deg, #059669, #10b981)",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
+      </Card>
     </div>
   );
 }

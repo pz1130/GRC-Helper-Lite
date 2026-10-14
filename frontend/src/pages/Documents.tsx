@@ -352,7 +352,7 @@ export function Documents() {
 
       {/* Plain Text Fallback Drawer Card */}
       {pasting !== null && (
-        <div className="kn-card" style={{ marginTop: 24, border: "1px solid var(--accent-blue)" }}>
+        <div className="kn-card kn-card--accent kn-mt-6">
           <h4 className="kn-m-0 kn-mb-2">{t("documents.pasteText")}</h4>
           <p className="kn-secondary kn-text-xs kn-mb-3">
             {t("documents.pasteHint")}

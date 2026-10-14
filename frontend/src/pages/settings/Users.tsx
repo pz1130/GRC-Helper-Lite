@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
 import type { Role } from "../../auth";
+import { Card, DataTable } from "../../components/ui";
 
 interface UserRow {
   id: number;
@@ -114,8 +115,7 @@ export function Users() {
   return (
     <div>
       {/* Users Table Card */}
-      <div className="kn-card kn-mb-6">
-        <h3 className="kn-section-title">{t("settings.users")}</h3>
+      <Card className="kn-mb-6" title={t("settings.users")}>
         {error && (
           <p role="alert">
             <span>⚠️</span> {error}
@@ -134,19 +134,14 @@ export function Users() {
             </button>
           </p>
         )}
-        <div className="kn-table-container kn-m-0">
-          <table>
-            <thead>
-              <tr>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("settings.usersConfig.email")}</th>
                 <th>{t("settings.usersConfig.name")}</th>
                 <th>{t("settings.usersConfig.role")}</th>
                 <th>{t("settings.usersConfig.active")}</th>
                 <th>{t("settings.usersConfig.expiresAt")}</th>
                 <th>{t("common.actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {users.data?.map((u) => (
                 <Fragment key={u.id}>
                 <tr>
@@ -159,7 +154,7 @@ export function Users() {
                       onChange={(e) =>
                         update.mutate({ id: u.id, patch: { role: e.target.value as Role } })
                       }
-                      style={{ padding: "4px 28px 4px 10px", fontSize: "0.8125rem" }}
+                      className="kn-select-xs"
                     >
                       {ROLES.map((r) => (
                         <option key={r} value={r}>
@@ -225,10 +220,8 @@ export function Users() {
                 )}
                 </Fragment>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
 
       {/* Add User Card */}
       <div className="kn-max-w-md kn-card">

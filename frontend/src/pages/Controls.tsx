@@ -113,7 +113,7 @@ function MatrixImport() {
     </div>
 
     {!proposal && (
-      <div className="kn-card" style={{ background: "var(--stage-card-subtle)", padding: 14, marginTop: 12 }}>
+      <div className="kn-card kn-card--subtle kn-card--compact kn-mt-3">
         <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: "0 0 10px 0" }}>{t("matrix.resumeHint")}</p>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <label className="kn-inline-label">
@@ -154,18 +154,16 @@ function MatrixImport() {
         {typeof proposal.payload.notes === "string" && (
           <p className="kn-secondary kn-text-sm">{proposal.payload.notes}</p>
         )}
-        <p style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.875rem" }}>
+        <p className="kn-strong kn-primary-text kn-text-sm">
           {t("matrix.rows", { count: typeof proposal.payload.source_rows === "number" ? proposal.payload.source_rows : report?.rows ?? 0 })}
         </p>
 
         <DataTable
           head={
-            <>
           <tr>
             <th>{t("matrix.target")}</th>
             <th>{t("matrix.source")}</th>
           </tr>
-            </>
           }
         >
           {MAPPING_FIELDS.map((field) => (
@@ -186,7 +184,7 @@ function MatrixImport() {
                     setReport(null);
                     setError("");
                   }}
-                  style={{ padding: "6px 28px 6px 12px", width: "100%", maxWidth: 280 }}
+                  className="kn-select-full"
                 >
                   <option value="">{t("matrix.unmapped")}</option>
                   {[...new Set([...headers, ...Object.values(mapping)])].map((header) => (
@@ -198,7 +196,7 @@ function MatrixImport() {
           ))}
         </DataTable>
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16 }}>
+        <div className="kn-row-gap kn-mt-4">
           <button
             className="kn-btn-secondary kn-btn-sm"
             disabled={busy || !mapping.title || !mapping.statement}
@@ -343,14 +341,12 @@ export function Controls() {
       {!!controls.data?.length && (
         <DataTable
           head={
-            <>
           <tr>
             <th>{t("controls.code")}</th>
             <th>{t("controls.name")}</th>
             <th>{t("controls.statement")}</th>
             <th>{t("controls.category")}</th>
           </tr>
-            </>
           }
         >
           {controls.data.map((c) => (

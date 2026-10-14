@@ -90,14 +90,17 @@ export function DataTable({
   children,
   empty,
   caption,
+  className,
 }: {
   head: ReactNode;
   children: ReactNode;
   empty?: boolean;
   caption?: string;
+  /** 额外加在外壳上的类（例如 kn-mb-6、kn-table-flush）。 */
+  className?: string;
 }) {
   return (
-    <div className="kn-table-container">
+    <div className={cx("kn-table-container", className)}>
       <table>
         {caption ? <caption className="kn-sr-only">{caption}</caption> : null}
         <thead>{head}</thead>

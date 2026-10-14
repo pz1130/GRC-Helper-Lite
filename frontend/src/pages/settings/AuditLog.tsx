@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
+import { Card, DataTable } from "../../components/ui";
 
 interface Entry {
   id: number;
@@ -24,12 +25,10 @@ export function AuditLog() {
   });
 
   return (
-    <div className="kn-card">
+    <Card>
       <div className="kn-mb-4">
-        <h3 style={{ margin: "0 0 4px 0", fontSize: "1.125rem" }}>{t("settings.auditLog")}</h3>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: 0 }}>
-          {t("settings.auditLogConfig.description")}
-        </p>
+        <h3 className="kn-card-title-sm" style={{ fontSize: "1.125rem" }}>{t("settings.auditLog")}</h3>
+        <p className="kn-page-email">{t("settings.auditLogConfig.description")}</p>
       </div>
 
       {/* 加载失败时空表读起来是「没有任何审计记录」；只取最近 LIMIT 条时也要说出来 */}
@@ -39,21 +38,16 @@ export function AuditLog() {
           {t("settings.auditLogConfig.latestOnly", { count: LIMIT })}
         </p>
       )}
-      <div className="kn-table-container kn-m-0">
-        <table>
-          <thead>
-            <tr>
+      <DataTable className="kn-m-0" head={<><tr>
               <th>{t("settings.auditLogConfig.time")}</th>
               <th>{t("settings.auditLogConfig.user")}</th>
               <th>{t("settings.auditLogConfig.action")}</th>
               <th>{t("settings.auditLogConfig.entity")}</th>
               <th>{t("settings.auditLogConfig.change")}</th>
-            </tr>
-          </thead>
-          <tbody>
+            </tr></>}>
             {data?.map((e) => (
               <tr key={e.id}>
-                <td style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
+                <td className="kn-audit-time">
                   {e.at.replace("T", " ").slice(0, 19)}
                 </td>
                 <td>
@@ -69,9 +63,9 @@ export function AuditLog() {
                     {e.entity_type}#{e.entity_id}
                   </code>
                 </td>
-                <td style={{ fontSize: "0.75rem", fontFamily: "monospace" }}>
+                <td className="kn-audit-change">
                   {e.before && (
-                    <div style={{ color: "var(--accent-ruby)", marginBottom: 2 }}>
+                    <div className="kn-diff-before">
                       − {JSON.stringify(e.before)}
                     </div>
                   )}
@@ -83,9 +77,7 @@ export function AuditLog() {
                 </td>
               </tr>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </DataTable>
+    </Card>
   );
 }

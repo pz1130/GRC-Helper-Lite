@@ -82,7 +82,7 @@ export function Search() {
       {rebuild.isSuccess && <p role="status">{t("documents.indexQueued")}</p>}
 
       {status.data && status.data.total > 0 && (
-        <div className="kn-card" style={{ padding: "12px 18px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div className="kn-card kn-search-meta">
           <div className="kn-row">
             <span className="kn-dot kn-dot-blue kn-pulse" />
             <span className="kn-secondary kn-text-xs">
@@ -169,7 +169,7 @@ export function Search() {
       )}
 
       {results.data && results.data.hits.length === 0 && submitted.trim() && (
-        <div className="kn-card" style={{ textAlign: "center", padding: "48px 20px", maxWidth: 780 }}>
+        <div className="kn-card kn-search-empty">
           <div className="kn-empty-emoji">🔍</div>
           <p className="kn-secondary kn-m-0">{t("search.noResults")}</p>
         </div>
@@ -177,7 +177,7 @@ export function Search() {
 
       <ol style={{ paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 14, maxWidth: 840 }}>
         {results.data?.hits.map((hit) => (
-          <li key={hit.chunk_id} className="kn-card kn-card-interactive" style={{ padding: "18px 22px" }}>
+          <li key={hit.chunk_id} className="kn-card kn-card-interactive kn-search-hit">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
               <div className="kn-row">
                 <Link to={`/documents/${hit.document_id}#clause-${hit.clause_id}`} style={{ fontWeight: 600, fontSize: "1.0625rem", color: "var(--text-primary)" }}>

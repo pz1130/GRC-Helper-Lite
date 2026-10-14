@@ -341,3 +341,69 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 /* 总览 hero 的 WebGL 版：与 CSS 版占同一位置 */
 .kn-hero-3d { position: absolute; right: 230px; top: -34px; width: 230px; height: 150px; pointer-events: none; }
 @media (max-width: 1100px) { .kn-hero-3d { display: none; } }
+
+/* ---------- 组件化：把反复出现的内联布局收成类 ---------- */
+.kn-table-flush { margin: 0; border: none; border-radius: 0; box-shadow: none; }
+.kn-card--flush { padding: 0; overflow: hidden; }
+.kn-card-section-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 24px; border-bottom: 1px solid var(--stage-border);
+}
+.kn-card-section-head h3 { margin: 0; font-size: 1.0625rem; }
+.kn-form-grid-4 {
+  display: grid; grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) 160px auto;
+  align-items: end; gap: 12px; margin-bottom: 20px;
+}
+.kn-form-grid-4 .kn-col-span-all { grid-column: 1 / -1; }
+.kn-form-card { margin-bottom: 20px; max-width: 960px; }
+.kn-form-card--narrow { max-width: 900px; }
+.kn-empty-card-center { text-align: center; padding: 40px 20px; margin-bottom: 20px; }
+.kn-search-meta { padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+.kn-search-empty { text-align: center; padding: 48px 20px; max-width: 780px; }
+.kn-search-hit { padding: 18px 22px; }
+.kn-score-pill { padding: 5px 9px; border-radius: 6px; font-weight: 700; }
+.kn-task-code {
+  font-size: 0.8125rem; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.08);
+  padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.kn-cost-row { display: flex; align-items: center; }
+.kn-cost-row { gap: 14px; }
+.kn-tabular { font-variant-numeric: tabular-nums; }
+.kn-cost-amount { min-width: 68px; font-variant-numeric: tabular-nums; font-weight: 600; }
+.kn-cost-bar { flex: 1; max-width: 120px; }
+.kn-cost-bar .kn-progress-bar { height: 4px; border-radius: 9999px; }
+.kn-cost-bar .kn-progress-fill { background: linear-gradient(90deg, #059669, #10b981); }
+.kn-hero-title { margin: 0; font-size: 1.75rem; letter-spacing: -0.03em; font-weight: 700; }
+.kn-hero-subtitle { margin: 6px 0 0; color: var(--text-secondary); font-size: 0.875rem; }
+.kn-page-email { color: var(--text-secondary); font-size: 0.875rem; margin-top: 0; }
+.kn-card-title-sm { margin: 0 0 4px; font-size: 1.0625rem; }
+.kn-row-gap { display: flex; gap: 10px; flex-wrap: wrap; }
+.kn-select-w170 { width: 170px; }
+.kn-select-full { padding: 6px 28px 6px 12px; width: 100%; max-width: 280px; }
+.kn-status-expired { color: var(--accent-ruby); font-weight: 700; }
+.kn-weight-1 { font-weight: 600; }
+.kn-weight-0 { font-weight: 400; }
+.kn-reason-note { margin-top: 6px; font-size: 0.75rem; color: var(--text-tertiary); }
+.kn-question-btn { display: block; width: 100%; margin-bottom: 8px; text-align: left; }
+.kn-similar-history { border-top: 1px solid var(--stage-border); margin-top: 20px; padding-top: 12px; }
+.kn-prewrap { white-space: pre-wrap; }
+.kn-stack-5 { display: grid; gap: 20px; }
+.kn-card--warn { border-color: var(--accent-amber); }
+.kn-card--warn-strong { border: 1px solid var(--accent-amber-border); }
+.kn-card--accent { border: 1px solid var(--accent-blue); }
+.kn-card-note { color: var(--text-secondary); font-size: 0.8125rem; margin: 0 0 14px; }
+.kn-inline-list-row { padding: 8px 0; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.kn-gap-row { padding: 10px 14px; background: var(--stage-card-subtle); border-radius: var(--radius-sm); margin-bottom: 8px; display: flex; align-items: center; gap: 10px; }
+.kn-gap-row-note { margin-left: auto; color: var(--accent-amber); }
+.kn-coverage-bar { width: 90px; }
+.kn-card-toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.kn-select-sm { padding: 5px 28px 5px 12px; }
+.kn-tree-row { padding-top: 6px; padding-bottom: 6px; }
+.kn-tree-row--nested { border-left: 1px solid var(--stage-border-subtle); margin-left: 8px; }
+.kn-tree-desc { color: var(--text-tertiary); font-size: 0.8125rem; margin-left: 8px; }
+.kn-list-indented { margin: 10px 0 0; padding-left: 20px; }
+.kn-card--compact { padding: 14px; }
+.kn-select-xs { padding: 4px 28px 4px 10px; font-size: 0.8125rem; }
+.kn-diff-before { color: var(--accent-ruby); margin-bottom: 2px; }
+.kn-audit-time { font-size: 0.8125rem; color: var(--text-secondary); white-space: nowrap; }
+.kn-audit-change { font-size: 0.75rem; font-family: var(--font-mono, monospace); }

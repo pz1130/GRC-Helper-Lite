@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { request } from "../api";
 import { PrerequisiteNotice } from "../components/PrerequisiteNotice";
 import { useAuth } from "../auth";
-import { EmptyState, LoadingState } from "../components/ui";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Framework {
   id: number;
@@ -288,18 +288,21 @@ export function Maturity() {
 
   return (
     <section>
-      <div className="kn-page-header">
-        <div><h2>{t("maturity.title")}</h2><p className="kn-page-subtitle">{t("maturity.subtitle")}</p></div>
-        {selected?.status === "draft" && canWrite && (
-          <div className="kn-row kn-wrap">
+      <PageHeader
+        title={t("maturity.title")}
+        subtitle={t("maturity.subtitle")}
+        actions={
+          selected?.status === "draft" && canWrite ? (
+            <>
             <button disabled={suggest.isPending} onClick={() => suggest.mutate()}>
               {suggest.isPending ? t("maturity.suggesting") : t("maturity.suggest")}
             </button>
             {/* 定稿不可撤回（后端没有反向操作），定稿后分数再也改不了 */}
             <button className="kn-btn-primary" disabled={finalize.isPending} onClick={() => { if (window.confirm(t("maturity.finalizeConfirm"))) finalize.mutate(); }}>{t("maturity.finalize")}</button>
-          </div>
-        )}
-      </div>
+            </>
+          ) : undefined
+        }
+      />
 
       {suggest.error && <p role="alert" className="kn-danger-text kn-card">{suggest.error.message}</p>}
       {finalize.error && <p role="alert" className="kn-danger-text kn-card">{finalize.error.message}</p>}
@@ -310,7 +313,7 @@ export function Maturity() {
       )}
 
       {canWrite && (
-        <form className="kn-card" onSubmit={submitCreate} style={{ display: "grid", gridTemplateColumns: "minmax(180px, 1fr) minmax(180px, 1fr) 160px auto", alignItems: "end", gap: 12, marginBottom: 20 }}>
+        <form className="kn-card kn-form-grid-4" onSubmit={submitCreate}>
           <label>{t("maturity.framework")}<select required value={frameworkId} onChange={(event) => setFrameworkId(event.target.value)}><option value="">{t("maturity.chooseFramework")}</option>{frameworks.data?.map((framework) => <option key={framework.id} value={framework.id}>{framework.name_en || framework.name_zh} · {framework.version}</option>)}</select></label>
           <label>{t("maturity.assessmentName")}<input required value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label>{t("maturity.asOfDate")}<input required type="date" value={asOfDate} onChange={(event) => setAsOfDate(event.target.value)} /></label>
@@ -330,7 +333,7 @@ export function Maturity() {
 
       {(assessments.isPending || (selectedId !== null && summary.isPending)) && <LoadingState />}
       {(assessments.error || summary.error) && <p role="alert" className="kn-danger-text">{(assessments.error ?? summary.error)?.message}</p>}
-      {!assessments.isPending && assessments.data?.length === 0 && <div className="kn-card"><EmptyState title={t("maturity.empty")} /></div>}
+      {!assessments.isPending && assessments.data?.length === 0 && <Card><EmptyState title={t("maturity.empty")} /></Card>}
 
       {selected && summary.data && (
         <>
@@ -340,7 +343,7 @@ export function Maturity() {
 
           <div style={{ display: "grid", gridTemplateColumns: "minmax(300px, 0.9fr) minmax(360px, 1.1fr)", gap: 20, marginBottom: 20 }}>
             <div className="kn-card"><h3 className="kn-mt-0">{t("maturity.radarTitle")}</h3><div style={{ display: "flex", gap: 18, fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: 8 }}><span><i style={{ display: "inline-block", width: 16, borderTop: "2px solid var(--accent-blue)", marginRight: 6 }} />{t("maturity.docScore")}</span><span><i style={{ display: "inline-block", width: 16, borderTop: "2px solid var(--accent-emerald)", marginRight: 6 }} />{t("maturity.implScore")}</span></div><RadarChart groups={summary.data.groups} /></div>
-            <div className="kn-card"><h3 className="kn-mt-0">{t("maturity.groupSummary")}</h3><div className="kn-table-container kn-m-0"><table><thead><tr><th>{t("maturity.domain")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.completion")}</th></tr></thead><tbody>{summary.data.groups.map((group) => <tr key={group.framework_item_id}><td><code>{group.code}</code><div className="kn-mt-1">{group.title}</div></td><td><span style={{ ...scoreTone(group.doc_average), padding: "5px 9px", borderRadius: 6, fontWeight: 700 }}>{formatScore(group.doc_average)}</span></td><td><span style={{ ...scoreTone(group.impl_average), padding: "5px 9px", borderRadius: 6, fontWeight: 700 }}>{formatScore(group.impl_average)}</span></td><td>{group.scored_items} / {group.total_items}</td></tr>)}</tbody></table></div></div>
+            <Card title={t("maturity.groupSummary")}><DataTable className="kn-m-0" head={<><tr><th>{t("maturity.domain")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.completion")}</th></tr></>}>{summary.data.groups.map((group) => <tr key={group.framework_item_id}><td><code>{group.code}</code><div className="kn-mt-1">{group.title}</div></td><td><span className="kn-score-pill" style={scoreTone(group.doc_average)}>{formatScore(group.doc_average)}</span></td><td><span className="kn-score-pill" style={scoreTone(group.impl_average)}>{formatScore(group.impl_average)}</span></td><td>{group.scored_items} / {group.total_items}</td></tr>)}</DataTable></Card>
           </div>
 
           <div className="kn-card">
@@ -349,7 +352,7 @@ export function Maturity() {
             {summary.data.groups.map((group) => (
               <div key={group.framework_item_id} style={{ marginTop: 22 }}>
                 <h4 style={{ marginBottom: 10 }}>{group.code} · {group.title}</h4>
-                <div className="kn-table-container kn-m-0"><table><thead><tr><th>{t("maturity.item")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.rationale")}</th>{canWrite && <th>{t("maturity.action")}</th>}</tr></thead><tbody>{groupedItems.get(group.framework_item_id)?.map((item) => <ScoreEditor key={item.framework_item_id} item={item} assessment={selected} canWrite={canWrite} />)}</tbody></table></div>
+                <DataTable className="kn-m-0" head={<><tr><th>{t("maturity.item")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.rationale")}</th>{canWrite && <th>{t("maturity.action")}</th>}</tr></>}>{groupedItems.get(group.framework_item_id)?.map((item) => <ScoreEditor key={item.framework_item_id} item={item} assessment={selected} canWrite={canWrite} />)}</DataTable>
               </div>
             ))}
           </div>

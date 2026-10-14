@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { request, setToken } from "../api";
 import { useAuth } from "../auth";
+import { Card, PageHeader } from "../components/ui";
 
 interface PasswordChangeOut {
   access_token: string;
@@ -54,13 +55,10 @@ export function Account() {
 
   return (
     <div className="kn-max-w-md">
-      <h2 className="kn-page-title">{t("account.title")}</h2>
-      <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginTop: 0 }}>
-        {user?.email}
-      </p>
+      <PageHeader title={t("account.title")} subtitle={user?.email} />
 
-      <div className="kn-card">
-        <h3 style={{ margin: "0 0 4px 0", fontSize: "1.0625rem" }}>{t("account.changePassword")}</h3>
+      <Card>
+        <h3 className="kn-card-title-sm">{t("account.changePassword")}</h3>
         <p className="kn-secondary kn-text-xs kn-mb-4">
           {t("account.changePasswordHint")}
         </p>
@@ -113,7 +111,7 @@ export function Account() {
             </button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

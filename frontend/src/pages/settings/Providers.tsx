@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { request } from "../../api";
 import { DecisionModel } from "./DecisionModel";
 import { hasText } from "../../i18n";
+import { Card, DataTable } from "../../components/ui";
 
 interface Provider {
   id: number;
@@ -170,20 +171,15 @@ export function Providers() {
 
   return (
     <div>
-      <div className="kn-card kn-mb-6">
+      <Card className="kn-mb-6">
         <h3 className="kn-section-title">{t("settings.providers")}</h3>
-        <div className="kn-table-container kn-m-0">
-          <table>
-            <thead>
-              <tr>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("settings.providersConfig.name")}</th>
                 <th>{t("settings.providersConfig.kind")}</th>
                 <th>{t("settings.providersConfig.model")}</th>
                 <th>{t("settings.providersConfig.apiKey")}</th>
                 <th className="kn-text-right">{t("common.actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {providers.data?.map((p) => (
                 <tr key={p.id}>
                   <td>
@@ -264,13 +260,11 @@ export function Providers() {
                   </td>
                 </tr>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
 
       {/* Add Provider Card */}
-      <div className="kn-card kn-mb-6">
+      <Card className="kn-mb-6">
         <h4 className="kn-m-0 kn-mb-3 kn-text-md">{t("common.add")}</h4>
         <form onSubmit={submit} className="kn-stack-3 kn-max-w-md">
           <input
@@ -310,26 +304,19 @@ export function Providers() {
             </button>
           </div>
         </form>
-      </div>
+      </Card>
 
       {create.error && <p role="alert">{create.error.message}</p>}
       <DecisionModel providers={providers.data ?? []} />
 
       {/* Routing Matrix Card */}
-      <div className="kn-card">
+      <Card>
         <h3 className="kn-section-title">{t("settings.routing")}</h3>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: 14 }}>
-          {t("settings.providersConfig.routingHint")}
-        </p>
-        <div className="kn-table-container kn-m-0">
-          <table>
-            <thead>
-              <tr>
+        <p className="kn-card-note">{t("settings.providersConfig.routingHint")}</p>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("settings.providersConfig.taskPipeline")}</th>
                 <th>{t("settings.providersConfig.assignedProvider")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {tasks.data?.filter((task) => task.key !== "requirement_decision").map((task) => {
                 const current = routing.data?.find((r) => r.task_key === task.key);
                 return (
@@ -367,10 +354,8 @@ export function Providers() {
                   </tr>
                 );
               })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
     </div>
   );
 }

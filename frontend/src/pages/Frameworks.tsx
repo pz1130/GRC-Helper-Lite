@@ -7,7 +7,7 @@ import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } 
 import { useAuth } from "../auth";
 import { type Issue, issueText } from "../i18n";
 import i18n from "../i18n";
-import { EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Framework {
   id: number;
@@ -107,48 +107,44 @@ export function Frameworks() {
       {frameworks.isPending && <LoadingState />}
       {frameworks.error && <p role="alert"><span>⚠️</span> {frameworks.error.message}</p>}
       {frameworks.data && frameworks.data.length === 0 && (
-        <div className="kn-card" style={{ textAlign: "center", padding: "40px 20px", marginBottom: 20 }}>
+        <Card className="kn-empty-card-center">
           <EmptyState compact />
-        </div>
+        </Card>
       )}
 
       {!!frameworks.data?.length && (
-        <div className="kn-table-container kn-mb-6">
-          <table>
-            <thead>
-              <tr>
-                <th>{t("frameworks.name")}</th>
-                <th>{t("frameworks.key")}</th>
-                <th>{t("frameworks.version")}</th>
-                <th>{t("frameworks.items")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {frameworks.data.map((framework) => (
-                <tr key={framework.id}>
-                  <td>
-                    <Link
-                      to={`/frameworks/${framework.id}`} className="kn-strong kn-primary-text"
-                    >
-                      {framework.name_en || framework.name_zh}
-                    </Link>
-                  </td>
-                  <td>
-                    <code>{framework.key}</code>
-                  </td>
-                  <td>
-                    <span className="kn-badge">{framework.version}</span>
-                  </td>
-                  <td>
-                    <span className="kn-badge kn-badge-blue">
-                      {framework.item_count} {t("frameworks.items")}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          className="kn-mb-6"
+          head={
+            <tr>
+              <th>{t("frameworks.name")}</th>
+              <th>{t("frameworks.key")}</th>
+              <th>{t("frameworks.version")}</th>
+              <th>{t("frameworks.items")}</th>
+            </tr>
+          }
+        >
+          {frameworks.data.map((framework) => (
+            <tr key={framework.id}>
+              <td>
+                <Link to={`/frameworks/${framework.id}`} className="kn-strong kn-primary-text">
+                  {framework.name_en || framework.name_zh}
+                </Link>
+              </td>
+              <td>
+                <code>{framework.key}</code>
+              </td>
+              <td>
+                <span className="kn-badge">{framework.version}</span>
+              </td>
+              <td>
+                <span className="kn-badge kn-badge-blue">
+                  {framework.item_count} {t("frameworks.items")}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
       )}
 
       {canWrite && (

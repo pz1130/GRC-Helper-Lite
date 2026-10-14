@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { request } from "../api";
 import { useAuth } from "../auth";
-import { DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface TechAsset {
   id: number;
@@ -142,7 +142,7 @@ export function TechAssets() {
       {assets.error && <p role="alert">⚠️ {assets.error.message}</p>}
 
       {form && canWrite && (
-        <form className="kn-card" onSubmit={submit} style={{ marginBottom: 20, maxWidth: 900 }}>
+        <form className="kn-card kn-form-card kn-form-card--narrow" onSubmit={submit}>
           <h3 className="kn-mb-4">{t(editingId === null ? "techAssets.add" : "techAssets.edit")}</h3>
           <div className="kn-auto-grid">
             <label>
@@ -189,7 +189,7 @@ export function TechAssets() {
       )}
 
       {assets.data && assets.data.length === 0 && !assets.isPending && (
-        <div className="kn-card"><EmptyState /></div>
+        <Card><EmptyState /></Card>
       )}
       {!!assets.data?.length && (
         <DataTable
@@ -232,7 +232,7 @@ export function TechAssets() {
                     {controls.isPending && <LoadingState />}
                     {controls.error && <p role="alert">⚠️ {controls.error.message}</p>}
                     {controls.data?.length === 0 && <p className="kn-muted">{t("techAssets.noControls")}</p>}
-                    {!!controls.data?.length && <ul style={{ margin: "10px 0 0", paddingLeft: 20 }}>
+                    {!!controls.data?.length && <ul className="kn-list-indented">
                       {controls.data.map((control) => <li key={control.id}><code>{control.control_code ?? `#${control.control_id}`}</code> {control.control_title ?? ""} · <span className="kn-badge">{t(`techAssets.implementationStatuses.${control.status}`)}</span></li>)}
                     </ul>}
                   </td>

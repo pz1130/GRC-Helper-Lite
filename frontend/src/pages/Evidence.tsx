@@ -8,7 +8,7 @@ import { useAuth } from "../auth";
 import { PrerequisiteNotice } from "../components/PrerequisiteNotice";
 import { CONTROL_SEARCH_LIMIT, useControlSearch, withSelected } from "../controlSearch";
 import type { ControlOption } from "../controlSearch";
-import { EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface EvidenceType {
   id: number;
@@ -236,7 +236,7 @@ export function Evidence() {
         actions={canWrite && <button className="kn-btn-primary kn-btn-sm" onClick={beginCreate}>{t("common.add")}</button>}
       />
 
-      <div className="kn-card kn-mb-5">
+      <Card className="kn-mb-5">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, alignItems: "end" }}>
           <label>
             {t("evidence.owner")}
@@ -269,10 +269,10 @@ export function Evidence() {
             </button>
           )}
         </div>
-      </div>
+      </Card>
 
       {form && canWrite && (
-        <form className="kn-card" onSubmit={submit} style={{ marginBottom: 20, maxWidth: 960 }}>
+        <form className="kn-card kn-form-card" onSubmit={submit}>
           <h3 className="kn-mb-4">{t(editingId === null ? "evidence.add" : "evidence.edit")}</h3>
           <div className="kn-auto-grid">
             <label>
@@ -368,27 +368,54 @@ export function Evidence() {
 
       {evidence.isPending && <LoadingState />}
       {evidence.error && <p role="alert">⚠️ {evidence.error.message}</p>}
-      {evidence.data && evidence.data.length === 0 && !evidence.isPending && <div className="kn-card"><EmptyState /></div>}
+      {evidence.data && evidence.data.length === 0 && !evidence.isPending && <Card><EmptyState /></Card>}
       {!!evidence.data?.length && (
-        <div className="kn-table-container">
-          <table>
-            <thead><tr><th>{t("evidence.titleField")}</th><th>{t("evidence.type")}</th><th>{t("evidence.control")}</th><th>{t("evidence.owner")}</th><th>{t("evidence.validUntil")}</th><th>{t("evidence.status")}</th>{canWrite && <th />}</tr></thead>
-            <tbody>
-              {evidence.data.map((item) => {
-                const isExpired = item.display_status === "expired";
-                return <tr key={item.id}>
-                  <td><strong>{item.title}</strong><div className="kn-muted kn-text-2xs">{item.location_hint || "—"}</div></td>
-                  <td>{item.evidence_type_name ?? typeName(item.evidence_type_id)}</td>
-                  <td><code>{item.control_code ?? `#${item.control_id}`}</code>{item.control_title && <div className="kn-muted kn-text-2xs">{item.control_title}</div>}</td>
-                  <td>{item.owner_user_id ? `#${item.owner_user_id}` : "—"}</td>
-                  <td style={isExpired ? { color: "var(--accent-ruby)", fontWeight: 700 } : undefined}>{item.valid_until ? new Date(item.valid_until).toLocaleDateString() : "—"}</td>
-                  <td><span className={`kn-badge ${isExpired ? "kn-badge-ruby" : item.display_status === "valid" ? "kn-badge-emerald" : item.display_status === "missing" ? "kn-badge-amber" : "kn-badge-blue"}`}>{t(`evidence.statuses.${item.display_status}`, { defaultValue: item.display_status })}</span></td>
-                  {canWrite && <td><button className="kn-btn-secondary kn-btn-sm" onClick={() => beginEdit(item)}>{t("common.edit")}</button></td>}
-                </tr>;
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          head={
+            <tr>
+              <th>{t("evidence.titleField")}</th>
+              <th>{t("evidence.type")}</th>
+              <th>{t("evidence.control")}</th>
+              <th>{t("evidence.owner")}</th>
+              <th>{t("evidence.validUntil")}</th>
+              <th>{t("evidence.status")}</th>
+              {canWrite && <th />}
+            </tr>
+          }
+        >
+          {evidence.data.map((item) => {
+            const isExpired = item.display_status === "expired";
+            return (
+              <tr key={item.id}>
+                <td>
+                  <strong>{item.title}</strong>
+                  <div className="kn-muted kn-text-2xs">{item.location_hint || "—"}</div>
+                </td>
+                <td>{item.evidence_type_name ?? typeName(item.evidence_type_id)}</td>
+                <td>
+                  <code>{item.control_code ?? `#${item.control_id}`}</code>
+                  {item.control_title && <div className="kn-muted kn-text-2xs">{item.control_title}</div>}
+                </td>
+                <td>{item.owner_user_id ? `#${item.owner_user_id}` : "—"}</td>
+                <td className={isExpired ? "kn-status-expired" : undefined}>
+                  {item.valid_until ? new Date(item.valid_until).toLocaleDateString() : "—"}
+                </td>
+                <td>
+                  <span className={`kn-badge ${isExpired ? "kn-badge-ruby" : item.display_status === "valid" ? "kn-badge-emerald" : item.display_status === "missing" ? "kn-badge-amber" : "kn-badge-blue"}`}>
+                    {t(`evidence.statuses.${item.display_status}`, { defaultValue: item.display_status })}
+                  </span>
+                </td>
+                {canWrite && (
+                  <td>
+                    <button className="kn-btn-secondary kn-btn-sm" onClick={() => beginEdit(item)}>
+                      {t("common.edit")}
+                    </button>
+                  </td>
+                )}
+              </tr>
+            );
+          })}
+        </DataTable>
       )}
     </section>
   );
