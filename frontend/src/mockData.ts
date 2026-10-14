@@ -222,9 +222,11 @@ export function getMockResponse(path: string, _init: RequestInit = {}): unknown 
   }
 
   if (url === "/api/settings/providers") {
+    // 字段名跟真实 ProviderOut 对齐：kind / api_key_masked / enabled。
+    // 以前写成 masked_key + is_active，Kind 和 API key 列就会空白（不是 DataTable 迁移引入的）。
     return [
-      { id: 1, name: "OpenAI Production", base_url: "https://api.openai.com/v1", model: "gpt-4o", masked_key: "sk-proj-****89Ab", is_active: true },
-      { id: 2, name: "Anthropic Claude Dedicated", base_url: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet", masked_key: "sk-ant-****55Ff", is_active: true },
+      { id: 1, name: "OpenAI Production", kind: "openai", base_url: "https://api.openai.com/v1", model: "gpt-4o", api_key_masked: "sk-proj-****89Ab", enabled: true, is_fallback: false, capabilities: ["chat", "embedding"] },
+      { id: 2, name: "Anthropic Claude Dedicated", kind: "anthropic", base_url: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet", api_key_masked: "sk-ant-****55Ff", enabled: true, is_fallback: false, capabilities: ["chat"] },
     ];
   }
 

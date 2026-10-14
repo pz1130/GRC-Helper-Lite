@@ -6,7 +6,7 @@ import { ApiError, request } from "../api";
 import { hasText, renderParams } from "../i18n";
 import { useAuth } from "../auth";
 import type { Control } from "./Controls";
-import { EmptyState, LoadingState } from "../components/ui";
+import { Badge, Card, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Detail extends Control {
   sources: { clause_id: number; document_id: number; document_title: string; citation_label: string; heading_path: string; relation: string }[];
@@ -130,40 +130,39 @@ function ControlContent({ id }: { id: string }) {
             </p>
           )}
 
-          <div className="kn-page-header">
-            <div>
-              <h2>
+          <PageHeader
+            title={
+              <>
                 <code className="kn-title-code">{data.code}</code>
                 {data.title}
-              </h2>
-              <div className="kn-row kn-wrap kn-mt-1">
-                <span className="kn-badge">
-                  {t("controls.category")}: {data.category ?? "—"}
-                </span>
-                <span className="kn-badge kn-badge-emerald">
-                  {t("documents.status")}: {t(`controls.statuses.${data.status}`)}
-                </span>
-              </div>
-            </div>
-            {canWrite && data.status === "active" && (
-              <button
-                type="button"
-                className="kn-btn-secondary kn-btn-sm"
-                onClick={() => {
-                  setPicking((open) => !open);
-                  setMergeQ("");
-                  setMergeSearch("");
-                  loadPreview.reset();
-                }}
-              >
-                {t("controls.mergeInto")}
-              </button>
-            )}
-          </div>
+              </>
+            }
+            badge={
+              <span className="kn-page-head-meta kn-ml-2">
+                <Badge>{t("controls.category")}: {data.category ?? "—"}</Badge>
+                <Badge tone="emerald">{t("documents.status")}: {t(`controls.statuses.${data.status}`)}</Badge>
+              </span>
+            }
+            actions={
+              canWrite && data.status === "active" ? (
+                <button
+                  type="button"
+                  className="kn-btn-secondary kn-btn-sm"
+                  onClick={() => {
+                    setPicking((open) => !open);
+                    setMergeQ("");
+                    setMergeSearch("");
+                    loadPreview.reset();
+                  }}
+                >
+                  {t("controls.mergeInto")}
+                </button>
+              ) : undefined
+            }
+          />
 
           {picking && canWrite && data.status === "active" && (
-            <div className="kn-card kn-mb-5">
-              <h3 className="kn-text-lg">{t("controls.mergePick")}</h3>
+            <Card className="kn-mb-5" title={t("controls.mergePick")}>
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -175,7 +174,7 @@ function ControlContent({ id }: { id: string }) {
                   placeholder={t("controls.search")}
                   value={mergeQ}
                   onChange={(e) => setMergeQ(e.target.value)}
-                  style={{ width: 340, maxWidth: "100%" }}
+                  className="kn-input-md"
                 />
                 <button type="submit" className="kn-btn-primary kn-btn-sm">{t("search.run")}</button>
                 <button type="button" className="kn-btn-secondary kn-btn-sm" onClick={() => setPicking(false)}>{t("common.cancel")}</button>
@@ -194,10 +193,9 @@ function ControlContent({ id }: { id: string }) {
                   <li key={c.id} className="kn-mb-2">
                     <button
                       type="button"
-                      className="kn-btn-secondary"
+                      className="kn-btn-secondary kn-btn-block"
                       disabled={loadPreview.isPending}
                       onClick={() => loadPreview.mutate(c.id)}
-                      style={{ width: "100%", textAlign: "left" }}
                     >
                       <code>{c.code}</code> {c.title}
                     </button>
@@ -207,18 +205,18 @@ function ControlContent({ id }: { id: string }) {
               {candidates.isSuccess && (candidates.data ?? []).filter((c) => c.id !== data.id).length === 0 && (
                 <EmptyState compact />
               )}
-            </div>
+            </Card>
           )}
 
           {/* Statement & Edit Pane */}
-          <div className="kn-card kn-mb-6">
+          <Card className="kn-mb-6">
             {form ? (
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (form.title.trim() && form.statement.trim()) save.mutate();
                 }}
-                style={{ display: "grid", gap: 16, maxWidth: 760 }}
+                className="kn-form-stack"
               >
                 <label>
                   {t("controls.name")}
@@ -250,7 +248,7 @@ function ControlContent({ id }: { id: string }) {
 
                 {save.error && <p role="alert"><span>⚠️</span> {save.error.message}</p>}
 
-                <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
+                <div className="kn-row-gap-sm">
                   <button
                     className="kn-btn-primary"
                     disabled={save.isPending || !form.title.trim() || !form.statement.trim()}
@@ -290,30 +288,16 @@ function ControlContent({ id }: { id: string }) {
                 )}
               </div>
             )}
-          </div>
+          </Card>
 
           {saved && <p role="status">{t("common.saved")}</p>}
 
           {/* Sources Section */}
-          <div className="kn-card kn-mb-5">
-            <h3 className="kn-text-lg">
-              {t("controls.sources")} · {t("controls.backedBy", { count: new Set(data.sources.map((s) => s.document_id)).size })}
-            </h3>
+          <Card className="kn-mb-5" title={<>{t("controls.sources")} · {t("controls.backedBy", { count: new Set(data.sources.map((s) => s.document_id)).size })}</>}>
             {data.sources.length === 0 && <p className="kn-muted">{t("controls.noSources")}</p>}
             <ul className="kn-list-plain">
               {data.sources.map((s) => (
-                <li
-                  key={`${s.document_id}-${s.clause_id}`}
-                  style={{
-                    padding: "10px 14px",
-                    background: "var(--stage-card-subtle)",
-                    borderRadius: "var(--radius-sm)",
-                    marginBottom: 8,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
-                >
+                <li key={`${s.document_id}-${s.clause_id}`} className="kn-gap-row">
                   <Link to={`/documents/${s.document_id}#clause-${s.clause_id}`} className="kn-strong">
                     {s.document_title} · <code>{s.citation_label}</code>
                   </Link>
@@ -323,23 +307,14 @@ function ControlContent({ id }: { id: string }) {
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
           {/* Relations Section */}
-          <div className="kn-card kn-mb-5">
-            <h3 className="kn-text-lg">{t("controls.relations")}</h3>
+          <Card className="kn-mb-5" title={t("controls.relations")}>
             {data.relations.length === 0 && <EmptyState compact />}
             <ul className="kn-list-plain">
               {data.relations.map((r) => (
-                <li
-                  key={`${r.from_control_id}-${r.to_control_id}-${r.relation_type}`}
-                  style={{
-                    padding: "12px 14px",
-                    background: "var(--stage-card-subtle)",
-                    borderRadius: "var(--radius-sm)",
-                    marginBottom: 8,
-                  }}
-                >
+                <li key={`${r.from_control_id}-${r.to_control_id}-${r.relation_type}`} className="kn-well">
                   <div className="kn-row">
                     <Link to={`/controls/${r.from_control_id}`} className="kn-strong">
                       {r.from_control_code ?? `#${r.from_control_id}`}
@@ -353,33 +328,29 @@ function ControlContent({ id }: { id: string }) {
                     </span>
                   </div>
                   {r.rationale && (
-                    <p style={{ margin: "6px 0 0 0", fontSize: "0.8125rem", color: "var(--text-secondary)", whiteSpace: "pre-wrap" }}>
-                      {r.rationale}
-                    </p>
+                    <p className="kn-secondary-note">{r.rationale}</p>
                   )}
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
           {/* Environment Implementation Section */}
-          <div className="kn-card kn-mb-5">
-            <h3 className="kn-text-lg">{t("controls.implementations")}</h3>
+          <Card className="kn-mb-5" title={t("controls.implementations")}>
             {(data.implementations ?? []).length === 0 && <p className="kn-muted">{t("controls.noImplementations")}</p>}
             <ul className="kn-list-plain">
               {(data.implementations ?? []).map((implementation) => (
                 <li key={implementation.id} className="kn-well">
                   <span className="kn-badge kn-badge-blue">{t(`techAssets.implementationStatuses.${implementation.status}`, { defaultValue: implementation.status })}</span>{" "}
                   <span className="kn-badge">{implementation.how_enforced}</span>
-                  {implementation.description && <p style={{ margin: "6px 0 0", fontSize: "0.8125rem", color: "var(--text-secondary)" }}>{implementation.description}</p>}
+                  {implementation.description && <p className="kn-secondary-note kn-secondary-note--tight">{implementation.description}</p>}
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
           {/* Evidence Section */}
-          <div className="kn-card kn-mb-5">
-            <h3 className="kn-text-lg">{t("controls.evidence")}</h3>
+          <Card className="kn-mb-5" title={t("controls.evidence")}>
             {(data.evidence ?? []).length === 0 && <p className="kn-muted">{t("controls.noEvidence")}</p>}
             <ul className="kn-list-plain">
               {(data.evidence ?? []).map((item) => (
@@ -392,26 +363,14 @@ function ControlContent({ id }: { id: string }) {
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
           {/* Framework Mappings Section */}
-          <div className="kn-card">
-            <h3 className="kn-text-lg">{t("controls.frameworkMappings")}</h3>
+          <Card title={t("controls.frameworkMappings")}>
             {(data.mappings ?? []).length === 0 && <p className="kn-muted">{t("controls.noFrameworkMappings")}</p>}
             <ul className="kn-list-plain">
               {(data.mappings ?? []).map((mapping) => (
-                <li
-                  key={`${mapping.framework_name}-${mapping.code}`}
-                  style={{
-                    padding: "10px 14px",
-                    background: "var(--stage-card-subtle)",
-                    borderRadius: "var(--radius-sm)",
-                    marginBottom: 8,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
-                >
+                <li key={`${mapping.framework_name}-${mapping.code}`} className="kn-gap-row">
                   <span className="kn-strong">
                     {mapping.framework_name_en || mapping.framework_name}
                   </span>{" "}
@@ -422,27 +381,15 @@ function ControlContent({ id }: { id: string }) {
                 </li>
               ))}
             </ul>
-          </div>
+          </Card>
 
           {preview && (
-            <div
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(0, 0, 0, 0.55)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                zIndex: 40,
-                padding: 24,
-              }}
-            >
+            <div className="kn-modal-backdrop">
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="control-merge-title"
-                className="kn-card"
-                style={{ width: 560, maxWidth: "100%", maxHeight: "80vh", overflow: "auto" }}
+                className="kn-card kn-dialog"
               >
                 <h3 className="kn-text-lg" id="control-merge-title">
                   {t("controls.mergePreview", { loser: preview.loser_code, winner: preview.winner_code })}
@@ -458,12 +405,12 @@ function ControlContent({ id }: { id: string }) {
                   </div>
                 )}
                 {Object.entries(preview.moves).map(([table, count]) => (
-                  <p key={table} style={{ margin: "0 0 8px" }}>
+                  <p key={table} className="kn-mb-2">
                     {t(`controls.mergeMoves.${table}`, { count })}
                   </p>
                 ))}
                 {preview.discards.length > 0 && (
-                  <div style={{ margin: "12px 0" }}>
+                  <div className="kn-my-3">
                     <h4 className="kn-text-sm kn-mb-2">{t("controls.mergeDiscards")}</h4>
                     <ul className="kn-list">
                       {preview.discards.map((item) => (

@@ -39,7 +39,7 @@ export function Card({
   className,
   children,
   ...rest
-}: { title?: ReactNode; actions?: ReactNode } & HTMLAttributes<HTMLDivElement>) {
+}: { title?: ReactNode; actions?: ReactNode } & Omit<HTMLAttributes<HTMLDivElement>, "title">) {
   return (
     <div className={cx("kn-card", className)} {...rest}>
       {title || actions ? (

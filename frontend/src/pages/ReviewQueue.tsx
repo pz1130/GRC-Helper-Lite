@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router-dom";
 import { request } from "../api";
 import { useAuth } from "../auth";
-import { Badge, EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { Badge, Card, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 export interface ControlSource {
   clause_id: number;
@@ -94,7 +94,7 @@ interface AutomationPreview {
     映射卡右栏是「你的控制点」。不写出来，读卡的人只能靠猜。 */
 function CardClaim({ text }: { text: string }) {
   return (
-    <p style={{ margin: "12px 0 0", fontSize: "0.8125rem", lineHeight: 1.6, color: "var(--text-tertiary)" }}>
+    <p className="kn-claim">
       {text}
     </p>
   );
@@ -115,7 +115,7 @@ function ControlSources({ sources }: { sources?: ControlSource[] }) {
             {source.citation_label ?? `#${source.clause_id}`}
           </Link>
           {source.heading_path && (
-            <div style={{ fontSize: "0.75rem", opacity: 0.8 }}>{source.heading_path}</div>
+            <div className="kn-source-heading">{source.heading_path}</div>
           )}
         </div>
       ))}
@@ -129,18 +129,7 @@ function Rationale({ payload }: { payload: Record<string, unknown> }) {
   const text = typeof payload.rationale === "string" ? payload.rationale.trim() : "";
   if (!text) return null;
   return (
-    <div
-      style={{
-        marginTop: 16,
-        padding: "10px 14px",
-        fontSize: "0.875rem",
-        lineHeight: 1.6,
-        color: "var(--text-secondary)",
-        background: "var(--stage-card-subtle)",
-        borderLeft: "3px solid var(--accent-blue)",
-        borderRadius: "var(--radius-xs)",
-      }}
-    >
+    <div className="kn-callout-note">
       <strong className="kn-primary-text">{t("review.rationale")}</strong>
       <div className="kn-mt-1">{text}</div>
     </div>
@@ -234,24 +223,12 @@ function MappingPreview({
         strength: t(`mapping.strength.${strength}`, { defaultValue: strength }),
       })} />
       {covered && (
-        <p
-          role="note"
-          style={{
-            margin: "0 0 16px",
-            padding: "10px 14px",
-            fontSize: "0.875rem",
-            lineHeight: 1.6,
-            color: "var(--accent-amber)",
-            background: "var(--accent-amber-bg)",
-            border: "1px solid var(--accent-amber-border)",
-            borderRadius: "var(--radius-xs)",
-          }}
-        >
+        <p role="note" className="kn-callout-amber">
           {t("mapping.alreadyCovered", { controls: coveredBy })}
           {strength === "supporting" && <> {t("mapping.supportingNoEffect")}</>}
         </p>
       )}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 16, marginBottom: 16 }}>
+      <div className="kn-review-grid">
         <div className="kn-card kn-card--subtle">
           <h3 className="kn-text-lg">
             {t("mapping.frameworkItem")} · <code>{itemCode}</code> {itemTitle}
@@ -278,7 +255,7 @@ function MappingPreview({
       <Rationale payload={payload} />
 
       <div className="kn-row">
-        <label style={{ flexDirection: "row", alignItems: "center" }}>
+        <label className="kn-check-row">
           <span>{t("mapping.strength.label")}</span>
           <select
             aria-label={t("mapping.strength.label")}
@@ -347,7 +324,7 @@ function RelationBody({
         <p><strong className="kn-accent">{label}</strong></p>
         <CardClaim text={t("review.claimRelation", { relation: label })} />
         <p className="kn-warn" role="note">{t("relations.contextMissing")}</p>
-        <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontSize: 13 }}>
+        <pre className="kn-json-pre">
           {JSON.stringify(proposal.payload, null, 2)}
         </pre>
         {editor}
@@ -479,18 +456,7 @@ function ConflictBody({
         />
       </div>
       {difference && (
-        <div
-          style={{
-            marginTop: 16,
-            padding: "10px 14px",
-            fontSize: "0.875rem",
-            lineHeight: 1.6,
-            color: "var(--text-secondary)",
-            background: "var(--stage-card-subtle)",
-            borderLeft: "3px solid var(--accent-blue)",
-            borderRadius: "var(--radius-xs)",
-          }}
-        >
+        <div className="kn-callout-note">
           <strong className="kn-primary-text">{t("review.conflictDifference")}</strong>
           <div className="kn-mt-1">{difference}</div>
         </div>
@@ -668,18 +634,18 @@ export function ReviewQueue() {
           比任何一条待确认提案都更需要先被看到。 */}
       {(failures.data?.length ?? 0) > 0 && (
         <div className="kn-card kn-failed-batches kn-mb-5">
-          <h3 style={{ margin: "0 0 4px", fontSize: "0.9375rem" }}>
+          <h3>
             {t("review.failedBatches", { count: failures.data!.length })}
           </h3>
-          <p style={{ margin: "0 0 12px", fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
+          <p>
             {t("review.failedBatchesHint")}
           </p>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 8 }}>
+          <ul className="kn-failed-list">
             {failures.data!.map((failure) => (
               <li key={failure.id} className="kn-failed-batch-row">
                 <div className="kn-min-0">
                   <code className="kn-text-2xs">{failure.reject_reason}</code>
-                  <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", marginTop: 2 }}>
+                  <div className="kn-failed-meta">
                     {t("review.failedBatchClauses", { count: failure.clause_ids?.length ?? 0 })}
                     {failure.document_id != null && ` · ${t("review.failedBatchDocument", { id: failure.document_id })}`}
                   </div>
@@ -700,17 +666,7 @@ export function ReviewQueue() {
       )}
 
       {/* Control Filter Bar */}
-      <div
-        className="kn-card"
-        style={{
-          padding: "14px 18px",
-          display: "flex",
-          gap: 12,
-          flexWrap: "wrap",
-          alignItems: "center",
-          marginBottom: 20,
-        }}
-      >
+      <div className="kn-card kn-toolbar-card">
         <label className="kn-inline-label">
           <span>{t("review.kind")}</span>
           <select
@@ -835,7 +791,7 @@ export function ReviewQueue() {
         )}
 
         {canWrite && (
-          <div style={{ display: "flex", gap: 8, marginLeft: "auto" }}>
+          <div className="kn-inline-actions">
             <button className="kn-btn-secondary kn-btn-sm" disabled={busy} onClick={() => infer.mutate()}>
               {t("relations.infer")}
             </button>
@@ -848,10 +804,10 @@ export function ReviewQueue() {
 
       {showAutomationPreview && (
         <section className="kn-mb-5 kn-card" aria-label={t("review.previewTitle")}>
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
+          <div className="kn-preview-head">
             <div>
               <h3 className="kn-m-0">{t("review.previewTitle")}</h3>
-              <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 0 }}>
+              <p className="kn-preview-note">
                 {t("review.previewReadOnly")}
               </p>
             </div>
@@ -863,11 +819,11 @@ export function ReviewQueue() {
           {automationPreview.error && <p role="alert">⚠️ {automationPreview.error.message}</p>}
           {automationPreview.data && (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginTop: 18 }}>
+              <div className="kn-tier-grid">
                 {(["auto", "sample", "manual", "deferred"] as const).map((tier) => (
-                  <div key={tier} className="kn-card" style={{ background: "var(--stage-card-subtle)", padding: 14 }}>
+                  <div key={tier} className="kn-card kn-tier-card">
                     <div className="kn-muted kn-text-2xs">{t(`review.tiers.${tier}`)}</div>
-                    <strong style={{ fontSize: "1.5rem" }}>{automationPreview.data.by_tier[tier] ?? 0}</strong>
+                    <strong className="kn-tier-count">{automationPreview.data.by_tier[tier] ?? 0}</strong>
                   </div>
                 ))}
               </div>
@@ -880,11 +836,11 @@ export function ReviewQueue() {
                   {t("review.previewTruncated", { count: automationPreview.data.scanned })}
                 </p>
               )}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))", gap: 16 }}>
+              <div className="kn-review-grid kn-review-grid--tight">
                 <div>
                   <h4>{t("review.byFramework")}</h4>
                   {Object.entries(automationPreview.data.by_framework).map(([framework, tiers]) => (
-                    <div key={framework} style={{ fontSize: "0.8125rem", marginBottom: 6 }}>
+                    <div key={framework} className="kn-framework-hit">
                       <code>{framework}</code> · {t("review.autoShort")} {tiers.auto ?? 0} · {t("review.sampleShort")} {tiers.sample ?? 0}
                     </div>
                   ))}
@@ -935,14 +891,14 @@ export function ReviewQueue() {
       {proposals.error && <p role="alert"><span>⚠️</span> {proposals.error.message}</p>}
       {stats.error && <p role="alert"><span>⚠️</span> {t("review.statsError")} {stats.error.message}</p>}
       {proposals.isSuccess && proposals.data.length === 0 && (
-        <div className="kn-card">
+        <Card>
           <EmptyState tone="success" title={t("review.empty")} />
-        </div>
+        </Card>
       )}
       {proposals.data && proposals.data.length >= 200 && <p className="kn-muted kn-text-xs">{t("review.limit")}</p>}
 
       {/* Proposal Cards Stream */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div className="kn-stack-4">
         {proposals.data?.map((p) => {
           const confidence = p.confidence ?? 0;
           const confBadgeClass = confidence >= 0.85 ? "kn-badge-emerald" : confidence >= 0.65 ? "kn-badge-amber" : "kn-badge-ruby";
@@ -951,14 +907,13 @@ export function ReviewQueue() {
             <article
               key={p.id}
               id={`proposal-${p.id}`}
-              className="kn-card"
+              className="kn-card kn-proposal"
               data-proposal-kind={p.kind}
-              style={{ padding: "20px 24px" }}
             >
               {/* Proposal Header */}
-              <div style={{ display: "flex", gap: 12, justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", borderBottom: "1px solid var(--stage-border)", paddingBottom: 14 }}>
+              <div className="kn-proposal-head">
                 <div className="kn-row">
-                  <span style={{ fontSize: "1.0625rem", fontWeight: 700, color: "var(--text-primary)" }}>
+                  <span className="kn-proposal-id">
                     #{p.id}
                   </span>
                   <span className="kn-badge">
@@ -976,7 +931,7 @@ export function ReviewQueue() {
                 </div>
 
                 {canDecide && p.kind !== "conflict" && (
-                  <label style={{ flexDirection: "row", alignItems: "center", gap: 6, margin: 0 }}>
+                  <label className="kn-proposal-check">
                     <input
                       type="checkbox"
                       aria-label={t("review.select", { id: p.id })}
@@ -1066,7 +1021,7 @@ export function ReviewQueue() {
               ) : (
                 <>
                 <CardClaim text={t(p.kind === "control_extract" ? "review.claimExtract" : "review.claimGeneric")} />
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: 16, marginTop: 16 }}>
+                <div className="kn-proposal-grid">
                   {/* Left Payload Pane */}
                   <div className="kn-card kn-card--subtle kn-m-0">
                     <h3 className="kn-text-lg kn-mt-0">
@@ -1095,7 +1050,7 @@ export function ReviewQueue() {
                             {p.payload.body}
                           </p>
                         )}
-                        <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontSize: "0.75rem", maxHeight: 180, overflowY: "auto" }}>
+                        <pre className="kn-payload-pre">
                           {JSON.stringify(p.payload, null, 2)}
                         </pre>
                       </>
@@ -1113,12 +1068,12 @@ export function ReviewQueue() {
                     {groupByClause(p.citations).map(([clauseId, group]) => (
                       <div key={clauseId} className="kn-card-head">
                         {group[0].document_title && (
-                          <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "var(--text-primary)" }}>
+                          <div className="kn-cite-doc">
                             {group[0].document_title}
                           </div>
                         )}
                         {group[0].heading_path && (
-                          <div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", margin: "2px 0 4px 0" }}>
+                          <div className="kn-cite-path">
                             {group[0].heading_path}
                           </div>
                         )}
@@ -1132,16 +1087,8 @@ export function ReviewQueue() {
                         {group.map((c, i) => (
                           <blockquote
                             key={i}
-                            style={{
-                              margin: "8px 0 0 0",
-                              whiteSpace: "pre-wrap",
-                              fontSize: "0.8125rem",
-                              lineHeight: 1.5,
-                              color: "var(--text-secondary)",
-                              borderLeft: "2px solid var(--accent-blue)",
-                              paddingLeft: 10,
-                            }}
-                          >
+                            className="kn-cite-quote"
+                            >
                             {c.quote}
                           </blockquote>
                         ))}
@@ -1154,7 +1101,7 @@ export function ReviewQueue() {
 
               {/* Action Buttons Bar */}
               {canDecide && p.status === "pending" && (
-                <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--stage-border)" }}>
+                <div className="kn-proposal-actions">
                   {editing !== p.id && rejecting !== p.id && (
                     <>
                       {p.duplicate_of ? (
@@ -1229,7 +1176,7 @@ export function ReviewQueue() {
                         value={reason}
                         disabled={busy}
                         onChange={(e) => setReason(e.target.value)}
-                        style={{ flex: 1, minWidth: 220 }}
+                        className="kn-reason-input"
                       />
                       <button
                         className="kn-btn-danger"
