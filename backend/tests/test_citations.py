@@ -5,7 +5,7 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from app.extraction.citations import ClauseCitationValidator, normalize
+from app.extraction.citations import ClauseCitationValidator
 
 
 def payload(cid=1, quote="Two approvers"):
