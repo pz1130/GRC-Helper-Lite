@@ -31,11 +31,11 @@ from app.risk import models as risk_models
 from app.search import models as search_models
 
 __all__ = [
-    "decision_models",
     "audit_models",
     "clauses_models",
     "conflict_models",
     "controls_models",
+    "decision_models",
     "environment_models",
     "evidence_models",
     "extraction_models",
