@@ -21,8 +21,8 @@ test:
 # 为什么不串成一条管道：`命令 | tail` 报的是 tail 的退出码，不是命令的。
 # 2026-09-11 就这样同时藏过一次 playwright 失败和 ruff 的 126 条，两个都显示为绿。
 #
-# ruff 只报数、不判成败：main 上本来就有约 121 条既有告警，做成硬失败这个目标
-# 会永远是红的，然后就没人看了。要看的是「有没有比基线多」。
+# ruff 现在是硬检查：既有告警已清零（backend/.ruff-baseline = 0），CI 用
+# scripts/check_ruff_baseline.py 卡住「比基线多」，这里同样有一条就算失败。
 #
 # e2e 走 make e2e 而不是直接 npx playwright test：后者跑在开发栈上，每次留下
 # 一个 provider 和一个用户（OQ-3）。慢几分钟，换的是跑完开发库一条痕迹不留。
@@ -31,8 +31,9 @@ verify:
 	echo "── pytest ──"; \
 	docker compose run --rm -e TEST_DATABASE_URL=postgresql+asyncpg://grc:grc@db:5432/grc_test api pytest -q; \
 	  status=$$?; echo "   pytest exit=$$status"; [ $$status -eq 0 ] || fail=1; \
-	echo "── ruff（只报数；对比 main 基线约 121 条）──"; \
-	echo "   $$(docker compose run --rm api ruff check app tests 2>&1 | grep -E '^Found|^All checks passed' || echo '没拿到 ruff 的结论行')"; \
+	echo "── ruff（基线 0，有告警即失败）──"; \
+	docker compose run --rm api ruff check app tests; \
+	  status=$$?; echo "   ruff exit=$$status"; [ $$status -eq 0 ] || fail=1; \
 	echo "── npm run build ──"; \
 	( cd frontend && npm run build >/dev/null ); \
 	  status=$$?; echo "   build exit=$$status"; [ $$status -eq 0 ] || fail=1; \
@@ -46,7 +47,7 @@ verify:
 	$(MAKE) e2e; \
 	  status=$$?; echo "   e2e exit=$$status"; [ $$status -eq 0 ] || fail=1; \
 	echo; \
-	if [ $$fail -eq 0 ]; then echo "✅ 五条硬检查都过了；ruff 的数字自己对基线"; \
+	if [ $$fail -eq 0 ]; then echo "✅ 六条硬检查都过了"; \
 	else echo "❌ 有硬检查没过，往上翻各自的 exit"; fi; \
 	exit $$fail
 

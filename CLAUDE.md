@@ -6,7 +6,7 @@
 ## 验证
 
 ```bash
-make verify        # 五条一次跑完：pytest / ruff / npm build / i18n-check / make e2e
+make verify        # 六条一次跑完：pytest / ruff / npm build / i18n-check / 注释卫生 / make e2e
 make test          # 只跑后端，快，写代码时用这个
 make i18n-check    # 单跑那条：后端的 code 与 en.json 词条对不对得上
 ```
@@ -16,8 +16,8 @@ make i18n-check    # 单跑那条：后端的 code 与 en.json 词条对不对�
 - **每条单独报退出码，失败不中断后面的**——一次跑完能看到所有失败，不是第一个。
   绝不要把验证命令管道给 `tail`：报的是 `tail` 的退出码。2026-09-11 就这样同时藏过
   一次 playwright 失败和 ruff 的 126 条，两个都显示为绿。
-- **ruff 只报数不判成败**。main 上本来就有 **127** 条既有告警（2026-09-23 实测）（多是 `app/llm/router.py`
-  与 `app/ingest/router.py` 的 B008）。只看本次改动的文件有没有新增，别去清基线。
+- **ruff 是硬闸门**。既有告警已于 2026-10-14 清零（`backend/.ruff-baseline` = 0），CI 用
+  `scripts/check_ruff_baseline.py` 判定，新增任何一条都会让 CI 变红。
 - **`i18n-check` 拦的是测试和构建都拦不住的那一类**：后端加了个 `code=` 却忘了
   补词条。这**不会报错**——前端会回落到后端那句中文，界面照常能用，只是用户看到
   中文。所以它只能靠这条检查发现。

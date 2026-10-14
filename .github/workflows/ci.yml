@@ -49,8 +49,8 @@ jobs:
           cache-dependency-path: backend/requirements-dev.lock
       - run: pip install --require-hashes -r requirements-dev.lock
       - run: pip install --no-deps .
-      # ruff 有一批既有告警的基线：只报数，不判成败，闸门放在测试上。
-      - run: ruff check --statistics --exit-zero app tests
+      # ruff 告警数不得超过 backend/.ruff-baseline（当前为 0，等于严格模式）。
+      - run: python ../scripts/check_ruff_baseline.py
       - run: pytest -q
 
   frontend:
