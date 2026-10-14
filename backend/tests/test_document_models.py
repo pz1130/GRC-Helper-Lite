@@ -6,13 +6,13 @@ from app.ingest.models import DocStatus, DocType, Document
 
 
 async def _doc(db_session, **kwargs) -> Document:
-    defaults = dict(
-        title="IT Change Management Procedure",
-        doc_type=DocType.PROCEDURE,
-        file_hash="a" * 64,
-        file_path="/data/documents/aa/aaaa.pdf",
-        original_filename="Acme-change-management.pdf",
-    )
+    defaults = {
+        "title": "IT Change Management Procedure",
+        "doc_type": DocType.PROCEDURE,
+        "file_hash": "a" * 64,
+        "file_path": "/data/documents/aa/aaaa.pdf",
+        "original_filename": "Acme-change-management.pdf",
+    }
     defaults.update(kwargs)
     doc = Document(**defaults)
     db_session.add(doc)

@@ -401,7 +401,8 @@ def _empty_meta() -> DocumentMeta:
 def _parse_date(raw: str) -> date | None:
     for date_format in _DATE_FORMATS:
         try:
-            return datetime.strptime(raw.strip(), date_format).date()
+            # 只取日期部分，时区无关
+            return datetime.strptime(raw.strip(), date_format).date()  # noqa: DTZ007
         except ValueError:
             continue
     return None

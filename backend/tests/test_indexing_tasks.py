@@ -138,10 +138,11 @@ async def test_parse_document_persists_document_fields_not_just_clauses(tmp_path
         document_id = document.id
 
     try:
-        with patch("app.ingest.tasks.session_factory", factory):
-            with patch("app.ingest.tasks.enqueue" if False else "app.worker.enqueue",
-                       new=AsyncMock(return_value="job")):
-                await parse_document({}, document_id)
+        with (
+            patch("app.ingest.tasks.session_factory", factory),
+            patch("app.worker.enqueue", new=AsyncMock(return_value="job")),
+        ):
+            await parse_document({}, document_id)
 
         # 关键：换一个全新 session 去读，确认字段真的落库了
         async with factory() as check:

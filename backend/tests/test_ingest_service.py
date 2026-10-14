@@ -8,13 +8,13 @@ STORED = StoredFile(path="/data/documents/ab/abcd.pdf", sha256="ab" + "c" * 62, 
 
 
 async def _register(db_session, **kwargs):
-    defaults = dict(
-        stored=STORED,
-        original_filename="proc.pdf",
-        title="IT Change Management Procedure",
-        doc_type=DocType.PROCEDURE,
-        uploaded_by=None,
-    )
+    defaults = {
+        "stored": STORED,
+        "original_filename": "proc.pdf",
+        "title": "IT Change Management Procedure",
+        "doc_type": DocType.PROCEDURE,
+        "uploaded_by": None,
+    }
     defaults.update(kwargs)
     return await register(db_session, **defaults)
 

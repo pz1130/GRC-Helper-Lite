@@ -1,3 +1,4 @@
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -138,11 +139,13 @@ async def test_persistent_schema_failure_raises_after_two_retries(db_session):
     complete = AsyncMock(
         return_value=CompletionResponse(text='{"wrong": 1}', tokens_in=1, tokens_out=1)
     )
-    with patch("app.llm.runner.build_provider", return_value=AsyncMock(complete=complete)):
-        with pytest.raises(ValidationFailure):
-            await run(
-                db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA
-            )
+    with (
+        patch("app.llm.runner.build_provider", return_value=AsyncMock(complete=complete)),
+        pytest.raises(ValidationFailure),
+    ):
+        await run(
+            db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA
+        )
     assert complete.await_count == 3   # 首次 + 2 次纠错
 
 
@@ -155,11 +158,13 @@ async def test_retryable_provider_error_falls_back(db_session):
             return_value=CompletionResponse(text='{"answer": "备用"}', tokens_in=1, tokens_out=1)
         )
     )
-    with patch("app.llm.runner.build_provider", side_effect=[primary, backup]):
-        with patch("app.llm.runner._sleep", new=AsyncMock()):
-            result = await run(
-                db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA
-            )
+    with (
+        patch("app.llm.runner.build_provider", side_effect=[primary, backup]),
+        patch("app.llm.runner._sleep", new=AsyncMock()),
+    ):
+        result = await run(
+            db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA
+        )
     assert result.payload["answer"] == "备用"
 
 
@@ -192,14 +197,14 @@ async def test_llm_call_is_recorded_with_redaction_facts(db_session):
 @pytest.mark.asyncio
 async def test_failed_call_is_also_recorded(db_session):
     await _setup(db_session)
-    with patch(
-        "app.llm.runner.build_provider",
-        return_value=AsyncMock(complete=AsyncMock(side_effect=ProviderError("401", retryable=False))),
+    failing = AsyncMock(complete=AsyncMock(side_effect=ProviderError("401", retryable=False)))
+    with (
+        patch("app.llm.runner.build_provider", return_value=failing),
+        pytest.raises(ProviderError),
     ):
-        with pytest.raises(ProviderError):
-            await run(
-                db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA
-            )
+        await run(
+            db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA
+        )
     call = await db_session.scalar(select(LLMCall))
     assert call.status == "error"
     assert "401" in call.error
@@ -239,7 +244,7 @@ async def test_run_does_not_write_business_tables(db_session):
     """铁律 2：run() 只返回纯数据，把它变成 Proposal 是 M4 的事。"""
     import app.llm.runner as runner_module
 
-    source = open(runner_module.__file__, encoding="utf-8").read()
+    source = Path(runner_module.__file__).read_text(encoding="utf-8")
     for forbidden in ("Proposal", "Control(", "Document("):
         assert forbidden not in source, f"runner 不应引用业务实体 {forbidden}"
 

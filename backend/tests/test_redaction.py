@@ -77,7 +77,7 @@ def test_restore_handles_llm_output_containing_placeholders():
     """模型返回的文本里带占位符，还原后必须是真实内容。"""
     engine = RedactionEngine([IP_RULE])
     result = engine.redact("请检查 10.0.0.1")
-    llm_output = f"建议核查 {list(result.mapping)[0]} 的访问日志。"
+    llm_output = f"建议核查 {next(iter(result.mapping))} 的访问日志。"
     assert engine.restore(llm_output, result.mapping) == "建议核查 10.0.0.1 的访问日志。"
 
 

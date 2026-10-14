@@ -114,9 +114,11 @@ async def test_failure_leaves_earlier_batches_committed(db_session):
             raise ProviderError("上游返回 500", retryable=True)
         return [[0.1] * 1536 for _ in texts], 1
 
-    with patch("app.indexing.embedder.embed", new=AsyncMock(side_effect=_flaky)):
-        with pytest.raises(ProviderError):
-            await embed_pending(db_session)
+    with (
+        patch("app.indexing.embedder.embed", new=AsyncMock(side_effect=_flaky)),
+        pytest.raises(ProviderError),
+    ):
+        await embed_pending(db_session)
 
     done = await db_session.scalar(
         select(ClauseChunk).where(ClauseChunk.embedding.is_not(None)).limit(1)
