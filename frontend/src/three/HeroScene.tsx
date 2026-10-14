@@ -21,7 +21,7 @@ export default function HeroScene() {
     const host = hostRef.current;
     if (!host) return;
     // 透明背景（bloom: 0）才能和 hero 的底色融为一体；装饰小图不需要实时阴影。
-    const kit = createScene(host, { cameraPos: [30, 24, 36], target: [0, 8, 0], bloom: 0, interactive: false, shadows: false, intro: true });
+    const kit = createScene(host, { cameraPos: [30, 24, 36], target: [0, 8, 0], bloom: 0, interactive: false, shadows: false, intro: true, refined: true });
     const slabGeo = new RoundedBoxGeometry(30, 1.6, 30, 4, 0.8);
     const slabs = LAYERS.map(([v, fb], i) => {
       const color = richen(themeColor(v, fb), kit.isDark);

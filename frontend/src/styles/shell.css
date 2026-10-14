@@ -337,7 +337,6 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 .g3d-legend-item--risk i { transform: rotate(45deg) scale(0.85); border-radius: 1px; }
 .g3d-legend-item--policy { --dot: var(--accent-amber); }
 .g3d-legend-item--policy i { clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); }
-.r3d-count { font-variant-numeric: tabular-nums; letter-spacing: 0; }
 
 /* 总览 hero 的 WebGL 版：与 CSS 版占同一位置 */
 .kn-hero-3d { position: absolute; right: 230px; top: -34px; width: 230px; height: 150px; pointer-events: none; }

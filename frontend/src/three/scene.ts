@@ -41,6 +41,8 @@ export function createScene(
     /** false 时不接管指针（装饰用小场景）。 */
     interactive?: boolean;
     shadows?: boolean;
+    /** v3 画质参数（图谱与 hero 使用）；不传则保持 v2 的数值——风险柱状图按要求沿用 v2 外观。 */
+    refined?: boolean;
   },
 ): SceneKit {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
@@ -70,7 +72,7 @@ export function createScene(
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.12).texture;
+  const envTexture = pmrem.fromScene(new RoomEnvironment(), opts.refined ? 0.12 : 0.04).texture;
   scene.environment = envTexture;
   scene.environmentIntensity = isDark ? 0.55 : 0.8;
 
@@ -83,8 +85,8 @@ export function createScene(
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.radius = 6;
-  key.shadow.bias = -0.0002;
-  key.shadow.normalBias = 1.2;
+  key.shadow.bias = opts.refined ? -0.0002 : -0.0004;
+  key.shadow.normalBias = opts.refined ? 1.2 : 0.6;
   const sc = key.shadow.camera as THREE.OrthographicCamera;
   sc.left = -160; sc.right = 160; sc.top = 160; sc.bottom = -160; sc.near = 10; sc.far = 500;
   scene.add(key);

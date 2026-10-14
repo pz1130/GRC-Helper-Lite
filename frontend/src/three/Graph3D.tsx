@@ -134,7 +134,7 @@ export default function Graph3D({
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const kit = createScene(host, { autoRotate: true, intro: true, cameraPos: [0, 110, 260], target: [0, 40, 0] });
+    const kit = createScene(host, { autoRotate: true, intro: true, refined: true, cameraPos: [0, 110, 260], target: [0, 40, 0] });
     kit.controls.minDistance = 60;
     kit.controls.maxDistance = 700;
     kit.controls.maxPolarAngle = Math.PI * 0.49;
