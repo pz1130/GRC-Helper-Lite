@@ -657,7 +657,7 @@ export function ReviewQueue() {
   }
 
   return (
-    <section>
+    <section className="kn-page kn-page-review">
       <PageHeader
         title={t("review.title")}
         subtitle={t("review.subtitle")}

@@ -265,7 +265,7 @@ export function Controls() {
   });
 
   return (
-    <section>
+    <section className="kn-page kn-page-controls">
       <div className="kn-page-header">
         <div>
           <h2>{t("controls.title")}</h2>

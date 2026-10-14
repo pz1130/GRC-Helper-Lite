@@ -67,7 +67,7 @@ export function Overview() {
   const pendingCount = proposalStats.data?.pending ?? 0;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+    <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
       <div className="kn-cockpit-hero">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>

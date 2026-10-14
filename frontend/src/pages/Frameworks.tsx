@@ -101,7 +101,7 @@ export function Frameworks() {
   const metadataReady = Boolean(file && key.trim() && nameEn.trim() && version.trim());
 
   return (
-    <section>
+    <section className="kn-page kn-page-frameworks">
       <div className="kn-page-header">
         <div>
           <h2>{t("frameworks.title")}</h2>

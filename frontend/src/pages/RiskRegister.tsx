@@ -158,7 +158,7 @@ export function RiskRegister() {
   };
 
   return (
-    <section>
+    <section className="kn-page kn-page-risks">
       <div className="kn-mb-6"><h2 className="kn-mb-2">{t("risks.title")}</h2><p className="kn-secondary kn-m-0">{t("risks.subtitle")}</p></div>
       {canWrite && <form className="kn-card" onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1fr) 100px 100px minmax(150px, 0.7fr) 160px auto", gap: 10, alignItems: "end", marginBottom: 20 }}><label>{t("risks.riskTitle")}<input required value={title} onChange={(event) => setTitle(event.target.value)} /></label><label>{t("risks.likelihood")}<select value={likelihood} onChange={(event) => setLikelihood(event.target.value)}>{scores.map((score) => <option key={score}>{score}</option>)}</select></label><label>{t("risks.impact")}<select value={impact} onChange={(event) => setImpact(event.target.value)}>{scores.map((score) => <option key={score}>{score}</option>)}</select></label><label>{t("risks.owner")}<select value={owner} onChange={(event) => setOwner(event.target.value)}><option value="">{t("risks.unassigned")}</option>{owners.data?.map((item) => <option key={item.id} value={item.id}>{item.name} ({item.email})</option>)}</select></label><label>{t("risks.dueDate")}<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label><button type="submit" disabled={create.isPending}>{t("risks.add")}</button>{create.error && <p role="alert" style={{ gridColumn: "1 / -1", color: "var(--accent-ruby)", margin: 0 }}>{create.error.message}</p>}</form>}
       {risks.isPending && <LoadingState />}
