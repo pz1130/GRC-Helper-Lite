@@ -65,11 +65,14 @@ function RiskMatrix({ risks }: { risks: Risk[] }) {
       </div>
       <p className="kn-secondary kn-text-xs">{t("risks.matrixHint")}</p>
       {mode === "3d" ? (
-        <Suspense fallback={<LoadingState />}>
-          <RiskBars3D cells={cells} />
-        </Suspense>
-      ) : (
-      <table aria-label={t("risks.matrix")} style={{ tableLayout: "fixed", minWidth: 520 }}>
+        <div aria-hidden="true">
+          <Suspense fallback={<LoadingState />}>
+            <RiskBars3D cells={cells} />
+          </Suspense>
+        </div>
+      ) : null}
+      {/* 3D 只是视觉层：同一张矩阵表始终在 DOM 里，3D 模式下对视觉隐藏、读屏照读。 */}
+      <table className={mode === "3d" ? "kn-sr-only" : undefined} aria-label={t("risks.matrix")} style={{ tableLayout: "fixed", minWidth: 520 }}>
         <thead><tr><th>{t("risks.impactLikelihood")}</th>{scores.map((likelihood) => <th key={likelihood} className="kn-text-center">{likelihood}</th>)}</tr></thead>
         <tbody>
           {[5, 4, 3, 2, 1].map((impact) => (
@@ -84,7 +87,6 @@ function RiskMatrix({ risks }: { risks: Risk[] }) {
           ))}
         </tbody>
       </table>
-      )}
     </div>
   );
 }

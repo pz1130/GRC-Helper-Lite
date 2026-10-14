@@ -206,18 +206,13 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
    ========================================================================== */
 .kn-graph-canvas-box--3d { flex: 1; min-width: 0; position: relative; padding: 0; overflow: hidden; }
 .g3d, .r3d { position: relative; width: 100%; overflow: hidden; }
-.r3d { height: 380px; }
+.r3d { height: 400px; }
 .g3d-canvas, .r3d-canvas { position: absolute; inset: 0; cursor: grab; }
 .g3d-canvas:active, .r3d-canvas:active { cursor: grabbing; }
-.g3d-labels, .r3d-ticks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-.g3d-label {
-  position: absolute; left: 0; top: 0; font: 600 11px/1 var(--font-mono); color: var(--text-secondary);
-  white-space: nowrap; will-change: transform; text-shadow: 0 0 3px var(--stage-bg);
-}
-.r3d-tick { position: absolute; left: 0; top: 0; font: 600 11px/1 var(--font-sans); color: var(--text-tertiary); will-change: transform; }
+
+
 .r3d-axis { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); }
-.g3d-tooltip { position: absolute; transform: translate(12px, 12px); pointer-events: none; z-index: 5; max-width: 260px; }
-.g3d-tooltip::after { display: none; }
+
 .g3d-hint { position: absolute; left: 12px; bottom: 8px; margin: 0; font-size: 0.6875rem; color: var(--text-tertiary); pointer-events: none; }
 
 /* 总览：卡片层叠阴影 + 悬停轻微倾斜 */
@@ -265,3 +260,36 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 .kn-hero-stack { top: -22px; transform: scale(0.78); transform-origin: top center; }
 .kn-stat-link.kn-danger-text { color: var(--accent-ruby); }
 .kn-stat-link.kn-warn { color: var(--accent-amber); }
+
+/* ---- 3D v2：标签、提示框、画布底色 ---- */
+.three-labels { position: absolute; inset: 0; pointer-events: none; }
+.g3d-canvas, .r3d-canvas { border-radius: inherit; }
+.kn-graph-canvas-box--3d { background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--accent-blue) 7%, var(--stage-card)), var(--stage-card)); }
+.g3d-label {
+  display: inline-flex; align-items: baseline; gap: 6px; max-width: 220px;
+  padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+  font: 600 11px/1.3 var(--font-sans); color: var(--text-primary);
+  background: color-mix(in srgb, var(--stage-card) 82%, transparent);
+  border: 1px solid var(--stage-border);
+  box-shadow: 0 2px 8px rgba(16, 24, 40, 0.12);
+  backdrop-filter: blur(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  margin-top: -4px;
+}
+.g3d-label b { font-family: var(--font-mono); font-weight: 600; }
+.g3d-label span { display: none; color: var(--text-secondary); font-weight: 500; overflow: hidden; text-overflow: ellipsis; }
+.g3d-label.is-active { border-color: var(--accent-blue); box-shadow: 0 0 0 3px var(--accent-blue-bg), 0 4px 14px rgba(16, 24, 40, 0.18); }
+.g3d-label.is-active span { display: inline; }
+.g3d-label.is-hidden { opacity: 0; }
+.r3d-count {
+  padding: 2px 7px; border-radius: 999px; font: 700 11px/1.3 var(--font-sans);
+  color: var(--text-primary); background: color-mix(in srgb, var(--stage-card) 85%, transparent);
+  border: 1px solid var(--stage-border); box-shadow: 0 2px 6px rgba(16, 24, 40, 0.12);
+}
+.r3d-tick { font: 600 11px/1 var(--font-sans); color: var(--text-tertiary); }
+.r3d-axis { font: 600 10.5px/1 var(--font-sans); text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-secondary); white-space: nowrap; }
+.three-tip { position: fixed; z-index: 200; pointer-events: none; max-width: 280px; transform: none; }
+.three-tip::after { display: none; }
+
+/* 窄屏抽屉：业务域标题已列出「确认队列」，下面那段的小标题就重复了 */
+@media (max-width: 900px) { .ws-panel-section .ws-panel-subtitle { display: none; } .ws-panel-section { border-top: 0; margin-top: 0; } }

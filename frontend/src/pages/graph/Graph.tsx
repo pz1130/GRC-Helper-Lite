@@ -263,6 +263,7 @@ export function Graph() {
             {viewMode === "3d" ? (
               <div className="kn-graph-canvas-box kn-graph-canvas-box--3d">
                 <Suspense fallback={<LoadingState />}>
+                  <div aria-hidden="true">
                   <Graph3D
                     data={data}
                     height={MIN_CANVAS_HEIGHT}
@@ -272,8 +273,25 @@ export function Graph() {
                       setSelectedNode(node);
                     }}
                   />
+                  </div>
                 </Suspense>
                 <p className="g3d-hint">{t("view3d.hint")}</p>
+                {/* 画布对读屏不可见；这份节点列表让键盘与读屏用户同样能打开节点详情。 */}
+                <ul className="kn-sr-only" aria-label={t("view3d.nodeList")}>
+                  {data.nodes.map((node) => (
+                    <li key={node.key}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedEdge(null);
+                          setSelectedNode(node);
+                        }}
+                      >
+                        {node.code} {node.title}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : (
             <div ref={canvasWrapper} className="kn-graph-canvas-box" style={{ flex: 1, minWidth: 0, overflow: "auto", maxHeight: MIN_CANVAS_HEIGHT }}>

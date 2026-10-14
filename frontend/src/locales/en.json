@@ -1336,6 +1336,8 @@
     "2d": "2D",
     "3d": "3D",
     "unavailable": "3D view needs WebGL, which this browser does not provide.",
-    "hint": "Drag to rotate · scroll to zoom · click a node for details"
+    "hint": "Drag to rotate · scroll to zoom · click a node for details",
+    "score": "Score {{value}}",
+    "nodeList": "Graph nodes"
   }
 }
