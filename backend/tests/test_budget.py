@@ -1,7 +1,7 @@
 import pytest
 
-from app.llm.budget import BudgetExceeded, check, month_to_date_cost
 from app.crypto import encrypt
+from app.llm.budget import BudgetExceeded, check, month_to_date_cost
 from app.llm.models import (
     AppSetting,
     LLMCall,
@@ -203,3 +203,44 @@ def test_budget_exhaustion_is_an_app_error_with_a_code():
 
     # 交互式任务照旧放行（spec §9：只暂停批量）
     _enforce(None, budget=10.0, spent=12.5, interactive=True)
+
+
+async def _holds_budget_lock(db_session) -> bool:
+    from sqlalchemy import text
+
+    from app.llm.budget import BUDGET_LOCK_KEY
+
+    count = await db_session.scalar(
+        text(
+            "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' "
+            "AND pid = pg_backend_pid() "
+            "AND ((classid::bigint << 32) | objid::bigint) = :key"
+        ),
+        {"key": BUDGET_LOCK_KEY},
+    )
+    return bool(count)
+
+
+@pytest.mark.asyncio
+async def test_batch_check_near_limit_serialises_on_advisory_lock(db_session):
+    """K5：接近上限时批量检查要拿事务级锁，并发批次不能同时看到「还没超」。"""
+    await _budget(db_session, 10.0)
+    await _spend(db_session, 8.5)
+    await check(db_session, interactive=False)
+    assert await _holds_budget_lock(db_session)
+
+
+@pytest.mark.asyncio
+async def test_batch_check_far_below_limit_takes_no_lock(db_session):
+    await _budget(db_session, 100.0)
+    await _spend(db_session, 1.0)
+    await check(db_session, interactive=False)
+    assert not await _holds_budget_lock(db_session)
+
+
+@pytest.mark.asyncio
+async def test_interactive_check_never_takes_the_lock(db_session):
+    await _budget(db_session, 10.0)
+    await _spend(db_session, 9.5)
+    await check(db_session, interactive=True)
+    assert not await _holds_budget_lock(db_session)

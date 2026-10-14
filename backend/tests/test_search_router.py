@@ -55,12 +55,11 @@ async def test_viewer_can_search(client, db_session):
     await _seed_user(db_session, Role.VIEWER, "v@example.com")
     await _corpus(db_session)
     headers = await _auth(client, "v@example.com")
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-        ):
-            resp = await client.get("/api/search?q=privileged accounts", headers=headers)
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        resp = await client.get("/api/search?q=privileged accounts", headers=headers)
     assert resp.status_code == 200
     body = resp.json()
     assert body["hits"][0]["citation_label"] == "3.5"
@@ -115,3 +114,28 @@ async def test_status_counts_stale_model_as_pending(client, db_session):
         body = (await client.get("/api/index/status", headers=headers)).json()
     assert body["embedded"] == 0
     assert body["pending"] == 1
+
+
+@pytest.mark.asyncio
+async def test_overlong_query_is_rejected(client, db_session):
+    """K1：查询会被送去做模型扩展，长度必须有上限。"""
+    await _seed_user(db_session, Role.VIEWER, "v@example.com")
+    headers = await _auth(client, "v@example.com")
+    resp = await client.get("/api/search", params={"q": "a" * 501}, headers=headers)
+    assert resp.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_search_passes_the_caller_to_expansion_for_rate_limiting(client, db_session):
+    user = await _seed_user(db_session, Role.VIEWER, "v@example.com")
+    headers = await _auth(client, "v@example.com")
+    expand = AsyncMock(return_value=["特权"])
+    with patch("app.search.service.expand", new=expand), patch(
+        "app.search.service.current_model", new=AsyncMock(return_value="m1")
+    ), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        resp = await client.get("/api/search", params={"q": "特权"}, headers=headers)
+    assert resp.status_code == 200
+    assert expand.await_args.kwargs["user_id"] == user.id

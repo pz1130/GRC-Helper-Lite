@@ -68,20 +68,43 @@ they need your own input:
 
 Each affected page says what is missing and links to where to fix it.
 
-The stack listens on `127.0.0.1:8080` by default (change the port with `WEB_PORT`).
-Place an HTTPS reverse proxy on the same host. If a separate proxy needs access, set
-`WEB_BIND_ADDRESS` to a private interface address and restrict access to that proxy in the firewall.
-Do not bind the preview directly to a public interface. Production differs from development
-in shape, not just settings:
+Production differs from development in shape, not just settings:
 
 - the frontend is a static build served by nginx, not a dev server;
 - the backend runs the code baked into the image, with no reload and no source mount;
-- only the web container publishes a port; the database, Redis and the API stay on the
-  internal network;
+- only the `proxy` container (Caddy, HTTPS) publishes ports; web, API, database and Redis
+  stay on the internal network;
 - every service uses `restart: unless-stopped`.
 
-**Not included, and needed before real use:** HTTPS (put a reverse proxy or load balancer in
-front), restricting `8080` to the internal network, log collection, and scheduled backups.
+### HTTPS
+
+The `proxy` service (Caddy, config in `deploy/caddy/Caddyfile`) terminates TLS and forwards to
+the web container. Configure it in `.env`:
+
+| Variable | Meaning |
+|---|---|
+| `SITE_ADDRESS` | Host name users type, e.g. `grc.example.org` or an intranet name. |
+| `TLS_ISSUER` | `internal` (default): Caddy's own CA issues the certificate — for intranets without public DNS. An e-mail address: certificates from Let's Encrypt, renewed automatically; the name must resolve to this host and ports 80/443 must be reachable from the internet. |
+| `PROXY_BIND_ADDRESS` | Interface to listen on (default `0.0.0.0`). Use a private address on multi-homed hosts. |
+| `HTTP_PORT` / `HTTPS_PORT` | Published ports (default 80/443). Port 80 only redirects to HTTPS and answers ACME challenges. |
+
+With `TLS_ISSUER=internal`, distribute Caddy's root certificate to client machines (or your
+device-management system), otherwise browsers warn:
+
+```bash
+docker compose -p grc-prod -f docker-compose.prod.yml cp proxy:/data/caddy/pki/authorities/local/root.crt ./grc-root.crt
+```
+
+The `caddy_data` volume holds the certificates and that internal CA; losing it means
+re-distributing a new root certificate.
+
+Caddy adds HSTS, `Permissions-Policy`, `Cross-Origin-Opener-Policy` and removes the `Server`
+header; nginx in the web container keeps sending CSP, `X-Frame-Options`, `nosniff` and
+`Referrer-Policy`. If your organisation already has a load balancer that terminates TLS,
+point it at the proxy's HTTPS port, or remove the `proxy` service and publish `web` on a
+private address instead — never on a public interface.
+
+Firewall: allow 80/443 only from the networks that should use the system.
 
 ### Upgrading
 
@@ -110,54 +133,84 @@ You need both halves. Without the documents, citations point at nothing; without
 database, every review decision is gone. `backups/` is git-ignored because it contains the
 encrypted provider keys. Do not commit or share it.
 
-`make backup` does not schedule itself and only writes to the local disk, so a failed disk
-takes both the data and its backups. Schedule it and copy the result elsewhere:
+### Scheduled backups and offsite copies
 
-```cron
-30 2 * * *  cd /srv/grc-helper && make backup >> /var/log/grc-backup.log 2>&1
-0  3 * * *  rsync -a /srv/grc-helper/backups/ backup-host:/grc/          # or object storage
+`scripts/backup.sh` (also `make backup-scheduled`) wraps `make backup` for unattended use:
+
+1. dumps the database and archives the document volume under one timestamp;
+2. checks integrity: the dump ends with pg_dump's completion marker, the archive passes
+   `gzip -t`, and (unless `BACKUP_VERIFY_RESTORE=0`) the dump is loaded into a throw-away
+   database inside the db container to prove it imports completely;
+3. writes `backups/manifest-<stamp>.txt`: migration version, row count of every table,
+   number of document files, sha256 of both files, and a **fingerprint** (sha256 prefix) of
+   `APP_SECRET_KEY` — never the key itself;
+4. copies the three files offsite with `rsync` (`BACKUP_OFFSITE_RSYNC=user@host:/path/`) or
+   `rclone` (`BACKUP_OFFSITE_RCLONE=remote:bucket/path`);
+5. keeps the newest `BACKUP_KEEP` (default 14) copies locally.
+
+Any failure exits non-zero. Schedule it with the bundled systemd timer (02:30 nightly,
+catches up after downtime):
+
+```bash
+sudo cp deploy/systemd/grc-backup.{service,timer} /etc/systemd/system/
+# edit WorkingDirectory/ExecStart if the checkout is not /srv/grc-helper
+sudo systemctl daemon-reload && sudo systemctl enable --now grc-backup.timer
+systemctl list-timers grc-backup.timer        # next run
+journalctl -u grc-backup -n 50                # last run
 ```
 
-Backups beyond `KEEP` are deleted automatically. An unattended job without rotation fills the
-disk eventually, and a full disk stops new backups exactly when you need one.
+or cron: `30 2 * * *  cd /srv/grc-helper && scripts/backup.sh >> /var/log/grc-backup.log 2>&1`.
+Without an offsite target the script still runs but warns: a failed disk takes the data and
+its backups together. Retention on the offsite side is up to the target (bucket lifecycle
+rule, or a cleanup job on the backup host); the script only adds files there.
 
 ### Restore drill
 
-Run one at least once. A backup that has never been restored has not been tested.
-
-Do not use plain `make restore` for a drill: it restores into the production database.
-Restore into a separate, temporary stack instead. A different project name gives it its own
-volumes, and a different port keeps it apart.
+Run one at least once, and after every upgrade that adds migrations. A backup that has never
+been restored has not been tested.
 
 ```bash
-# 1. Start an empty temporary stack (database and Redis only)
-COMPOSE_PROJECT_NAME=grc-drill WEB_PORT=8081 docker compose -f docker-compose.prod.yml up -d db redis
+scripts/restore-drill.sh                   # newest backup
+scripts/restore-drill.sh 20261013-201500   # a specific one
+KEEP_DRILL=1 scripts/restore-drill.sh      # leave the stack up at https://localhost:18443
+```
 
-# 2. Use the normal restore command, pointed at the temporary stack
-make restore PROD_PROJECT=grc-drill db=backups/db-....sql docs=backups/docstore-....tar.gz
+It restores into a separate project (`grc-drill`, ports 18080/18443 on 127.0.0.1) and never
+touches production. It checks, in order: the manifest sha256 of both files; that the current
+`APP_SECRET_KEY` matches the fingerprint recorded at backup time; the migration version; the
+row count of every table; the number of document files; and finally that the full stack
+answers `/api/health` over HTTPS with the HSTS header. It removes the temporary stack (and
+its volumes) when done.
 
-# 3. Compare every table's row count, the migration version and the sha256 of each stored
-#    document with production (run the same queries with COMPOSE_PROJECT_NAME=grc-prod)
+To compare against live production instead of the manifest, the manual queries are:
+
+```bash
 COMPOSE_PROJECT_NAME=grc-drill docker compose -f docker-compose.prod.yml exec -T db psql -U grc -d grc -At -c \
   "select table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) c from %I', table_name), false, true, '')))[1]::text
    from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by 1"
-COMPOSE_PROJECT_NAME=grc-drill docker compose -f docker-compose.prod.yml run --rm --no-deps worker \
-  sh -c 'cd /data/documents && find . -type f -exec sha256sum {} + | sort'
-
-# 4. Start the full stack and check it works: sign in at http://localhost:8081, open a
-#    document, then re-parse it, which makes the worker read the restored original file
-COMPOSE_PROJECT_NAME=grc-drill WEB_PORT=8081 docker compose -f docker-compose.prod.yml up -d
-
-# 5. Remove the temporary stack (-v deletes only grc-drill's volumes; --rmi local deletes
-#    the images built for it)
-COMPOSE_PROJECT_NAME=grc-drill WEB_PORT=8081 docker compose -f docker-compose.prod.yml down -v --rmi local
 ```
 
-Matching row counts show the data arrived. Step 4 shows the system works.
+### Restoring on a new machine
 
-A drill on the same machine cannot test the master key, because the temporary stack reads the
-same `.env`. To restore on another machine, you need the `APP_SECRET_KEY` that was in use when
-the backup was taken (see below). Store the key and the backups separately, but keep both.
+1. **Retrieve `APP_SECRET_KEY` from escrow** (see "Master key"). Without the key that was in
+   use when the backup was taken, the data restores but every stored AI provider key is
+   undecryptable. `JWT_SECRET` may be new (users just sign in again).
+2. Install Docker, clone the repository at the release that wrote the backup (or newer), and
+   create `.env` from `.env.example` with the escrowed `APP_SECRET_KEY`, a database password,
+   and the HTTPS settings.
+3. Copy the backup set (`db-`, `docstore-`, `manifest-` with the same stamp) into `backups/`.
+4. Run `scripts/restore-drill.sh <stamp>`. Step 2 of the drill fails immediately with a clear
+   message if the key is wrong — fix that before going further.
+5. Restore for real into an empty production stack, then migrate if the code is newer:
+
+```bash
+COMPOSE_PROJECT_NAME=grc-prod docker compose -f docker-compose.prod.yml up -d --wait db redis
+make restore db=backups/db-<stamp>.sql docs=backups/docstore-<stamp>.tar.gz
+make prod-up && make prod-migrate
+```
+
+6. Sign in, open a document and re-parse it (proves the worker reads restored originals), and
+   open Settings → AI providers and run a test call (proves the key decrypts).
 
 ---
 
@@ -166,7 +219,12 @@ the backup was taken (see below). Store the key and the backups separately, but 
 `APP_SECRET_KEY` is a Fernet key. It encrypts every AI provider API key stored in the database.
 
 - Back it up on its own, and not next to the database backups. Keeping them together defeats
-  the encryption.
+  the encryption. **Escrow it** in the organisation's password manager or secrets vault, with
+  at least two people able to retrieve it; record the fingerprint
+  (`printf %s "$APP_SECRET_KEY" | sha256sum | cut -c1-16`) next to it so a restorer can match
+  it against `app_secret_key_sha256_prefix` in a backup manifest.
+- After a rotation, backups taken before it need the **old** key. Keep retired keys in escrow
+  until the last backup that needs them has expired.
 - If it is lost, the stored provider keys cannot be decrypted. The system keeps working, but
   every AI feature reports a decryption error until each provider key is entered again.
 - If it leaks, put a new value in `.env`, restart, and run a rotation with the **old** value.

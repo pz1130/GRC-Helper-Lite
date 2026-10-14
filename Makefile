@@ -1,4 +1,4 @@
-.PHONY: up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
+.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
 
 up:
 	docker compose up -d --build db redis api
@@ -53,13 +53,13 @@ verify:
 # ── 生产 ─────────────────────────────────────────────────────
 # 与开发栈的区别不是参数，是**形态**：前端是 nginx + 构建产物（不是 vite 开发
 # 服务器），后端没有 --reload、源码不挂进容器，只有 web 对外暴露端口。
-# 首次部署：cp .env.example .env → 填两个密钥和 POSTGRES_PASSWORD →
+# 首次部署：cp .env.example .env → 填两个密钥、POSTGRES_PASSWORD 和 SITE_ADDRESS/TLS_ISSUER →
 #           make prod-up → make prod-migrate → make prod-create-admin ...
 # 项目名必须与开发栈分开：同名会让 compose 把两者当成同一套，
 # 在开发机上跑 prod-up 会直接顶掉正在用的开发容器。
 # 同一台机器上要再起一套（比如验证"从 GitHub 全新部署"是否可行），换个项目名和
 # 端口就行，不会碰到既有的那套：
-#   PROD_PROJECT=grc-fresh WEB_PORT=18080 make prod-up
+#   PROD_PROJECT=grc-fresh HTTP_PORT=18080 HTTPS_PORT=18443 make prod-up
 PROD_PROJECT ?= grc-prod
 PROD = COMPOSE_PROJECT_NAME=$(PROD_PROJECT) docker compose -f docker-compose.prod.yml
 
@@ -103,15 +103,29 @@ prod-rotate-secret:
 # 而盘满之后连新备份也写不成，正好在最需要它的时候没有。
 KEEP ?= 14
 
+# STAMP 让库和原文两半用同一个时间戳（原先各自取 date，可能差一秒，配不上对）。
+ifndef STAMP
+STAMP := $(shell date +%Y%m%d-%H%M%S)
+endif
+
 backup:
 	@mkdir -p backups
 	$(PROD) exec -T db pg_dump -U $${POSTGRES_USER:-grc} -d $${POSTGRES_DB:-grc} \
-	  > backups/db-$$(date +%Y%m%d-%H%M%S).sql
-	$(PROD) run --rm -v "$(PWD)/backups:/backup" worker \
-	  tar czf /backup/docstore-$$(date +%Y%m%d-%H%M%S).tar.gz -C /data documents
+	  > backups/db-$(STAMP).sql
+	$(PROD) run --rm --no-deps -v "$(PWD)/backups:/backup" worker \
+	  tar czf /backup/docstore-$(STAMP).tar.gz -C /data documents
 	@ls -1t backups/db-*.sql        2>/dev/null | tail -n +$$(($(KEEP)+1)) | xargs -r rm --
 	@ls -1t backups/docstore-*.tar.gz 2>/dev/null | tail -n +$$(($(KEEP)+1)) | xargs -r rm --
+	@ls -1t backups/manifest-*.txt   2>/dev/null | tail -n +$$(($(KEEP)+1)) | xargs -r rm --
 	@echo "备份完成，保留最近 $(KEEP) 份："; ls -lh backups | tail -3
+
+# 定时备份入口：make backup + 完整性校验 + 清单 + 异地复制（scripts/backup.sh）
+backup-scheduled:
+	PROD_PROJECT=$(PROD_PROJECT) scripts/backup.sh
+
+# 在隔离的临时栈里恢复最新（或指定）备份并逐项核对，跑完自动拆除
+restore-drill:
+	PROD_PROJECT=$(PROD_PROJECT) scripts/restore-drill.sh $(stamp)
 
 restore:
 	@test -n "$(db)" || (echo "用法: make restore db=backups/db-....sql docs=backups/docstore-....tar.gz"; exit 1)
@@ -162,14 +176,17 @@ E2E_COMPOSE = COMPOSE_PROJECT_NAME=grc-e2e DB_PORT=5433 REDIS_PORT=6380 API_PORT
 # 先 down -v 再起：上一次被打断、或有人在这套栈上手动跑过单个 spec，库里就留着
 # 那次建的数据。有几条用例依赖冷启动状态（比如「还没有证据类型」），会因此失败，
 # 而失败看起来像回归（2026-09-23 撞过一次）。
+# 前端依赖必须在起栈之前装：web 服务的匿名卷 /srv/node_modules 会让 docker 以 root
+# 在宿主机上建出空的 frontend/node_modules，之后宿主机 npm ci 写不进去（EACCES，退出码 243）。
+# 先装好，目录已存在且归当前用户，docker 只是挂载上去。
 e2e:
 	@set -e; \
 	trap 'status=$$?; trap - EXIT; $(MAKE) e2e-down || status=1; exit $$status' EXIT; \
 	$(E2E_COMPOSE) down -v; \
+	(cd frontend && npm ci && npx playwright install --with-deps chromium); \
 	$(E2E_COMPOSE) up -d --build; \
 	$(E2E_COMPOSE) run --rm api alembic upgrade head; \
 	$(E2E_COMPOSE) run --rm api python -m app.cli create-admin admin@example.com Admin pw123456; \
-	(cd frontend && npm ci --silent && npx playwright install --with-deps chromium); \
 	(cd frontend && E2E_BASE_URL=http://localhost:5174 E2E_API_BASE=http://localhost:8001 npm run test:e2e)
 
 # 单独留一个出口：e2e 中途被 Ctrl-C 打断时，那套栈还在后台占着端口。

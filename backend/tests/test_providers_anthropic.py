@@ -48,11 +48,10 @@ async def test_rate_limit_is_marked_retryable():
 
     with patch.object(
         provider._client.messages, "create", new=AsyncMock(side_effect=_RateLimit("429"))
-    ):
-        with pytest.raises(ProviderError) as exc:
-            await provider.complete(
-                CompletionRequest(system="s", prompt="p", model="claude-opus-5")
-            )
+    ), pytest.raises(ProviderError) as exc:
+        await provider.complete(
+            CompletionRequest(system="s", prompt="p", model="claude-opus-5")
+        )
     assert exc.value.retryable is True
 
 
@@ -65,11 +64,10 @@ async def test_auth_error_is_not_retryable():
 
     with patch.object(
         provider._client.messages, "create", new=AsyncMock(side_effect=_AuthError("401"))
-    ):
-        with pytest.raises(ProviderError) as exc:
-            await provider.complete(
-                CompletionRequest(system="s", prompt="p", model="claude-opus-5")
-            )
+    ), pytest.raises(ProviderError) as exc:
+        await provider.complete(
+            CompletionRequest(system="s", prompt="p", model="claude-opus-5")
+        )
     assert exc.value.retryable is False
 
 
