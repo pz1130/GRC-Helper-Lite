@@ -10,6 +10,7 @@ import { useAuth } from "../auth";
 import { RequirementInventory } from "../RequirementInventory";
 import { DecisionScan } from "../DecisionScan";
 import { OriginalSources } from "../OriginalSources";
+import { EmptyState, LoadingState } from "../components/ui";
 
 interface ClauseNode {
   id: number;
@@ -229,13 +230,13 @@ export function DocumentDetail() {
 
   return (
     <section>
-      <p style={{ marginBottom: 16 }}>
-        <Link to="/documents" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.875rem" }}>
+      <p className="kn-mb-4">
+        <Link to="/documents" className="kn-check-label">
           ← {t("documents.title")}
         </Link>
       </p>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+      <div className="kn-page-header">
         <div>
           <h2>{doc.data?.title}</h2>
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
@@ -310,7 +311,7 @@ export function DocumentDetail() {
               event.target.value = "";
             }}
           />
-          {uploadVersion.isPending && <p role="status">{t("common.loading")}</p>}
+          {uploadVersion.isPending && <LoadingState inline />}
           {uploadVersion.error && (
             <p role="alert">
               <span>⚠️</span> {uploadVersion.error.message}
@@ -343,11 +344,11 @@ export function DocumentDetail() {
       {!isDemoSession() && doc.data?.status === "active" && id && <DecisionScan documentId={id} canScan={canEdit} />}
 
       {!isDemoSession() && doc.data?.status === "active" && (
-        <section className="kn-card" style={{ marginBottom: 20 }} aria-label={t("documents.coverageTitle")}>
+        <section className="kn-mb-5 kn-card" aria-label={t("documents.coverageTitle")}>
           <strong>{t("documents.coverageTitle")}</strong>
           <p>{t("documents.coverageExplanation")}</p>
           {coverage.error && <p role="alert">{coverage.error.message}</p>}
-          {coverage.isPending && <p role="status">{t("common.loading")}</p>}
+          {coverage.isPending && <LoadingState />}
           {coverage.data && <>
             <p>{t("documents.coverageCounts", coverage.data.counts)}</p>
             {coverage.data.clauses.some((row) => row.inventory_status === "needs_review") && <div>
@@ -432,8 +433,8 @@ export function DocumentDetail() {
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                 <h3 style={{ margin: 0, fontSize: "1.2rem" }}>{selected.heading}</h3>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <code style={{ fontSize: "0.8125rem" }}>{selected.citation_label}</code>
+                <div className="kn-row">
+                  <code className="kn-text-xs">{selected.citation_label}</code>
                   {selected.page_ref && <span className="kn-badge">p.{selected.page_ref}</span>}
                 </div>
               </div>
@@ -513,7 +514,7 @@ export function DocumentDetail() {
                     </button>
                   </div>
                   {(split.error || merge.error) && (
-                    <p role="alert" style={{ marginTop: 8 }}>
+                    <p role="alert" className="kn-mt-2">
                       {(split.error ?? merge.error)?.message}
                     </p>
                   )}
@@ -538,8 +539,8 @@ export function DocumentDetail() {
             </>
           ) : (
             <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-tertiary)" }}>
-              <div style={{ fontSize: "2rem", marginBottom: 8, opacity: 0.5 }}>📖</div>
-              <p style={{ color: "var(--text-secondary)" }}>{t("common.empty")}</p>
+              <div className="kn-empty-emoji">📖</div>
+              <EmptyState compact />
             </div>
           )}
         </article>

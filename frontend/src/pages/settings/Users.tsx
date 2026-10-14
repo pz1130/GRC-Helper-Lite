@@ -114,8 +114,8 @@ export function Users() {
   return (
     <div>
       {/* Users Table Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
-        <h3 style={{ margin: "0 0 16px 0", fontSize: "1.125rem" }}>{t("settings.users")}</h3>
+      <div className="kn-card kn-mb-6">
+        <h3 className="kn-section-title">{t("settings.users")}</h3>
         {error && (
           <p role="alert">
             <span>⚠️</span> {error}
@@ -134,7 +134,7 @@ export function Users() {
             </button>
           </p>
         )}
-        <div className="kn-table-container" style={{ margin: 0 }}>
+        <div className="kn-table-container kn-m-0">
           <table>
             <thead>
               <tr>
@@ -150,7 +150,7 @@ export function Users() {
               {users.data?.map((u) => (
                 <Fragment key={u.id}>
                 <tr>
-                  <td style={{ fontWeight: 600, color: "var(--text-primary)" }}>{u.email}</td>
+                  <td className="kn-strong kn-primary-text">{u.email}</td>
                   <td>{u.name}</td>
                   <td>
                     <select
@@ -177,7 +177,7 @@ export function Users() {
                     />
                   </td>
                   <td>
-                    <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
+                    <span className="kn-secondary kn-text-xs">
                       {u.expires_at ? localDate(u.expires_at) : "—"}
                     </span>
                   </td>
@@ -200,8 +200,7 @@ export function Users() {
                   <tr>
                     <td colSpan={6}>
                       <form
-                        onSubmit={(event) => submitReset(event, u)}
-                        style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}
+                        onSubmit={(event) => submitReset(event, u)} className="kn-row kn-wrap"
                       >
                         <input
                           type="password"
@@ -232,7 +231,7 @@ export function Users() {
       </div>
 
       {/* Add User Card */}
-      <div className="kn-card" style={{ maxWidth: 520 }}>
+      <div className="kn-max-w-md kn-card">
         <h4 style={{ margin: "0 0 4px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 16 }}>
           {t("settings.usersConfig.auditorHint")}
@@ -277,7 +276,7 @@ export function Users() {
             onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
           />
           <div>
-            <button type="submit" className="kn-btn-primary" style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary">
               {t("common.save")}
             </button>
           </div>

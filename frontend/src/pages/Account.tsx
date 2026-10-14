@@ -53,7 +53,7 @@ export function Account() {
   }
 
   return (
-    <div style={{ maxWidth: 520 }}>
+    <div className="kn-max-w-md">
       <h2 style={{ marginBottom: 4 }}>{t("account.title")}</h2>
       <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginTop: 0 }}>
         {user?.email}
@@ -108,7 +108,7 @@ export function Account() {
             />
           </label>
           <div>
-            <button type="submit" className="kn-btn-primary" disabled={change.isPending} style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary" disabled={change.isPending}>
               {t("account.changePassword")}
             </button>
           </div>

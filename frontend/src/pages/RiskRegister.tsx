@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { request } from "../api";
 import { useAuth } from "../auth";
+import { EmptyState, LoadingState } from "../components/ui";
 
 type RiskStatus = "open" | "mitigating" | "accepted" | "closed";
 
@@ -46,8 +47,8 @@ function RiskMatrix({ risks }: { risks: Risk[] }) {
   const active = risks.filter((risk) => risk.status !== "closed");
   return (
     <div className="kn-card" style={{ overflowX: "auto" }}>
-      <h3 style={{ marginTop: 0 }}>{t("risks.matrix")}</h3>
-      <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem" }}>{t("risks.matrixHint")}</p>
+      <h3 className="kn-mt-0">{t("risks.matrix")}</h3>
+      <p className="kn-secondary kn-text-xs">{t("risks.matrixHint")}</p>
       <table aria-label={t("risks.matrix")} style={{ tableLayout: "fixed", minWidth: 520 }}>
         <thead><tr><th>{t("risks.impactLikelihood")}</th>{scores.map((likelihood) => <th key={likelihood} style={{ textAlign: "center" }}>{likelihood}</th>)}</tr></thead>
         <tbody>
@@ -110,7 +111,7 @@ function RiskRow({ risk, owners, canWrite }: { risk: Risk; owners: Owner[]; canW
       <td><span style={{ ...riskTone(risk.inherent_score), display: "inline-block", minWidth: 34, padding: "6px 9px", textAlign: "center", borderRadius: 6, fontWeight: 700 }}>{risk.inherent_score}</span><small style={{ display: "block", marginTop: 4, color: "var(--text-tertiary)" }}>{risk.likelihood} × {risk.impact}</small></td>
       <td style={{ minWidth: 190 }}>
         {canWrite ? <select aria-label={`${risk.title} ${t("risks.owner")}`} value={owner} onChange={(event) => setOwner(event.target.value)}><option value="">{t("risks.unassigned")}</option>{owners.map((item) => <option key={item.id} value={item.id}>{item.name} ({item.email})</option>)}</select> : ownerName}
-        {canWrite ? <input aria-label={`${risk.title} ${t("risks.dueDate")}`} type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} style={{ marginTop: 6 }} /> : <small style={{ display: "block", marginTop: 5 }}>{risk.due_date ?? "—"}</small>}
+        {canWrite ? <input aria-label={`${risk.title} ${t("risks.dueDate")}`} type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} className="kn-mt-1" /> : <small style={{ display: "block", marginTop: 5 }}>{risk.due_date ?? "—"}</small>}
       </td>
       <td style={{ minWidth: 230 }}>
         {canWrite ? <textarea aria-label={`${risk.title} ${t("risks.mitigation")}`} rows={2} value={mitigation} onChange={(event) => setMitigation(event.target.value)} /> : (risk.mitigation || "—")}
@@ -121,7 +122,7 @@ function RiskRow({ risk, owners, canWrite }: { risk: Risk; owners: Owner[]; canW
         {canWrite ? <select aria-label={`${risk.title} ${t("risks.status")}`} value={status} onChange={(event) => setStatus(event.target.value as RiskStatus)}>{statuses.map((item) => <option key={item} value={item}>{t(`risks.statuses.${item}`)}</option>)}</select> : t(`risks.statuses.${risk.status}`)}
         {canWrite && <button className="kn-btn-sm" onClick={() => save.mutate()} disabled={save.isPending || Boolean(residualLikelihood) !== Boolean(residualImpact)} style={{ marginTop: 7, width: "100%" }}>{t("common.save")}</button>}
         {save.isSuccess && <small role="status" style={{ color: "var(--accent-emerald)" }}>{t("common.saved")}</small>}
-        {save.error && <small role="alert" style={{ color: "var(--accent-ruby)" }}>{save.error.message}</small>}
+        {save.error && <small role="alert" className="kn-danger-text">{save.error.message}</small>}
       </td>
     </tr>
   );
@@ -158,11 +159,11 @@ export function RiskRegister() {
 
   return (
     <section>
-      <div style={{ marginBottom: 24 }}><h2 style={{ marginBottom: 8 }}>{t("risks.title")}</h2><p style={{ margin: 0, color: "var(--text-secondary)" }}>{t("risks.subtitle")}</p></div>
+      <div className="kn-mb-6"><h2 className="kn-mb-2">{t("risks.title")}</h2><p className="kn-secondary kn-m-0">{t("risks.subtitle")}</p></div>
       {canWrite && <form className="kn-card" onSubmit={submit} style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1fr) 100px 100px minmax(150px, 0.7fr) 160px auto", gap: 10, alignItems: "end", marginBottom: 20 }}><label>{t("risks.riskTitle")}<input required value={title} onChange={(event) => setTitle(event.target.value)} /></label><label>{t("risks.likelihood")}<select value={likelihood} onChange={(event) => setLikelihood(event.target.value)}>{scores.map((score) => <option key={score}>{score}</option>)}</select></label><label>{t("risks.impact")}<select value={impact} onChange={(event) => setImpact(event.target.value)}>{scores.map((score) => <option key={score}>{score}</option>)}</select></label><label>{t("risks.owner")}<select value={owner} onChange={(event) => setOwner(event.target.value)}><option value="">{t("risks.unassigned")}</option>{owners.data?.map((item) => <option key={item.id} value={item.id}>{item.name} ({item.email})</option>)}</select></label><label>{t("risks.dueDate")}<input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} /></label><button type="submit" disabled={create.isPending}>{t("risks.add")}</button>{create.error && <p role="alert" style={{ gridColumn: "1 / -1", color: "var(--accent-ruby)", margin: 0 }}>{create.error.message}</p>}</form>}
-      {risks.isPending && <p role="status">{t("common.loading")}</p>}
-      {risks.error && <p role="alert" style={{ color: "var(--accent-ruby)" }}>{risks.error.message}</p>}
-      {risks.data && <div style={{ display: "grid", gridTemplateColumns: "minmax(420px, 0.85fr) minmax(520px, 1.15fr)", gap: 20 }}><RiskMatrix risks={risks.data} /><div className="kn-card"><div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 14 }}><h3 style={{ margin: 0 }}>{t("risks.list")}</h3><select aria-label={t("risks.statusFilter")} value={filter} onChange={(event) => setFilter(event.target.value as "all" | RiskStatus)} style={{ width: 170 }}><option value="all">{t("risks.allStatuses")}</option>{statuses.map((item) => <option key={item} value={item}>{t(`risks.statuses.${item}`)}</option>)}</select></div>{visible.length === 0 ? <p style={{ color: "var(--text-secondary)" }}>{t("risks.empty")}</p> : <div className="kn-table-container" style={{ margin: 0 }}><table><thead><tr><th>{t("risks.risk")}</th><th>{t("risks.inherentScore")}</th><th>{t("risks.ownerDue")}</th><th>{t("risks.mitigationResidual")}</th><th>{t("risks.status")}</th></tr></thead><tbody>{visible.map((risk) => <RiskRow key={risk.id} risk={risk} owners={owners.data ?? []} canWrite={canWrite} />)}</tbody></table></div>}</div></div>}
+      {risks.isPending && <LoadingState />}
+      {risks.error && <p role="alert" className="kn-danger-text">{risks.error.message}</p>}
+      {risks.data && <div className="kn-risk-layout"><RiskMatrix risks={risks.data} /><div className="kn-card"><div className="kn-card-head"><h3 className="kn-m-0">{t("risks.list")}</h3><select aria-label={t("risks.statusFilter")} value={filter} onChange={(event) => setFilter(event.target.value as "all" | RiskStatus)} style={{ width: 170 }}><option value="all">{t("risks.allStatuses")}</option>{statuses.map((item) => <option key={item} value={item}>{t(`risks.statuses.${item}`)}</option>)}</select></div>{visible.length === 0 ? <EmptyState compact title={t("risks.empty")} /> : <div className="kn-table-container kn-m-0"><table><thead><tr><th>{t("risks.risk")}</th><th>{t("risks.inherentScore")}</th><th>{t("risks.ownerDue")}</th><th>{t("risks.mitigationResidual")}</th><th>{t("risks.status")}</th></tr></thead><tbody>{visible.map((risk) => <RiskRow key={risk.id} risk={risk} owners={owners.data ?? []} canWrite={canWrite} />)}</tbody></table></div>}</div></div>}
     </section>
   );
 }

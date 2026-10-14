@@ -25,7 +25,7 @@ export function AuditLog() {
 
   return (
     <div className="kn-card">
-      <div style={{ marginBottom: 16 }}>
+      <div className="kn-mb-4">
         <h3 style={{ margin: "0 0 4px 0", fontSize: "1.125rem" }}>{t("settings.auditLog")}</h3>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: 0 }}>
           {t("settings.auditLogConfig.description")}
@@ -35,11 +35,11 @@ export function AuditLog() {
       {/* 加载失败时空表读起来是「没有任何审计记录」；只取最近 LIMIT 条时也要说出来 */}
       {error && <p role="alert">⚠️ {error.message}</p>}
       {data && data.length >= LIMIT && (
-        <p role="note" style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem" }}>
+        <p className="kn-muted kn-text-xs" role="note">
           {t("settings.auditLogConfig.latestOnly", { count: LIMIT })}
         </p>
       )}
-      <div className="kn-table-container" style={{ margin: 0 }}>
+      <div className="kn-table-container kn-m-0">
         <table>
           <thead>
             <tr>
@@ -57,7 +57,7 @@ export function AuditLog() {
                   {e.at.replace("T", " ").slice(0, 19)}
                 </td>
                 <td>
-                  <span style={{ fontWeight: 500 }}>{e.user_id ?? "—"}</span>
+                  <span className="kn-medium">{e.user_id ?? "—"}</span>
                 </td>
                 <td>
                   <span className="kn-badge kn-badge-blue">

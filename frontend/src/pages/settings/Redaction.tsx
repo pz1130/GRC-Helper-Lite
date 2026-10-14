@@ -65,7 +65,7 @@ export function Redaction() {
   return (
     <div>
       {/* Ruleset selector & Table Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
+      <div className="kn-card kn-mb-6">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
           <div>
             <h3 style={{ margin: 0, fontSize: "1.125rem" }}>{t("settings.redaction")}</h3>
@@ -88,7 +88,7 @@ export function Redaction() {
 
         {/* 脱敏决定哪些内容在发给模型前被遮住：规则没加载出来时，空表不能看起来像「没有规则」 */}
         {rules.error && <p role="alert">⚠️ {rules.error.message}</p>}
-        <div className="kn-table-container" style={{ margin: 0 }}>
+        <div className="kn-table-container kn-m-0">
           <table>
             <thead>
               <tr>
@@ -129,7 +129,7 @@ export function Redaction() {
       </div>
 
       {/* Add Rule Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
+      <div className="kn-card kn-mb-6">
         <h4 style={{ margin: "0 0 14px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
         <form onSubmit={submit} style={{ display: "grid", gap: 12, maxWidth: 520 }}>
           <select
@@ -162,7 +162,7 @@ export function Redaction() {
           />
           {create.error && <p role="alert">⚠️ {create.error.message}</p>}
           <div>
-            <button type="submit" className="kn-btn-primary" disabled={create.isPending} style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary" disabled={create.isPending}>
               {t("common.save")}
             </button>
           </div>

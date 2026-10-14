@@ -11,6 +11,7 @@ import { Drawer } from "./Drawer";
 import { downloadGraph } from "./export";
 import { canvasHeight, MIN_CANVAS_HEIGHT, type LayoutKind } from "./layout";
 import type { GraphData, GraphEdgeData, GraphNodeData } from "./types";
+import { LoadingState } from "../../components/ui";
 
 const WIDTH = 960;
 
@@ -104,7 +105,7 @@ export function Graph() {
 
       {/* 视图与布局切换区：独立醒目行 */}
       <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", margin: "16px 0 14px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="kn-row">
           <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
             {t("graph.viewLabel")}:
           </span>
@@ -125,7 +126,7 @@ export function Graph() {
         </div>
 
         {view === "relations" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="kn-row">
             <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {t("graph.layoutLabel")}:
             </span>
@@ -149,15 +150,14 @@ export function Graph() {
 
       {/* 过滤器与控制台 */}
       <div className="kn-graph-toolbar">
-        <label style={{ display: "inline-flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 500 }}>{t("graph.focus")}</span>
+        <label className="kn-inline-label">
+          <span className="kn-secondary kn-text-xs kn-medium">{t("graph.focus")}</span>
           <select
             value={focus}
             onChange={(event) => {
               setFocus(event.target.value);
               setFocusedControl(controls.find((control) => `control:${control.id}` === event.target.value) ?? null);
-            }}
-            style={{ padding: "6px 28px 6px 12px", fontSize: "0.8125rem" }}
+            }} className="kn-select-sm kn-text-xs"
           >
             <option value="">{t("graph.panorama")}</option>
             {documents?.map((document) => (
@@ -180,9 +180,9 @@ export function Graph() {
           onChange={(event) => setControlQuery(event.target.value)}
           style={{ padding: "6px 10px", fontSize: "0.8125rem", width: 180 }}
         />
-        <label style={{ display: "inline-flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 500 }}>{t("graph.hops")}</span>
-          <select value={hops} onChange={(event) => setHops(Number(event.target.value))} style={{ padding: "6px 28px 6px 12px", fontSize: "0.8125rem" }}>
+        <label className="kn-inline-label">
+          <span className="kn-secondary kn-text-xs kn-medium">{t("graph.hops")}</span>
+          <select value={hops} onChange={(event) => setHops(Number(event.target.value))} className="kn-select-sm kn-text-xs">
             <option value={1}>1</option>
             <option value={2}>2</option>
           </select>
@@ -207,9 +207,9 @@ export function Graph() {
           <input type="checkbox" checked={onlyConflicts} onChange={(event) => setOnlyConflicts(event.target.checked)} />
           {t("graph.filters.onlyConflicts")}
         </label>
-        <label style={{ display: "inline-flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 500 }}>{t("graph.filters.framework")}</span>
-          <select value={frameworkId} onChange={(event) => setFrameworkId(event.target.value)} style={{ padding: "6px 28px 6px 12px", fontSize: "0.8125rem" }}>
+        <label className="kn-inline-label">
+          <span className="kn-secondary kn-text-xs kn-medium">{t("graph.filters.framework")}</span>
+          <select value={frameworkId} onChange={(event) => setFrameworkId(event.target.value)} className="kn-select-sm kn-text-xs">
             <option value="">{t("graph.filters.allFrameworks")}</option>
             {frameworks?.map((framework) => (
               <option key={framework.id} value={framework.id}>{framework.name_en}</option>
@@ -222,9 +222,9 @@ export function Graph() {
         </label>
       </div>
 
-      {isLoading && <p style={{ color: "var(--text-tertiary)" }}>{t("common.loading")}</p>}
+      {isLoading && <LoadingState />}
       {/* 没有这一行时，加载失败只是「加载中」消失、画布不出现，看起来像图是空的 */}
-      {error && <p role="alert" style={{ color: "var(--accent-ruby)" }}>{error.message}</p>}
+      {error && <p role="alert" className="kn-danger-text">{error.message}</p>}
       {data && (
         <>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, margin: "14px 0 12px" }}>

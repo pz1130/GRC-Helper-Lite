@@ -68,9 +68,9 @@ export function Search() {
 
   return (
     <section>
-      <div style={{ marginBottom: 24 }}>
+      <div className="kn-mb-6">
         <h2>{t("search.title")}</h2>
-        <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+        <p className="kn-page-subtitle">
           {t("search.subtitle")}
         </p>
       </div>
@@ -87,10 +87,10 @@ export function Search() {
 
       {status.data && status.data.total > 0 && (
         <div className="kn-card" style={{ padding: "12px 18px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div className="kn-row">
             <span className="kn-dot kn-dot-blue kn-pulse" />
-            <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-              {t("search.indexing")}: <strong style={{ color: "var(--text-primary)" }}>{status.data.embedded}</strong> / {status.data.total}
+            <span className="kn-secondary kn-text-xs">
+              {t("search.indexing")}: <strong className="kn-primary-text">{status.data.embedded}</strong> / {status.data.total}
               {status.data.model ? ` · ${status.data.model}` : ""}
               {status.data.pending > 0 ? ` · ${t("search.indexIncomplete")}` : ""}
             </span>
@@ -145,8 +145,7 @@ export function Search() {
         />
         <button
           type="submit"
-          className="kn-btn-primary"
-          style={{ padding: "8px 24px" }}
+          className="kn-btn-wide kn-btn-primary"
         >
           {t("search.run")}
         </button>
@@ -175,8 +174,8 @@ export function Search() {
 
       {results.data && results.data.hits.length === 0 && submitted.trim() && (
         <div className="kn-card" style={{ textAlign: "center", padding: "48px 20px", maxWidth: 780 }}>
-          <div style={{ fontSize: "2rem", marginBottom: 8, opacity: 0.5 }}>🔍</div>
-          <p style={{ color: "var(--text-secondary)", margin: 0 }}>{t("search.noResults")}</p>
+          <div className="kn-empty-emoji">🔍</div>
+          <p className="kn-secondary kn-m-0">{t("search.noResults")}</p>
         </div>
       )}
 
@@ -184,7 +183,7 @@ export function Search() {
         {results.data?.hits.map((hit) => (
           <li key={hit.chunk_id} className="kn-card kn-card-interactive" style={{ padding: "18px 22px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div className="kn-row">
                 <Link to={`/documents/${hit.document_id}#clause-${hit.clause_id}`} style={{ fontWeight: 600, fontSize: "1.0625rem", color: "var(--text-primary)" }}>
                   <strong>{hit.document_title}</strong>
                 </Link>

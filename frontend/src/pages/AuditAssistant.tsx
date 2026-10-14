@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import { download, request } from "../api";
 import { useAuth } from "../auth";
+import { LoadingState } from "../components/ui";
 
 interface Engagement { id: number; name: string; audit_type: string; status: string; framework_id?: number | null }
 interface Question { id: number; seq: number; question_text: string; language: string; status: string }
@@ -193,7 +194,7 @@ export function AuditAssistant() {
   return (
     <section>
       <h2>{t("audit.title")}</h2>
-      <p style={{ color: "var(--text-secondary)" }}>{t("audit.subtitle")}</p>
+      <p className="kn-secondary">{t("audit.subtitle")}</p>
       {notice && <p role="status">{notice}</p>}
       {error && <p role="alert">⚠️ {error}</p>}
       <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, .8fr) minmax(260px, 1fr) minmax(360px, 1.5fr)", gap: 16, alignItems: "start" }}>
@@ -204,9 +205,9 @@ export function AuditAssistant() {
               {row.name}<br /><small>{t(`audit.types.${row.audit_type}`)}</small>
             </button>
           ))}
-          {canDraft && <div style={{ borderTop: "1px solid var(--stage-border)", marginTop: 16, paddingTop: 16 }}>
+          {canDraft && <div className="kn-divider-top">
             <input aria-label={t("audit.newEngagement")} placeholder={t("audit.newEngagement")} value={engagementName} onChange={(event) => setEngagementName(event.target.value)} />
-            <button className="kn-btn-primary" disabled={busy || !engagementName.trim()} style={{ marginTop: 8 }} onClick={() => createEngagement.mutate()}>{t("common.create")}</button>
+            <button className="kn-mt-2 kn-btn-primary" disabled={busy || !engagementName.trim()} onClick={() => createEngagement.mutate()}>{t("common.create")}</button>
           </div>}
           {engagementId && <button className="kn-btn-secondary" disabled={busy} style={{ width: "100%", marginTop: 12 }} onClick={() => exportWord.mutate()}>{t("audit.exportWord")}</button>}
           {engagementId && canDraft && <button className="kn-btn-primary" disabled={busy || !questions.data?.some((row) => row.status === "pending")} style={{ width: "100%", marginTop: 8 }} onClick={() => generateAll.mutate()}>{t("audit.generateAll")}</button>}
@@ -220,15 +221,15 @@ export function AuditAssistant() {
               {row.seq}. {row.question_text}<br /><small>{t(`audit.status.${row.status}`)}</small>
             </button>
           ))}
-          {engagementId && canDraft && <div style={{ borderTop: "1px solid var(--stage-border)", marginTop: 16, paddingTop: 16 }}>
-            <textarea aria-label={t("audit.pasteQuestions")} placeholder={t("audit.pasteQuestions")} rows={6} style={{ width: "100%", boxSizing: "border-box" }} value={questionsText} onChange={(event) => setQuestionsText(event.target.value)} />
+          {engagementId && canDraft && <div className="kn-divider-top">
+            <textarea aria-label={t("audit.pasteQuestions")} placeholder={t("audit.pasteQuestions")} rows={6} className="kn-w-full" value={questionsText} onChange={(event) => setQuestionsText(event.target.value)} />
             <button className="kn-btn-primary" disabled={busy || !questionsText.trim()} onClick={() => importQuestions.mutate()}>{t("audit.import")}</button>
-            <div style={{ borderTop: "1px solid var(--stage-border)", marginTop: 16, paddingTop: 16 }}>
+            <div className="kn-divider-top">
               <label>
                 {t("audit.xlsxFile")}
                 <input key={xlsxInputKey} aria-label={t("audit.xlsxFile")} type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => setXlsxFile(event.target.files?.[0] ?? null)} />
               </label>
-              <p style={{ color: "var(--text-tertiary)", fontSize: "0.75rem" }}>{t("audit.xlsxHint")}</p>
+              <p className="kn-muted kn-text-2xs">{t("audit.xlsxHint")}</p>
               <button className="kn-btn-secondary" disabled={busy || !xlsxFile} onClick={() => importXlsx.mutate()}>{t("audit.importXlsx")}</button>
             </div>
           </div>}
@@ -237,21 +238,21 @@ export function AuditAssistant() {
         <main className="kn-card">
           <h3>{selected?.question_text ?? t("audit.selectQuestion")}</h3>
           {selected && !answer.data && <>
-            <p style={{ color: "var(--text-secondary)" }}>{t("audit.noDraft")}</p>
-            {canDraft && <div style={{ display: "flex", gap: 8 }}>
+            <p className="kn-secondary">{t("audit.noDraft")}</p>
+            {canDraft && <div className="kn-row">
               <button className="kn-btn-primary" disabled={busy} onClick={() => generate.mutate("en")}>{t("audit.generateEn")}</button>
             </div>}
             {generate.isSuccess && <p><Link to="/review?kind=answer">{t("audit.reviewProposal")}</Link></p>}
           </>}
           {answer.data && <>
-            <textarea aria-label={t("audit.answer")} rows={16} style={{ width: "100%", boxSizing: "border-box" }} value={draft} disabled={!!answer.data.finalized_at || !canDraft} onChange={(event) => setDraft(event.target.value)} />
+            <textarea aria-label={t("audit.answer")} rows={16} className="kn-w-full" value={draft} disabled={!!answer.data.finalized_at || !canDraft} onChange={(event) => setDraft(event.target.value)} />
             {incoming !== null && (
               <p role="status" style={{ color: "var(--accent-amber)", fontSize: "0.8125rem" }}>
                 {t("audit.newerVersion")}{" "}
                 <button type="button" className="kn-btn-secondary kn-btn-sm" onClick={takeIncoming}>{t("audit.loadNewerVersion")}</button>
               </p>
             )}
-            {answer.data.gap_notes && <p style={{ color: "var(--accent-amber)" }}>⚠️ {answer.data.gap_notes}</p>}
+            {answer.data.gap_notes && <p className="kn-warn">⚠️ {answer.data.gap_notes}</p>}
             <p style={{ fontSize: "0.8125rem", color: "var(--text-tertiary)" }}>{t("audit.references", { clauses: answer.data.cited_clause_ids.length, controls: answer.data.cited_control_ids.length, evidence: answer.data.suggested_evidence_ids.length })}</p>
             {!answer.data.finalized_at && canDraft && <button className="kn-btn-secondary" disabled={busy || !draft.trim()} onClick={() => save.mutate()}>{t("common.save")}</button>}
             {!answer.data.finalized_at && canFinalize && <button className="kn-btn-primary" disabled={busy || !draft.trim() || unsaved} style={{ marginLeft: 8 }} onClick={() => finalize.mutate()}>{t("audit.finalize")}</button>}
@@ -260,23 +261,23 @@ export function AuditAssistant() {
           </>}
           {selected && <div style={{ borderTop: "1px solid var(--stage-border)", marginTop: 20, paddingTop: 12 }}>
             <h4>{t("audit.similarHistory")}</h4>
-            {similar.data?.map((row) => <details key={row.answer_id} style={{ marginBottom: 8 }}>
+            {similar.data?.map((row) => <details key={row.answer_id} className="kn-mb-2">
               <summary>{row.question_text} · {Math.round(row.similarity * 100)}%</summary>
               <p style={{ whiteSpace: "pre-wrap", color: "var(--text-secondary)" }}>{row.answer}</p>
-              <small style={{ color: "var(--text-tertiary)" }}>{row.engagement_name}</small>
+              <small className="kn-muted">{row.engagement_name}</small>
             </details>)}
-            {similar.data?.length === 0 && <p style={{ color: "var(--text-tertiary)" }}>{t("audit.noSimilarHistory")}</p>}
+            {similar.data?.length === 0 && <p className="kn-muted">{t("audit.noSimilarHistory")}</p>}
           </div>}
         </main>
       </div>
       <div className="kn-card" style={{ marginTop: 20 }}>
         <h3>{t("audit.history")}</h3>
-        {history.data?.map((row) => <div key={row.id} style={{ borderTop: "1px solid var(--stage-border)", padding: "12px 0" }}><strong>{row.question_text}</strong><div style={{ color: "var(--text-tertiary)", fontSize: "0.75rem" }}>{row.engagement_name}</div><p>{row.final_body}</p></div>)}
-        {history.data?.length === 0 && <p style={{ color: "var(--text-tertiary)" }}>{t("audit.noHistory")}</p>}
+        {history.data?.map((row) => <div key={row.id} style={{ borderTop: "1px solid var(--stage-border)", padding: "12px 0" }}><strong>{row.question_text}</strong><div className="kn-muted kn-text-2xs">{row.engagement_name}</div><p>{row.final_body}</p></div>)}
+        {history.data?.length === 0 && <p className="kn-muted">{t("audit.noHistory")}</p>}
       </div>
       {preflightOpen && <div className="kn-card" style={{ marginTop: 20 }}>
         <h3>{t("audit.preflightTitle")}</h3>
-        {preflight.isLoading && <p>{t("common.loading")}</p>}
+        {preflight.isLoading && <LoadingState />}
         {preflight.error && <p role="alert">⚠️ {(preflight.error as Error).message}</p>}
         {preflight.data && <>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 14 }}>
@@ -290,7 +291,7 @@ export function AuditAssistant() {
               <tbody>{preflight.data.rows.filter((row) => readinessFilter === "all" || row.readiness === readinessFilter).map((row) => <tr key={row.framework_item_id}>
                 <td><span className={`kn-badge kn-badge-${row.readiness === "green" ? "emerald" : row.readiness === "yellow" ? "amber" : "danger"}`}>{t(`audit.readiness.${row.readiness}`)}</span><div style={{ marginTop: 6, fontSize: "0.75rem", color: "var(--text-tertiary)" }}>{row.reason}</div></td>
                 <td><strong>{row.code} {row.title}</strong><p>{row.likely_question}</p></td>
-                <td>{t("audit.supportCounts", { controls: row.control_count, implementations: row.implementation_count, evidence: row.valid_evidence_count })}<div style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>{row.tool_names.join(", ") || "—"}</div></td>
+                <td>{t("audit.supportCounts", { controls: row.control_count, implementations: row.implementation_count, evidence: row.valid_evidence_count })}<div className="kn-muted kn-text-2xs">{row.tool_names.join(", ") || "—"}</div></td>
               </tr>)}</tbody>
             </table>
           </div>

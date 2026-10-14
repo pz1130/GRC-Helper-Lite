@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 
 import { ApiError, request } from "../api";
+import { LoadingState } from "../components/ui";
 
 interface PreviousDocument {
   id: number;
@@ -72,13 +73,13 @@ export function ChangeImpact() {
 
   return (
     <section>
-      <p style={{ marginBottom: 16 }}>
-        <Link to={`/documents/${id}`} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.875rem" }}>
+      <p className="kn-mb-4">
+        <Link to={`/documents/${id}`} className="kn-check-label">
           ← {t("documents.title")}
         </Link>
       </p>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+      <div className="kn-page-header">
         <div>
           <h2>{t("impact.title")}</h2>
           {data?.previous_document && (
@@ -90,7 +91,7 @@ export function ChangeImpact() {
         </div>
       </div>
 
-      {impact.isPending && <p role="status">{t("common.loading")}</p>}
+      {impact.isPending && <LoadingState />}
 
       {noPrevious && (
         <p role="status">{t("impact.noPrevious")}</p>
@@ -112,7 +113,7 @@ export function ChangeImpact() {
           )}
           <div style={{ display: "grid", gap: 20, marginBottom: 24 }}>
             <section data-impact-section="added" className="kn-card">
-              <h3 style={{ marginTop: 0 }}>{t("impact.added")}</h3>
+              <h3 className="kn-mt-0">{t("impact.added")}</h3>
               <ul>
                 {data.added.map((clause) => (
                   <li key={clause.clause_id}>
@@ -123,7 +124,7 @@ export function ChangeImpact() {
             </section>
 
             <section data-impact-section="removed" className="kn-card">
-              <h3 style={{ marginTop: 0 }}>{t("impact.removed")}</h3>
+              <h3 className="kn-mt-0">{t("impact.removed")}</h3>
               <ul>
                 {data.removed.map((clause) => (
                   <li key={clause.clause_id}>
@@ -134,15 +135,15 @@ export function ChangeImpact() {
             </section>
 
             <section data-impact-section="matched" className="kn-card">
-              <h3 style={{ marginTop: 0 }}>{t("impact.matched")}</h3>
+              <h3 className="kn-mt-0">{t("impact.matched")}</h3>
               <ul>
                 {data.matched.map((clause) => (
                   <li key={`${clause.old_clause_id}-${clause.new_clause_id}`}>
                     <code>{clause.citation_label}</code>
                     {clause.changed ? (
-                      <details style={{ marginTop: 6 }}>
+                      <details className="kn-mt-1">
                         <summary>{t("impact.textChanged")}</summary>
-                        <div style={{ marginTop: 6 }}>
+                        <div className="kn-mt-1">
                           <div><strong>{t("impact.before")}</strong> {clause.old_text}</div>
                           <div><strong>{t("impact.after")}</strong> {clause.text}</div>
                         </div>
@@ -154,9 +155,9 @@ export function ChangeImpact() {
             </section>
           </div>
 
-          <div className="kn-card" style={{ marginBottom: 20 }}>
-            <h3 style={{ marginTop: 0 }}>{t("impact.affectedControls")}</h3>
-            <div className="kn-table-container" style={{ margin: 0 }}>
+          <div className="kn-card kn-mb-5">
+            <h3 className="kn-mt-0">{t("impact.affectedControls")}</h3>
+            <div className="kn-table-container kn-m-0">
               <table>
                 <thead>
                   <tr>
@@ -176,9 +177,9 @@ export function ChangeImpact() {
             </div>
           </div>
 
-          <div className="kn-card" style={{ marginBottom: 20 }}>
-            <h3 style={{ marginTop: 0 }}>{t("impact.affectedMappings")}</h3>
-            <div className="kn-table-container" style={{ margin: 0 }}>
+          <div className="kn-card kn-mb-5">
+            <h3 className="kn-mt-0">{t("impact.affectedMappings")}</h3>
+            <div className="kn-table-container kn-m-0">
               <table>
                 <thead>
                   <tr>
@@ -199,8 +200,8 @@ export function ChangeImpact() {
           </div>
 
           <div className="kn-card">
-            <h3 style={{ marginTop: 0 }}>{t("impact.affectedEvidence")}</h3>
-            <div className="kn-table-container" style={{ margin: 0 }}>
+            <h3 className="kn-mt-0">{t("impact.affectedEvidence")}</h3>
+            <div className="kn-table-container kn-m-0">
               <table>
                 <thead>
                   <tr>

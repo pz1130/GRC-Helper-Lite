@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "./api";
+import { LoadingState } from "./components/ui";
 
 interface Inventory {
   semantic_review?: { findings: {
@@ -33,7 +34,7 @@ export function RequirementInventory({ documentId, clauseId, inventoryId, status
     <p>{t("inventory.explanation")}</p>
     {inventoryId === null ? <p>{t("inventory.unavailable")}</p> : <>
       {status && <p>{t(`inventory.status.${status}`)}</p>}
-      {inventory.isPending && <p role="status">{t("common.loading")}</p>}
+      {inventory.isPending && <LoadingState />}
       {inventory.error && <p role="alert">{inventory.error.message}</p>}
       {inventory.data && <section>
         <strong>{t("inventory.semanticTitle")}</strong>

@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } from "../api";
 import { useAuth } from "../auth";
 import i18n, { renderParams } from "../i18n";
+import { EmptyState, LoadingState } from "../components/ui";
 
 interface Framework {
   id: number; key: string; name_zh: string; name_en: string;
@@ -99,8 +100,8 @@ export function FrameworkDetail() {
 
   return (
     <section>
-      <p style={{ marginBottom: 16 }}>
-        <Link to="/frameworks" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.875rem" }}>
+      <p className="kn-mb-4">
+        <Link to="/frameworks" className="kn-check-label">
           ← {t("frameworks.title")}
         </Link>
       </p>
@@ -112,13 +113,13 @@ export function FrameworkDetail() {
             {current && <small style={{ color: "var(--text-secondary)", fontSize: "1.0625rem", marginLeft: 8 }}>· {current.version}</small>}
           </h2>
           {current && (
-            <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+            <p className="kn-page-subtitle">
               {t("frameworks.source")}: {current.source}
             </p>
           )}
         </div>
 
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div className="kn-row kn-wrap">
           <button
             className="kn-btn-secondary"
             disabled={exportPackage.isPending}
@@ -138,17 +139,17 @@ export function FrameworkDetail() {
         </div>
       </div>
 
-      {runMapping.isPending && <p role="status">{t("common.loading")}</p>}
+      {runMapping.isPending && <LoadingState inline />}
       {runMapping.error && <p role="alert"><span>⚠️</span> {runMapping.error.message}</p>}
       {runMapping.data && <p role="status">{t("frameworks.mappingQueued", { id: runMapping.data.job_id })}</p>}
-      {exportPackage.isPending && <p role="status">{t("common.loading")}</p>}
+      {exportPackage.isPending && <LoadingState inline />}
       {/* 带上原因：只说「导出失败」，人不知道是权限、数据还是服务的问题 */}
       {exportPackage.error && <p role="alert"><span>⚠️</span> {t("frameworks.exportFailed")}: {exportPackage.error.message}</p>}
 
       {/* Coverage & Gap Analysis Section */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
+      <div className="kn-card kn-mb-6">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 16 }}>
-          <h3 style={{ margin: 0 }}>{t("frameworks.coverage")}</h3>
+          <h3 className="kn-m-0">{t("frameworks.coverage")}</h3>
           <label style={{ flexDirection: "row", alignItems: "center", gap: 8, margin: 0 }}>
             <span>{t("frameworks.baseline")}</span>
             <select
@@ -164,10 +165,10 @@ export function FrameworkDetail() {
           </label>
         </div>
 
-        {coverage.isPending && <p role="status">{t("common.loading")}</p>}
+        {coverage.isPending && <LoadingState />}
         {coverage.error && <p role="alert"><span>⚠️</span> {coverage.error.message}</p>}
 
-        <div className="kn-table-container" style={{ margin: 0 }}>
+        <div className="kn-table-container kn-m-0">
           <table>
             <thead>
               <tr>
@@ -194,7 +195,7 @@ export function FrameworkDetail() {
                       <span style={{ fontWeight: row.level === 1 ? 600 : 400 }}>{row.title}</span>
                     </td>
                     <td>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div className="kn-row">
                         <span className={`kn-badge ${badgeClass}`}>
                           {row.covered} / {row.requirements}
                         </span>
@@ -238,12 +239,12 @@ export function FrameworkDetail() {
           <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: "0 0 14px 0" }}>
             {t("frameworks.supersededOnlyHint")}
           </p>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          <ul className="kn-list-plain">
             {superseded.data.map((row) => (
               <li key={row.item_id} style={{ padding: "8px 0", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "baseline" }}>
                 <code>{row.code}</code>
                 <span>{row.title}</span>
-                <span style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem" }}>
+                <span className="kn-muted kn-text-xs">
                   {t("frameworks.supersededOnlyControls", renderParams({ controls: row.controls }))}
                 </span>
               </li>
@@ -254,14 +255,14 @@ export function FrameworkDetail() {
       {superseded.error && <p role="alert"><span>⚠️</span> {superseded.error.message}</p>}
 
       {/* Gaps Checklist */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
+      <div className="kn-card kn-mb-6">
         <h3 style={{ margin: "0 0 14px 0" }}>{t("frameworks.gaps")}</h3>
-        {gaps.isPending && <p role="status">{t("common.loading")}</p>}
+        {gaps.isPending && <LoadingState />}
         {gaps.error && <p role="alert"><span>⚠️</span> {gaps.error.message}</p>}
         {gaps.data?.length === 0 && (
-          <p style={{ color: "var(--accent-emerald)", margin: 0 }}>✓ {t("common.empty")}</p>
+          <EmptyState compact tone="success" />
         )}
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul className="kn-list-plain">
           {gaps.data?.map((gap) => (
             <li
               key={gap.item_id}
@@ -277,7 +278,7 @@ export function FrameworkDetail() {
             >
               <span className="kn-badge kn-badge-ruby">{t("frameworks.gap")}</span>
               <code>{gap.code}</code>
-              <span style={{ color: "var(--text-primary)" }}>{gap.title}</span>
+              <span className="kn-primary-text">{gap.title}</span>
               {gap.has_supporting && (
                 <small style={{ marginLeft: "auto", color: "var(--accent-amber)" }}>
                   {t("frameworks.hasSupporting")}
@@ -291,9 +292,9 @@ export function FrameworkDetail() {
       {/* Framework Tree */}
       <div className="kn-card">
         <h3 style={{ margin: "0 0 14px 0" }}>{t("frameworks.tree")}</h3>
-        {tree.isPending && <p role="status">{t("common.loading")}</p>}
+        {tree.isPending && <LoadingState />}
         {tree.error && <p role="alert"><span>⚠️</span> {tree.error.message}</p>}
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul className="kn-list-plain">
           {tree.data?.map((item) => (
             <li
               key={item.id}

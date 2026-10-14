@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { request } from "./api";
+import { LoadingState } from "./components/ui";
 
 interface ScanResult {
   mode: "rules" | "model_assisted";
@@ -35,10 +36,10 @@ export function DecisionScan({ documentId, canScan }: { documentId: string; canS
   });
   const data = scan.data;
   const blocked = !data || data.reasons.some((r) => ["disabled", "not_configured", "provider_unavailable", "document_inactive"].includes(r));
-  return <section className="kn-card" style={{ marginBottom: 20 }} aria-label={t("decision.scanTitle")}>
+  return <section className="kn-mb-5 kn-card" aria-label={t("decision.scanTitle")}>
     <h3>{t("decision.scanTitle")}</h3>
     <p>{t("decision.scanHint")}</p>
-    {scan.isPending && <p role="status">{t("common.loading")}</p>}
+    {scan.isPending && <LoadingState />}
     {scan.error && <p role="alert">{scan.error.message}</p>}
     {data && <>
       <p><strong>{t(`decision.mode.${data.mode}`)}</strong>{data.model ? ` · ${data.model}` : ""}</p>
@@ -51,7 +52,7 @@ export function DecisionScan({ documentId, canScan }: { documentId: string; canS
           {t(run.isPending ? "decision.running" : "decision.run")}
         </button>
       </>}
-      <details style={{ marginTop: 12 }}>
+      <details className="kn-mt-3">
         <summary>{t("decision.inspect")}</summary>
         {data.rows.filter((row) => !row.has_control).map((row) => <p key={row.clause_id}>
           <a href={`#clause-${row.clause_id}`}>{row.citation_label || row.heading_path}</a>

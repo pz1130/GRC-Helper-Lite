@@ -68,7 +68,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
       className="kn-graph-drawer"
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="kn-row">
           <span
             className="kn-dot"
             style={{
@@ -98,7 +98,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
           <div>
             <h2 style={{ fontSize: "1.125rem", margin: "0 0 6px" }}>{t(`graph.edgeKind.${edge.kind}`, edge.kind)}</h2>
             {edge.confidence !== null && (
-              <span className="kn-badge kn-badge-blue" style={{ fontSize: "0.75rem" }}>
+              <span className="kn-text-2xs kn-badge kn-badge-blue">
                 {edge.confidence.toFixed(2)}
               </span>
             )}
@@ -219,7 +219,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
                   >
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <code style={{ fontSize: "0.75rem", fontWeight: 600 }}>{source.citation_label}</code>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>{source.relation}</span>
+                      <span className="kn-muted kn-text-2xs">{source.relation}</span>
                     </div>
                     <ClauseText clauseId={source.clause_id} />
                     <Link

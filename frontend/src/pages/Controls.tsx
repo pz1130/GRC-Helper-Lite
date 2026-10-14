@@ -6,6 +6,7 @@ import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } 
 import { type Issue, issueText } from "../i18n";
 import { useAuth } from "../auth";
 import type { Proposal } from "./ReviewQueue";
+import { EmptyState, LoadingState } from "../components/ui";
 
 export interface Control {
   id: number;
@@ -88,12 +89,12 @@ function MatrixImport() {
   const approved = proposal?.status === "accepted" || proposal?.status === "modified";
   const busy = propose.isPending || validate.isPending || approve.isPending || importRows.isPending;
   const headers = Array.isArray(proposal?.payload.source_headers) ? proposal.payload.source_headers.filter((h): h is string => typeof h === "string") : [];
-  return <details className="kn-card" style={{ marginBottom: 20 }}>
-    <summary style={{ fontSize: "1rem", color: "var(--text-primary)" }}>{t("matrix.title")}</summary>
+  return <details className="kn-card kn-mb-5">
+    <summary className="kn-text-md kn-primary-text">{t("matrix.title")}</summary>
     <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", margin: "8px 0 16px 0" }}>{t("matrix.flow")}</p>
     
     <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap", marginBottom: 16 }}>
-      <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+      <label className="kn-inline-label">
         <span>{t("matrix.file")}</span>
         <input
           type="file"
@@ -115,7 +116,7 @@ function MatrixImport() {
       <div className="kn-card" style={{ background: "var(--stage-card-subtle)", padding: 14, marginTop: 12 }}>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", margin: "0 0 10px 0" }}>{t("matrix.resumeHint")}</p>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <label style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <label className="kn-inline-label">
             <span>{t("matrix.proposalId")}</span>
             <input
               type="number"
@@ -138,11 +139,11 @@ function MatrixImport() {
       </div>
     )}
 
-    {busy && <p role="status">{t("common.loading")}</p>}
+    {busy && <LoadingState inline />}
     {error && <p role="alert"><span>⚠️</span> {error}</p>}
 
     {proposal && (
-      <div style={{ marginTop: 16 }}>
+      <div className="kn-mt-4">
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
           <Link to="/review?kind=matrix_mapping" className="kn-badge kn-badge-blue">
             {t("review.title")} · #{proposal.id}
@@ -151,7 +152,7 @@ function MatrixImport() {
         </div>
 
         {typeof proposal.payload.notes === "string" && (
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>{proposal.payload.notes}</p>
+          <p className="kn-secondary kn-text-sm">{proposal.payload.notes}</p>
         )}
         <p style={{ fontWeight: 600, color: "var(--text-primary)", fontSize: "0.875rem" }}>
           {t("matrix.rows", { count: typeof proposal.payload.source_rows === "number" ? proposal.payload.source_rows : report?.rows ?? 0 })}
@@ -168,7 +169,7 @@ function MatrixImport() {
             <tbody>
               {MAPPING_FIELDS.map((field) => (
                 <tr key={field}>
-                  <td style={{ fontWeight: 500 }}>
+                  <td className="kn-medium">
                     {t(`matrix.fields.${field}`)}{field === "title" || field === "statement" ? " *" : ""}
                   </td>
                   <td>
@@ -223,7 +224,7 @@ function MatrixImport() {
         </div>
 
         {report && (
-          <div role={report.ok ? "status" : "alert"} style={{ marginTop: 14 }}>
+          <div role={report.ok ? "status" : "alert"} className="kn-mt-3">
             <p>{t(report.ok ? "matrix.valid" : "matrix.invalid", { count: report.rows })}</p>
             <ul style={{ paddingLeft: 18, margin: "6px 0 0 0" }}>
               {report.report.map((issue, i) => <li key={i}>{issueText(issue)}</li>)}
@@ -265,21 +266,21 @@ export function Controls() {
 
   return (
     <section>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
+      <div className="kn-page-header">
         <div>
           <h2>{t("controls.title")}</h2>
-          <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+          <p className="kn-page-subtitle">
             {t("controls.subtitle")}
           </p>
         </div>
       </div>
 
       {canWrite && (
-        <div style={{ marginBottom: 20 }}>
-          <details className="kn-card" style={{ marginBottom: 16 }}>
-            <summary style={{ fontSize: "1rem", color: "var(--text-primary)" }}>{t("controls.extract")}</summary>
+        <div className="kn-mb-5">
+          <details className="kn-card kn-mb-4">
+            <summary className="kn-text-md kn-primary-text">{t("controls.extract")}</summary>
             <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", margin: "8px 0 14px 0" }}>{t("controls.extractHint")}</p>
-            {documents.isPending && <p role="status">{t("common.loading")}</p>}
+            {documents.isPending && <LoadingState />}
             {documents.error && (
               <p role="alert">
                 <span>⚠️</span> {documents.error.message}{" "}
@@ -307,7 +308,7 @@ export function Controls() {
                 {t("controls.extract")}
               </button>
             </div>
-            {extract.isPending && <p role="status">{t("common.loading")}</p>}
+            {extract.isPending && <LoadingState inline />}
             {extract.error && <p role="alert"><span>⚠️</span> {extract.error.message}</p>}
             {extract.data && (
               <p role="status">
@@ -322,7 +323,7 @@ export function Controls() {
       )}
 
       {/* Search Header */}
-      <form onSubmit={(e) => { e.preventDefault(); setSearch(q.trim()); }} style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+      <form onSubmit={(e) => { e.preventDefault(); setSearch(q.trim()); }} className="kn-toolbar">
         <input
           aria-label={t("controls.search")}
           placeholder={t("controls.search")}
@@ -336,15 +337,15 @@ export function Controls() {
         </button>
       </form>
 
-      {controls.isPending && <p role="status">{t("common.loading")}</p>}
+      {controls.isPending && <LoadingState />}
       {controls.error && <p role="alert"><span>⚠️</span> {controls.error.message}</p>}
       {controls.isSuccess && !controls.data.length && (
-        <div className="kn-card" style={{ textAlign: "center", padding: "40px 20px" }}>
-          <p style={{ color: "var(--text-secondary)", margin: 0 }}>{t("common.empty")}</p>
+        <div className="kn-card kn-empty-card">
+          <EmptyState compact />
         </div>
       )}
       {controls.data && controls.data.length >= 100 && (
-        <p style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem" }}>{t("controls.limit")}</p>
+        <p className="kn-muted kn-text-xs">{t("controls.limit")}</p>
       )}
 
       {!!controls.data?.length && (
@@ -367,7 +368,7 @@ export function Controls() {
                     </Link>
                   </td>
                   <td>
-                    <Link to={`/controls/${c.id}`} style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                    <Link to={`/controls/${c.id}`} className="kn-strong kn-primary-text">
                       {c.title}
                     </Link>
                   </td>

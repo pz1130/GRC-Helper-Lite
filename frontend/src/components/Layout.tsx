@@ -473,7 +473,7 @@ export function Layout() {
           </div>
 
           {/* Right Actions & Status Indicators */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="kn-row">
             {/* Quick ⌘K Search Prompt */}
             <button
               type="button"

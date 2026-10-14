@@ -52,10 +52,10 @@ function ExtractionCell({ row }: { row?: Coverage }) {
     );
   }
   return (
-    <td style={{ fontSize: "0.8125rem" }}>
+    <td className="kn-text-xs">
       <div>{t("documents.controlCount", { count: row.controls })}</div>
       {row.uncovered_normative > 0 && (
-        <div style={{ color: "var(--accent-amber)" }}
+        <div className="kn-warn"
              title={t("documents.uncoveredHint")}>
           {t("documents.uncovered", { count: row.uncovered_normative })}
         </div>
@@ -158,10 +158,10 @@ export function Documents() {
 
   return (
     <section>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
+      <div className="kn-page-header">
         <div>
           <h2>{t("documents.title")}</h2>
-          <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+          <p className="kn-page-subtitle">
             {t("documents.subtitle")}
           </p>
         </div>
@@ -242,7 +242,7 @@ export function Documents() {
               <th>{t("documents.effective")}</th>
               <th>{t("documents.review")}</th>
               <th title={t("documents.blindSpotHint")}>{t("documents.extraction")}</th>
-              <th style={{ textAlign: "right" }}>{t("common.actions")}</th>
+              <th className="kn-text-right">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -255,10 +255,9 @@ export function Documents() {
               return (
                 <tr key={document.id}>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div className="kn-row">
                       <Link
-                        to={`/documents/${document.id}`}
-                        style={{ fontWeight: 600, color: "var(--text-primary)" }}
+                        to={`/documents/${document.id}`} className="kn-strong kn-primary-text"
                       >
                         {document.title}
                       </Link>
@@ -326,7 +325,7 @@ export function Documents() {
                     {document.review_due_date ?? "—"}
                   </td>
                   <ExtractionCell row={(coverage.data ?? []).find((c) => c.document_id === document.id)} />
-                  <td style={{ textAlign: "right" }}>
+                  <td className="kn-text-right">
                     <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
                       {document.status !== "superseded" && (
                         <button

@@ -170,9 +170,9 @@ export function Providers() {
 
   return (
     <div>
-      <div className="kn-card" style={{ marginBottom: 24 }}>
-        <h3 style={{ margin: "0 0 16px 0", fontSize: "1.125rem" }}>{t("settings.providers")}</h3>
-        <div className="kn-table-container" style={{ margin: 0 }}>
+      <div className="kn-card kn-mb-6">
+        <h3 className="kn-section-title">{t("settings.providers")}</h3>
+        <div className="kn-table-container kn-m-0">
           <table>
             <thead>
               <tr>
@@ -180,26 +180,26 @@ export function Providers() {
                 <th>{t("settings.providersConfig.kind")}</th>
                 <th>{t("settings.providersConfig.model")}</th>
                 <th>{t("settings.providersConfig.apiKey")}</th>
-                <th style={{ textAlign: "right" }}>{t("common.actions")}</th>
+                <th className="kn-text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {providers.data?.map((p) => (
                 <tr key={p.id}>
                   <td>
-                    <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{p.name}</span>
+                    <span className="kn-strong kn-primary-text">{p.name}</span>
                     {p.is_fallback && <span className="kn-badge kn-badge-purple" style={{ marginLeft: 8 }}>{t("settings.providersConfig.fallback")}</span>}
                   </td>
                   <td>
                     <span className="kn-badge">{p.kind}</span>
                   </td>
                   <td>
-                    <span style={{ color: "var(--text-secondary)", fontSize: "0.875rem" }}>{p.model}</span>
+                    <span className="kn-secondary kn-text-sm">{p.model}</span>
                   </td>
                   <td>
                     <code>{p.api_key_masked}</code>
                   </td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="kn-text-right">
                     <div style={{ display: "inline-flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
                       <button className="kn-btn-secondary kn-btn-sm" onClick={() => void testConnection(p.id)}>
                         {t("common.test")}
@@ -253,7 +253,7 @@ export function Providers() {
                       )}
                       {!p.enabled && <span className="kn-badge">{t("settings.providerDisabled")}</span>}
                       {probe[p.id] && (
-                        <span style={{ fontSize: "0.8125rem" }}>{probe[p.id]}</span>
+                        <span className="kn-text-xs">{probe[p.id]}</span>
                       )}
                       {confirming === p.id && remove.error && (
                         <span role="alert" style={{ fontSize: "0.8125rem", color: "var(--accent-red)" }}>
@@ -270,7 +270,7 @@ export function Providers() {
       </div>
 
       {/* Add Provider Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
+      <div className="kn-card kn-mb-6">
         <h4 style={{ margin: "0 0 14px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
         <form onSubmit={submit} style={{ display: "grid", gap: 12, maxWidth: 520 }}>
           <input
@@ -305,7 +305,7 @@ export function Providers() {
             onChange={(e) => setForm({ ...form, api_key: e.target.value })}
           />
           <div>
-            <button type="submit" className="kn-btn-primary" style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary">
               {t("common.save")}
             </button>
           </div>
@@ -317,11 +317,11 @@ export function Providers() {
 
       {/* Routing Matrix Card */}
       <div className="kn-card">
-        <h3 style={{ margin: "0 0 16px 0", fontSize: "1.125rem" }}>{t("settings.routing")}</h3>
+        <h3 className="kn-section-title">{t("settings.routing")}</h3>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: 14 }}>
           {t("settings.providersConfig.routingHint")}
         </p>
-        <div className="kn-table-container" style={{ margin: 0 }}>
+        <div className="kn-table-container kn-m-0">
           <table>
             <thead>
               <tr>

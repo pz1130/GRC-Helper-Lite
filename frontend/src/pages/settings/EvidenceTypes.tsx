@@ -82,11 +82,11 @@ export function EvidenceTypes() {
   return (
     <div style={{ display: "grid", gap: 20 }}>
       <div className="kn-card">
-        <h3 style={{ marginTop: 0 }}>{t("evidenceTypes.title")}</h3>
+        <h3 className="kn-mt-0">{t("evidenceTypes.title")}</h3>
         <p style={{ margin: "0 0 16px", fontSize: "0.875rem", color: "var(--text-secondary)" }}>
           {t("evidenceTypes.subtitle")}
         </p>
-        <div className="kn-table-container" style={{ margin: 0 }}>
+        <div className="kn-table-container kn-m-0">
           <table>
             <thead>
               <tr>
@@ -94,13 +94,13 @@ export function EvidenceTypes() {
                 <th>{t("evidenceTypes.format")}</th>
                 <th>{t("evidenceTypes.cadence")}</th>
                 <th>{t("evidenceTypes.source")}</th>
-                <th style={{ textAlign: "right" }}>{t("common.actions")}</th>
+                <th className="kn-text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {types.data?.length === 0 && (
                 <tr>
-                  <td colSpan={5} style={{ color: "var(--text-tertiary)" }}>
+                  <td colSpan={5} className="kn-muted">
                     {t("evidenceTypes.empty")}
                   </td>
                 </tr>
@@ -111,7 +111,7 @@ export function EvidenceTypes() {
                   <td><code>{item.format || "—"}</code></td>
                   <td>{t(`evidenceTypes.cadences.${item.cadence}`, { defaultValue: item.cadence })}</td>
                   <td>{item.typical_source || "—"}</td>
-                  <td style={{ textAlign: "right" }}>
+                  <td className="kn-text-right">
                     <button
                       className="kn-btn-secondary kn-btn-sm"
                       onClick={() => {
@@ -148,7 +148,7 @@ export function EvidenceTypes() {
       </div>
 
       <form className="kn-card" onSubmit={submit}>
-        <h3 style={{ marginTop: 0 }}>
+        <h3 className="kn-mt-0">
           {t(editingId === null ? "evidenceTypes.add" : "evidenceTypes.edit")}
         </h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
@@ -174,13 +174,13 @@ export function EvidenceTypes() {
             {t("evidenceTypes.source")}
             <input value={form.typical_source} onChange={(e) => setForm({ ...form, typical_source: e.target.value })} />
           </label>
-          <label style={{ gridColumn: "1 / -1" }}>
+          <label className="kn-col-span-all">
             {t("evidenceTypes.description")}
             <input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </label>
         </div>
-        {error && <p role="alert" style={{ color: "var(--accent-ruby)" }}>⚠️ {error}</p>}
-        <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+        {error && <p role="alert" className="kn-danger-text">⚠️ {error}</p>}
+        <div className="kn-row kn-mt-4">
           <button className="kn-btn-primary" type="submit" disabled={save.isPending || !form.name_en.trim()}>
             {t("common.save")}
           </button>

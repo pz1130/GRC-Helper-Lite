@@ -10,9 +10,9 @@ export function SettingsLayout() {
 
   return (
     <section>
-      <div style={{ marginBottom: 20 }}>
+      <div className="kn-mb-5">
         <h2>{t("settings.title")}</h2>
-        <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
+        <p className="kn-page-subtitle">
           {t("settings.subtitle")}
         </p>
       </div>

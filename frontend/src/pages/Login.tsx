@@ -110,7 +110,7 @@ export function Login() {
           WebkitBackdropFilter: "blur(20px)",
         }}
       >
-        <BrandLogo size={56} style={{ marginBottom: 20 }} />
+        <BrandLogo size={56} className="kn-mb-5" />
 
         <form onSubmit={submit} style={{ width: "100%", display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ textAlign: "center", marginBottom: 6 }}>
@@ -129,8 +129,7 @@ export function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="name@organization.com"
-              style={{ width: "100%" }}
+              placeholder="name@organization.com" className="kn-w-full"
             />
           </label>
 
@@ -141,8 +140,7 @@ export function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
-              style={{ width: "100%" }}
+              placeholder="••••••••" className="kn-w-full"
             />
           </label>
 

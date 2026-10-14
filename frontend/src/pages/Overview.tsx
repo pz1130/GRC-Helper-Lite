@@ -74,7 +74,7 @@ export function Overview() {
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
               <span className="kn-pulse-dot" />
-              <span className="kn-badge kn-badge-emerald" style={{ fontSize: "0.75rem" }}>
+              <span className="kn-text-2xs kn-badge kn-badge-emerald">
                 {t("overview.compliancePosture")}
               </span>
             </div>
@@ -95,26 +95,26 @@ export function Overview() {
 
         <div className="kn-cockpit-metrics-strip">
           <div className="kn-cockpit-metric">
-            <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>
+            <span className="kn-eyebrow">
               {t("overview.activeDocuments")}
             </span>
             <div className="kn-cockpit-metric-num">{governed ?? "—"}</div>
           </div>
           <div className="kn-cockpit-metric">
-            <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>
+            <span className="kn-eyebrow">
               {t("overview.monthCost")}
             </span>
             {/* 没拿到数据时是「—」而不是 $0.00：后者读起来是「本月没花钱」 */}
             <div className="kn-cockpit-metric-num">{data ? `$${data.month_to_date_cost.toFixed(2)}` : "—"}</div>
           </div>
           <div className="kn-cockpit-metric">
-            <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>
+            <span className="kn-eyebrow">
               {t("overview.totalCalls")}
             </span>
             <div className="kn-cockpit-metric-num">{data ? totalCalls.toLocaleString() : "—"}</div>
           </div>
           <div className="kn-cockpit-metric">
-            <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>
+            <span className="kn-eyebrow">
               {t("overview.reviewAlerts")}
             </span>
             <div className="kn-cockpit-metric-num" style={{ color: overdue > 0 ? "var(--accent-ruby)" : soon > 0 ? "var(--accent-amber)" : undefined }}>
@@ -135,7 +135,7 @@ export function Overview() {
                 </span>
               )}
             </div>
-            <div className="kn-stat-number" style={{ color: "var(--text-primary)" }}>
+            <div className="kn-stat-number kn-primary-text">
               ${data ? data.month_to_date_cost.toFixed(2) : "—"}
             </div>
             <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", margin: "4px 0 8px" }}>
@@ -145,13 +145,13 @@ export function Overview() {
             {/* 未计价的调用必须说出来。不说的话，一个用未知模型的部署会永远
                 显示 $0.00，预算闸门静默放行，而这张卡看起来一切正常。 */}
             {(data?.uncosted_calls ?? 0) > 0 && (
-              <p role="note" className="kn-prereq-notice" style={{ marginBottom: 8 }}>
+              <p role="note" className="kn-prereq-notice kn-mb-2">
                 {t("overview.uncostedCalls", { count: data!.uncosted_calls })}
               </p>
             )}
           </div>
           {budget != null && budgetRatio !== null && (
-            <div style={{ marginTop: 8 }}>
+            <div className="kn-mt-2">
               <div className="kn-progress-bar" style={{ height: 6, borderRadius: 9999 }}>
                 <div
                   className="kn-progress-fill"
@@ -202,7 +202,7 @@ export function Overview() {
         <div className="kn-card kn-stat-card">
           <div>
             <span className="kn-stat-label">{t("overview.calls")}</span>
-            <div className="kn-stat-number" style={{ color: "var(--text-primary)" }}>
+            <div className="kn-stat-number kn-primary-text">
               {totalCalls.toLocaleString()}
             </div>
             <div className="kn-stat-sub">
@@ -229,13 +229,13 @@ export function Overview() {
             <tbody>
               {data?.by_task.map((row) => (
                 <tr key={row.task_key}>
-                  <td style={{ fontWeight: 500 }}>
+                  <td className="kn-medium">
                     <code style={{ fontSize: "0.8125rem", color: "var(--accent-emerald)", background: "rgba(16, 185, 129, 0.08)", padding: "2px 6px", borderRadius: 4, border: "1px solid rgba(16, 185, 129, 0.2)" }}>
                       {t(`taskNames.${row.task_key}`, { defaultValue: row.task_key })}
                     </code>
                   </td>
                   <td>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div className="kn-row">
                       <span style={{ minWidth: 40, fontVariantNumeric: "tabular-nums" }}>{row.calls.toLocaleString()}</span>
                     </div>
                   </td>
