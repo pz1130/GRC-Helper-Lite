@@ -162,14 +162,17 @@ E2E_COMPOSE = COMPOSE_PROJECT_NAME=grc-e2e DB_PORT=5433 REDIS_PORT=6380 API_PORT
 # 先 down -v 再起：上一次被打断、或有人在这套栈上手动跑过单个 spec，库里就留着
 # 那次建的数据。有几条用例依赖冷启动状态（比如「还没有证据类型」），会因此失败，
 # 而失败看起来像回归（2026-09-23 撞过一次）。
+# 前端依赖必须在起栈之前装：web 服务的匿名卷 /srv/node_modules 会让 docker 以 root
+# 在宿主机上建出空的 frontend/node_modules，之后宿主机 npm ci 写不进去（EACCES，退出码 243）。
+# 先装好，目录已存在且归当前用户，docker 只是挂载上去。
 e2e:
 	@set -e; \
 	trap 'status=$$?; trap - EXIT; $(MAKE) e2e-down || status=1; exit $$status' EXIT; \
 	$(E2E_COMPOSE) down -v; \
+	(cd frontend && npm ci && npx playwright install --with-deps chromium); \
 	$(E2E_COMPOSE) up -d --build; \
 	$(E2E_COMPOSE) run --rm api alembic upgrade head; \
 	$(E2E_COMPOSE) run --rm api python -m app.cli create-admin admin@example.com Admin pw123456; \
-	(cd frontend && npm ci && npx playwright install --with-deps chromium); \
 	(cd frontend && E2E_BASE_URL=http://localhost:5174 E2E_API_BASE=http://localhost:8001 npm run test:e2e)
 
 # 单独留一个出口：e2e 中途被 Ctrl-C 打断时，那套栈还在后台占着端口。
