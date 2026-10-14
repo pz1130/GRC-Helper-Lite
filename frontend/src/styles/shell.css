@@ -408,29 +408,6 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 .kn-audit-change { font-size: 0.75rem; font-family: var(--font-mono, monospace); }
 
 /* ---------- 复杂页面：把反复出现的内联布局收成类 ---------- */
-.kn-login-page {
-  min-height: 100vh; display: flex; align-items: center; justify-content: center;
-  padding: 24px; position: relative; overflow: hidden;
-}
-.kn-login-shader { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-.kn-login-float { position: fixed; top: 20px; right: 24px; z-index: 10; display: flex; align-items: center; gap: 8px; }
-.kn-login-card {
-  width: 100%; max-width: 420px; position: relative; z-index: 1;
-  padding: 36px 32px; backdrop-filter: blur(12px);
-}
-.kn-login-form { width: 100%; display: flex; flex-direction: column; gap: 18px; }
-.kn-login-heading { text-align: center; margin-bottom: 6px; }
-.kn-login-heading h1 { font-size: 1.75rem; margin: 0; }
-.kn-login-heading p { font-size: 0.875rem; color: var(--text-secondary); margin-top: 6px; }
-.kn-login-notice { color: var(--text-secondary); font-size: 0.8rem; }
-.kn-login-submit { width: 100%; padding: 12px; margin-top: 8px; font-size: 0.9375rem; }
-.kn-login-demo {
-  margin-top: 8px; padding: 12px 14px; border-radius: var(--radius-sm);
-  border: 1px dashed var(--stage-border); background: var(--stage-card-subtle);
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-}
-.kn-login-demo-title { color: var(--text-primary); font-weight: 500; margin-bottom: 2px; }
-.kn-login-demo-hint { font-size: 0.75rem; color: var(--text-muted); }
 .kn-icon-btn { display: inline-flex; align-items: center; gap: 7px; }
 
 .kn-page-head-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
@@ -498,7 +475,6 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 .kn-inline-actions { display: flex; gap: 8px; margin-left: auto; }
 .kn-actions-end { display: inline-flex; align-items: center; gap: 8px; justify-content: flex-end; }
 .kn-json-pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
-.kn-login-demo-go { font-size: 0.75rem; padding: 6px 12px; cursor: pointer; font-weight: 600; color: var(--accent-primary); }
 .kn-modal-backdrop {
   position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55);
   display: flex; align-items: center; justify-content: center; z-index: 40; padding: 24px;

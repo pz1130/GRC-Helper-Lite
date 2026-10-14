@@ -13,7 +13,7 @@ const LAYERS: [string, string][] = [
   ["--accent-amber", "#d97706"],
 ];
 
-export default function HeroScene() {
+export default function HeroScene({ className = "kn-hero-3d" }: { className?: string } = {}) {
   const { theme } = useTheme();
   const hostRef = useRef<HTMLDivElement>(null);
 
@@ -73,5 +73,5 @@ export default function HeroScene() {
     };
   }, [theme]);
 
-  return <div ref={hostRef} className="kn-hero-3d" aria-hidden="true" />;
+  return <div ref={hostRef} className={className} aria-hidden="true" />;
 }

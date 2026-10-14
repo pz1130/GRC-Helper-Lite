@@ -1,0 +1,171 @@
+/* 品牌标识与字标。颜色全部来自主题变量，明暗主题各自成立。 */
+:root {
+  --brand-a: #5e6ad2;
+  --brand-b: #0e9f7a;
+  --brand-ink: #ffffff;
+  --brand-glyph-ink: var(--text-primary);
+}
+:root[data-theme="dark"] {
+  --brand-a: #6c78e6;
+  --brand-b: #12b38a;
+}
+
+.brand-mark { display: inline-flex; flex: none; position: relative; border-radius: 25%; }
+.brand-mark svg { display: block; overflow: visible; }
+.brand-mark--tile { box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--brand-a) 55%, transparent), 0 1px 2px rgba(15, 23, 42, 0.12); }
+
+.brand-mark--tile .brand-shield { stroke: var(--brand-ink); stroke-opacity: 0.9; fill: rgba(255, 255, 255, 0.1); }
+.brand-mark--tile .brand-layer { fill: var(--brand-ink); }
+.brand-mark--tile .brand-check { stroke: var(--brand-ink); }
+.brand-mark--glyph .brand-shield { stroke: var(--brand-b); fill: color-mix(in srgb, var(--brand-b) 10%, transparent); }
+.brand-mark--glyph .brand-layer { fill: var(--brand-a); }
+.brand-mark--glyph .brand-check { stroke: var(--brand-b); }
+
+.brand-layer--1 { opacity: 0.55; }
+.brand-layer--2 { opacity: 0.75; }
+.brand-layer--3 { opacity: 0.95; }
+.brand-layer { transform-box: fill-box; transform-origin: center; }
+.brand-check { stroke-dasharray: 1; stroke-dashoffset: 0; }
+.brand-sheen { opacity: 0; }
+
+/* ---- 动效 ---- */
+.brand-mark.is-animated .brand-check { animation: brand-draw 900ms 200ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+.brand-mark.is-animated .brand-layer--1 { animation: brand-float 5.6s ease-in-out infinite; }
+.brand-mark.is-animated .brand-layer--2 { animation: brand-float 5.6s -1.8s ease-in-out infinite; }
+.brand-mark.is-animated .brand-layer--3 { animation: brand-float 5.6s -3.6s ease-in-out infinite; }
+.brand-mark.is-animated .brand-sheen { animation: brand-sheen 7s 1.4s ease-in-out infinite; }
+.brand-mark { transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 260ms ease; }
+
+a:hover > .brand-mark,
+.brand-lockup:hover .brand-mark,
+.brand-mark:hover { transform: rotate(-6deg) scale(1.06); }
+a:hover > .brand-mark .brand-check,
+.brand-lockup:hover .brand-check,
+.brand-mark:hover .brand-check { animation: brand-draw 600ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+
+@keyframes brand-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes brand-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.2px); } }
+@keyframes brand-sheen {
+  0%, 70% { opacity: 0; transform: rotate(20deg) translateX(0); }
+  75% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(20deg) translateX(120px); }
+}
+
+/* 字标 */
+.brand-lockup { display: inline-flex; align-items: center; gap: 10px; color: var(--text-primary); text-decoration: none; }
+.brand-word { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-word-main { font-size: 0.9375rem; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; }
+.brand-word-main b { font-weight: 750; letter-spacing: 0.02em; }
+.brand-word-sub { font-size: 0.6875rem; color: var(--text-tertiary); letter-spacing: 0.04em; margin-top: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark, .brand-mark * { animation: none !important; transition: none !important; }
+  .brand-mark:hover, a:hover > .brand-mark, .brand-lockup:hover .brand-mark { transform: none; }
+}
+.ws-panel-brand { padding: 6px 8px 10px; }
+.ws-rail-brand { border-radius: 10px; }
+@media (max-width: 900px) { .ws-panel-brand { padding: 14px 12px 6px; } }
+
+/* ---------- 登录页：分栏布局，左侧品牌视觉 + 右侧表单 ---------- */
+.login {
+  min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+  background: var(--stage-bg); color: var(--text-primary); position: relative; overflow: hidden;
+}
+.login-brand {
+  position: relative; display: flex; flex-direction: column; justify-content: center; gap: 28px;
+  padding: 48px 56px; overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 10% 0%, color-mix(in srgb, var(--brand-a) 28%, transparent), transparent 55%),
+    radial-gradient(90% 70% at 90% 100%, color-mix(in srgb, var(--brand-b) 22%, transparent), transparent 50%),
+    linear-gradient(160deg, var(--stage-card) 0%, var(--stage-bg) 100%);
+  border-right: 1px solid var(--stage-border);
+}
+.login-brand-glow {
+  position: absolute; inset: -20% -10%; pointer-events: none;
+  background: radial-gradient(circle at 30% 40%, color-mix(in srgb, var(--brand-a) 18%, transparent), transparent 45%),
+              radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--brand-b) 16%, transparent), transparent 50%);
+  animation: login-glow 12s ease-in-out infinite alternate;
+}
+.login-brand-mark { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
+.login-brand-title { font-size: 2rem; font-weight: 500; letter-spacing: -0.02em; }
+.login-brand-title b { font-weight: 750; letter-spacing: 0.02em; }
+.login-brand-tag { color: var(--text-secondary); font-size: 0.9375rem; }
+.login-brand-stage {
+  position: relative; z-index: 1; height: 260px; width: min(100%, 420px);
+  border-radius: 20px; overflow: hidden;
+  background: color-mix(in srgb, var(--stage-card) 55%, transparent);
+  border: 1px solid var(--stage-border);
+  box-shadow: var(--shadow-md);
+}
+.login-hero-3d { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.login-brand-points { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.login-brand-points li { display: flex; align-items: center; gap: 10px; color: var(--text-secondary); font-size: 0.875rem; }
+.login-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent); }
+.login-dot--blue { background: var(--accent-blue); color: var(--accent-blue); }
+.login-dot--emerald { background: var(--accent-emerald); color: var(--accent-emerald); }
+.login-dot--amber { background: var(--accent-amber); color: var(--accent-amber); }
+
+.login-layers { position: absolute; inset: 0; perspective: 700px; }
+.login-layer {
+  position: absolute; left: 18%; width: 64%; height: 64%; border-radius: 16px;
+  transform: rotateX(58deg) rotateZ(-42deg);
+  border: 1px solid color-mix(in srgb, var(--accent-blue) 45%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-blue) 22%, transparent), transparent);
+  box-shadow: 0 18px 28px -14px color-mix(in srgb, var(--accent-blue) 50%, transparent);
+  animation: kn-hero-float 6s ease-in-out infinite;
+}
+.login-layer--1 { top: 42%; }
+.login-layer--2 { top: 26%; animation-delay: -2s; border-color: color-mix(in srgb, var(--accent-emerald) 50%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--accent-emerald) 22%, transparent), transparent); }
+.login-layer--3 { top: 10%; animation-delay: -4s; border-color: color-mix(in srgb, var(--accent-amber) 55%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--accent-amber) 22%, transparent), transparent); }
+
+.login-main {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  padding: 48px 32px; background: var(--stage-bg);
+}
+.login-float { position: absolute; top: 20px; right: 24px; z-index: 5; }
+.login-card {
+  width: 100%; max-width: 420px; padding: 36px 32px;
+  background: var(--stage-card); border: 1px solid var(--stage-border); border-radius: 18px;
+  box-shadow: var(--shadow-lg); animation: kn-pop var(--dur-slow, 420ms) var(--ease-out, cubic-bezier(0.16,1,0.3,1)) both;
+}
+.login-card-brand { margin-bottom: 28px; }
+.login-form { display: flex; flex-direction: column; gap: 16px; }
+.login-heading h1 { margin: 0 0 6px; font-size: 1.625rem; letter-spacing: -0.02em; }
+.login-notice { margin: 0; color: var(--text-tertiary); font-size: 0.8125rem; line-height: 1.45; }
+.login-submit { width: 100%; padding: 12px; margin-top: 4px; font-size: 0.9375rem; }
+.login-demo {
+  margin-top: 4px; padding: 12px 14px; border-radius: 12px;
+  border: 1px dashed var(--stage-border); background: var(--stage-card-subtle);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.login-demo-title { color: var(--text-primary); font-weight: 600; margin-bottom: 2px; font-size: 0.8125rem; }
+.login-demo-hint { font-size: 0.75rem; color: var(--text-muted, var(--text-tertiary)); }
+.login-demo-go { font-size: 0.75rem; padding: 6px 12px; font-weight: 600; color: var(--accent-primary, var(--accent-blue)); flex: none; }
+
+@keyframes login-glow {
+  from { transform: translate(0, 0) scale(1); opacity: 0.9; }
+  to { transform: translate(4%, -3%) scale(1.05); opacity: 1; }
+}
+
+@media (max-width: 960px) {
+  .login { grid-template-columns: 1fr; }
+  .login-brand { min-height: 280px; padding: 32px 28px 24px; border-right: 0; border-bottom: 1px solid var(--stage-border); }
+  .login-brand-stage { height: 180px; width: 100%; max-width: 360px; }
+  .login-brand-points { display: none; }
+  .login-brand-title { font-size: 1.5rem; }
+  .login-main { padding: 28px 20px 40px; }
+  .login-card { box-shadow: var(--shadow-md); padding: 28px 22px; }
+}
+@media (max-width: 480px) {
+  .login-brand-stage { display: none; }
+  .login-card-brand .brand-word-sub { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .login-brand-glow, .login-layer, .login-card { animation: none !important; }
+}
+.brand-boot-label { color: var(--text-secondary); font-size: 0.875rem; letter-spacing: 0.05em; font-weight: 600; margin: 0; }
+
+.brand-lockup:not(:has(.brand-mark)) { gap: 0; }
+.login-demo-hint { display: block; }
+/* 移动端主题按钮压在表单卡上：改为固定在页面右上角（品牌区内）。 */
+@media (max-width: 960px) { .login-float { position: fixed; top: 14px; right: 14px; } }

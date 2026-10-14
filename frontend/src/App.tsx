@@ -45,10 +45,8 @@ export function App() {
           gap: 16,
         }}
       >
-        <BrandLogo size={48} style={{ animation: "kn-pulse 1.8s infinite ease-in-out", marginBottom: 4 }} />
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", letterSpacing: "0.05em", fontWeight: 600 }}>
-          GRC HELPER
-        </p>
+        <BrandLogo size={48} className="kn-mb-1" />
+        <p className="brand-boot-label">GRC HELPER</p>
       </div>
     );
   }

@@ -4,6 +4,8 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import { CountUp } from "./CountUp";
+
 function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
@@ -70,7 +72,9 @@ export function StatCard({
     <div className={cx("kn-card kn-stat-card", tone && `kn-tone-${tone}`)}>
       <div>
         <span className="kn-stat-label">{label}</span>
-        <div className="kn-stat-number kn-primary-text">{value}</div>
+        <div className="kn-stat-number kn-primary-text">
+          <CountUp value={value} />
+        </div>
         {hint ? <div className="kn-stat-sub">{hint}</div> : null}
       </div>
       {footer}

@@ -9,6 +9,8 @@ import "./i18n";
 import "./styles/keynote.css";
 import "./styles/ledger.css";
 import "./styles/shell.css";
+import "./styles/brand.css";
+import "./styles/motion.css";
 import { ThemeProvider, applyTheme, getInitialTheme } from "./theme";
 
 applyTheme(getInitialTheme());

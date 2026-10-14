@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { PageErrorBoundary } from "./ErrorBoundary";
-import { BrandLogo } from "./BrandLogo";
+import { BrandLogo, BrandWordmark } from "./BrandLogo";
 import { CommandPalette } from "./CommandPalette";
 import { useNavModel } from "./nav";
 import { HealthPill, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
@@ -85,6 +85,10 @@ export function Layout() {
       </nav>
 
       <aside className="ws-panel" aria-label={activeGroup.title}>
+        {/* 图标轨里已经有标识，这里只放字标，避免两个标识并排 */}
+        <div className="ws-panel-brand">
+          <BrandWordmark sub="Governance · Risk · Compliance" />
+        </div>
         <div className="ws-panel-head">
           <span className="ws-panel-title">{activeGroup.title}</span>
         </div>
@@ -157,7 +161,10 @@ export function Layout() {
         </header>
         <main className="kn-shell-main ws-main">
           <PageErrorBoundary>
-            <Outlet />
+            {/* 换路由时重新挂载这层外壳，触发入场动画（styles/motion.css） */}
+            <div key={location.pathname} className="ws-route">
+              <Outlet />
+            </div>
           </PageErrorBoundary>
         </main>
       </div>
