@@ -1,0 +1,244 @@
+/* ==========================================================================
+   Ledger 设计层 —— 叠在 keynote.css 之上，只改视觉不改结构。
+   为什么是覆盖层而不是重写：keynote.css 的类名被 40 多个页面和大量内联样式引用，
+   原地重写风险大、diff 难审。这里集中重定义设计令牌（颜色、字号、圆角、阴影），
+   再收敛几个组件的观感：
+   - 银行 IT 风险团队长时间盯表格，所以去掉玻璃模糊、渐变标题和发光，换成实色表面与
+     清晰分隔线，降低视觉噪声；
+   - 主色从近黑灰换成机构蓝，主按钮与链接一眼可辨；
+   - 统一 focus-visible 焦点环、prefers-reduced-motion、表格密度与等宽编号。
+   ========================================================================== */
+
+:root,
+:root[data-theme="light"] {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  --brand-600: #1f4fd1;
+  --brand-700: #183fa8;
+  --brand-50: #eef3ff;
+  --focus-ring: 0 0 0 3px rgba(31, 79, 209, 0.32);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+:root[data-theme="light"] {
+  --stage-bg: #f4f6f9;
+  --stage-surface: #ffffff;
+  --stage-card: #ffffff;
+  --stage-card-hover: #fafbfc;
+  --stage-border: #e3e7ee;
+  --stage-border-hover: #c9d0db;
+  --stage-border-subtle: #edf0f4;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280; /* 原 #94a3b8 在白底对比度不足 4.5:1 */
+  --text-quaternary: #9ca3af;
+  --accent-blue: var(--brand-600);
+  --accent-blue-hover: var(--brand-700);
+  --accent-blue-bg: var(--brand-50);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.12);
+  --shadow-glass: var(--shadow-sm);
+  --shadow-hover: var(--shadow-md);
+  --sidebar-bg: #ffffff;
+  --topbar-bg: rgba(255, 255, 255, 0.92);
+  --nav-active-bg: var(--brand-50);
+  --sidebar-nav-active-bg: var(--brand-50);
+  --sidebar-nav-active-color: var(--brand-700);
+  --heading-gradient: none;
+  --stat-number-gradient: none;
+  --table-th-bg: #f8fafc;
+  --table-tr-hover: #f7f9fc;
+  --spotlight-gradient: none;
+  --primary-bg: var(--brand-600);
+  --primary-bg-hover: var(--brand-700);
+}
+
+:root[data-theme="dark"] {
+  --stage-bg: #0b0f17;
+  --stage-surface: #111723;
+  --stage-card: #121a27;
+  --stage-card-hover: #162031;
+  --stage-border: #1f2a3c;
+  --stage-border-hover: #2d3b52;
+  --text-primary: #e8edf5;
+  --text-secondary: #a3b0c2;
+  --text-tertiary: #7d8aa0;
+  --accent-blue: #6b9bff;
+  --accent-blue-hover: #8fb3ff;
+  --accent-blue-bg: rgba(107, 155, 255, 0.12);
+  --focus-ring: 0 0 0 3px rgba(107, 155, 255, 0.4);
+  --shadow-glass: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --sidebar-bg: #0d131d;
+  --topbar-bg: rgba(11, 15, 23, 0.9);
+  --sidebar-nav-active-bg: rgba(107, 155, 255, 0.12);
+  --sidebar-nav-active-color: #dbe6ff;
+  --heading-gradient: none;
+  --stat-number-gradient: none;
+  --spotlight-gradient: none;
+  --primary-bg: #2f62e6;
+  --primary-bg-hover: #3d70f5;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "tnum" 0;
+  letter-spacing: 0;
+}
+
+/* 标题：实色，不再用渐变裁切文字（截图、打印、高对比模式下渐变文字会糊） */
+h1 {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--text-primary);
+  font-size: 1.625rem;
+  letter-spacing: -0.015em;
+}
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.0625rem; }
+
+code, pre, kbd { font-family: var(--font-mono); }
+/* 控制点编号等短代码不应折行（原来 AC-1 会被拆成两行） */
+td code, .kn-badge, .kn-task-tag { white-space: nowrap; }
+
+/* ---------- 表面：去玻璃化 ---------- */
+.kn-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: var(--radius-lg);
+}
+.kn-card::before { display: none; }
+.kn-card-interactive:hover { border-color: var(--stage-border-hover); box-shadow: var(--shadow-hover); }
+.kn-stat-number, .kn-stat-number.kn-gradient, .kn-cockpit-metric-num {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.kn-bento-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+
+/* ---------- 按钮 ---------- */
+button[type="submit"], .kn-btn-primary,
+:root[data-theme="light"] .kn-btn-primary,
+:root[data-theme="light"] button[type="submit"] {
+  background: var(--primary-bg);
+  border: 1px solid transparent;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+button[type="submit"]:hover, .kn-btn-primary:hover,
+:root[data-theme="light"] .kn-btn-primary:hover,
+:root[data-theme="light"] button[type="submit"]:hover {
+  background: var(--primary-bg-hover);
+  border-color: transparent;
+  box-shadow: var(--shadow-md);
+}
+button, .kn-btn { border-radius: var(--radius-sm); }
+button[type="submit"]:active, .kn-btn-primary:active,
+:root[data-theme="light"] .kn-btn-primary:active,
+:root[data-theme="light"] button[type="submit"]:active { background: var(--primary-bg-hover); }
+.kn-btn-danger { background: var(--accent-ruby); color: #fff; border-color: transparent; }
+
+/* ---------- 焦点与可达性 ---------- */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-blue);
+  box-shadow: var(--focus-ring);
+}
+input, select, textarea { border-radius: var(--radius-sm); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- 表格：审阅场景下的密度与可读性 ---------- */
+.kn-table-container { border-radius: var(--radius-lg); }
+th {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--table-th-bg);
+}
+td { font-variant-numeric: tabular-nums; vertical-align: top; }
+tbody tr { transition: background-color 0.12s ease; }
+
+/* ---------- 折叠面板（details/summary 在多个页面用作操作区） ---------- */
+details.kn-card > summary, details > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+  opacity: 0.6;
+  flex: none;
+}
+details[open] > summary::before { transform: rotate(45deg); }
+
+/* ---------- 布局外壳 ---------- */
+.kn-sidebar { border-right: 1px solid var(--stage-border); }
+.kn-sidebar-nav-item { border-radius: var(--radius-sm); border: 1px solid transparent; }
+.kn-sidebar-nav-item.active,
+:root[data-theme="light"] .kn-sidebar-nav-item.active {
+  background: var(--sidebar-nav-active-bg);
+  color: var(--sidebar-nav-active-color);
+  border-color: transparent;
+  box-shadow: inset 3px 0 0 var(--accent-blue);
+}
+.kn-sidebar-nav-item.active .kn-sidebar-nav-item-icon { color: var(--accent-blue); }
+.kn-nav-group-header { letter-spacing: 0.06em; color: var(--text-tertiary); }
+.kn-top-command-bar { backdrop-filter: saturate(160%) blur(8px); border-bottom: 1px solid var(--stage-border); }
+.kn-cockpit-hero::before { display: none; }
+
+/* ---------- 通用状态组件：空态 / 骨架屏 ---------- */
+.kn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+.kn-skeleton {
+  display: block;
+  height: 0.9rem;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(90deg, var(--stage-border-subtle), var(--stage-border), var(--stage-border-subtle));
+  background-size: 200% 100%;
+  animation: kn-shimmer 1.2s ease-in-out infinite;
+}
+@keyframes kn-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (max-width: 768px) {
+  h1 { font-size: 1.375rem; }
+  .kn-bento-grid { grid-template-columns: 1fr; }
+  .kn-table-container { overflow-x: auto; }
+}

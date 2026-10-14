@@ -15,6 +15,10 @@ const STORAGE_KEY = "grc.theme";
 export function getInitialTheme(): Theme {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved === "light" || saved === "dark") return saved;
+  // 首次访问跟随系统配色；用户切换过就以 localStorage 为准。
+  if (typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: light)").matches) {
+    return "light";
+  }
   return "dark";
 }
 

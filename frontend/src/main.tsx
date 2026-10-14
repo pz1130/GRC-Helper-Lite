@@ -7,6 +7,7 @@ import { App } from "./App";
 import { AuthProvider } from "./auth";
 import "./i18n";
 import "./styles/keynote.css";
+import "./styles/ledger.css";
 import { ThemeProvider, applyTheme, getInitialTheme } from "./theme";
 
 applyTheme(getInitialTheme());
