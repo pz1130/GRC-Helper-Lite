@@ -169,7 +169,7 @@ e2e:
 	$(E2E_COMPOSE) up -d --build; \
 	$(E2E_COMPOSE) run --rm api alembic upgrade head; \
 	$(E2E_COMPOSE) run --rm api python -m app.cli create-admin admin@example.com Admin pw123456; \
-	(cd frontend && npm ci --silent && npx playwright install --with-deps chromium); \
+	(cd frontend && npm ci && npx playwright install --with-deps chromium); \
 	(cd frontend && E2E_BASE_URL=http://localhost:5174 E2E_API_BASE=http://localhost:8001 npm run test:e2e)
 
 # 单独留一个出口：e2e 中途被 Ctrl-C 打断时，那套栈还在后台占着端口。
