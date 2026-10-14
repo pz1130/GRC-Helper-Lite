@@ -1,7 +1,8 @@
 # 生产编排。与 docker-compose.yml 的区别不是"参数不同"，是**形态不同**：
 #   · 前端是构建好的静态产物 + nginx，不是 vite 开发服务器
 #   · 后端没有 --reload，源码不挂进容器（镜像里是什么就跑什么）
-#   · 只有 web 对外暴露端口；db / redis / api 都只在内部网络里
+#   · 只有 proxy（Caddy，HTTPS）对外暴露端口；web / api / db / redis 都只在内部网络里
+#     web 默认不再发布端口；仍要直连 http 排障时见 OPERATIONS.md「HTTPS」
 #   · 全部 restart: unless-stopped
 #
 # 用法见 OPERATIONS.md。迁移要单独跑一次：make prod-migrate
@@ -72,8 +73,32 @@ services:
       dockerfile: Dockerfile.prod
     depends_on:
       - api
+    # 不发布端口：只经 proxy 访问（G1）。
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2-alpine
+    depends_on:
+      - web
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-localhost}
+      TLS_ISSUER: ${TLS_ISSUER:-internal}
     ports:
-      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-8080}:80"
+      - "${PROXY_BIND_ADDRESS:-0.0.0.0}:${HTTP_PORT:-80}:80"
+      - "${PROXY_BIND_ADDRESS:-0.0.0.0}:${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # 证书、ACME 账号与 internal CA 根证书。丢了会重新签发；internal CA 丢了
+      # 需要重新给客户端分发根证书。
+      - caddy_data:/data
+      - caddy_config:/config
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
 volumes:
@@ -81,3 +106,5 @@ volumes:
   redisdata:
   docstore:
   staging:
+  caddy_data:
+  caddy_config:
