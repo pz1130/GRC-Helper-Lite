@@ -71,6 +71,12 @@ export function Overview() {
     <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
       <div className="kn-cockpit-hero">
+        {/* 装饰用的「治理分层」立体示意：纯 CSS 3D，不加载 WebGL，读屏忽略。 */}
+        <div className="kn-hero-stack" aria-hidden="true">
+          <span className="kn-hero-layer kn-hero-layer--1" />
+          <span className="kn-hero-layer kn-hero-layer--2" />
+          <span className="kn-hero-layer kn-hero-layer--3" />
+        </div>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>

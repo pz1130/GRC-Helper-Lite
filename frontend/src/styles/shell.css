@@ -200,3 +200,68 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 }
 .ws-palette-icon code { font-size: 0.6875rem; padding: 1px 5px; }
 .ws-palette-score { display: inline-flex; min-width: 22px; justify-content: center; font-size: 0.6875rem; font-weight: 700; border-radius: 4px; background: var(--accent-ruby-bg); color: var(--accent-ruby); }
+
+/* ==========================================================================
+   3D：图谱 / 风险柱状图画布、总览的景深与悬停倾斜
+   ========================================================================== */
+.kn-graph-canvas-box--3d { flex: 1; min-width: 0; position: relative; padding: 0; overflow: hidden; }
+.g3d, .r3d { position: relative; width: 100%; overflow: hidden; }
+.r3d { height: 380px; }
+.g3d-canvas, .r3d-canvas { position: absolute; inset: 0; cursor: grab; }
+.g3d-canvas:active, .r3d-canvas:active { cursor: grabbing; }
+.g3d-labels, .r3d-ticks { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.g3d-label {
+  position: absolute; left: 0; top: 0; font: 600 11px/1 var(--font-mono); color: var(--text-secondary);
+  white-space: nowrap; will-change: transform; text-shadow: 0 0 3px var(--stage-bg);
+}
+.r3d-tick { position: absolute; left: 0; top: 0; font: 600 11px/1 var(--font-sans); color: var(--text-tertiary); will-change: transform; }
+.r3d-axis { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); }
+.g3d-tooltip { position: absolute; transform: translate(12px, 12px); pointer-events: none; z-index: 5; max-width: 260px; }
+.g3d-tooltip::after { display: none; }
+.g3d-hint { position: absolute; left: 12px; bottom: 8px; margin: 0; font-size: 0.6875rem; color: var(--text-tertiary); pointer-events: none; }
+
+/* 总览：卡片层叠阴影 + 悬停轻微倾斜 */
+.kn-page-overview .kn-bento-grid { perspective: 1200px; }
+.kn-page-overview .kn-stat-card {
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow: 0 1px 1px rgba(16, 24, 40, 0.03), 0 2px 4px rgba(16, 24, 40, 0.03);
+}
+.kn-page-overview .kn-stat-card:hover {
+  transform: translateY(-3px) rotateX(3deg) rotateY(-2deg);
+  border-color: var(--stage-border-hover);
+  box-shadow: 0 2px 4px rgba(16, 24, 40, 0.04), 0 8px 16px rgba(16, 24, 40, 0.06), 0 24px 40px -12px rgba(16, 24, 40, 0.16);
+}
+:root[data-theme="dark"] .kn-page-overview .kn-stat-card:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.35), 0 24px 48px -12px rgba(94, 106, 210, 0.25);
+}
+
+/* 总览 hero：三层「治理平面」的等轴立体示意 */
+.kn-page-overview .kn-cockpit-hero { position: relative; }
+.kn-hero-stack {
+  position: absolute; right: 260px; top: -6px; width: 150px; height: 120px;
+  perspective: 600px; pointer-events: none;
+}
+.kn-hero-layer {
+  position: absolute; left: 20px; width: 110px; height: 110px; border-radius: 14px;
+  transform: rotateX(60deg) rotateZ(-45deg);
+  border: 1px solid color-mix(in srgb, var(--accent-blue) 45%, transparent);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-blue) 22%, transparent), color-mix(in srgb, var(--accent-blue) 4%, transparent));
+  box-shadow: 0 18px 28px -14px color-mix(in srgb, var(--accent-blue) 55%, transparent);
+  animation: kn-hero-float 6s ease-in-out infinite;
+}
+.kn-hero-layer--1 { top: 46px; }
+.kn-hero-layer--2 { top: 24px; animation-delay: -2s; border-color: color-mix(in srgb, var(--accent-emerald) 50%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--accent-emerald) 22%, transparent), transparent); }
+.kn-hero-layer--3 { top: 2px; animation-delay: -4s; border-color: color-mix(in srgb, var(--accent-amber) 55%, transparent); background: linear-gradient(135deg, color-mix(in srgb, var(--accent-amber) 22%, transparent), transparent); }
+@keyframes kn-hero-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -5px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kn-hero-layer { animation: none; }
+  .kn-page-overview .kn-stat-card:hover { transform: none; }
+}
+@media (max-width: 1100px) { .kn-hero-stack { display: none; } }
+.kn-hero-stack { top: -22px; transform: scale(0.78); transform-origin: top center; }
+.kn-stat-link.kn-danger-text { color: var(--accent-ruby); }
+.kn-stat-link.kn-warn { color: var(--accent-amber); }

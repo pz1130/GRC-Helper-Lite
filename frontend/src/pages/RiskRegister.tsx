@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "../api";
 import { useAuth } from "../auth";
 import { EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { useViewMode, ViewToggle } from "../three/ViewToggle";
 
 type RiskStatus = "open" | "mitigating" | "accepted" | "closed";
 
@@ -32,6 +33,9 @@ interface Owner {
   email: string;
 }
 
+// 3D 柱状视图单独分包，只有切到 3D 才加载 three.js。
+const RiskBars3D = lazy(() => import("../three/RiskBars3D"));
+
 const scores = [1, 2, 3, 4, 5];
 const statuses: RiskStatus[] = ["open", "mitigating", "accepted", "closed"];
 
@@ -45,10 +49,26 @@ function riskTone(score: number): { background: string; color: string } {
 function RiskMatrix({ risks }: { risks: Risk[] }) {
   const { t } = useTranslation();
   const active = risks.filter((risk) => risk.status !== "closed");
+  const [mode, setMode] = useViewMode("grc.risks.view");
+  const cells = useMemo(
+    () => scores.flatMap((likelihood) => scores.map((impact) => ({
+      likelihood, impact, count: risks.filter((risk) => risk.status !== "closed").filter((risk) => risk.impact === impact && risk.likelihood === likelihood).length,
+    }))),
+    // 依赖写 risks 而不是 active：active 每次渲染都是新数组，写它等于不缓存。
+    [risks],
+  );
   return (
     <div className="kn-card" style={{ overflowX: "auto" }}>
-      <h3 className="kn-mt-0">{t("risks.matrix")}</h3>
+      <div className="kn-card-head">
+        <h3 className="kn-m-0">{t("risks.matrix")}</h3>
+        <ViewToggle mode={mode} onChange={setMode} />
+      </div>
       <p className="kn-secondary kn-text-xs">{t("risks.matrixHint")}</p>
+      {mode === "3d" ? (
+        <Suspense fallback={<LoadingState />}>
+          <RiskBars3D cells={cells} />
+        </Suspense>
+      ) : (
       <table aria-label={t("risks.matrix")} style={{ tableLayout: "fixed", minWidth: 520 }}>
         <thead><tr><th>{t("risks.impactLikelihood")}</th>{scores.map((likelihood) => <th key={likelihood} className="kn-text-center">{likelihood}</th>)}</tr></thead>
         <tbody>
@@ -64,6 +84,7 @@ function RiskMatrix({ risks }: { risks: Risk[] }) {
           ))}
         </tbody>
       </table>
+      )}
     </div>
   );
 }

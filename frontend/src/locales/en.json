@@ -1330,5 +1330,12 @@
     "probability": "Model probability: {{value}}%",
     "requestFailed": "The scan request did not complete successfully. Any displayed results are from the last successful read.",
     "invalidResponse": "The requirement scan response could not be read."
+  },
+  "view3d": {
+    "label": "View mode",
+    "2d": "2D",
+    "3d": "3D",
+    "unavailable": "3D view needs WebGL, which this browser does not provide.",
+    "hint": "Drag to rotate · scroll to zoom · click a node for details"
   }
 }

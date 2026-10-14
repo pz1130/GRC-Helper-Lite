@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
@@ -12,6 +12,10 @@ import { downloadGraph } from "./export";
 import { canvasHeight, MIN_CANVAS_HEIGHT, type LayoutKind } from "./layout";
 import type { GraphData, GraphEdgeData, GraphNodeData } from "./types";
 import { LoadingState } from "../../components/ui";
+import { useViewMode, ViewToggle } from "../../three/ViewToggle";
+
+// 3D 视图单独分包：只有切到 3D 才下载 three.js。
+const Graph3D = lazy(() => import("../../three/Graph3D"));
 
 const WIDTH = 960;
 
@@ -19,6 +23,7 @@ export function Graph() {
   const { t } = useTranslation();
   const [view, setView] = useState<"relations" | "mappings">("relations");
   const [layoutKind, setLayoutKind] = useState<LayoutKind>("document");
+  const [viewMode, setViewMode] = useViewMode("grc.graph.view");
   const [selectedNode, setSelectedNode] = useState<GraphNodeData | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<GraphEdgeData | null>(null);
   const [focus, setFocus] = useState<string>("");
@@ -235,6 +240,7 @@ export function Graph() {
               {view === "mappings" && ` · ${t("graph.gapCount", { count: data.nodes.filter((node) => node.is_gap).length })}`}
             </p>
             <div className="kn-row">
+              <ViewToggle mode={viewMode} onChange={setViewMode} />
               <button type="button" className="kn-btn-secondary" style={{ padding: "6px 14px", fontSize: "0.8125rem" }} onClick={() => exportGraph("svg")}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="kn-mr-1"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 {t("graph.exportSvg")}
@@ -254,6 +260,22 @@ export function Graph() {
           </div>
 
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+            {viewMode === "3d" ? (
+              <div className="kn-graph-canvas-box kn-graph-canvas-box--3d">
+                <Suspense fallback={<LoadingState />}>
+                  <Graph3D
+                    data={data}
+                    height={MIN_CANVAS_HEIGHT}
+                    selectedNodeKey={selectedNode?.key}
+                    onSelectNode={(node) => {
+                      setSelectedEdge(null);
+                      setSelectedNode(node);
+                    }}
+                  />
+                </Suspense>
+                <p className="g3d-hint">{t("view3d.hint")}</p>
+              </div>
+            ) : (
             <div ref={canvasWrapper} className="kn-graph-canvas-box" style={{ flex: 1, minWidth: 0, overflow: "auto", maxHeight: MIN_CANVAS_HEIGHT }}>
               <Canvas
                 data={data}
@@ -274,6 +296,7 @@ export function Graph() {
                 }}
               />
             </div>
+            )}
             <Drawer
               node={selectedNode}
               edge={selectedEdge}
