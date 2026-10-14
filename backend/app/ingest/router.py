@@ -296,10 +296,10 @@ async def replace_with_plain_text(
     session: AsyncSession = Depends(get_session),
 ) -> Document:
     """用人工粘贴的编号文本给解析失败的文档兜底：按编号切成条款。"""
+    from app.parsing.contract import SourceBlock
     from app.parsing.flatten import persist
     from app.parsing.numbering import assemble_tree, extract_headings
     from app.parsing.unstructured import structure_warnings
-    from app.parsing.contract import SourceBlock
 
     document = await session.get(Document, document_id)
     if document is None:

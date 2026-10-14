@@ -44,12 +44,13 @@ async def search(
     *,
     limit: int = 20,
     document_id: int | None = None,
+    user_id: int | None = None,
 ) -> SearchResponse:
     query = query.strip()
     if not query:
         return SearchResponse(query=query, expanded_terms=[], hits=[], vector_used=False)
 
-    terms = await expand(session, query)
+    terms = await expand(session, query, user_id=user_id)
     text_hits = await fulltext.search(
         session, " ".join(terms), limit=CANDIDATES, document_id=document_id
     )

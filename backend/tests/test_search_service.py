@@ -40,12 +40,11 @@ async def _corpus(db_session) -> Document:
 @pytest.mark.asyncio
 async def test_returns_hits_with_citation_and_document_title(db_session):
     await _corpus(db_session)
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-        ):
-            response = await search(db_session, "privileged accounts VaultKeeper")
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        response = await search(db_session, "privileged accounts VaultKeeper")
 
     assert response.hits
     top = response.hits[0]
@@ -57,12 +56,11 @@ async def test_returns_hits_with_citation_and_document_title(db_session):
 @pytest.mark.asyncio
 async def test_vector_used_is_reported_true_when_vectors_exist(db_session):
     await _corpus(db_session)
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-        ):
-            response = await search(db_session, "privileged")
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        response = await search(db_session, "privileged")
     assert response.vector_used is True
 
 
@@ -83,12 +81,11 @@ async def test_embedding_call_failure_also_degrades(db_session):
     from app.llm.providers.base import ProviderError
 
     await _corpus(db_session)
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(side_effect=ProviderError("上游 500", retryable=True)),
-        ):
-            response = await search(db_session, "privileged accounts")
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(side_effect=ProviderError("上游 500", retryable=True)),
+    ):
+        response = await search(db_session, "privileged accounts")
     assert response.hits
     assert response.vector_used is False
     assert response.vector_unavailable_reason == "provider_error"
@@ -100,13 +97,11 @@ async def test_expanded_terms_are_used_for_fulltext_and_reported(db_session):
     with patch(
         "app.search.service.expand",
         new=AsyncMock(return_value=["特权账号", "privileged accounts"]),
+    ), patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
     ):
-        with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-            with patch(
-                "app.search.service.embed",
-                new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-            ):
-                response = await search(db_session, "特权账号")
+        response = await search(db_session, "特权账号")
     assert "privileged accounts" in response.expanded_terms
     assert response.hits
 
@@ -114,12 +109,11 @@ async def test_expanded_terms_are_used_for_fulltext_and_reported(db_session):
 @pytest.mark.asyncio
 async def test_document_filter_is_passed_through(db_session):
     doc = await _corpus(db_session)
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-        ):
-            response = await search(db_session, "privileged", document_id=doc.id + 999)
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        response = await search(db_session, "privileged", document_id=doc.id + 999)
     assert response.hits == []
 
 
@@ -135,12 +129,11 @@ async def test_blank_query_returns_empty_without_calling_anything(db_session):
 @pytest.mark.asyncio
 async def test_hits_carry_both_ranks_for_debugging(db_session):
     await _corpus(db_session)
-    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")):
-        with patch(
-            "app.search.service.embed",
-            new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
-        ):
-            response = await search(db_session, "privileged accounts")
+    with patch("app.search.service.current_model", new=AsyncMock(return_value="m1")), patch(
+        "app.search.service.embed",
+        new=AsyncMock(return_value=([[0.1] * EMBEDDING_DIM], 1)),
+    ):
+        response = await search(db_session, "privileged accounts")
     top = response.hits[0]
     assert top.rank_fulltext is not None or top.rank_vector is not None
 

@@ -18,7 +18,7 @@ TEST_DATABASE_URL = os.environ.get(
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 os.environ.setdefault("APP_SECRET_KEY", "test-secret-key-not-for-production-use")
 os.environ.setdefault("JWT_SECRET", "test-jwt-secret-not-for-production-use")
-from app.config import get_settings  # noqa: E402
+from app.config import get_settings
 
 get_settings.cache_clear()
 
@@ -26,8 +26,9 @@ get_settings.cache_clear()
 @pytest_asyncio.fixture(scope="session")
 async def _schema() -> AsyncGenerator[None, None]:
     """整个测试会话建一次表结构。"""
-    from alembic import command
     from alembic.config import Config
+
+    from alembic import command
 
     cfg = Config("alembic.ini")
     cfg.set_main_option("sqlalchemy.url", TEST_DATABASE_URL)

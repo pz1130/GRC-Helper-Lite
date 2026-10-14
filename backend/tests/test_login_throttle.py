@@ -163,3 +163,14 @@ async def test_an_admin_password_reset_unlocks_the_account(client, db_session, f
     resp = await client.post("/api/auth/login",
                              json={"email": "lead@example.com", "password": "new-pass-1"})
     assert resp.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_generic_allow_counts_within_window():
+    from uuid import uuid4
+
+    from app.iam.throttle import allow
+
+    key = f"test:allow:{uuid4()}"
+    results = [await allow(key, limit=3, window_seconds=60) for _ in range(5)]
+    assert results == [True, True, True, False, False]

@@ -76,9 +76,8 @@ async def test_real_upstream_failure_still_propagates(db_session):
         with patch(
             "app.indexing.tasks.embed_pending",
             new=AsyncMock(side_effect=ProviderError("上游返回 500", retryable=True)),
-        ):
-            with pytest.raises(ProviderError):
-                await index_document({}, doc.id)
+        ), pytest.raises(ProviderError):
+            await index_document({}, doc.id)
 
 
 @pytest.mark.asyncio
