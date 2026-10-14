@@ -42,5 +42,15 @@ testpaths = ["tests"]
 line-length = 100
 target-version = "py312"
 
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI 依赖注入写在默认参数里是框架约定，不是可变默认值。
+extend-immutable-calls = [
+    "fastapi.Depends",
+    "fastapi.File",
+    "fastapi.Form",
+    "fastapi.Query",
+    "app.iam.deps.require",
+]
+
 [tool.setuptools.packages.find]
 include = ["app*"]

@@ -25,13 +25,13 @@ def _make_docx(tmp_path: Path) -> Path:
 
 
 async def _doc(db_session, path: Path, **kwargs) -> Document:
-    defaults = dict(
-        title="Guideline",
-        doc_type=DocType.GUIDELINE,
-        file_hash="f" * 64,
-        file_path=str(path),
-        original_filename=path.name,
-    )
+    defaults = {
+        "title": "Guideline",
+        "doc_type": DocType.GUIDELINE,
+        "file_hash": "f" * 64,
+        "file_path": str(path),
+        "original_filename": path.name,
+    }
     defaults.update(kwargs)
     document = Document(**defaults)
     db_session.add(document)
@@ -108,7 +108,7 @@ async def test_parse_failure_records_a_specific_reason(db_session, tmp_path):
     broken.write_bytes(b"not a docx")
     document = await _doc(db_session, broken)
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: B017 —— 只断言坏文件会失败，具体异常类型不在本测试范围
         await run_parse(db_session, document)
 
     assert document.status is DocStatus.PARSE_FAILED

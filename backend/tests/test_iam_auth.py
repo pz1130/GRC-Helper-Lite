@@ -8,12 +8,12 @@ from app.iam.security import hash_password
 
 
 async def _make_user(db_session, **kwargs) -> User:
-    defaults = dict(
-        email="lead@example.com",
-        name="GRC Lead",
-        role=Role.GRC_LEAD,
-        password_hash=hash_password("pw123456"),
-    )
+    defaults = {
+        "email": "lead@example.com",
+        "name": "GRC Lead",
+        "role": Role.GRC_LEAD,
+        "password_hash": hash_password("pw123456"),
+    }
     defaults.update(kwargs)
     user = User(**defaults)
     db_session.add(user)
