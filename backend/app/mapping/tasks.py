@@ -17,7 +17,21 @@ from app.llm.providers.base import ProviderError
 from app.llm.routing import routed_model
 from app.llm.runner import run
 from app.llm.validation import ValidationFailure
-from app.mapping.batching import build_batches, render_controls, render_items
+from app.mapping.batching import (
+    build_batches,
+    chunk_items,
+    render_controls,
+    render_controls_unchecked,
+    render_items,
+    split_to_fit,
+)
+from app.mapping.candidates import (
+    TOP_K,
+    control_text,
+    item_text,
+    load_vectors,
+    rank_candidates,
+)
 from app.mapping.citations import MappingCitationValidator
 from app.mapping.prompts import MAPPING_SCHEMA, MAPPING_SYSTEM, MAPPING_TASK_KEY
 from app.review import service as review_service
@@ -65,19 +79,54 @@ async def run_mapping(
     controls = list(await session.scalars(active_controls().order_by(Control.id)))
     if not controls:
         raise AppError("控制点库为空，无法映射；请先在确认队列中确认控制点", code="mapping.no_controls")
-    controls_text = render_controls(controls)
+    by_id = {control.id: control for control in controls}
 
     items = list(await session.scalars(
         select(FrameworkItem)
         .where(FrameworkItem.framework_id == framework_id)
         .order_by(FrameworkItem.order_index, FrameworkItem.id)
     ))
-    batches = [
-        (render_items(batch), batch.mappable_ids)
-        for batch in build_batches(items)
+    raw_batches = build_batches(items)
+
+    # K16/K17：每个框架项预筛 TOP_K 个候选控制点，提示词只放候选。
+    # 控制点不多于 TOP_K 时不必预筛——全给，与原先行为一致。
+    mappable = [
+        (item.id, item_text(item))
+        for batch in raw_batches for item in batch.items if item.id in batch.mappable_ids
     ]
+    if len(controls) <= TOP_K:
+        candidates = {item_id: list(by_id) for item_id, _ in mappable}
+        vector_used = False
+    else:
+        item_vectors, control_vectors = await load_vectors(session, mappable, list(by_id))
+        vector_used = bool(item_vectors and control_vectors)
+        candidates = rank_candidates(
+            mappable,
+            [(control.id, control_text(control)) for control in controls],
+            item_vectors=item_vectors,
+            control_vectors=control_vectors,
+        )
+
+    def _size(control_ids: list[int]) -> int:
+        return len(render_controls_unchecked([by_id[cid] for cid in control_ids]))
+
+    batches = []
+    # 控制点不多于 TOP_K 时没有预筛，保持原来的分批（全库上下文，与旧行为一致）。
+    sized = raw_batches if len(controls) <= TOP_K else [
+        piece for batch in raw_batches for piece in chunk_items(batch)
+    ]
+    for batch in sized:
+        for piece, control_ids in split_to_fit(batch, candidates, _size):
+            if not control_ids:
+                continue
+            batches.append((
+                render_items(piece),
+                piece.mappable_ids,
+                render_controls([by_id[cid] for cid in control_ids]),
+            ))
     summary: dict[str, Any] = {
         "batches": len(batches),
+        "candidate_vector_used": vector_used,
         "proposals": 0,
         "rejected": 0,
         "failed": 0,
@@ -90,11 +139,11 @@ async def run_mapping(
         "resumed_proposal_ids": [],
     }
 
-    for items_text, item_ids in batches:
+    for items_text, item_ids, controls_text in batches:
         prompt = (
             "# Framework items to assess\n"
             + items_text
-            + "\n# All available controls\n"
+            + "\n# Candidate controls (pre-selected as most relevant to these items)\n"
             + controls_text
             + "\nOutput JSON Schema:\n"
             + json.dumps(MAPPING_SCHEMA)

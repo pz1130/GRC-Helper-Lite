@@ -7,6 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.clauses.models import Clause
+from app.iam import audit
+from app.llm.citation_repair import repair_quote
 from app.llm.validation import clause_source, normalize
 
 __all__ = ["ClauseCitationValidator", "clause_source", "normalize"]
@@ -22,6 +24,8 @@ class ClauseCitationValidator:
         self._document_id = document_id
         self._clause_ids = frozenset(clause_ids) if clause_ids is not None else None
         self._item_key = item_key
+        # 本次校验里修复过的引文，供调用方与测试查看；每条同时写进审计日志。
+        self.repairs: list[dict[str, Any]] = []
         self._target_clause_ids = (
             frozenset(target_clause_ids) if target_clause_ids is not None else None
         )
@@ -70,5 +74,21 @@ class ClauseCitationValidator:
             if self._clause_ids is not None and cid not in self._clause_ids:
                 return f"cited clause {cid} is not in this batch"
             if normalize(source["quote"]) not in normalize(clause_source(clause)):
-                return f"the quote was not found in the text of clause {cid}"
+                fixed = repair_quote(source["quote"], clause_source(clause))
+                if fixed is None:
+                    return f"the quote was not found in the text of clause {cid}"
+                await self._record_repair("clause", cid, source["quote"], fixed)
+                source["quote"] = fixed.quote
         return None
+
+    async def _record_repair(self, entity: str, entity_id: int, original: str, fixed: Any) -> None:
+        entry = {
+            "entity": entity, "entity_id": entity_id, "original": original,
+            "repaired": fixed.quote, "ratio": fixed.ratio, "edited_tokens": fixed.edited_tokens,
+        }
+        self.repairs.append(entry)
+        await audit.record(
+            self._session, user=None, action="citation.repair", entity_type=entity,
+            entity_id=entity_id, before={"quote": original},
+            after={"quote": fixed.quote, "ratio": fixed.ratio, "edited_tokens": fixed.edited_tokens},
+        )

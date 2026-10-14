@@ -133,15 +133,20 @@ async def test_a_framework_with_no_controls_refuses_to_run(harness):
     harness.run.assert_not_awaited()
 
 
-async def test_a_control_library_over_the_limit_fails_before_spending_tokens(harness):
+async def test_a_large_control_library_is_prefiltered_instead_of_failing(harness, monkeypatch):
+    """K16：库超过原先的 60000 字符上限也照常映射，提示词只带 TOP_K 个候选。"""
     huge = [
-        SimpleNamespace(id=n, code=f"C-{n:04d}", title="t", statement="x" * 1000)
+        SimpleNamespace(id=n, code=f"C-{n:04d}", title="Identity management" if n % 7 == 0 else "Backup",
+                        statement=("Identities are managed. " if n % 7 == 0 else "Backups run. ") + "x" * 1000)
         for n in range(1, 200)
     ]
+    monkeypatch.setattr(tasks, "load_vectors", AsyncMock(return_value=({}, {})))
     harness.session.scalars = AsyncMock(side_effect=[huge, harness.items])
-    with pytest.raises(AppError):
-        await tasks.run_mapping(harness.session, 3)
-    harness.run.assert_not_awaited()
+    summary = await tasks.run_mapping(harness.session, 3)
+    assert summary["batches"] == 1
+    prompt = harness.run.await_args.kwargs["prompt"]
+    assert prompt.count("[control_id=") == tasks.TOP_K
+    assert "[control_id=7]" in prompt and "[control_id=1]" not in prompt
 
 
 async def test_a_cached_checkpoint_skips_the_batch(harness):

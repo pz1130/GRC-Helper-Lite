@@ -183,11 +183,19 @@ async def test_mapping_candidates_skip_a_merged_control(db_session, monkeypatch)
     from app.mapping import tasks
 
     winner, loser = await _merged_pair(db_session)
-    # 只要框架、不要要求项：render_controls 在分批之前就会跑，避免真打模型。
+    # 候选按批渲染：需要一个要求项才有批次；模型调用替换掉，只看渲染了哪些控制点。
+    from app.llm.validation import ValidationFailure
+
     framework = Framework(
         key="nist-csf-2.0", name_zh="框架", name_en="Framework", version="2.0", source="nist.gov"
     )
     db_session.add(framework)
+    await db_session.flush()
+    db_session.add(FrameworkItem(
+        framework_id=framework.id, code="PR.AA-01", title="Identities",
+        description="Identities and credentials are managed", level=1,
+        attributes={"is_requirement": True},
+    ))
     await db_session.flush()
     seen: list[str] = []
     real = tasks.render_controls
@@ -197,6 +205,8 @@ async def test_mapping_candidates_skip_a_merged_control(db_session, monkeypatch)
         return real(controls)
 
     monkeypatch.setattr(tasks, "render_controls", capturing)
+    monkeypatch.setattr(tasks, "routed_model", AsyncMock(return_value="m"))
+    monkeypatch.setattr(tasks, "run", AsyncMock(side_effect=ValidationFailure("stub")))
     await tasks.run_mapping(db_session, framework.id)
 
     assert winner.code in seen
