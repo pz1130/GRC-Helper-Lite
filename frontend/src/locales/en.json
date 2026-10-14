@@ -1338,6 +1338,12 @@
     "unavailable": "3D view needs WebGL, which this browser does not provide.",
     "hint": "Drag to rotate · scroll to zoom · click a node for details",
     "score": "Score {{value}}",
-    "nodeList": "Graph nodes"
+    "nodeList": "Graph nodes",
+    "legend": {
+      "control": "Control",
+      "framework": "Framework requirement",
+      "risk": "Risk / coverage gap",
+      "policy": "Policy document"
+    }
   }
 }

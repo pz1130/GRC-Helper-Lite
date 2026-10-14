@@ -31,7 +31,17 @@ export interface SceneKit {
 
 export function createScene(
   host: HTMLElement,
-  opts: { autoRotate?: boolean; cameraPos: [number, number, number]; target?: [number, number, number]; bloom?: number },
+  opts: {
+    autoRotate?: boolean;
+    cameraPos: [number, number, number];
+    target?: [number, number, number];
+    bloom?: number;
+    /** 入场镜头：从远处侧上方缓缓推近到 cameraPos。 */
+    intro?: boolean;
+    /** false 时不接管指针（装饰用小场景）。 */
+    interactive?: boolean;
+    shadows?: boolean;
+  },
 ): SceneKit {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
   const reducedMotion = prefersReducedMotion();
@@ -43,9 +53,11 @@ export function createScene(
   renderer.setSize(width(), height());
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  // 环境贴图做了较强模糊（sigma 0.12）：RoomEnvironment 里的灯板若反射得太清晰，
+  // 竖直的清漆柱面上会出现一道道水平亮纹（v2 深色主题的「条纹」主要来自这里）。
   // 浅色主题下 ACES 会把高亮色压淡，曝光略降让品牌色更饱满。
   renderer.toneMappingExposure = isDark ? 1.05 : 0.82;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = opts.shadows !== false;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.style.display = "block";
@@ -58,7 +70,7 @@ export function createScene(
 
   const scene = new THREE.Scene();
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.12).texture;
   scene.environment = envTexture;
   scene.environmentIntensity = isDark ? 0.55 : 0.8;
 
@@ -71,8 +83,8 @@ export function createScene(
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.radius = 6;
-  key.shadow.bias = -0.0004;
-  key.shadow.normalBias = 0.6;
+  key.shadow.bias = -0.0002;
+  key.shadow.normalBias = 1.2;
   const sc = key.shadow.camera as THREE.OrthographicCamera;
   sc.left = -160; sc.right = 160; sc.top = 160; sc.bottom = -160; sc.near = 10; sc.far = 500;
   scene.add(key);
@@ -88,6 +100,7 @@ export function createScene(
   controls.autoRotate = !!opts.autoRotate && !reducedMotion;
   controls.autoRotateSpeed = 0.45;
   if (opts.target) controls.target.set(...opts.target);
+  controls.enabled = opts.interactive !== false;
   // 用户一动手就停止自转，松手 6 秒后恢复——自转只是「闲置时的展示」。
   let resumeTimer = 0;
   controls.addEventListener("start", () => {
@@ -115,6 +128,12 @@ export function createScene(
   const clock = new THREE.Clock();
   const focusTarget = new THREE.Vector3();
   let focusing = false;
+  // 入场镜头：起点在终点外侧、更高、绕 Y 轴偏一点，用 easeOutCubic 推近。
+  const introEnd = camera.position.clone();
+  const introFrom = introEnd.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), -0.7).multiplyScalar(1.55).setY(introEnd.y * 2.1);
+  const INTRO = 1.8;
+  let introT = opts.intro && !reducedMotion ? 0 : INTRO;
+  if (introT < INTRO) camera.position.copy(introFrom);
   let raf = 0;
   let visible = true;
   const loop = () => {
@@ -123,6 +142,11 @@ export function createScene(
     const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.elapsedTime;
     for (const fn of frameFns) fn(dt, t);
+    if (introT < INTRO) {
+      introT = Math.min(INTRO, introT + dt);
+      const e = 1 - Math.pow(1 - introT / INTRO, 3);
+      camera.position.lerpVectors(introFrom, introEnd, e);
+    }
     if (focusing) {
       controls.target.lerp(focusTarget, reducedMotion ? 1 : 1 - Math.pow(0.002, dt));
       if (controls.target.distanceTo(focusTarget) < 0.05) focusing = false;
@@ -252,4 +276,37 @@ export function declutterLabels(
     r.item.el.classList.toggle("is-hidden", hit);
     if (!hit) placed.push(rect);
   }
+}
+
+let contactTex: THREE.Texture | null = null;
+/**
+ * 「接触阴影」：贴在地面上的径向渐变圆斑。比 SSAO 便宜得多（SwiftShader 下也流畅），
+ * 又能让物体真正「贴地」——实时阴影负责方向感，接触阴影负责落地感。
+ */
+export function contactShadow(radius: number, isDark: boolean): THREE.Mesh {
+  if (!contactTex) {
+    const c = document.createElement("canvas");
+    c.width = c.height = 128;
+    const g = c.getContext("2d")!;
+    const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, "rgba(0,0,0,0.85)");
+    grad.addColorStop(0.45, "rgba(0,0,0,0.35)");
+    grad.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 128, 128);
+    contactTex = new THREE.CanvasTexture(c);
+  }
+  const mesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(radius * 2, radius * 2),
+    new THREE.MeshBasicMaterial({ map: contactTex, transparent: true, depthWrite: false, opacity: isDark ? 0.75 : 0.32, toneMapped: false }),
+  );
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.06;
+  mesh.renderOrder = -1;
+  return mesh;
+}
+
+/** 浅色主题里 ACES 会把颜色压粉，按 HSL 补一点饱和、压一点亮度，让色块更「实」。 */
+export function richen(color: THREE.Color, isDark: boolean): THREE.Color {
+  return isDark ? color : color.clone().offsetHSL(0, 0.12, -0.07);
 }

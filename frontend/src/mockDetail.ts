@@ -96,19 +96,27 @@ function graph() {
       n("c2", "control", "IA-2", "Identification and Authentication", "doc-2"),
       n("c3", "control", "SC-7", "Boundary Protection", "doc-1"),
       n("c4", "control", "SI-4", "System Monitoring", "doc-1"),
-      n("c5", "control", "CP-9", "System Backup", "doc-3"),
+      n("c5", "control", "CP-9", "System Backup", "doc-3", true),
       n("c6", "control", "CM-3", "Configuration Change Control", "doc-3"),
+      n("c7", "control", "AC-2", "Account Management", "doc-2", true),
+      n("f1", "framework_item", "A.5.15", "ISO 27001 Access control", "doc-1"),
+      n("f2", "framework_item", "A.8.13", "ISO 27001 Information backup", "doc-3"),
+      n("f3", "framework_item", "CC6.1", "SOC 2 Logical access", "doc-2"),
+      n("f4", "framework_item", "A.8.16", "ISO 27001 Monitoring activities", "doc-1"),
     ],
     edges: [
-      e("c1", "c2", "depends_on"), e("c4", "c1", "monitors"), e("c3", "c4", "related"),
-      e("c6", "c3", "supports"), e("c5", "c6", "related", "pending"),
+      e("c1", "c2", "depends_on"), e("c4", "c1", "depends_on"), e("c3", "c4", "duplicates"),
+      e("c6", "c3", "depends_on"), e("c5", "c6", "depends_on", "pending"), e("c7", "c2", "depends_on"),
+      e("c7", "c1", "conflicts_with"),
+      e("c1", "f1", "full"), e("c2", "f3", "full"), e("c7", "f3", "partial"), e("c5", "f2", "partial"),
+      e("c4", "f4", "full"), e("c3", "f4", "supporting", "pending"),
     ],
     groups: [
       { key: "doc-1", kind: "document", label: "Information Security Policy" },
       { key: "doc-2", kind: "document", label: "Identity Management Standard" },
       { key: "doc-3", kind: "document", label: "IT Operations Standard" },
     ],
-    stats: { nodes: 6, edges: 5, pending_edges: 1, truncated: false },
+    stats: { nodes: 11, edges: 13, pending_edges: 2, truncated: false },
   };
 }
 

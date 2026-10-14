@@ -1,16 +1,18 @@
 // 知识图谱的 3D 视图（按需加载的分包）。
 // 布局：自带的小型三维力导向，一次性算完再展示——节点数几百以内，O(n²) 足够，
 // 也免得画面一直「抖」。画质要点见 scene.ts；这里负责节点、曲线连线、流动粒子与标签。
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as THREE from "three";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { LineGeometry } from "three/examples/jsm/lines/LineGeometry.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 
 import type { GraphData, GraphEdgeData, GraphNodeData } from "../pages/graph/types";
 import { useTheme } from "../theme";
-import { createFloor, createScene, declutterLabels, themeColor } from "./scene";
+import { contactShadow, createFloor, createScene, declutterLabels, richen, themeColor } from "./scene";
 import { FloatingTip } from "./FloatingTip";
 
 const EDGE_VAR: Record<string, [string, string]> = {
@@ -21,6 +23,25 @@ const EDGE_VAR: Record<string, [string, string]> = {
   partial: ["--accent-cyan", "#0891b2"],
   supporting: ["--accent-amber", "#d97706"],
 };
+
+// 视觉类别只在 3D 视图里推导，不改接口：缺口（is_gap）视为风险，framework_item 为框架条款，
+// 其余为控制项；「制度」来自 document 分组，作为枢纽节点额外画出，把同一份制度下的节点串起来。
+type Category = "control" | "framework" | "risk" | "policy";
+const CATEGORY: Record<Category, { var: string; fb: string }> = {
+  control: { var: "--accent-blue", fb: "#5e6ad2" },
+  framework: { var: "--accent-emerald", fb: "#059669" },
+  risk: { var: "--accent-ruby", fb: "#e11d48" },
+  policy: { var: "--accent-amber", fb: "#d97706" },
+};
+const categoryOf = (node: GraphNodeData): Category => (node.is_gap ? "risk" : node.kind === "framework_item" ? "framework" : "control");
+
+function geometryFor(cat: Category): THREE.BufferGeometry {
+  // 形状区分类别（色弱用户也能分辨）：球 = 控制项，圆角方块 = 框架条款，八面体 = 风险缺口，六棱柱 = 制度。
+  if (cat === "framework") return new RoundedBoxGeometry(1.6, 1.6, 1.6, 4, 0.32);
+  if (cat === "risk") return new THREE.OctahedronGeometry(1.25, 0);
+  if (cat === "policy") return new THREE.CylinderGeometry(1.15, 1.15, 0.9, 6, 1);
+  return new THREE.SphereGeometry(1, 48, 32);
+}
 
 interface Body { node: GraphNodeData; p: THREE.Vector3; v: THREE.Vector3 }
 
@@ -92,6 +113,12 @@ export default function Graph3D({
   selectedNodeKey?: string | null;
 }) {
   const { theme } = useTheme();
+  const { t } = useTranslation();
+  const present = useMemo(() => {
+    const set = new Set<Category>(data.nodes.map(categoryOf));
+    if (data.groups.some((g) => g.kind === "document")) set.add("policy");
+    return (["control", "framework", "risk", "policy"] as Category[]).filter((c) => set.has(c));
+  }, [data]);
   const hostRef = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<{ node: GraphNodeData; x: number; y: number } | null>(null);
   const selectRef = useRef(onSelectNode);
@@ -107,7 +134,7 @@ export default function Graph3D({
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const kit = createScene(host, { autoRotate: true, cameraPos: [0, 110, 260], target: [0, 40, 0] });
+    const kit = createScene(host, { autoRotate: true, intro: true, cameraPos: [0, 110, 260], target: [0, 40, 0] });
     kit.controls.minDistance = 60;
     kit.controls.maxDistance = 700;
     kit.controls.maxPolarAngle = Math.PI * 0.49;
@@ -125,45 +152,66 @@ export default function Graph3D({
     kit.scene.add(floor);
 
     // ---------- 节点 ----------
-    const colors = {
-      control: themeColor("--accent-blue", "#5e6ad2"),
-      item: themeColor("--accent-emerald", "#059669"),
-      gap: themeColor("--accent-ruby", "#e11d48"),
-    };
-    const sphere = new THREE.SphereGeometry(1, 48, 32);
+    const geos = new Map<Category, THREE.BufferGeometry>();
+    const geo = (c: Category) => geos.get(c) ?? geos.set(c, geometryFor(c)).get(c)!;
     const glowTex = glowTexture();
-    const nodes = data.nodes.map((node, i) => {
-      const color = node.is_gap ? colors.gap : node.kind === "control" ? colors.control : colors.item;
+    const makeNode = (cat: Category, at: THREE.Vector3, base: number, code: string, title: string) => {
+      const color = richen(themeColor(CATEGORY[cat].var, CATEGORY[cat].fb), kit.isDark);
       const material = new THREE.MeshPhysicalMaterial({
-        color, roughness: 0.22, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.12,
-        sheen: 0.4, sheenColor: color.clone().lerp(new THREE.Color(0xffffff), 0.5),
+        color, roughness: cat === "policy" ? 0.32 : 0.24, metalness: cat === "framework" ? 0.25 : 0.05,
+        clearcoat: 0.8, clearcoatRoughness: 0.22, envMapIntensity: kit.isDark ? 0.6 : 0.95,
+        // 制度枢纽做成半透明「玻璃」，与实心节点区分层级
+        transmission: cat === "policy" ? 0.35 : 0, thickness: 2, ior: 1.4,
         emissive: color, emissiveIntensity: 0,
       });
-      const mesh = new THREE.Mesh(sphere, material);
-      const base = 4.2 + Math.min(3, node.pending_edges * 0.8);
+      const mesh = new THREE.Mesh(geo(cat), material);
       mesh.scale.setScalar(base);
-      mesh.position.copy(pos[i]);
+      mesh.position.copy(at);
       mesh.castShadow = true;
-      mesh.userData.index = i;
       kit.scene.add(mesh);
-
       const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
       halo.scale.setScalar(base * 5);
-      halo.position.copy(pos[i]);
+      halo.position.copy(at);
       kit.scene.add(halo);
-
+      const shadow = contactShadow(base * 1.6, kit.isDark);
+      shadow.position.set(at.x, 0.06, at.z);
+      kit.scene.add(shadow);
       const el = document.createElement("div");
-      el.className = "g3d-label";
-      el.innerHTML = `<b></b><span></span>`;
-      (el.firstChild as HTMLElement).textContent = node.code;
-      (el.lastChild as HTMLElement).textContent = node.title;
+      el.className = `g3d-label g3d-label--${cat}`;
+      el.innerHTML = `<i></i><b></b><span></span>`;
+      el.children[1].textContent = code;
+      el.children[2].textContent = title;
       const label = new CSS2DObject(el);
-      label.position.copy(pos[i]).add(new THREE.Vector3(0, base + 3, 0));
+      label.position.copy(at).add(new THREE.Vector3(0, base + 3, 0));
       label.center.set(0.5, 1);
       kit.scene.add(label);
-
-      return { node, mesh, material, halo, el, label, base, emissive: 0, scale: base };
+      return { cat, mesh, material, halo, el, label, base, emissive: 0, scale: base, spin: cat === "risk" || cat === "policy" };
+    };
+    const nodes = data.nodes.map((node, i) => {
+      const n = makeNode(categoryOf(node), pos[i], 4.2 + Math.min(3, node.pending_edges * 0.8), node.code, node.title);
+      n.mesh.userData.index = i;
+      return { ...n, node };
     });
+
+    // 制度枢纽：放在成员节点重心的正上方，用细淡线连到成员。
+    const policyLinks: { a: THREE.Vector3; b: THREE.Vector3 }[] = [];
+    const policies = data.groups
+      .filter((g) => g.kind === "document")
+      .map((g) => {
+        const members = data.nodes.map((n, i) => (n.group === g.key || n.group_extra.includes(g.key) ? i : -1)).filter((i) => i >= 0);
+        if (members.length < 2) return null;
+        const at = members.reduce((acc, i) => acc.add(pos[i]), new THREE.Vector3()).divideScalar(members.length);
+        at.y = Math.max(...members.map((i) => pos[i].y)) + 26;
+        members.forEach((i) => policyLinks.push({ a: at, b: pos[i] }));
+        return makeNode("policy", at, 5, g.label, "");
+      })
+      .filter((p): p is NonNullable<typeof p> => p !== null);
+    if (policyLinks.length) {
+      const pts = policyLinks.flatMap(({ a, b }) => [a.x, a.y, a.z, b.x, b.y, b.z]);
+      const g = new THREE.BufferGeometry();
+      g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
+      kit.scene.add(new THREE.LineSegments(g, new THREE.LineBasicMaterial({ color: themeColor(CATEGORY.policy.var, CATEGORY.policy.fb), transparent: true, opacity: kit.isDark ? 0.28 : 0.35 })));
+    }
 
     // ---------- 连线：二次贝塞尔曲线 + 屏幕空间粗线 ----------
     const resolution = new THREE.Vector2(host.clientWidth, host.clientHeight);
@@ -225,6 +273,10 @@ export default function Graph3D({
         n.mesh.scale.setScalar(n.scale);
         (n.halo.material as THREE.SpriteMaterial).opacity = Math.min(0.9, n.emissive * (kit.isDark ? 0.35 : 0.5));
         n.el.classList.toggle("is-active", active || hot);
+        if (n.spin && !kit.reducedMotion) n.mesh.rotation.y += dt * 0.5;
+      });
+      policies.forEach((p) => {
+        if (!kit.reducedMotion) p.mesh.rotation.y += dt * 0.3;
       });
       // 悬停时，相连的线变亮，其余变淡
       curves.forEach((c) => {
@@ -249,7 +301,10 @@ export default function Graph3D({
         particles.visible = false;
       }
       declutterLabels(
-        nodes.map((n, i) => ({ el: n.el, world: n.label.position, priority: n.node.key === sel ? 3 : i === hovered ? 2 : 0 })),
+        [
+          ...nodes.map((n, i) => ({ el: n.el, world: n.label.position, priority: n.node.key === sel ? 3 : i === hovered ? 2 : 0 })),
+          ...policies.map((p) => ({ el: p.el, world: p.label.position, priority: 1 })),
+        ],
         kit.camera,
         host.clientWidth,
         host.clientHeight,
@@ -293,6 +348,7 @@ export default function Graph3D({
       canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointerup", onUp);
       nodes.forEach((n) => n.el.remove());
+      policies.forEach((p) => p.el.remove());
       glowTex.dispose();
       focusRef.current = () => {};
       kit.dispose();
@@ -303,6 +359,14 @@ export default function Graph3D({
   return (
     <div className="g3d" style={{ height }}>
       <div ref={hostRef} className="g3d-canvas" />
+      <ul className="g3d-legend">
+        {present.map((c) => (
+          <li key={c} className={`g3d-legend-item g3d-legend-item--${c}`}>
+            <i aria-hidden="true" />
+            {t(`view3d.legend.${c}`)}
+          </li>
+        ))}
+      </ul>
       {hover ? (
         <FloatingTip x={hover.x} y={hover.y}>
           <div className="kn-node-tooltip-code">{hover.node.code}</div>

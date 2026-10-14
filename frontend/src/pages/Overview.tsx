@@ -2,9 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { StatCard } from "../components/ui";
 import { Link } from "react-router-dom";
+import { lazy, Suspense, useState } from "react";
+
+import { wantsHero3d } from "../three/support";
 
 import { request } from "../api";
 import { reviewState } from "../reviewDue";
+
+// three.js 很大，hero 的 3D 版按需加载；首屏先出 CSS 版，加载完再替换。
+const HeroScene = lazy(() => import("../three/HeroScene"));
 
 interface Usage {
   month_to_date_cost: number;
@@ -66,17 +72,29 @@ export function Overview() {
     queryFn: () => request<{ pending: number }>("/api/proposals/stats"),
   });
   const pendingCount = proposalStats.data?.pending ?? 0;
+  // 只在首次渲染时判定一次：中途切换会让 hero 闪一下，没必要。
+  const [hero3d] = useState(wantsHero3d);
+
+  const cssHero = (
+    <div className="kn-hero-stack" aria-hidden="true">
+      <span className="kn-hero-layer kn-hero-layer--1" />
+      <span className="kn-hero-layer kn-hero-layer--2" />
+      <span className="kn-hero-layer kn-hero-layer--3" />
+    </div>
+  );
 
   return (
     <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
       <div className="kn-cockpit-hero">
-        {/* 装饰用的「治理分层」立体示意：纯 CSS 3D，不加载 WebGL，读屏忽略。 */}
-        <div className="kn-hero-stack" aria-hidden="true">
-          <span className="kn-hero-layer kn-hero-layer--1" />
-          <span className="kn-hero-layer kn-hero-layer--2" />
-          <span className="kn-hero-layer kn-hero-layer--3" />
-        </div>
+        {/* 装饰用的「治理分层」立体示意：有 WebGL 时是真 3D 玻璃板，否则退回纯 CSS 3D；读屏忽略。 */}
+        {hero3d ? (
+          <Suspense fallback={cssHero}>
+            <HeroScene />
+          </Suspense>
+        ) : (
+          cssHero
+        )}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>

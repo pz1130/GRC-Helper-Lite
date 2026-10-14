@@ -8,7 +8,7 @@ import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
 
 import { useTheme } from "../theme";
 import { FloatingTip } from "./FloatingTip";
-import { createFloor, createScene, themeColor } from "./scene";
+import { contactShadow, createFloor, createScene, richen, themeColor } from "./scene";
 
 export interface RiskCell { likelihood: number; impact: number; count: number }
 
@@ -38,7 +38,7 @@ export default function RiskBars3D({ cells }: { cells: RiskCell[] }) {
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const kit = createScene(host, { cameraPos: [62, 70, 88], target: [0, 8, 0], bloom: 0.35 });
+    const kit = createScene(host, { cameraPos: [62, 70, 88], target: [0, 8, 0], bloom: 0.35, intro: true });
     kit.controls.maxPolarAngle = Math.PI / 2.15;
     kit.controls.minDistance = 70;
     kit.controls.maxDistance = 220;
@@ -52,7 +52,7 @@ export default function RiskBars3D({ cells }: { cells: RiskCell[] }) {
 
     for (const cell of cells) {
       const [name, fb] = tone(cell.likelihood * cell.impact);
-      const color = themeColor(name, fb);
+      const color = richen(themeColor(name, fb), kit.isDark);
       const tile = new THREE.Mesh(
         tileGeo,
         new THREE.MeshPhysicalMaterial({ color, roughness: 0.6, metalness: 0, transparent: true, opacity: kit.isDark ? 0.28 : 0.22, clearcoat: 0.3 }),
@@ -62,8 +62,9 @@ export default function RiskBars3D({ cells }: { cells: RiskCell[] }) {
       kit.scene.add(tile);
       if (cell.count === 0) continue;
       const material = new THREE.MeshPhysicalMaterial({
-        color, roughness: 0.18, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.08,
-        emissive: color, emissiveIntensity: 0, envMapIntensity: kit.isDark ? 0.6 : 1,
+        // 粗糙度稍高、清漆更柔：高光是一片柔和的反光而不是一条条锐利的灯板倒影（去条纹）。
+        color, roughness: 0.38, metalness: 0, clearcoat: 0.55, clearcoatRoughness: 0.35,
+        emissive: color, emissiveIntensity: 0, envMapIntensity: kit.isDark ? 0.45 : 0.9,
       });
       // 每根柱子按最终高度单独建几何体：拉伸一个单位高的圆角盒会把圆角和法线一起拉坏，
       // 表面出现条纹。升起动画只在 0→1 之间缩放，最终状态没有形变。
@@ -77,7 +78,11 @@ export default function RiskBars3D({ cells }: { cells: RiskCell[] }) {
       mesh.receiveShadow = false;
       mesh.scale.y = 0.01;
       const tag = label(String(cell.count), "r3d-count", new THREE.Vector3(mesh.position.x, 0, mesh.position.z));
-      kit.scene.add(mesh, tag);
+      const contact = contactShadow(CELL * 0.62, kit.isDark);
+      contact.position.x = mesh.position.x;
+      contact.position.z = mesh.position.z;
+      contact.position.y = 0.85;
+      kit.scene.add(mesh, tag, contact);
       bars.push({ mesh, material, cell, height, grow: kit.reducedMotion ? 1 : 0, glow: 0, tag });
     }
 

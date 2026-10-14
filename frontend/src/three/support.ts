@@ -48,3 +48,11 @@ export function readViewMode(key: string): "2d" | "3d" {
 export function writeViewMode(key: string, mode: "2d" | "3d"): void {
   localStorage.setItem(key, mode);
 }
+
+/** 总览 hero 是否用 WebGL 版本；规则同 3D 视图默认值（自动化浏览器与减少动态时用 CSS 版）。 */
+export function wantsHero3d(): boolean {
+  const forced = localStorage.getItem("grc.hero.view");
+  if (forced === "2d") return false;
+  if (forced !== "3d" && (navigator.webdriver || prefersReducedMotion())) return false;
+  return hasWebGL();
+}

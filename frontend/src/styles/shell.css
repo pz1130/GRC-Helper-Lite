@@ -293,3 +293,52 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
 
 /* 窄屏抽屉：业务域标题已列出「确认队列」，下面那段的小标题就重复了 */
 @media (max-width: 900px) { .ws-panel-section .ws-panel-subtitle { display: none; } .ws-panel-section { border-top: 0; margin-top: 0; } }
+
+/* ---------- 3D v3 ---------- */
+/* 标签：更紧凑的排版——等宽编号 + 正文标题，类别色点；半透明毛玻璃底，在 3D 背景上不发脏 */
+.g3d-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px 3px 6px; border-radius: 999px;
+  font: 500 11px/1.25 var(--font-sans); letter-spacing: 0.005em;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--stage-card) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+  -webkit-backdrop-filter: blur(6px) saturate(1.4); backdrop-filter: blur(6px) saturate(1.4);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08), 0 4px 12px -4px rgba(16, 24, 40, 0.18);
+  transition: opacity 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  max-width: 240px; white-space: nowrap;
+}
+.g3d-label i { width: 6px; height: 6px; border-radius: 50%; flex: none; background: var(--dot, var(--accent-blue)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--dot, var(--accent-blue)) 25%, transparent); }
+.g3d-label b { font: 600 10.5px/1.25 var(--font-mono); letter-spacing: 0; font-variant-numeric: tabular-nums; }
+.g3d-label span:empty { display: none !important; }
+.g3d-label--control { --dot: var(--accent-blue); }
+.g3d-label--framework { --dot: var(--accent-emerald); }
+.g3d-label--risk { --dot: var(--accent-ruby); }
+.g3d-label--policy { --dot: var(--accent-amber); }
+.g3d-label--policy b { font-family: var(--font-sans); font-weight: 600; letter-spacing: -0.005em; }
+.g3d-label.is-active { border-color: var(--dot, var(--accent-blue)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot, var(--accent-blue)) 18%, transparent), 0 6px 18px -6px rgba(16, 24, 40, 0.3); }
+
+/* 图例：左上角的一列类别说明，形状与 3D 中一致 */
+.g3d-legend {
+  position: absolute; top: 10px; left: 10px; margin: 0; padding: 8px 10px; list-style: none;
+  display: grid; gap: 5px; pointer-events: none;
+  font: 500 11px/1.2 var(--font-sans); color: var(--text-secondary);
+  background: color-mix(in srgb, var(--stage-card) 85%, transparent);
+  border: 1px solid var(--stage-border); border-radius: 10px;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.g3d-legend-item { display: flex; align-items: center; gap: 7px; }
+.g3d-legend-item i { width: 9px; height: 9px; flex: none; background: var(--dot); }
+.g3d-legend-item--control { --dot: var(--accent-blue); }
+.g3d-legend-item--control i { border-radius: 50%; }
+.g3d-legend-item--framework { --dot: var(--accent-emerald); }
+.g3d-legend-item--framework i { border-radius: 2px; }
+.g3d-legend-item--risk { --dot: var(--accent-ruby); }
+.g3d-legend-item--risk i { transform: rotate(45deg) scale(0.85); border-radius: 1px; }
+.g3d-legend-item--policy { --dot: var(--accent-amber); }
+.g3d-legend-item--policy i { clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); }
+.r3d-count { font-variant-numeric: tabular-nums; letter-spacing: 0; }
+
+/* 总览 hero 的 WebGL 版：与 CSS 版占同一位置 */
+.kn-hero-3d { position: absolute; right: 230px; top: -34px; width: 230px; height: 150px; pointer-events: none; }
+@media (max-width: 1100px) { .kn-hero-3d { display: none; } }
