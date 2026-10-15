@@ -1,3 +1,4 @@
+import { setMotionPref, useMotionPref, type MotionPref } from "../motion";
 // 各外壳共用的小部件：用户卡、主题切换、心跳胶囊、待办胶囊。
 // 心跳不加 role="status"：各页面的 e2e 用 getByRole("status") 取自己那条
 // 操作结果提示，顶栏常驻一个同角色元素会让它们撞上 strict mode violation。
@@ -56,6 +57,31 @@ export function ThemeToggle({ compact }: { compact?: boolean }) {
             </svg>
           )}
           {compact ? null : <span>{value === "light" ? "Light" : "Dark"}</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** 动画档位：System / On / Off。默认 On——见 src/motion.ts 的说明。 */
+export function MotionToggle() {
+  const pref = useMotionPref();
+  const opts: { value: MotionPref; label: string }[] = [
+    { value: "system", label: "System" },
+    { value: "on", label: "On" },
+    { value: "off", label: "Off" },
+  ];
+  return (
+    <div className="kn-segmented-pill ws-pref-seg" role="group" aria-label="Animations">
+      {opts.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          className={`kn-segmented-pill-btn ${pref === o.value ? "active" : ""}`}
+          aria-pressed={pref === o.value}
+          onClick={() => setMotionPref(o.value)}
+        >
+          {o.label}
         </button>
       ))}
     </div>

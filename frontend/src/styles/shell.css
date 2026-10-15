@@ -251,10 +251,7 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
   0%, 100% { translate: 0 0; }
   50% { translate: 0 -5px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .kn-hero-layer { animation: none; }
-  .kn-page-overview .kn-stat-card:hover { transform: none; }
-}
+
 @media (max-width: 1100px) { .kn-hero-stack { display: none; } }
 .kn-hero-stack { top: -22px; transform: scale(0.78); transform-origin: top center; }
 .kn-stat-link.kn-danger-text { color: var(--accent-ruby); }
@@ -539,3 +536,45 @@ pre.kn-clause-body { min-height: 0; resize: none; }
 }
 .kn-proposal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--stage-border); }
 .kn-reason-input { flex: 1; min-width: 220px; }
+
+/* ---------- 修订：图标轨加宽、底部区域重排 ----------
+ * Windows 上 125%/150% 缩放时 56px 的轨与 18px 图标显得太小、难点；改为 64px 轨、44px 点击区、22px 图标，
+ * 提示文字也放大。 */
+.ws-shell { grid-template-columns: 64px 240px minmax(0, 1fr); }
+.ws-shell--collapsed { grid-template-columns: 64px 0 minmax(0, 1fr); }
+.ws-rail { padding: 14px 0; gap: 14px; }
+.ws-rail-items { gap: 12px; padding: 0 10px; }
+.ws-rail-group { gap: 4px; padding-bottom: 12px; }
+.ws-rail-item { width: 44px; height: 44px; border-radius: 10px; color: var(--text-secondary); }
+.ws-rail-item svg { width: 22px; height: 22px; }
+.ws-rail-item::after {
+  left: 54px; padding: 6px 10px; border-radius: 8px; font-size: 0.8125rem; font-weight: 600;
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.35); z-index: 40;
+}
+.ws-rail-badge { top: 3px; right: 3px; min-width: 17px; height: 17px; font-size: 0.6875rem; }
+.ws-rail-foot { padding-bottom: 4px; }
+.ws-rail-foot .kn-avatar { width: 36px; height: 36px; font-size: 0.9375rem; }
+
+/* 底部：状态 / 偏好 / 账户 三段，各自整行。 */
+.ws-panel-foot { align-items: stretch; gap: 10px; padding: 10px 4px 2px; border-top: 1px solid var(--stage-border); }
+.ws-panel-foot > .kn-health-pill, .ws-panel-foot > :first-child { align-self: flex-start; }
+.ws-prefs { display: flex; flex-direction: column; gap: 8px; }
+.ws-pref-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ws-pref-label { font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); }
+.ws-pref-row .kn-segmented-pill-btn { font-size: 0.75rem; padding: 4px 8px; }
+.ws-account {
+  padding: 8px 10px; border-radius: 10px; border: 1px solid var(--stage-border); background: var(--stage-card);
+}
+.ws-account .kn-user-chip { width: 100%; gap: 10px; }
+.ws-account .kn-avatar { width: 32px; height: 32px; flex: none; }
+.ws-account .kn-user-chip-text { flex: 1; }
+.ws-account .kn-btn-logout-compact { margin-left: auto; flex: none; }
+/* 1366×768 @125% 只有约 614px 高：面板内容超出时滚动，不裁掉底部账户区。 */
+.ws-panel { overflow-y: auto; overscroll-behavior: contain; }
+.ws-rail-item::after { display: none; }
+.ws-rail-tip {
+  position: fixed; z-index: 200; transform: translateY(-50%); pointer-events: none;
+  padding: 6px 10px; border-radius: 8px; background: var(--text-primary); color: var(--stage-bg);
+  font-size: 0.8125rem; font-weight: 600; white-space: nowrap; box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.35);
+  animation: kn-fade var(--dur-fast, 150ms) ease-out both;
+}

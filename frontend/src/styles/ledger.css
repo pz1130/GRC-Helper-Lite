@@ -157,13 +157,7 @@ input:focus, select:focus, textarea:focus {
 }
 input, select, textarea { border-radius: var(--radius-sm); }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
+
 
 /* ---------- 表格：审阅场景下的密度与可读性 ---------- */
 .kn-table-container { border-radius: var(--radius-lg); }

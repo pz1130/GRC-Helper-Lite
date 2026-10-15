@@ -6,7 +6,7 @@ import { PageErrorBoundary } from "./ErrorBoundary";
 import { BrandLogo, BrandWordmark } from "./BrandLogo";
 import { CommandPalette } from "./CommandPalette";
 import { useNavModel } from "./nav";
-import { HealthPill, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
+import { HealthPill, MotionToggle, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
 
 const PANEL_KEY = "grc.ws.panel";
 // 窄屏底部标签栏放最常用的四页，其余进抽屉。
@@ -54,6 +54,15 @@ export function Layout() {
     );
   }, [location.pathname, navGroups]);
 
+  // 图标轨提示：轨内列表需要纵向滚动（矮屏 + 系统缩放），overflow 会裁掉绝对定位的 ::after 提示，
+  // 所以改为 fixed 定位的浮层，按悬停项的位置放置。
+  const [tip, setTip] = useState<{ label: string; top: number; left: number } | null>(null);
+  const showTip = (label: string) => (e: { currentTarget: HTMLElement }) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    setTip({ label, top: r.top + r.height / 2, left: r.right + 10 });
+  };
+  const hideTip = () => setTip(null);
+
   return (
     <div className={`ws-shell${panelOpen ? "" : " ws-shell--collapsed"}${drawerOpen ? " ws-shell--drawer" : ""}`}>
       <nav className="ws-rail" aria-label={t("app.name")}>
@@ -70,7 +79,10 @@ export function Layout() {
                   end={item.to === "/"}
                   className={({ isActive }) => `ws-rail-item${isActive ? " active" : ""}`}
                   aria-label={item.label}
-                  data-tip={item.label}
+                  onMouseEnter={showTip(item.label)}
+                  onFocus={showTip(item.label)}
+                  onMouseLeave={hideTip}
+                  onBlur={hideTip}
                 >
                   {item.icon}
                   {item.badge != null ? <span className="ws-rail-badge">{item.badge}</span> : null}
@@ -83,6 +95,12 @@ export function Layout() {
           <UserChip showName={false} />
         </div>
       </nav>
+
+      {tip ? (
+        <div className="ws-rail-tip" role="tooltip" style={{ top: tip.top, left: tip.left }}>
+          {tip.label}
+        </div>
+      ) : null}
 
       <aside className="ws-panel" aria-label={activeGroup.title}>
         {/* 图标轨里已经有标识，这里只放字标，避免两个标识并排 */}
@@ -118,9 +136,22 @@ export function Layout() {
           <span className="ws-panel-subtitle">{t("nav.review")}</span>
           <PendingPill count={pendingCount} />
         </div>
+        {/* 底部区域：状态、偏好、账户分成三行，各占整行，避免挤在一起互相遮挡。 */}
         <div className="ws-panel-foot">
           <HealthPill state={healthState} label={healthLabel} hint={t("topbar.systemDegradedHint")} />
-          <ThemeToggle compact />
+          <div className="ws-prefs">
+            <div className="ws-pref-row">
+              <span className="ws-pref-label">Theme</span>
+              <ThemeToggle />
+            </div>
+            <div className="ws-pref-row">
+              <span className="ws-pref-label">Animations</span>
+              <MotionToggle />
+            </div>
+          </div>
+          <div className="ws-account">
+            <UserChip />
+          </div>
         </div>
       </aside>
 

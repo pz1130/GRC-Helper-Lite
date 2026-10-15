@@ -6,7 +6,7 @@ import { ApiError } from "../api";
 import { useAuth } from "../auth";
 import { BrandLogo, BrandWordmark } from "../components/BrandLogo";
 import { useTheme } from "../theme";
-import { hasWebGL, prefersReducedMotion } from "../three/support";
+import { wantsHero3d } from "../three/support";
 
 // three.js 很大：登录页的品牌视觉按需加载，失败或无 WebGL 时退回纯 SVG 示意。
 const HeroScene = lazy(() => import("../three/HeroScene"));
@@ -18,7 +18,8 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const hero3d = hasWebGL() && !prefersReducedMotion() && !navigator.webdriver;
+  // 与总览 hero 同一套规则：有 WebGL 且动效档位为 full 才用 3D；自动化浏览器默认 CSS 版。
+  const hero3d = wantsHero3d();
 
   async function submit(event: FormEvent) {
     event.preventDefault();

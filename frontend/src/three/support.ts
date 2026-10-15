@@ -1,6 +1,8 @@
 // 3D 视图的公共判断。这个文件**不 import three**：页面在决定要不要加载 3D 分包之前
 // 就要调用它，import three 会把整个库拉进主包，代码分割就白做了。
 
+import { motionLevel } from "../motion";
+
 let webglCache: boolean | null = null;
 
 /** 能否创建 WebGL 上下文。不能时页面退回 2D，不渲染一块黑画布。 */
@@ -15,8 +17,9 @@ export function hasWebGL(): boolean {
   return webglCache;
 }
 
+/** 是否应减少运动：由应用内「动画」设置决定（默认开启），只有选了 System 且系统要求减少、或选了 Off 才为真。 */
 export function prefersReducedMotion(): boolean {
-  return typeof window !== "undefined" && !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  return motionLevel() !== "full";
 }
 
 /** 读当前主题下某个 CSS 变量的颜色值，3D 材质随明暗主题取色。 */

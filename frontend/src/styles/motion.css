@@ -1,7 +1,7 @@
 /* 全站动效。原则：
  * - CSS 优先，只动 transform / opacity（合成层，60fps，不触发布局）；
  * - 时长短（150–420ms），入场用 ease-out，交互反馈用轻微回弹；
- * - prefers-reduced-motion 下全部关闭（文件末尾）；
+ * - 档位由 <html data-motion> 决定（见 src/motion.ts 与文件末尾）；
  * - 入场动画用 `both` 填充但起点仍是可见元素：Playwright 的可见性判断不受 opacity 影响，
  *   e2e 不需要等动画。 */
 :root {
@@ -12,8 +12,8 @@
   --dur-slow: 420ms;
 }
 
-@keyframes kn-route-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes kn-rise { from { opacity: 0; transform: translateY(10px) scale(0.985); } to { opacity: 1; transform: none; } }
+@keyframes kn-route-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes kn-rise { from { opacity: 0; transform: translateY(14px) scale(0.98); } to { opacity: 1; transform: none; } }
 @keyframes kn-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes kn-pop { from { opacity: 0; transform: translateY(-8px) scale(0.97); } to { opacity: 1; transform: none; } }
 @keyframes kn-dialog-in { from { opacity: 0; transform: translateY(12px) scale(0.96); } to { opacity: 1; transform: none; } }
@@ -83,13 +83,40 @@ input, select, textarea { transition: border-color var(--dur-fast) ease, box-sha
 }
 
 /* ---- 尊重「减少动态效果」：全部动画关闭，状态直接到位 ---- */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    animation-delay: 0ms !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-  .kn-stat-card:hover, button:active { transform: none !important; }
+
+
+/* ---- 动效档位 ----
+ * reduced：系统要求减少动态效果时（且用户选了 System）。只去掉大幅位移/缩放与持续漂浮，
+ * 保留短淡入和标识的轻微呼吸——这些不会引起前庭不适，去掉反而显得页面「坏了」。 */
+html[data-motion="reduced"] .ws-route,
+html[data-motion="reduced"] .ws-route .kn-page > .kn-card,
+html[data-motion="reduced"] .ws-route .kn-page > section > .kn-card,
+html[data-motion="reduced"] .ws-route .kn-bento-grid > *,
+html[data-motion="reduced"] .ws-route .kn-cockpit-metric,
+html[data-motion="reduced"] .ws-route .kn-stack-4 > .kn-card,
+html[data-motion="reduced"] .ws-route .kn-risk-layout > *,
+html[data-motion="reduced"] .ws-route .kn-table-container tbody tr,
+html[data-motion="reduced"] .ws-palette,
+html[data-motion="reduced"] .kn-dialog,
+html[data-motion="reduced"] .login-card { animation-name: kn-fade !important; }
+html[data-motion="reduced"] .kn-stat-card:hover,
+html[data-motion="reduced"] .ws-rail-item:hover svg,
+html[data-motion="reduced"] .ws-panel-item:hover .ws-panel-icon svg,
+html[data-motion="reduced"] button:active,
+html[data-motion="reduced"] .brand-mark:hover,
+html[data-motion="reduced"] a:hover > .brand-mark,
+html[data-motion="reduced"] .brand-lockup:hover .brand-mark { transform: none !important; }
+html[data-motion="reduced"] .login-brand-glow,
+html[data-motion="reduced"] .kn-hero-layer,
+html[data-motion="reduced"] .login-layer,
+html[data-motion="reduced"] .brand-sheen { animation: none !important; }
+
+/* off：用户明确关闭。所有动画/过渡瞬间到位。 */
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  animation-delay: 0ms !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
+html[data-motion="off"] .kn-stat-card:hover, html[data-motion="off"] button:active { transform: none !important; }
