@@ -402,7 +402,7 @@ def _parse_date(raw: str) -> date | None:
     for date_format in _DATE_FORMATS:
         try:
             # 只取日期部分，时区无关
-            return datetime.strptime(raw.strip(), date_format).date()  # noqa: DTZ007
+            return datetime.strptime(raw.strip(), date_format).date()
         except ValueError:
             continue
     return None
