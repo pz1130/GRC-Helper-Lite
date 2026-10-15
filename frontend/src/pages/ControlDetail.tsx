@@ -292,6 +292,8 @@ function ControlContent({ id }: { id: string }) {
 
           {saved && <p role="status">{t("common.saved")}</p>}
 
+          {/* 宽屏下来源 / 关系 / 实施 / 证据 / 映射 排成两列，不再在右侧留大片空白。 */}
+          <div className="kn-detail-grid">
           {/* Sources Section */}
           <Card className="kn-mb-5" title={<>{t("controls.sources")} · {t("controls.backedBy", { count: new Set(data.sources.map((s) => s.document_id)).size })}</>}>
             {data.sources.length === 0 && <p className="kn-muted">{t("controls.noSources")}</p>}
@@ -382,6 +384,7 @@ function ControlContent({ id }: { id: string }) {
               ))}
             </ul>
           </Card>
+          </div>
 
           {preview && (
             <div className="kn-modal-backdrop">

@@ -17,7 +17,7 @@ export interface RiskPoint { likelihood: number; impact: number; score: number; 
 
 interface Built { update: (t: number, px: number, py: number) => void; dispose: () => void }
 
-export default function HeroV2({ concept, risks }: { concept: HeroConcept; risks?: RiskPoint[] }) {
+export default function HeroV2({ concept, risks, className }: { concept: HeroConcept; risks?: RiskPoint[]; className?: string }) {
   const { theme } = useTheme();
   const hostRef = useRef<HTMLDivElement>(null);
   const riskKey = JSON.stringify(risks ?? []);
@@ -108,7 +108,7 @@ export default function HeroV2({ concept, risks }: { concept: HeroConcept; risks
     };
   }, [theme, concept, riskKey]);
 
-  return <div ref={hostRef} className={`hero-v2 hero-v2--${concept}`} aria-hidden="true" />;
+  return <div ref={hostRef} className={className ?? `hero-v2 hero-v2--${concept}`} aria-hidden="true" />;
 }
 
 type Ctx = { scene: THREE.Scene; camera: THREE.PerspectiveCamera; isDark: boolean; palette: Record<"a" | "b" | "c" | "d", THREE.Color> };

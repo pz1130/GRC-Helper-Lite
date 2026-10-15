@@ -172,3 +172,28 @@ a:hover > .brand-mark .brand-check,
 .login-brand-points { justify-items: start; margin: 0 auto; }
 .login-layers { display: grid; place-items: center; }
 .login-layer { left: 50%; margin-left: -32%; }
+
+/* 修订：登录页视觉换成控制网络地球（hero 概念 A）。舞台去掉卡片框，直接大尺寸居中。 */
+.login-brand-stage {
+  width: min(100%, 560px); height: auto; aspect-ratio: 1 / 0.82; max-height: 52vh;
+  background: none; border: 0; box-shadow: none; overflow: visible;
+}
+.login-globe { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; animation: kn-fade 900ms ease-out both; }
+.login-globe-css { position: absolute; inset: 0; display: grid; place-items: center; }
+.login-globe-css > * { grid-area: 1 / 1; }
+.lg-sphere {
+  width: 58%; aspect-ratio: 1; border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--brand-a) 18%, transparent), transparent 55%),
+    radial-gradient(circle, transparent 58%, color-mix(in srgb, var(--brand-b) 35%, transparent) 71%, transparent 72%);
+  box-shadow: inset 0 0 40px color-mix(in srgb, var(--brand-a) 30%, transparent), 0 0 60px -10px color-mix(in srgb, var(--brand-a) 35%, transparent);
+}
+.lg-ring { width: 80%; aspect-ratio: 1; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--brand-b) 45%, transparent); transform: rotateX(72deg); }
+.lg-ring--2 { width: 66%; border-color: color-mix(in srgb, var(--brand-a) 45%, transparent); transform: rotate(60deg) rotateX(72deg); animation: lg-spin 24s linear infinite; }
+.lg-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-amber); box-shadow: 0 0 12px var(--accent-amber); }
+.lg-dot--1 { transform: translate(-60px, -40px); }
+.lg-dot--2 { transform: translate(50px, 20px); background: var(--accent-emerald); box-shadow: 0 0 12px var(--accent-emerald); }
+.lg-dot--3 { transform: translate(10px, -80px); background: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue); }
+@keyframes lg-spin { to { transform: rotate(420deg) rotateX(72deg); } }
+html[data-motion="reduced"] .lg-ring--2, html[data-motion="off"] .lg-ring--2 { animation: none; }
+@media (max-width: 960px) { .login-brand-stage { width: min(100%, 340px); max-height: 30vh; } }

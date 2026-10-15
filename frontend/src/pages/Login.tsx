@@ -9,7 +9,8 @@ import { useTheme } from "../theme";
 import { wantsHero3d } from "../three/support";
 
 // three.js 很大：登录页的品牌视觉按需加载，失败或无 WebGL 时退回纯 SVG 示意。
-const HeroScene = lazy(() => import("../three/HeroScene"));
+// 登录页用 hero 概念 A（控制网络地球）：节点 = 控制项，弧线流光 = 框架间的映射。
+const HeroV2 = lazy(() => import("../three/HeroV2"));
 
 export function Login() {
   const { t } = useTranslation();
@@ -50,7 +51,7 @@ export function Login() {
         <div className="login-brand-stage">
           {hero3d ? (
             <Suspense fallback={<LoginLayers />}>
-              <HeroScene className="login-hero-3d" />
+              <HeroV2 concept="a" className="login-globe" />
             </Suspense>
           ) : (
             <LoginLayers />
@@ -169,13 +170,16 @@ export function Login() {
   );
 }
 
-/** 无 WebGL / 减少动态效果时的品牌示意：三层半透明平面，与总览 hero 同语义。 */
 function LoginLayers() {
+  // 无 WebGL / 自动化浏览器时的纯 CSS 地球：渐变球体 + 两道倾斜轨道环 + 几颗节点。
   return (
-    <div className="login-layers">
-      <span className="login-layer login-layer--1" />
-      <span className="login-layer login-layer--2" />
-      <span className="login-layer login-layer--3" />
+    <div className="login-globe-css">
+      <span className="lg-sphere" />
+      <span className="lg-ring lg-ring--1" />
+      <span className="lg-ring lg-ring--2" />
+      <span className="lg-dot lg-dot--1" />
+      <span className="lg-dot lg-dot--2" />
+      <span className="lg-dot lg-dot--3" />
     </div>
   );
 }
