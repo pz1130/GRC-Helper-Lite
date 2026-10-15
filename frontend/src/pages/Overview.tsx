@@ -10,7 +10,16 @@ import { request } from "../api";
 import { reviewState } from "../reviewDue";
 
 // three.js 很大，hero 的 3D 版按需加载；首屏先出 CSS 版，加载完再替换。
-const HeroScene = lazy(() => import("../three/HeroScene"));
+const HeroV2 = lazy(() => import("../three/HeroV2"));
+
+type HeroConcept = "a" | "b" | "c";
+/** hero 概念：开发对比用 `?hero=a|b|c`；不带参数时用默认概念。 */
+function heroConcept(): HeroConcept {
+  const q = new URLSearchParams(window.location.search).get("hero");
+  return q === "a" || q === "b" || q === "c" ? q : DEFAULT_HERO;
+}
+// 默认用风险地形：唯一由真实数据驱动的概念，且明暗主题下都最耐看。
+const DEFAULT_HERO: HeroConcept = "c";
 
 interface Usage {
   month_to_date_cost: number;
@@ -74,6 +83,14 @@ export function Overview() {
   const pendingCount = proposalStats.data?.pending ?? 0;
   // 只在首次渲染时判定一次：中途切换会让 hero 闪一下，没必要。
   const [hero3d] = useState(wantsHero3d);
+  const [concept] = useState(heroConcept);
+  // 风险地形（概念 c）用真实的风险登记数据塑形；其它概念不需要，避免多一个请求。
+  const risksQ = useQuery({
+    queryKey: ["risks"],
+    queryFn: () => request<{ likelihood: number; impact: number; inherent_score: number; status: string }[]>("/api/risks"),
+    enabled: hero3d && concept === "c",
+  });
+  const riskPoints = (risksQ.data ?? []).map((r) => ({ likelihood: r.likelihood, impact: r.impact, score: r.inherent_score, open: r.status !== "closed" && r.status !== "accepted" }));
 
   const cssHero = (
     <div className="kn-hero-stack" aria-hidden="true">
@@ -86,17 +103,17 @@ export function Overview() {
   return (
     <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
-      <div className="kn-cockpit-hero">
+      <div className={`kn-cockpit-hero${hero3d ? " kn-cockpit-hero--v2" : ""}`}>
         {/* 装饰用的「治理分层」立体示意：有 WebGL 时是真 3D 玻璃板，否则退回纯 CSS 3D；读屏忽略。 */}
         {hero3d ? (
           <Suspense fallback={cssHero}>
-            <HeroScene />
+            <HeroV2 concept={concept} risks={concept === "c" ? riskPoints : undefined} />
           </Suspense>
         ) : (
           cssHero
         )}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
-          <div>
+        <div className="kn-hero-top">
+          <div className="kn-hero-copy">
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
               <span className="kn-pulse-dot" />
               <span className="kn-text-2xs kn-badge kn-badge-emerald">
