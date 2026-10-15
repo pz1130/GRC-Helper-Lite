@@ -5,7 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.141.1",
     "uvicorn[standard]>=0.53.0",
-    "pydantic>=2.9",
+    "pydantic>=2.14.0",
     "email-validator>=2.3.0",
     "pydantic-settings>=2.15.0",
     "sqlalchemy[asyncio]>=2.0.36",
@@ -30,7 +30,7 @@ dependencies = [
 dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
-    "ruff>=0.8",
+    "ruff>=0.17.0",
     "fpdf2>=2.8",
 ]
 

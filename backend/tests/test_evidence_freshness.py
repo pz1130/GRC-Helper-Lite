@@ -22,4 +22,6 @@ def test_aware_timezones_are_compared_by_instant():
 
 
 def test_naive_fixture_values_are_supported():
-    assert display_status("collected", datetime(2026, 9, 10, 11), NOW)  # noqa: DTZ001 —— 本测试专测不带时区的值 == "expired"
+    # 本测试专测不带时区的值：按 NOW 的时区补上，11 点早于 12 点。
+    naive = datetime(2026, 9, 10, 11)
+    assert display_status("collected", naive, NOW) == "expired"
