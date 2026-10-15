@@ -30,7 +30,7 @@ dependencies = [
 dev = [
     "pytest>=9.1.1",
     "pytest-asyncio>=1.4.0",
-    "ruff>=0.8",
+    "ruff>=0.17.0",
     "fpdf2>=2.8",
 ]
 
