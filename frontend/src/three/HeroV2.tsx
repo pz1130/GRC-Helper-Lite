@@ -250,43 +250,82 @@ function glowPoints(isDark: boolean, px: number) {
  * (b) 极光丝带 + 粒子场：三条品牌色丝带缓慢起伏，粒子漂浮，指针让丝带轻轻弯向光标。
  * ------------------------------------------------------------------ */
 function buildAurora({ scene, camera, isDark, palette }: Ctx): Built {
+  // 丝带 = 柔光面 + 若干条清晰的细丝线，两者用同一段位移函数，细丝线给出「清晰轮廓」，
+  // 浅色主题下不再只是一团模糊的色雾。
+  // 浅色：正常混合 + 加深、提饱和的颜色（白底上提亮会发灰）；深色：叠加混合，颜色略提亮。
   camera.position.set(0, 0, 10);
   camera.lookAt(0, 0, 0);
   const blend = isDark ? THREE.AdditiveBlending : THREE.NormalBlending;
+  const tune = (c: THREE.Color) => {
+    const hsl = { h: 0, s: 0, l: 0 };
+    c.getHSL(hsl);
+    return new THREE.Color().setHSL(hsl.h, Math.min(1, hsl.s * (isDark ? 1.15 : 1.25)), isDark ? Math.min(0.68, hsl.l * 1.15) : hsl.l * 0.92);
+  };
+  const cols = [tune(palette.a), tune(palette.b), tune(palette.c)];
+  const cols2 = [cols[1], cols[2], cols[0]];
+  const WAVE = `
+    uniform float uT; uniform float uI; uniform vec2 uP;
+    vec3 ribbon(vec3 p, vec2 uv, out float w){
+      float x = p.x;
+      w = sin(x*0.45 + uT*0.6 + uI*1.7)*0.9 + sin(x*0.9 - uT*0.4 + uI)*0.35 + sin(x*1.9 + uT*0.9)*0.08;
+      w += uP.y*-0.6*exp(-pow(x/4. - uP.x*1.8, 2.));
+      p.y += w + (uI-1.)*0.6; p.z += cos(x*0.35 + uT*0.3 + uI)*1.2;
+      p.y += (uv.y-0.5)*(0.7+0.5*sin(x*0.6+uT*0.5+uI));
+      return p;
+    }`;
   const mats: THREE.ShaderMaterial[] = [];
-  const geo = new THREE.PlaneGeometry(16, 1.1, 320, 16);
-  [palette.a, palette.b, palette.c].forEach((col, i) => {
+  const geo = new THREE.PlaneGeometry(16, 1, 320, 24);
+  cols.forEach((col, i) => {
     const m = new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: blend,
-      uniforms: { uT: { value: 0 }, uC: { value: col }, uC2: { value: [palette.b, palette.c, palette.a][i] }, uI: { value: i }, uP: { value: new THREE.Vector2() }, uK: { value: isDark ? 0.5 : 0.38 } },
-      vertexShader: `uniform float uT; uniform float uI; uniform vec2 uP; varying vec2 vUv; varying float vH;
-        void main(){ vUv = uv; vec3 p = position; float x = p.x;
-          float w = sin(x*0.45 + uT*0.6 + uI*1.7)*0.9 + sin(x*0.9 - uT*0.4 + uI)*0.35 + sin(x*1.9 + uT*0.9)*0.08;
-          w += uP.y*-0.6*exp(-pow(x/4. - uP.x*1.8, 2.));
-          p.y += w + (uI-1.)*0.55; p.z += cos(x*0.35 + uT*0.3 + uI)*1.2;
-          p.y += (uv.y-0.5)*(0.6+0.4*sin(x*0.6+uT*0.5+uI)); vH = w;
-          gl_Position = projectionMatrix*modelViewMatrix*vec4(p,1.); }`,
-      fragmentShader: `uniform vec3 uC; uniform vec3 uC2; uniform float uK; uniform float uT; varying vec2 vUv; varying float vH;
-        void main(){ float edge = smoothstep(0.,0.45,vUv.y)*smoothstep(1.,0.55,vUv.y);
-          float ends = smoothstep(0.,0.18,vUv.x)*smoothstep(1.,0.82,vUv.x);
-          float core = exp(-pow((vUv.y-0.5)*5.5, 2.)); float streak = 0.55 + 0.45*core;
+      uniforms: { uT: { value: 0 }, uC: { value: col }, uC2: { value: cols2[i] }, uI: { value: i }, uP: { value: new THREE.Vector2() }, uK: { value: isDark ? 0.42 : 0.34 } },
+      vertexShader: `${WAVE} varying vec2 vUv; varying float vH;
+        void main(){ vUv = uv; float w; vec3 p = ribbon(position, uv, w); vH = w; gl_Position = projectionMatrix*modelViewMatrix*vec4(p,1.); }`,
+      fragmentShader: `uniform vec3 uC; uniform vec3 uC2; uniform float uK; varying vec2 vUv; varying float vH;
+        void main(){ float band = smoothstep(0.,0.3,vUv.y)*smoothstep(1.,0.7,vUv.y);
+          float ends = smoothstep(0.,0.16,vUv.x)*smoothstep(1.,0.84,vUv.x);
           vec3 c = mix(uC, uC2, smoothstep(-1.,1.,vH));
-          gl_FragColor = vec4(c, edge*ends*streak*uK); }`,
+          gl_FragColor = vec4(c, band*ends*uK); }`,
     });
     mats.push(m);
-    const mesh = new THREE.Mesh(geo, m);
-    mesh.rotation.x = -0.25;
-    scene.add(mesh);
-  });
+    scene.add(new THREE.Mesh(geo, m));
 
-  // 粒子
-  const N = 900;
+    // 细丝线：每条丝带 9 根，沿宽度分布，中间更亮
+    const LINES = 9, SEG = 400;
+    const pos: number[] = [], uvs: number[] = [];
+    for (let l = 0; l < LINES; l++) {
+      const v = 0.08 + (l / (LINES - 1)) * 0.84;
+      for (let k = 0; k < SEG; k++) {
+        for (const kk of [k, k + 1]) { const u = kk / SEG; pos.push(-8 + u * 16, v - 0.5, 0); uvs.push(u, v); }
+      }
+    }
+    const lg = new THREE.BufferGeometry();
+    lg.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    lg.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+    const lm = new THREE.ShaderMaterial({
+      transparent: true, depthWrite: false, blending: blend,
+      uniforms: { uT: { value: 0 }, uC: { value: col }, uC2: { value: cols2[i] }, uI: { value: i }, uP: { value: new THREE.Vector2() }, uK: { value: isDark ? 0.75 : 0.6 } },
+      vertexShader: `${WAVE} varying vec2 vUv; varying float vH;
+        void main(){ vUv = uv; float w; vec3 p = ribbon(position, uv, w); vH = w; gl_Position = projectionMatrix*modelViewMatrix*vec4(p,1.); }`,
+      fragmentShader: `uniform vec3 uC; uniform vec3 uC2; uniform float uK; uniform float uT; varying vec2 vUv; varying float vH;
+        void main(){ float ends = smoothstep(0.,0.18,vUv.x)*smoothstep(1.,0.82,vUv.x);
+          float mid = 1. - abs(vUv.y-0.5)*1.6;
+          float shimmer = 0.7 + 0.3*sin(vUv.x*14. - uT*1.2 + vUv.y*9.);
+          vec3 c = mix(uC, uC2, smoothstep(-1.,1.,vH));
+          gl_FragColor = vec4(c, ends*mid*shimmer*uK); }`,
+    });
+    mats.push(lm);
+    scene.add(new THREE.LineSegments(lg, lm));
+  });
+  scene.children.forEach((o) => (o.rotation.x = -0.25));
+
+  // 粒子：浅色主题更小、更实（深色描点），深色主题更亮的小光点
+  const N = 700;
   const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), size = new Float32Array(N), seed = new Float32Array(N);
-  const cs = [palette.a, palette.b, palette.c];
   for (let i = 0; i < N; i++) {
-    pos.set([(Math.random() - 0.5) * 18, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6], i * 3);
-    cs[i % 3].toArray(col, i * 3);
-    size[i] = 0.25 + Math.random() * 0.6;
+    pos.set([(Math.random() - 0.5) * 18, (Math.random() - 0.5) * 5, (Math.random() - 0.5) * 5], i * 3);
+    cols[i % 3].toArray(col, i * 3);
+    size[i] = (isDark ? 0.3 : 0.22) + Math.random() * (isDark ? 0.55 : 0.3);
     seed[i] = Math.random();
   }
   const pg = new THREE.BufferGeometry();
@@ -294,10 +333,15 @@ function buildAurora({ scene, camera, isDark, palette }: Ctx): Built {
   pg.setAttribute("color", new THREE.BufferAttribute(col, 3));
   pg.setAttribute("size", new THREE.BufferAttribute(size, 1));
   pg.setAttribute("seed", new THREE.BufferAttribute(seed, 1));
-  const pm = glowPoints(isDark, 70);
+  const pm = glowPoints(isDark, isDark ? 70 : 55);
   pm.vertexShader = pm.vertexShader
     .replace("attribute float size;", "attribute float size; attribute float seed;")
     .replace("vec4 mv = modelViewMatrix*vec4(position,1.);", "vec3 q = position; q.x = mod(q.x + uT*(0.15+seed*0.25) + 9., 18.) - 9.; q.y += sin(uT*0.5 + seed*6.28)*0.3; vec4 mv = modelViewMatrix*vec4(q,1.);");
+  if (!isDark) {
+    // 白底：实心小圆点、无大光晕，边缘抗锯齿
+    pm.fragmentShader = `varying vec3 vC; varying float vA;
+      void main(){ float d = length(gl_PointCoord-0.5); float a = smoothstep(0.5,0.32,d); if(a<=0.) discard; gl_FragColor = vec4(vC, a*0.85*vA); }`;
+  }
   scene.add(new THREE.Points(pg, pm));
 
   return {

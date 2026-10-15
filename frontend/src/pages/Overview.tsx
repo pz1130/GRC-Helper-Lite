@@ -18,8 +18,8 @@ function heroConcept(): HeroConcept {
   const q = new URLSearchParams(window.location.search).get("hero");
   return q === "a" || q === "b" || q === "c" ? q : DEFAULT_HERO;
 }
-// 默认用风险地形：唯一由真实数据驱动的概念，且明暗主题下都最耐看。
-const DEFAULT_HERO: HeroConcept = "c";
+// 默认用极光丝带（Jesse 选定）；风险地形 c 与控制网络地球 a 仍可用 ?hero= 切换对比。
+const DEFAULT_HERO: HeroConcept = "b";
 
 interface Usage {
   month_to_date_cost: number;
@@ -122,13 +122,16 @@ export function Overview() {
             </div>
             <h2 className="kn-hero-title">{t("overview.heroTitle")}</h2>
             <p className="kn-hero-subtitle">{t("overview.heroSubtitle")}</p>
+            {/* 待审入口放在文案列里：放右上角会压在 hero 画布上。 */}
+            {pendingCount > 0 && (
+              <div className="kn-hero-cta">
+              <Link to="/review" className="kn-btn-primary kn-btn-sm" style={{ textDecoration: "none" }}>
+                <span>{t("overview.pendingReviewQuick")} ({pendingCount})</span>
+                <span>→</span>
+              </Link>
+              </div>
+            )}
           </div>
-          {pendingCount > 0 && (
-            <Link to="/review" className="kn-btn-primary kn-btn-sm" style={{ textDecoration: "none" }}>
-              <span>{t("overview.pendingReviewQuick")} ({pendingCount})</span>
-              <span>→</span>
-            </Link>
-          )}
         </div>
 
         <div className="kn-cockpit-metrics-strip">
