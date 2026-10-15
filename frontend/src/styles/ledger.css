@@ -327,12 +327,16 @@ details[open] > summary::before { transform: rotate(45deg); }
   animation: kn-spin 0.8s linear infinite;
 }
 @keyframes kn-spin { to { transform: rotate(360deg); } }
-/* 风险登记：列表要 ~1050px 才放得下五列可编辑字段，与矩阵并排时会横向滚动。
-   2200px 以下矩阵在上、列表整宽在下；超宽屏才并排，且给列表更多份额。 */
+/* 风险登记：列表要 ~1300px 才能让下拉框文字（负责人邮箱、残余可能性/影响）完整显示，
+   而内容区上限 1760px——与矩阵并排在任何宽度下都不够，所以始终上下排列。 */
 .kn-risk-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
-@media (min-width: 2200px) { .kn-risk-layout { grid-template-columns: minmax(520px, 0.7fr) minmax(0, 1.3fr); } }
 .kn-risk-layout .kn-graph-canvas-box--3d, .kn-risk-layout canvas { max-height: 460px; }
 .kn-risk-table td { vertical-align: top; }
+.kn-risk-table td:nth-child(3) { min-width: 200px; }
+.kn-risk-table td:nth-child(4) { min-width: 240px; }
+/* 行内负责人只显示姓名（邮箱放在选项 title 里），残余可能性/影响两个下拉上下排，各占整行，标签不再被截断。 */
+.kn-risk-residual { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 6px; }
+@media (min-width: 1800px) { .kn-risk-residual { grid-template-columns: 1fr 1fr; } }
 .kn-risk-table textarea, .kn-risk-table select, .kn-risk-table input { width: 100%; box-sizing: border-box; }
 .kn-risk-desc { color: var(--text-secondary); font-size: 0.75rem; margin-top: 5px; }
 .kn-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
