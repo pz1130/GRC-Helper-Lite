@@ -24,6 +24,9 @@ test:
 # ruff 现在是硬检查：既有告警已清零（backend/.ruff-baseline = 0），CI 用
 # scripts/check_ruff_baseline.py 卡住「比基线多」，这里同样有一条就算失败。
 #
+# build 的输出平时不打印，失败时整段打出来：tsc 的类型错误写在 stdout 上，原先
+# `>/dev/null` 把它一起丢了，只剩一个 exit=1。
+#
 # e2e 走 make e2e 而不是直接 npx playwright test：后者跑在开发栈上，每次留下
 # 一个 provider 和一个用户（OQ-3）。慢几分钟，换的是跑完开发库一条痕迹不留。
 verify:
@@ -35,8 +38,9 @@ verify:
 	docker compose run --rm api ruff check app tests; \
 	  status=$$?; echo "   ruff exit=$$status"; [ $$status -eq 0 ] || fail=1; \
 	echo "── npm run build ──"; \
-	( cd frontend && npm run build >/dev/null ); \
-	  status=$$?; echo "   build exit=$$status"; [ $$status -eq 0 ] || fail=1; \
+	build_log=$$(mktemp); ( cd frontend && npm run build >"$$build_log" 2>&1 ); \
+	  status=$$?; [ $$status -eq 0 ] || cat "$$build_log"; rm -f "$$build_log"; \
+	  echo "   build exit=$$status"; [ $$status -eq 0 ] || fail=1; \
 	echo "── i18n code 与词条 ──"; \
 	python3 scripts/check_i18n_codes.py; \
 	  status=$$?; echo "   i18n exit=$$status"; [ $$status -eq 0 ] || fail=1; \

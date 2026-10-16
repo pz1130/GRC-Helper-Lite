@@ -115,7 +115,6 @@ html, body { font-size: 14px; }
 }
 .ws-icon-btn { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--text-tertiary); box-shadow: none; }
 .ws-icon-btn:hover { background: var(--stage-border-subtle); color: var(--text-primary); }
-.ws-drawer-toggle { display: none; }
 .ws-crumbs { display: flex; gap: 6px; font-size: 0.8125rem; color: var(--text-tertiary); }
 .ws-crumbs strong { color: var(--text-primary); font-weight: 600; }
 .ws-notice { margin: 0 0 0 auto; font-size: 0.6875rem; color: var(--text-quaternary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -158,7 +157,6 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
   .ws-shell--drawer .ws-panel { transform: none; }
   .ws-content { grid-column: 2; }
   .ws-panel-toggle { display: none; }
-  .ws-drawer-toggle { display: inline-flex; }
   .ws-notice { display: none; }
   .ws-main { padding: 18px 16px 40px; }
   .kn-page-overview .kn-bento-grid { grid-template-columns: 1fr; }
@@ -182,7 +180,6 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
   .ws-panel-list--active .ws-panel-group-title { display: block; }
   .ws-panel-head { display: none; }
   .ws-main { padding-bottom: 88px; }
-  .ws-drawer-toggle { display: none; }
   .ws-bottom-nav {
     display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
     background: var(--topbar-bg); backdrop-filter: blur(10px); border-top: 1px solid var(--stage-border);

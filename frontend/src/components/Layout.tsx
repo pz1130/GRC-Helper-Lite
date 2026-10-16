@@ -171,15 +171,6 @@ export function Layout() {
               <path d="M9 4v16" />
             </svg>
           </button>
-          <button
-            type="button"
-            className="ws-icon-btn ws-drawer-toggle"
-            onClick={() => setDrawerOpen((open) => !open)}
-            aria-label={t("nav.openMenu")}
-            aria-expanded={drawerOpen}
-          >
-            ☰
-          </button>
           <div className="ws-crumbs">
             <span>{breadcrumb.section}</span>
             {breadcrumb.page ? (
