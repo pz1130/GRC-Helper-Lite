@@ -1,0 +1,365 @@
+/* ==========================================================================
+   Ledger 设计层 —— 叠在 keynote.css 之上，只改视觉不改结构。
+   为什么是覆盖层而不是重写：keynote.css 的类名被 40 多个页面和大量内联样式引用，
+   原地重写风险大、diff 难审。这里集中重定义设计令牌（颜色、字号、圆角、阴影），
+   再收敛几个组件的观感：
+   - 银行 IT 风险团队长时间盯表格，所以去掉玻璃模糊、渐变标题和发光，换成实色表面与
+     清晰分隔线，降低视觉噪声；
+   - 主色从近黑灰换成机构蓝，主按钮与链接一眼可辨；
+   - 统一 focus-visible 焦点环、prefers-reduced-motion、表格密度与等宽编号。
+   ========================================================================== */
+
+:root,
+:root[data-theme="light"] {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  --brand-600: #1f4fd1;
+  --brand-700: #183fa8;
+  --brand-50: #eef3ff;
+  --focus-ring: 0 0 0 3px rgba(31, 79, 209, 0.32);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+}
+
+:root[data-theme="light"] {
+  --stage-bg: #f4f6f9;
+  --stage-surface: #ffffff;
+  --stage-card: #ffffff;
+  --stage-card-hover: #fafbfc;
+  --stage-border: #e3e7ee;
+  --stage-border-hover: #c9d0db;
+  --stage-border-subtle: #edf0f4;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280; /* 原 #94a3b8 在白底对比度不足 4.5:1 */
+  --text-quaternary: #9ca3af;
+  --accent-blue: var(--brand-600);
+  --accent-blue-hover: var(--brand-700);
+  --accent-blue-bg: var(--brand-50);
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.05);
+  --shadow-md: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.12);
+  --shadow-glass: var(--shadow-sm);
+  --shadow-hover: var(--shadow-md);
+  --sidebar-bg: #ffffff;
+  --topbar-bg: rgba(255, 255, 255, 0.92);
+  --nav-active-bg: var(--brand-50);
+  --sidebar-nav-active-bg: var(--brand-50);
+  --sidebar-nav-active-color: var(--brand-700);
+  --heading-gradient: none;
+  --stat-number-gradient: none;
+  --table-th-bg: #f8fafc;
+  --table-tr-hover: #f7f9fc;
+  --spotlight-gradient: none;
+  --primary-bg: var(--brand-600);
+  --primary-bg-hover: var(--brand-700);
+}
+
+:root[data-theme="dark"] {
+  --stage-bg: #0b0f17;
+  --stage-surface: #111723;
+  --stage-card: #121a27;
+  --stage-card-hover: #162031;
+  --stage-border: #1f2a3c;
+  --stage-border-hover: #2d3b52;
+  --text-primary: #e8edf5;
+  --text-secondary: #a3b0c2;
+  --text-tertiary: #7d8aa0;
+  --accent-blue: #6b9bff;
+  --accent-blue-hover: #8fb3ff;
+  --accent-blue-bg: rgba(107, 155, 255, 0.12);
+  --focus-ring: 0 0 0 3px rgba(107, 155, 255, 0.4);
+  --shadow-glass: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --sidebar-bg: #0d131d;
+  --topbar-bg: rgba(11, 15, 23, 0.9);
+  --sidebar-nav-active-bg: rgba(107, 155, 255, 0.12);
+  --sidebar-nav-active-color: #dbe6ff;
+  --heading-gradient: none;
+  --stat-number-gradient: none;
+  --spotlight-gradient: none;
+  --primary-bg: #2f62e6;
+  --primary-bg-hover: #3d70f5;
+}
+
+html, body {
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "tnum" 0;
+  letter-spacing: 0;
+}
+
+/* 标题：实色，不再用渐变裁切文字（截图、打印、高对比模式下渐变文字会糊） */
+h1 {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  color: var(--text-primary);
+  font-size: 1.625rem;
+  letter-spacing: -0.015em;
+}
+h2 { font-size: 1.25rem; }
+h3 { font-size: 1.0625rem; }
+
+code, pre, kbd { font-family: var(--font-mono); }
+/* 控制点编号等短代码不应折行（原来 AC-1 会被拆成两行） */
+td code, .kn-badge, .kn-task-tag { white-space: nowrap; }
+
+/* ---------- 表面：去玻璃化 ---------- */
+.kn-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: var(--radius-lg);
+}
+.kn-card::before { display: none; }
+.kn-card-interactive:hover { border-color: var(--stage-border-hover); box-shadow: var(--shadow-hover); }
+.kn-stat-number, .kn-stat-number.kn-gradient, .kn-cockpit-metric-num {
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  font-variant-numeric: tabular-nums;
+}
+.kn-bento-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; }
+
+/* ---------- 按钮 ---------- */
+button[type="submit"], .kn-btn-primary,
+:root[data-theme="light"] .kn-btn-primary,
+:root[data-theme="light"] button[type="submit"] {
+  background: var(--primary-bg);
+  border: 1px solid transparent;
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+button[type="submit"]:hover, .kn-btn-primary:hover,
+:root[data-theme="light"] .kn-btn-primary:hover,
+:root[data-theme="light"] button[type="submit"]:hover {
+  background: var(--primary-bg-hover);
+  border-color: transparent;
+  box-shadow: var(--shadow-md);
+}
+button, .kn-btn { border-radius: var(--radius-sm); }
+button[type="submit"]:active, .kn-btn-primary:active,
+:root[data-theme="light"] .kn-btn-primary:active,
+:root[data-theme="light"] button[type="submit"]:active { background: var(--primary-bg-hover); }
+.kn-btn-danger { background: var(--accent-ruby); color: #fff; border-color: transparent; }
+
+/* ---------- 焦点与可达性 ---------- */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent-blue);
+  box-shadow: var(--focus-ring);
+}
+input, select, textarea { border-radius: var(--radius-sm); }
+
+
+
+/* ---------- 表格：审阅场景下的密度与可读性 ---------- */
+.kn-table-container { border-radius: var(--radius-lg); }
+th {
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-tertiary);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--table-th-bg);
+}
+td { font-variant-numeric: tabular-nums; vertical-align: top; }
+tbody tr { transition: background-color 0.12s ease; }
+
+/* ---------- 折叠面板（details/summary 在多个页面用作操作区） ---------- */
+details.kn-card > summary, details > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+  opacity: 0.6;
+  flex: none;
+}
+details[open] > summary::before { transform: rotate(45deg); }
+
+/* ---------- 布局外壳 ---------- */
+.kn-sidebar { border-right: 1px solid var(--stage-border); }
+.kn-sidebar-nav-item { border-radius: var(--radius-sm); border: 1px solid transparent; }
+.kn-sidebar-nav-item.active,
+:root[data-theme="light"] .kn-sidebar-nav-item.active {
+  background: var(--sidebar-nav-active-bg);
+  color: var(--sidebar-nav-active-color);
+  border-color: transparent;
+}
+.kn-sidebar-nav-item.active .kn-sidebar-nav-item-icon { color: var(--accent-blue); }
+.kn-nav-group-header { letter-spacing: 0.06em; color: var(--text-tertiary); }
+.kn-top-command-bar { backdrop-filter: saturate(160%) blur(8px); border-bottom: 1px solid var(--stage-border); }
+.kn-cockpit-hero::before { display: none; }
+
+/* ---------- 通用状态组件：空态 / 骨架屏 ---------- */
+.kn-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+.kn-skeleton {
+  display: block;
+  height: 0.9rem;
+  border-radius: var(--radius-xs);
+  background: linear-gradient(90deg, var(--stage-border-subtle), var(--stage-border), var(--stage-border-subtle));
+  background-size: 200% 100%;
+  animation: kn-shimmer 1.2s ease-in-out infinite;
+}
+@keyframes kn-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (max-width: 768px) {
+  h1 { font-size: 1.375rem; }
+  .kn-bento-grid { grid-template-columns: 1fr; }
+  .kn-table-container { overflow-x: auto; }
+}
+
+/* ==========================================================================
+   第二轮：页面原语与工具类（替代页面里重复的内联样式，见 components/ui.tsx）
+   ========================================================================== */
+.kn-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--stage-border);
+}
+.kn-page-header h2, .kn-page-title {
+  display: flex; align-items: center; gap: 0.625rem;
+  font-size: 1.5rem; font-weight: 650; letter-spacing: -0.015em; margin: 0 0 0.25rem;
+}
+.kn-page-subtitle { margin: 0; font-size: 0.875rem; color: var(--text-secondary); max-width: 72ch; }
+.kn-page-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+
+.kn-card-head {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;
+  margin-bottom: 0.875rem; padding-bottom: 0.625rem; border-bottom: 1px solid var(--stage-border-subtle);
+}
+.kn-card-title { margin: 0; font-size: 1rem; font-weight: 600; }
+.kn-card--subtle { background: var(--stage-card-subtle); box-shadow: none; }
+.kn-well { padding: 10px 14px; background: var(--stage-card-subtle); border: 1px solid var(--stage-border-subtle); border-radius: var(--radius-sm); margin-bottom: 8px; }
+.kn-callout-warn { padding: 8px 12px; background: var(--accent-amber-bg); border: 1px solid var(--accent-amber-border); border-radius: var(--radius-sm); }
+.kn-divider-top { border-top: 1px solid var(--stage-border); margin-top: 16px; padding-top: 16px; }
+.kn-tone-danger .kn-stat-number { color: var(--accent-ruby); }
+.kn-tone-warning .kn-stat-number { color: var(--accent-amber); }
+.kn-tone-success .kn-stat-number { color: var(--accent-emerald); }
+
+/* 布局 */
+.kn-row { display: flex; align-items: center; gap: 0.5rem; }
+.kn-wrap { flex-wrap: wrap; }
+.kn-toolbar { display: flex; gap: 0.625rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+.kn-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+@media (max-width: 900px) { .kn-grid-2 { grid-template-columns: 1fr; } }
+.kn-col-span-all { grid-column: 1 / -1; }
+.kn-inline-label { display: inline-flex; flex-direction: row; align-items: center; gap: 0.5rem; }
+.kn-check-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.875rem; }
+.kn-block { display: block; }
+.kn-min-0 { min-width: 0; }
+.kn-w-full { width: 100%; box-sizing: border-box; }
+.kn-max-w-md { max-width: 520px; }
+.kn-list-plain { list-style: none; padding: 0; margin: 0; }
+.kn-list { margin: 0; padding-left: 18px; }
+.kn-scroll-box { max-height: 180px; overflow-y: auto; font-size: 0.8125rem; }
+.kn-select-sm { padding: 6px 28px 6px 12px; }
+.kn-btn-wide { padding: 8px 24px; }
+
+/* 间距 */
+.kn-m-0 { margin: 0; }
+.kn-mt-0 { margin-top: 0; } .kn-mt-1 { margin-top: 4px; } .kn-mt-2 { margin-top: 8px; }
+.kn-mt-3 { margin-top: 12px; } .kn-mt-4 { margin-top: 16px; }
+.kn-mb-2 { margin-bottom: 8px; } .kn-mb-4 { margin-bottom: 16px; }
+.kn-mb-5 { margin-bottom: 20px; } .kn-mb-6 { margin-bottom: 24px; }
+
+/* 文字 */
+.kn-text-2xs { font-size: 0.75rem; } .kn-text-xs { font-size: 0.8125rem; }
+.kn-text-sm { font-size: 0.875rem; } .kn-text-md { font-size: 1rem; } .kn-text-lg { font-size: 1.0625rem; }
+.kn-text-right { text-align: right; }
+.kn-strong { font-weight: 600; } .kn-medium { font-weight: 500; }
+.kn-muted { color: var(--text-tertiary); } .kn-secondary { color: var(--text-secondary); }
+.kn-primary-text { color: var(--text-primary); } .kn-accent { color: var(--accent-blue); }
+.kn-warn { color: var(--accent-amber); } .kn-danger-text { color: var(--accent-ruby); }
+.kn-eyebrow { font-size: 0.75rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.kn-section-title { margin: 0 0 16px; font-size: 1.125rem; }
+.kn-prose { white-space: pre-wrap; font-size: 0.875rem; line-height: 1.6; color: var(--text-secondary); }
+.kn-prose--lg { font-size: 1rem; line-height: 1.65; color: var(--text-primary); margin: 0; }
+.kn-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 空态 / 加载态 */
+.kn-empty-card { text-align: center; padding: 40px 20px; }
+.kn-empty-emoji { font-size: 2rem; margin-bottom: 8px; opacity: 0.5; }
+.kn-empty-icon { color: var(--text-quaternary); }
+.kn-empty-title { margin: 0; font-weight: 600; color: var(--text-secondary); font-size: 0.9375rem; }
+.kn-empty-desc { margin: 0; font-size: 0.8125rem; color: var(--text-tertiary); max-width: 48ch; }
+.kn-empty--compact { padding: 1.25rem 1rem; flex-direction: row; justify-content: center; }
+.kn-empty--compact .kn-empty-icon { width: 20px; height: 20px; }
+.kn-empty--success .kn-empty-icon, .kn-empty--success .kn-empty-title { color: var(--accent-emerald); }
+.kn-loading { display: grid; gap: 0.6rem; padding: 1rem 0; }
+.kn-loading-text { font-size: 0.75rem; color: var(--text-tertiary); }
+.kn-loading-inline { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--text-secondary); margin: 0.5rem 0; }
+.kn-spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--stage-border); border-top-color: var(--accent-blue);
+  animation: kn-spin 0.8s linear infinite;
+}
+@keyframes kn-spin { to { transform: rotate(360deg); } }
+/* 风险登记：列表要 ~1300px 才能让下拉框文字（负责人邮箱、残余可能性/影响）完整显示，
+   而内容区上限 1760px——与矩阵并排在任何宽度下都不够，所以始终上下排列。 */
+.kn-risk-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
+.kn-risk-layout .kn-graph-canvas-box--3d, .kn-risk-layout canvas { max-height: 460px; }
+/* 新增风险的表单：放得下就一行，放不下就换行。原先写死六列网格，至少要 909px，
+ * 手机和开着侧边面板的 1024 宽笔记本都把最右边的「Add risk」裁掉、点不到。 */
+.kn-risk-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 20px; }
+.kn-risk-form > label { flex: 1 1 150px; min-width: 0; }
+.kn-risk-form > label:first-child { flex: 3 1 220px; }
+.kn-risk-form > label:nth-child(2), .kn-risk-form > label:nth-child(3) { flex-basis: 100px; }
+.kn-risk-form > button { flex: none; }
+.kn-risk-form > [role="alert"] { flex-basis: 100%; }
+.kn-risk-table td { vertical-align: top; }
+.kn-risk-table td:nth-child(3) { min-width: 200px; }
+.kn-risk-table td:nth-child(4) { min-width: 240px; }
+/* 行内负责人只显示姓名（邮箱放在选项 title 里），残余可能性/影响两个下拉上下排，各占整行，标签不再被截断。 */
+.kn-risk-residual { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 6px; }
+@media (min-width: 1800px) { .kn-risk-residual { grid-template-columns: 1fr 1fr; } }
+.kn-risk-table textarea, .kn-risk-table select, .kn-risk-table input { width: 100%; box-sizing: border-box; }
+.kn-risk-desc { color: var(--text-secondary); font-size: 0.75rem; margin-top: 5px; }
+.kn-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.kn-title-code { font-size: 1.05rem; margin-right: 4px; vertical-align: middle; }
+.kn-title-meta { color: var(--text-secondary); font-size: 1rem; font-weight: 500; }
+.kn-stat-links { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.kn-stat-link { color: var(--text-primary); font-weight: 600; text-decoration: none; }
+.kn-tone-danger .kn-stat-number.kn-primary-text { color: var(--accent-ruby); }
+.kn-text-center { text-align: center; } .kn-text-3xs { font-size: 0.6875rem; } .kn-text-xl { font-size: 1.25rem; }
+.kn-mt-5 { margin-top: 20px; } .kn-mt-6 { margin-top: 24px; } .kn-mb-1 { margin-bottom: 4px; } .kn-mb-3 { margin-bottom: 12px; }
+.kn-mr-1 { margin-right: 4px; } .kn-mr-2 { margin-right: 8px; } .kn-ml-2 { margin-left: 8px; }
+.kn-ok-text { color: var(--accent-emerald); }
+.kn-stack-1 { display: grid; gap: 6px; } .kn-stack-2 { display: flex; flex-direction: column; gap: 10px; } .kn-stack-3 { display: grid; gap: 12px; }
+.kn-between { justify-content: space-between; }
+.kn-hint { margin: 8px 0 16px; }
+.kn-auto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.kn-scroll-240 { max-height: 240px; overflow: auto; }
+.kn-divider-row { border-top: 1px solid var(--stage-border); padding: 12px 0; }

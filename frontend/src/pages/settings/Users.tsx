@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
 import type { Role } from "../../auth";
+import { Card, DataTable } from "../../components/ui";
 
 interface UserRow {
   id: number;
@@ -114,8 +115,7 @@ export function Users() {
   return (
     <div>
       {/* Users Table Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
-        <h3 style={{ margin: "0 0 16px 0", fontSize: "1.125rem" }}>{t("settings.users")}</h3>
+      <Card className="kn-mb-6" title={t("settings.users")}>
         {error && (
           <p role="alert">
             <span>⚠️</span> {error}
@@ -134,23 +134,18 @@ export function Users() {
             </button>
           </p>
         )}
-        <div className="kn-table-container" style={{ margin: 0 }}>
-          <table>
-            <thead>
-              <tr>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("settings.usersConfig.email")}</th>
                 <th>{t("settings.usersConfig.name")}</th>
                 <th>{t("settings.usersConfig.role")}</th>
                 <th>{t("settings.usersConfig.active")}</th>
                 <th>{t("settings.usersConfig.expiresAt")}</th>
                 <th>{t("common.actions")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {users.data?.map((u) => (
                 <Fragment key={u.id}>
                 <tr>
-                  <td style={{ fontWeight: 600, color: "var(--text-primary)" }}>{u.email}</td>
+                  <td className="kn-strong kn-primary-text">{u.email}</td>
                   <td>{u.name}</td>
                   <td>
                     <select
@@ -159,7 +154,7 @@ export function Users() {
                       onChange={(e) =>
                         update.mutate({ id: u.id, patch: { role: e.target.value as Role } })
                       }
-                      style={{ padding: "4px 28px 4px 10px", fontSize: "0.8125rem" }}
+                      className="kn-select-xs"
                     >
                       {ROLES.map((r) => (
                         <option key={r} value={r}>
@@ -177,7 +172,7 @@ export function Users() {
                     />
                   </td>
                   <td>
-                    <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
+                    <span className="kn-secondary kn-text-xs">
                       {u.expires_at ? localDate(u.expires_at) : "—"}
                     </span>
                   </td>
@@ -200,8 +195,7 @@ export function Users() {
                   <tr>
                     <td colSpan={6}>
                       <form
-                        onSubmit={(event) => submitReset(event, u)}
-                        style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}
+                        onSubmit={(event) => submitReset(event, u)} className="kn-row kn-wrap"
                       >
                         <input
                           type="password"
@@ -226,18 +220,16 @@ export function Users() {
                 )}
                 </Fragment>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
 
       {/* Add User Card */}
-      <div className="kn-card" style={{ maxWidth: 520 }}>
-        <h4 style={{ margin: "0 0 4px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 16 }}>
+      <div className="kn-max-w-md kn-card">
+        <h4 className="kn-m-0 kn-mb-1 kn-text-md">{t("common.add")}</h4>
+        <p className="kn-secondary kn-text-xs kn-mb-4">
           {t("settings.usersConfig.auditorHint")}
         </p>
-        <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
+        <form onSubmit={submit} className="kn-stack-3">
           <input
             type="email"
             placeholder={t("settings.usersConfig.email")}
@@ -277,7 +269,7 @@ export function Users() {
             onChange={(e) => setForm({ ...form, expires_at: e.target.value })}
           />
           <div>
-            <button type="submit" className="kn-btn-primary" style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary">
               {t("common.save")}
             </button>
           </div>

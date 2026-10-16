@@ -1,5 +1,6 @@
 import { Navigate, NavLink, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "../../components/ui";
 
 import { canManageLlmConfig, canReadAuditLog, canWriteEvidence, useAuth } from "../../auth";
 
@@ -10,12 +11,7 @@ export function SettingsLayout() {
 
   return (
     <section>
-      <div style={{ marginBottom: 20 }}>
-        <h2>{t("settings.title")}</h2>
-        <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-          {t("settings.subtitle")}
-        </p>
-      </div>
+      <PageHeader title={t("settings.title")} subtitle={t("settings.subtitle")} />
 
       <nav
         className="kn-segmented"

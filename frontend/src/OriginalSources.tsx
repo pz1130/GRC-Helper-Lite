@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "./api";
+import { EmptyState, LoadingState } from "./components/ui";
 
 interface Block {
   id: number;
@@ -54,11 +55,11 @@ export function OriginalSources({ documentId, clauseId }: { documentId: string; 
   }
 
   return (
-    <details className="kn-card" style={{ marginBottom: 16 }} onToggle={(event) => setOpen(event.currentTarget.open)}>
+    <details className="kn-mb-4 kn-card" onToggle={(event) => setOpen(event.currentTarget.open)}>
       <summary>{t(clauseId ? "sources.clauseTitle" : "sources.documentTitle")}</summary>
       {open && <>
         <p>{t("sources.explanation")}</p>
-        {sources.isPending && <p role="status">{t("common.loading")}</p>}
+        {sources.isPending && <LoadingState />}
         {sources.error && <p role="alert">{sources.error.message}</p>}
         {sources.data && !sources.data.available && <p>{t("sources.legacy")}</p>}
         {sources.data?.available && <>
@@ -68,14 +69,14 @@ export function OriginalSources({ documentId, clauseId }: { documentId: string; 
               setUnassigned(event.target.checked); setOffset(0);
             }} /> {t("sources.onlyUnassigned")}
           </label>}
-          {sources.data.blocks.length === 0 && <p>{t("sources.empty")}</p>}
+          {sources.data.blocks.length === 0 && <EmptyState compact title={t("sources.empty")} />}
           {sources.data.blocks.map((block) => (
-            <div key={block.id} style={{ borderTop: "1px solid var(--stage-border)", padding: "12px 0" }}>
+            <div key={block.id} className="kn-divider-row">
               <small>{t(`sources.origin.${block.origin}`, { defaultValue: block.origin })} · {position(block)}</small>
               <pre style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere", font: "inherit" }}>{block.text}</pre>
             </div>
           ))}
-          <div style={{ display: "flex", gap: 8 }}>
+          <div className="kn-row">
             <button type="button" className="kn-btn-secondary" disabled={offset === 0}
               onClick={() => setOffset(Math.max(0, offset - limit))}>{t("sources.previous")}</button>
             <button type="button" className="kn-btn-secondary" disabled={!sources.data.has_more}

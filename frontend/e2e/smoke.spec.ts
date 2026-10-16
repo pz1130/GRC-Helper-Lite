@@ -191,23 +191,38 @@ test("窄屏下侧边栏收进抽屉，内容区不被挤掉也不横向溢出",
   await page.setViewportSize({ width: 375, height: 667 });
   await signIn(page);
 
-  // 抽屉默认收起：导航链接不占位
-  const nav = page.getByRole("navigation");
-  await expect(nav).not.toBeInViewport();
+  // 窄屏图标轨隐藏，常用四页放在底部标签栏，其余页面收进抽屉。
+  // 抽屉默认收起：抽屉里的导航链接不占位
+  const documents = page.getByRole("complementary").getByRole("link", { name: "Documents", exact: true });
+  await expect(documents).not.toBeInViewport();
 
   // 最要紧的一条：不许横向溢出
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
   expect(overflow).toBeLessThanOrEqual(1);
+  // 不溢出还不够：内容区曾被宽屏的三列网格挤进 64px 的第一列，照样不溢出
+  const main = await page.getByRole("main").boundingBox();
+  expect(main?.width).toBeGreaterThan(360);
 
   // 打得开、进得去
-  await page.getByRole("button", { name: "Open navigation" }).click();
-  await expect(nav).toBeInViewport();
-  await page.getByRole("link", { name: "Documents" }).click();
+  await page.getByRole("navigation").getByRole("button", { name: "Menu" }).click();
+  await expect(documents).toBeInViewport();
+  await documents.click();
   await expect(page).toHaveURL(/\/documents$/);
   // 跳转后抽屉自动收起，否则挡着刚打开的页面
-  await expect(nav).not.toBeInViewport();
+  await expect(documents).not.toBeInViewport();
+});
+
+test("宽屏收起过侧边面板，到窄屏抽屉照样打得开", async ({ page }) => {
+  // 收起偏好存在 localStorage 里，窄屏也带着 ws-shell--collapsed；那条 visibility:hidden
+  // 的选择器比窄屏抽屉的规则更具体，抽屉滑进来了却看不见。
+  await page.addInitScript(() => localStorage.setItem("grc.ws.panel", "closed"));
+  await page.setViewportSize({ width: 375, height: 667 });
+  await signIn(page);
+
+  await page.getByRole("navigation").getByRole("button", { name: "Menu" }).click();
+  await expect(page.getByRole("complementary").getByRole("link", { name: "Documents", exact: true })).toBeVisible();
 });
 
 test("宽屏不受抽屉改造影响：侧边栏常驻，没有汉堡按钮", async ({ page }) => {

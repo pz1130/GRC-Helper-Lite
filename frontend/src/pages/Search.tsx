@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { PageHeader } from "../components/ui";
 import { Link } from "react-router-dom";
 
 import { request } from "../api";
@@ -68,12 +69,7 @@ export function Search() {
 
   return (
     <section>
-      <div style={{ marginBottom: 24 }}>
-        <h2>{t("search.title")}</h2>
-        <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-          {t("search.subtitle")}
-        </p>
-      </div>
+      <PageHeader title={t("search.title")} subtitle={t("search.subtitle")} />
 
       {canWrite && (
         <p>
@@ -86,11 +82,11 @@ export function Search() {
       {rebuild.isSuccess && <p role="status">{t("documents.indexQueued")}</p>}
 
       {status.data && status.data.total > 0 && (
-        <div className="kn-card" style={{ padding: "12px 18px", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div className="kn-card kn-search-meta">
+          <div className="kn-row">
             <span className="kn-dot kn-dot-blue kn-pulse" />
-            <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)" }}>
-              {t("search.indexing")}: <strong style={{ color: "var(--text-primary)" }}>{status.data.embedded}</strong> / {status.data.total}
+            <span className="kn-secondary kn-text-xs">
+              {t("search.indexing")}: <strong className="kn-primary-text">{status.data.embedded}</strong> / {status.data.total}
               {status.data.model ? ` · ${status.data.model}` : ""}
               {status.data.pending > 0 ? ` · ${t("search.indexIncomplete")}` : ""}
             </span>
@@ -145,8 +141,7 @@ export function Search() {
         />
         <button
           type="submit"
-          className="kn-btn-primary"
-          style={{ padding: "8px 24px" }}
+          className="kn-btn-wide kn-btn-primary"
         >
           {t("search.run")}
         </button>
@@ -162,7 +157,7 @@ export function Search() {
 
       {results.data && results.data.expanded_terms.length > 1 && (
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-tertiary)" }}>
+          <span className="kn-muted kn-text-xs">
             {t("search.expanded")}:
           </span>
           {results.data.expanded_terms.slice(1).map((term) => (
@@ -174,17 +169,17 @@ export function Search() {
       )}
 
       {results.data && results.data.hits.length === 0 && submitted.trim() && (
-        <div className="kn-card" style={{ textAlign: "center", padding: "48px 20px", maxWidth: 780 }}>
-          <div style={{ fontSize: "2rem", marginBottom: 8, opacity: 0.5 }}>🔍</div>
-          <p style={{ color: "var(--text-secondary)", margin: 0 }}>{t("search.noResults")}</p>
+        <div className="kn-card kn-search-empty">
+          <div className="kn-empty-emoji">🔍</div>
+          <p className="kn-secondary kn-m-0">{t("search.noResults")}</p>
         </div>
       )}
 
       <ol style={{ paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 14, maxWidth: 840 }}>
         {results.data?.hits.map((hit) => (
-          <li key={hit.chunk_id} className="kn-card kn-card-interactive" style={{ padding: "18px 22px" }}>
+          <li key={hit.chunk_id} className="kn-card kn-card-interactive kn-search-hit">
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div className="kn-row">
                 <Link to={`/documents/${hit.document_id}#clause-${hit.clause_id}`} style={{ fontWeight: 600, fontSize: "1.0625rem", color: "var(--text-primary)" }}>
                   <strong>{hit.document_title}</strong>
                 </Link>
@@ -192,7 +187,7 @@ export function Search() {
                   <code>{hit.citation_label}</code>
                 </Link>
               </div>
-              <span className="kn-badge kn-badge-cyan" style={{ fontSize: "0.6875rem" }}>
+              <span className="kn-text-3xs kn-badge kn-badge-cyan">
                 Score: {hit.score.toFixed(3)}
               </span>
             </div>
@@ -212,7 +207,7 @@ export function Search() {
               ]
                 .filter(Boolean)
                 .map((m) => (
-                  <span key={m} className="kn-badge" style={{ fontSize: "0.6875rem" }}>
+                  <span key={m} className="kn-text-3xs kn-badge">
                     {m}
                   </span>
                 ))}

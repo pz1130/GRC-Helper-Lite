@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { request } from "../../api";
+import { LoadingState } from "../../components/ui";
 
 interface Settings {
   enabled: boolean;
@@ -38,12 +39,12 @@ export function DecisionModel({ providers }: { providers: Provider[] }) {
       void client.invalidateQueries({ queryKey: ["routing"] });
     },
   });
-  return <section className="kn-card" style={{ marginBottom: 24 }} aria-label={t("decision.settingsTitle")}>
+  return <section className="kn-mb-6 kn-card" aria-label={t("decision.settingsTitle")}>
     <h3>{t("decision.settingsTitle")}</h3>
     <p>{t("decision.settingsHint")}</p>
     <p>{t("decision.dataNotice")}</p>
     <p>{t("decision.costNotice")}</p>
-    {settings.isPending && <p role="status">{t("common.loading")}</p>}
+    {settings.isPending && <LoadingState />}
     {settings.error && <p role="alert">{settings.error.message}</p>}
     {settings.data && <form onSubmit={(event) => { event.preventDefault(); save.mutate(); }}>
       <label>{t("decision.provider")}

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { request } from "../api";
 import { PrerequisiteNotice } from "../components/PrerequisiteNotice";
 import { useAuth } from "../auth";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Framework {
   id: number;
@@ -85,9 +86,9 @@ function RadarChart({ groups }: { groups: Group[] }) {
     return (
       <div aria-label={t("maturity.comparison")}>
         {rated.map((group) => (
-          <div key={group.framework_item_id} style={{ marginBottom: 16 }}>
+          <div key={group.framework_item_id} className="kn-mb-4">
             <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 6 }}>
-              <strong style={{ fontSize: "0.8125rem" }}>{group.code} {group.title}</strong>
+              <strong className="kn-text-xs">{group.code} {group.title}</strong>
               <span style={{ color: "var(--text-secondary)", fontSize: "0.75rem" }}>
                 {formatScore(group.doc_average)} / {formatScore(group.impl_average)}
               </span>
@@ -100,7 +101,7 @@ function RadarChart({ groups }: { groups: Group[] }) {
             </div>
           </div>
         ))}
-        {rated.length === 0 && <p style={{ color: "var(--text-secondary)" }}>{t("maturity.noScores")}</p>}
+        {rated.length === 0 && <p className="kn-secondary">{t("maturity.noScores")}</p>}
       </div>
     );
   }
@@ -155,8 +156,8 @@ function GapRiskButton({ item, assessment }: { item: MaturityItem; assessment: A
   return (
     <>
       <button className="kn-btn-sm" onClick={() => create.mutate()} disabled={create.isPending || risks.isPending} style={{ marginTop: 7 }}>{t("maturity.createRisk")}</button>
-      {create.isSuccess && <small role="status" style={{ display: "block", color: "var(--accent-emerald)", marginTop: 5 }}>{t("maturity.riskCreated")}</small>}
-      {create.error && <small role="alert" style={{ display: "block", color: "var(--accent-ruby)", marginTop: 5 }}>{create.error.message}</small>}
+      {create.isSuccess && <small role="status" className="kn-block kn-ok-text kn-mt-1">{t("maturity.riskCreated")}</small>}
+      {create.error && <small role="alert" className="kn-block kn-danger-text kn-mt-1">{create.error.message}</small>}
     </>
   );
 }
@@ -208,9 +209,9 @@ function ScoreEditor({ item, assessment, canWrite }: { item: MaturityItem; asses
       </td>
       <td style={{ minWidth: 260 }}>
         {locked ? (
-          <small style={{ color: "var(--text-secondary)" }}>{item.doc_rationale || item.impl_rationale || t("maturity.noRationale")}</small>
+          <small className="kn-secondary">{item.doc_rationale || item.impl_rationale || t("maturity.noRationale")}</small>
         ) : (
-          <div style={{ display: "grid", gap: 6 }}>
+          <div className="kn-stack-1">
             <input aria-label={`${item.code} ${t("maturity.docRationale")}`} value={docRationale} onChange={(event) => setDocRationale(event.target.value)} placeholder={t("maturity.docRationale")} />
             <input aria-label={`${item.code} ${t("maturity.implRationale")}`} value={implRationale} onChange={(event) => setImplRationale(event.target.value)} placeholder={t("maturity.implRationale")} />
           </div>
@@ -219,8 +220,8 @@ function ScoreEditor({ item, assessment, canWrite }: { item: MaturityItem; asses
       {canWrite && (
         <td>
           {!locked && <button className="kn-btn-sm" disabled={!docScore || !implScore || save.isPending} onClick={() => save.mutate()}>{t("common.save")}</button>}
-          {!locked && save.isSuccess && <small role="status" style={{ display: "block", color: "var(--accent-emerald)", marginTop: 5 }}>{t("common.saved")}</small>}
-          {!locked && save.error && <small role="alert" style={{ display: "block", color: "var(--accent-ruby)", marginTop: 5 }}>{save.error.message}</small>}
+          {!locked && save.isSuccess && <small role="status" className="kn-block kn-ok-text kn-mt-1">{t("common.saved")}</small>}
+          {!locked && save.error && <small role="alert" className="kn-block kn-danger-text kn-mt-1">{save.error.message}</small>}
           <GapRiskButton item={item} assessment={assessment} />
         </td>
       )}
@@ -287,68 +288,71 @@ export function Maturity() {
 
   return (
     <section>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap", marginBottom: 24 }}>
-        <div><h2 style={{ marginBottom: 8 }}>{t("maturity.title")}</h2><p style={{ margin: 0, color: "var(--text-secondary)" }}>{t("maturity.subtitle")}</p></div>
-        {selected?.status === "draft" && canWrite && (
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      <PageHeader
+        title={t("maturity.title")}
+        subtitle={t("maturity.subtitle")}
+        actions={
+          selected?.status === "draft" && canWrite ? (
+            <>
             <button disabled={suggest.isPending} onClick={() => suggest.mutate()}>
               {suggest.isPending ? t("maturity.suggesting") : t("maturity.suggest")}
             </button>
             {/* 定稿不可撤回（后端没有反向操作），定稿后分数再也改不了 */}
             <button className="kn-btn-primary" disabled={finalize.isPending} onClick={() => { if (window.confirm(t("maturity.finalizeConfirm"))) finalize.mutate(); }}>{t("maturity.finalize")}</button>
-          </div>
-        )}
-      </div>
+            </>
+          ) : undefined
+        }
+      />
 
-      {suggest.error && <p role="alert" className="kn-card" style={{ color: "var(--accent-ruby)" }}>{suggest.error.message}</p>}
-      {finalize.error && <p role="alert" className="kn-card" style={{ color: "var(--accent-ruby)" }}>{finalize.error.message}</p>}
+      {suggest.error && <p role="alert" className="kn-danger-text kn-card">{suggest.error.message}</p>}
+      {finalize.error && <p role="alert" className="kn-danger-text kn-card">{finalize.error.message}</p>}
       {suggest.data && (
-        <p className="kn-card" style={{ marginBottom: 20 }}>
+        <p className="kn-card kn-mb-5">
           {t("maturity.suggestQueued", { id: suggest.data.job_id })}
         </p>
       )}
 
       {canWrite && (
-        <form className="kn-card" onSubmit={submitCreate} style={{ display: "grid", gridTemplateColumns: "minmax(180px, 1fr) minmax(180px, 1fr) 160px auto", alignItems: "end", gap: 12, marginBottom: 20 }}>
+        <form className="kn-card kn-form-grid-4" onSubmit={submitCreate}>
           <label>{t("maturity.framework")}<select required value={frameworkId} onChange={(event) => setFrameworkId(event.target.value)}><option value="">{t("maturity.chooseFramework")}</option>{frameworks.data?.map((framework) => <option key={framework.id} value={framework.id}>{framework.name_en || framework.name_zh} · {framework.version}</option>)}</select></label>
           <label>{t("maturity.assessmentName")}<input required value={name} onChange={(event) => setName(event.target.value)} /></label>
           <label>{t("maturity.asOfDate")}<input required type="date" value={asOfDate} onChange={(event) => setAsOfDate(event.target.value)} /></label>
           <button type="submit" disabled={create.isPending}>{t("maturity.create")}</button>
-          <div style={{ gridColumn: "1 / -1" }}>
+          <div className="kn-col-span-all">
             <PrerequisiteNotice
               items={[{ satisfied: (frameworks.data?.length ?? 0) > 0, label: t("maturity.prereqFrameworks"), to: "/frameworks" }]}
             />
           </div>
-          {create.error && <p role="alert" style={{ gridColumn: "1 / -1", color: "var(--accent-ruby)", margin: 0 }}>{create.error.message}</p>}
+          {create.error && <p role="alert" className="kn-col-span-all kn-danger-text kn-m-0">{create.error.message}</p>}
         </form>
       )}
 
-      <div className="kn-card" style={{ marginBottom: 20 }}>
-        <label style={{ maxWidth: 520 }}>{t("maturity.assessment")}<select value={selectedId ?? ""} onChange={(event) => setSelectedId(Number(event.target.value))}><option value="">{t("maturity.chooseAssessment")}</option>{assessments.data?.map((assessment) => <option key={assessment.id} value={assessment.id}>{assessment.name} · {assessment.as_of_date} · {t(`maturity.${assessment.status}`)}</option>)}</select></label>
+      <div className="kn-card kn-mb-5">
+        <label className="kn-max-w-md">{t("maturity.assessment")}<select value={selectedId ?? ""} onChange={(event) => setSelectedId(Number(event.target.value))}><option value="">{t("maturity.chooseAssessment")}</option>{assessments.data?.map((assessment) => <option key={assessment.id} value={assessment.id}>{assessment.name} · {assessment.as_of_date} · {t(`maturity.${assessment.status}`)}</option>)}</select></label>
       </div>
 
-      {(assessments.isPending || (selectedId !== null && summary.isPending)) && <p role="status">{t("common.loading")}</p>}
-      {(assessments.error || summary.error) && <p role="alert" style={{ color: "var(--accent-ruby)" }}>{(assessments.error ?? summary.error)?.message}</p>}
-      {!assessments.isPending && assessments.data?.length === 0 && <div className="kn-card"><p style={{ margin: 0, color: "var(--text-secondary)" }}>{t("maturity.empty")}</p></div>}
+      {(assessments.isPending || (selectedId !== null && summary.isPending)) && <LoadingState />}
+      {(assessments.error || summary.error) && <p role="alert" className="kn-danger-text">{(assessments.error ?? summary.error)?.message}</p>}
+      {!assessments.isPending && assessments.data?.length === 0 && <Card><EmptyState title={t("maturity.empty")} /></Card>}
 
       {selected && summary.data && (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 14, marginBottom: 20 }}>
-            {[[t("maturity.docAverage"), formatScore(summary.data.overall.doc_average)], [t("maturity.implAverage"), formatScore(summary.data.overall.impl_average)], [t("maturity.completion"), `${completion}%`], [t("maturity.status"), t(`maturity.${selected.status}`)]].map(([label, value]) => <div className="kn-card" key={label}><small style={{ color: "var(--text-secondary)" }}>{label}</small><div style={{ fontSize: "1.75rem", fontWeight: 700, marginTop: 8 }}>{value}</div></div>)}
+            {[[t("maturity.docAverage"), formatScore(summary.data.overall.doc_average)], [t("maturity.implAverage"), formatScore(summary.data.overall.impl_average)], [t("maturity.completion"), `${completion}%`], [t("maturity.status"), t(`maturity.${selected.status}`)]].map(([label, value]) => <div className="kn-card" key={label}><small className="kn-secondary">{label}</small><div style={{ fontSize: "1.75rem", fontWeight: 700, marginTop: 8 }}>{value}</div></div>)}
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "minmax(300px, 0.9fr) minmax(360px, 1.1fr)", gap: 20, marginBottom: 20 }}>
-            <div className="kn-card"><h3 style={{ marginTop: 0 }}>{t("maturity.radarTitle")}</h3><div style={{ display: "flex", gap: 18, fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: 8 }}><span><i style={{ display: "inline-block", width: 16, borderTop: "2px solid var(--accent-blue)", marginRight: 6 }} />{t("maturity.docScore")}</span><span><i style={{ display: "inline-block", width: 16, borderTop: "2px solid var(--accent-emerald)", marginRight: 6 }} />{t("maturity.implScore")}</span></div><RadarChart groups={summary.data.groups} /></div>
-            <div className="kn-card"><h3 style={{ marginTop: 0 }}>{t("maturity.groupSummary")}</h3><div className="kn-table-container" style={{ margin: 0 }}><table><thead><tr><th>{t("maturity.domain")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.completion")}</th></tr></thead><tbody>{summary.data.groups.map((group) => <tr key={group.framework_item_id}><td><code>{group.code}</code><div style={{ marginTop: 4 }}>{group.title}</div></td><td><span style={{ ...scoreTone(group.doc_average), padding: "5px 9px", borderRadius: 6, fontWeight: 700 }}>{formatScore(group.doc_average)}</span></td><td><span style={{ ...scoreTone(group.impl_average), padding: "5px 9px", borderRadius: 6, fontWeight: 700 }}>{formatScore(group.impl_average)}</span></td><td>{group.scored_items} / {group.total_items}</td></tr>)}</tbody></table></div></div>
+            <div className="kn-card"><h3 className="kn-mt-0">{t("maturity.radarTitle")}</h3><div style={{ display: "flex", gap: 18, fontSize: "0.75rem", color: "var(--text-secondary)", marginBottom: 8 }}><span><i style={{ display: "inline-block", width: 16, borderTop: "2px solid var(--accent-blue)", marginRight: 6 }} />{t("maturity.docScore")}</span><span><i style={{ display: "inline-block", width: 16, borderTop: "2px solid var(--accent-emerald)", marginRight: 6 }} />{t("maturity.implScore")}</span></div><RadarChart groups={summary.data.groups} /></div>
+            <Card title={t("maturity.groupSummary")}><DataTable className="kn-m-0" head={<><tr><th>{t("maturity.domain")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.completion")}</th></tr></>}>{summary.data.groups.map((group) => <tr key={group.framework_item_id}><td><code>{group.code}</code><div className="kn-mt-1">{group.title}</div></td><td><span className="kn-score-pill" style={scoreTone(group.doc_average)}>{formatScore(group.doc_average)}</span></td><td><span className="kn-score-pill" style={scoreTone(group.impl_average)}>{formatScore(group.impl_average)}</span></td><td>{group.scored_items} / {group.total_items}</td></tr>)}</DataTable></Card>
           </div>
 
           <div className="kn-card">
-            <h3 style={{ marginTop: 0 }}>{t("maturity.detail")}</h3>
-            <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem" }}>{t("maturity.scaleHint")}</p>
+            <h3 className="kn-mt-0">{t("maturity.detail")}</h3>
+            <p className="kn-secondary kn-text-xs">{t("maturity.scaleHint")}</p>
             {summary.data.groups.map((group) => (
               <div key={group.framework_item_id} style={{ marginTop: 22 }}>
                 <h4 style={{ marginBottom: 10 }}>{group.code} · {group.title}</h4>
-                <div className="kn-table-container" style={{ margin: 0 }}><table><thead><tr><th>{t("maturity.item")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.rationale")}</th>{canWrite && <th>{t("maturity.action")}</th>}</tr></thead><tbody>{groupedItems.get(group.framework_item_id)?.map((item) => <ScoreEditor key={item.framework_item_id} item={item} assessment={selected} canWrite={canWrite} />)}</tbody></table></div>
+                <DataTable className="kn-m-0" head={<><tr><th>{t("maturity.item")}</th><th>{t("maturity.docScore")}</th><th>{t("maturity.implScore")}</th><th>{t("maturity.rationale")}</th>{canWrite && <th>{t("maturity.action")}</th>}</tr></>}>{groupedItems.get(group.framework_item_id)?.map((item) => <ScoreEditor key={item.framework_item_id} item={item} assessment={selected} canWrite={canWrite} />)}</DataTable>
               </div>
             ))}
           </div>

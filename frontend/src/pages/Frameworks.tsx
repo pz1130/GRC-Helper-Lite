@@ -7,6 +7,7 @@ import { ApiError, demoNotCovered, getToken, isDemoSession, request, setToken } 
 import { useAuth } from "../auth";
 import { type Issue, issueText } from "../i18n";
 import i18n from "../i18n";
+import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface Framework {
   id: number;
@@ -100,74 +101,62 @@ export function Frameworks() {
   const metadataReady = Boolean(file && key.trim() && nameEn.trim() && version.trim());
 
   return (
-    <section>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
-        <div>
-          <h2>{t("frameworks.title")}</h2>
-          <p style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-secondary)" }}>
-            {t("frameworks.subtitle")}
-          </p>
-        </div>
-      </div>
+    <section className="kn-page kn-page-frameworks">
+      <PageHeader title={t("frameworks.title")} subtitle={t("frameworks.subtitle")} />
 
-      {frameworks.isPending && <p role="status">{t("common.loading")}</p>}
+      {frameworks.isPending && <LoadingState />}
       {frameworks.error && <p role="alert"><span>⚠️</span> {frameworks.error.message}</p>}
       {frameworks.data && frameworks.data.length === 0 && (
-        <div className="kn-card" style={{ textAlign: "center", padding: "40px 20px", marginBottom: 20 }}>
-          <p style={{ color: "var(--text-secondary)", margin: 0 }}>{t("common.empty")}</p>
-        </div>
+        <Card className="kn-empty-card-center">
+          <EmptyState compact />
+        </Card>
       )}
 
       {!!frameworks.data?.length && (
-        <div className="kn-table-container" style={{ marginBottom: 24 }}>
-          <table>
-            <thead>
-              <tr>
-                <th>{t("frameworks.name")}</th>
-                <th>{t("frameworks.key")}</th>
-                <th>{t("frameworks.version")}</th>
-                <th>{t("frameworks.items")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {frameworks.data.map((framework) => (
-                <tr key={framework.id}>
-                  <td>
-                    <Link
-                      to={`/frameworks/${framework.id}`}
-                      style={{ fontWeight: 600, color: "var(--text-primary)" }}
-                    >
-                      {framework.name_en || framework.name_zh}
-                    </Link>
-                  </td>
-                  <td>
-                    <code>{framework.key}</code>
-                  </td>
-                  <td>
-                    <span className="kn-badge">{framework.version}</span>
-                  </td>
-                  <td>
-                    <span className="kn-badge kn-badge-blue">
-                      {framework.item_count} {t("frameworks.items")}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          className="kn-mb-6"
+          head={
+            <tr>
+              <th>{t("frameworks.name")}</th>
+              <th>{t("frameworks.key")}</th>
+              <th>{t("frameworks.version")}</th>
+              <th>{t("frameworks.items")}</th>
+            </tr>
+          }
+        >
+          {frameworks.data.map((framework) => (
+            <tr key={framework.id}>
+              <td>
+                <Link to={`/frameworks/${framework.id}`} className="kn-strong kn-primary-text">
+                  {framework.name_en || framework.name_zh}
+                </Link>
+              </td>
+              <td>
+                <code>{framework.key}</code>
+              </td>
+              <td>
+                <span className="kn-badge">{framework.version}</span>
+              </td>
+              <td>
+                <span className="kn-badge kn-badge-blue">
+                  {framework.item_count} {t("frameworks.items")}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </DataTable>
       )}
 
       {canWrite && (
-        <details className="kn-card" open style={{ marginTop: 24 }}>
-          <summary style={{ fontSize: "1rem", color: "var(--text-primary)" }}>
+        <details className="kn-mt-6 kn-card" open>
+          <summary className="kn-text-md kn-primary-text">
             {t("frameworks.import")}
           </summary>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", margin: "8px 0 16px 0" }}>
+          <p className="kn-secondary kn-text-sm kn-hint">
             {t("frameworks.importHint")}
           </p>
 
-          <div style={{ marginBottom: 16 }}>
+          <div className="kn-mb-4">
             <label style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
               <span>{t("frameworks.file")}</span>
               <input
@@ -197,13 +186,13 @@ export function Frameworks() {
               {t("frameworks.version")}
               <input value={version} disabled={busy} onChange={(event) => setVersion(event.target.value)} />
             </label>
-            <label style={{ gridColumn: "1 / -1" }}>
+            <label className="kn-col-span-all">
               {t("frameworks.source")}
               <input value={source} disabled={busy} onChange={(event) => setSource(event.target.value)} />
             </label>
           </div>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+          <div className="kn-row kn-wrap kn-mb-3">
             <button
               className="kn-btn-secondary kn-btn-sm"
               disabled={!file || busy}
@@ -220,12 +209,12 @@ export function Frameworks() {
             </button>
           </div>
 
-          {busy && <p role="status">{t("common.loading")}</p>}
+          {busy && <LoadingState inline />}
           {error && <p role="alert"><span>⚠️</span> {error}</p>}
           {notice && <p role="status">{notice}</p>}
 
           {validation && (
-            <div role={validation.ok ? "status" : "alert"} style={{ marginTop: 14 }}>
+            <div role={validation.ok ? "status" : "alert"} className="kn-mt-3">
               <p style={{ margin: "0 0 6px 0", fontWeight: 600 }}>
                 {t("frameworks.report")} · {validation.items} {t("frameworks.items")}
               </p>

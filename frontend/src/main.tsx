@@ -7,9 +7,15 @@ import { App } from "./App";
 import { AuthProvider } from "./auth";
 import "./i18n";
 import "./styles/keynote.css";
+import "./styles/ledger.css";
+import "./styles/shell.css";
+import "./styles/brand.css";
+import "./styles/motion.css";
+import { initMotion } from "./motion";
 import { ThemeProvider, applyTheme, getInitialTheme } from "./theme";
 
 applyTheme(getInitialTheme());
+initMotion();
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 

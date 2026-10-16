@@ -60,8 +60,8 @@ export function PageErrorBoundary({ children }: { children: ReactNode }) {
       resetKey={location.pathname}
       fallback={(error, retry) => (
         <section className="kn-card" role="alert" style={{ padding: 24 }}>
-          <h2 style={{ marginTop: 0 }}>{t("common.pageFailed")}</h2>
-          <p style={{ color: "var(--text-secondary)" }}>{t("common.pageFailedHint")}</p>
+          <h2 className="kn-mt-0">{t("common.pageFailed")}</h2>
+          <p className="kn-secondary">{t("common.pageFailedHint")}</p>
           <pre
             style={{
               whiteSpace: "pre-wrap",

@@ -67,8 +67,8 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
       aria-label={t("graph.drawer.title")}
       className="kn-graph-drawer"
     >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div className="kn-row kn-between">
+        <div className="kn-row">
           <span
             className="kn-dot"
             style={{
@@ -98,7 +98,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
           <div>
             <h2 style={{ fontSize: "1.125rem", margin: "0 0 6px" }}>{t(`graph.edgeKind.${edge.kind}`, edge.kind)}</h2>
             {edge.confidence !== null && (
-              <span className="kn-badge kn-badge-blue" style={{ fontSize: "0.75rem" }}>
+              <span className="kn-text-2xs kn-badge kn-badge-blue">
                 {edge.confidence.toFixed(2)}
               </span>
             )}
@@ -113,7 +113,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
                 padding: "12px 14px",
               }}
             >
-              <p style={{ fontSize: "0.8125rem", margin: 0, lineHeight: 1.5, color: "var(--text-primary)" }}>
+              <p className="kn-primary-text kn-text-xs kn-m-0">
                 {edge.rationale}
               </p>
             </div>
@@ -128,7 +128,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
                 padding: "10px 14px",
               }}
             >
-              <p style={{ fontSize: "0.8125rem", color: "var(--accent-ruby)", margin: 0, fontWeight: 600 }}>
+              <p className="kn-danger-text kn-text-xs kn-m-0 kn-strong">
                 ⚠️ {t("graph.conflictPoints", { count: edge.conflict_count })}
               </p>
             </div>
@@ -152,9 +152,9 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
 
       {/* 框架项 */}
       {node && node.kind === "framework_item" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <div className="kn-stack-2">
           <div>
-            <h2 style={{ fontSize: "1.25rem", margin: "0 0 4px" }}>{node.code}</h2>
+            <h2 className="kn-m-0 kn-mb-1 kn-text-xl">{node.code}</h2>
             <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: 0, fontSize: "0.9375rem" }}>
               {node.title}
             </p>
@@ -168,7 +168,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
                 padding: "10px 14px",
               }}
             >
-              <p style={{ fontSize: "0.8125rem", color: "var(--accent-ruby)", margin: 0, fontWeight: 600 }}>
+              <p className="kn-danger-text kn-text-xs kn-m-0 kn-strong">
                 {t("graph.drawer.notCovered")}
               </p>
             </div>
@@ -180,20 +180,12 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
       {node && control && (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <div>
-            <h2 style={{ fontSize: "1.25rem", margin: "0 0 4px" }}>{control.code}</h2>
+            <h2 className="kn-m-0 kn-mb-1 kn-text-xl">{control.code}</h2>
             <p style={{ fontWeight: 600, color: "var(--text-primary)", margin: "4px 0 0" }}>{control.title}</p>
           </div>
 
-          <div
-            style={{
-              background: "var(--stage-card-subtle)",
-              border: "1px solid var(--stage-border)",
-              borderLeft: "3px solid var(--accent-blue)",
-              borderRadius: "var(--radius-sm)",
-              padding: "12px 14px",
-            }}
-          >
-            <p style={{ fontSize: "0.8125rem", margin: 0, lineHeight: 1.5, color: "var(--text-primary)" }}>
+          <div className="kn-well kn-m-0">
+            <p className="kn-primary-text kn-text-xs kn-m-0">
               {control.statement}
             </p>
           </div>
@@ -203,7 +195,7 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
               <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-tertiary)", fontWeight: 600, margin: "0 0 8px" }}>
                 {t("controls.sources")}
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div className="kn-stack-2">
                 {control.sources.map((source) => (
                   <div
                     key={source.clause_id}
@@ -217,9 +209,9 @@ export function Drawer({ node, edge, onClose }: DrawerProps) {
                       gap: 6,
                     }}
                   >
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div className="kn-row kn-between">
                       <code style={{ fontSize: "0.75rem", fontWeight: 600 }}>{source.citation_label}</code>
-                      <span style={{ fontSize: "0.75rem", color: "var(--text-tertiary)" }}>{source.relation}</span>
+                      <span className="kn-muted kn-text-2xs">{source.relation}</span>
                     </div>
                     <ClauseText clauseId={source.clause_id} />
                     <Link

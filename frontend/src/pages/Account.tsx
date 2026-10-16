@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { request, setToken } from "../api";
 import { useAuth } from "../auth";
+import { Card, PageHeader } from "../components/ui";
 
 interface PasswordChangeOut {
   access_token: string;
@@ -53,15 +54,12 @@ export function Account() {
   }
 
   return (
-    <div style={{ maxWidth: 520 }}>
-      <h2 style={{ marginBottom: 4 }}>{t("account.title")}</h2>
-      <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginTop: 0 }}>
-        {user?.email}
-      </p>
+    <div className="kn-max-w-md">
+      <PageHeader title={t("account.title")} subtitle={user?.email} />
 
-      <div className="kn-card">
-        <h3 style={{ margin: "0 0 4px 0", fontSize: "1.0625rem" }}>{t("account.changePassword")}</h3>
-        <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 16 }}>
+      <Card>
+        <h3 className="kn-card-title-sm">{t("account.changePassword")}</h3>
+        <p className="kn-secondary kn-text-xs kn-mb-4">
           {t("account.changePasswordHint")}
         </p>
         {error && (
@@ -74,7 +72,7 @@ export function Account() {
             <span>✅</span> {notice}
           </p>
         )}
-        <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
+        <form onSubmit={submit} className="kn-stack-3">
           <label>
             {t("account.currentPassword")}
             <input
@@ -108,12 +106,12 @@ export function Account() {
             />
           </label>
           <div>
-            <button type="submit" className="kn-btn-primary" disabled={change.isPending} style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary" disabled={change.isPending}>
               {t("account.changePassword")}
             </button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 }

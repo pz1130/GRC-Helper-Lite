@@ -549,14 +549,14 @@ export function Canvas({
             </span>
           </div>
           {hoveredNode.is_gap && (
-            <div style={{ marginTop: 6 }}>
+            <div className="kn-mt-1">
               <span className="kn-badge kn-badge-ruby" style={{ fontSize: "0.6875rem", padding: "2px 6px" }}>
                 {t("graph.drawer.notCovered")}
               </span>
             </div>
           )}
           {hoveredNode.pending_edges > 0 && (
-            <div style={{ marginTop: 4 }}>
+            <div className="kn-mt-1">
               <span className="kn-badge kn-badge-amber" style={{ fontSize: "0.6875rem", padding: "2px 6px" }}>
                 {t("graph.pendingCount", { count: hoveredNode.pending_edges })}
               </span>

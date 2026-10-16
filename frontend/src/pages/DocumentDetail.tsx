@@ -10,6 +10,7 @@ import { useAuth } from "../auth";
 import { RequirementInventory } from "../RequirementInventory";
 import { DecisionScan } from "../DecisionScan";
 import { OriginalSources } from "../OriginalSources";
+import { EmptyState, LoadingState, PageHeader } from "../components/ui";
 
 interface ClauseNode {
   id: number;
@@ -59,40 +60,23 @@ function Tree({
   selected: number | null;
 }) {
   return (
-    <ul style={{ listStyle: "none", paddingLeft: 12, margin: 0 }}>
+    <ul className="kn-tree-list">
       {nodes.map((node) => {
         const isSelected = selected === node.id;
         return (
-          <li key={node.id} style={{ margin: "2px 0" }}>
+          <li key={node.id} className="kn-tree-item">
             <button
               onClick={() => onSelect(node)}
               title={node.heading_path}
-              style={{
-                width: "100%",
-                background: isSelected ? "rgba(41, 151, 255, 0.16)" : "transparent",
-                // 选中项跟着主题取字色：写死白色时，浅色主题里是浅蓝底白字，看不见。
-                color: isSelected ? "var(--text-primary)" : "var(--text-secondary)",
-                border: isSelected ? "1px solid rgba(41, 151, 255, 0.35)" : "1px solid transparent",
-                borderRadius: "var(--radius-sm)",
-                padding: "6px 10px",
-                cursor: "pointer",
-                textAlign: "left",
-                font: "inherit",
-                fontSize: "0.8125rem",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontWeight: isSelected ? 600 : 400,
-                boxShadow: isSelected ? "0 2px 8px rgba(41, 151, 255, 0.2)" : "none",
-              }}
+              className={isSelected ? "kn-tree-btn is-active" : "kn-tree-btn"}
             >
-              {node.kind === "table" ? <span style={{ opacity: 0.7 }}>▦</span> : null}
+              {node.kind === "table" ? <span className="kn-tree-icon">▦</span> : null}
               {node.number ? (
-                <code style={{ fontSize: "0.75rem", padding: "1px 5px", background: "var(--code-bg)" }}>
+                <code className="kn-tree-code">
                   {node.number}
                 </code>
               ) : null}
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <span className="kn-tree-label">
                 {node.heading}
               </span>
             </button>
@@ -229,16 +213,16 @@ export function DocumentDetail() {
 
   return (
     <section>
-      <p style={{ marginBottom: 16 }}>
-        <Link to="/documents" style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: "0.875rem" }}>
+      <p className="kn-mb-4">
+        <Link to="/documents" className="kn-check-label">
           ← {t("documents.title")}
         </Link>
       </p>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-        <div>
-          <h2>{doc.data?.title}</h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginTop: 4 }}>
+      <PageHeader
+        title={doc.data?.title}
+        subtitle={
+          <span className="kn-page-head-meta">
             {doc.data && (
               <span className="kn-badge kn-badge-emerald">{t(`documents.statuses.${doc.data.status}`)}</span>
             )}
@@ -249,9 +233,10 @@ export function DocumentDetail() {
               {t("documents.clauses")}: {total}
             </span>
             {doc.data?.owner && <span className="kn-badge">{t("documents.owner")}: {doc.data.owner}</span>}
-          </div>
-        </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          </span>
+        }
+        actions={
+          <>
           {canEdit && doc.data?.status === "active" && (
             <button className="kn-btn-secondary kn-btn-sm" disabled={rebuildIndex.isPending} onClick={() => rebuildIndex.mutate()}>
               {t("documents.rebuildIndex")}
@@ -265,8 +250,7 @@ export function DocumentDetail() {
           {doc.data?.supersedes_id != null && (
             <Link
               to={`/documents/${id}/change-impact`}
-              className="kn-btn-secondary kn-btn-sm"
-              style={{ display: "inline-flex", alignItems: "center", textDecoration: "none" }}
+              className="kn-btn-secondary kn-btn-sm kn-link-btn"
             >
               {t("impact.viewImpact")}
             </Link>
@@ -282,8 +266,9 @@ export function DocumentDetail() {
               {t("impact.importNewVersion")}
             </button>
           )}
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {doc.error && <p role="alert">{doc.error.message}</p>}
       {clauses.error && <p role="alert">{clauses.error.message}</p>}
@@ -293,9 +278,9 @@ export function DocumentDetail() {
       {rebuildIndex.isSuccess && <p role="status">{t("documents.indexQueued")}</p>}
 
       {importing && (
-        <div className="kn-card" style={{ marginBottom: 20, border: "1px solid var(--accent-blue)" }}>
-          <h4 style={{ margin: "0 0 8px 0" }}>{t("impact.importNewVersion")}</h4>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 12 }}>
+        <div className="kn-card kn-card--accent kn-mb-5">
+          <h4 className="kn-m-0 kn-mb-2">{t("impact.importNewVersion")}</h4>
+          <p className="kn-secondary kn-text-xs kn-mb-3">
             {t("documents.dropHint")}
           </p>
           <input type="hidden" name="supersedes_id" value={id ?? ""} />
@@ -310,13 +295,13 @@ export function DocumentDetail() {
               event.target.value = "";
             }}
           />
-          {uploadVersion.isPending && <p role="status">{t("common.loading")}</p>}
+          {uploadVersion.isPending && <LoadingState inline />}
           {uploadVersion.error && (
             <p role="alert">
               <span>⚠️</span> {uploadVersion.error.message}
             </p>
           )}
-          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+          <div className="kn-row-gap-mt">
             <button type="button" className="kn-btn-secondary" onClick={() => setImporting(false)}>
               {t("common.cancel")}
             </button>
@@ -325,17 +310,7 @@ export function DocumentDetail() {
       )}
 
       {parseWarningText(doc.data?.parse_warnings, doc.data?.parse_warning_codes) && (
-        <pre
-          style={{
-            background: "var(--accent-amber-bg)",
-            border: "1px solid var(--accent-amber-border)",
-            color: "var(--accent-amber)",
-            padding: 12,
-            whiteSpace: "pre-wrap",
-            fontSize: "0.8125rem",
-            marginBottom: 20,
-          }}
-        >
+        <pre className="kn-parse-warning">
           ⚠️ {parseWarningText(doc.data?.parse_warnings, doc.data?.parse_warning_codes)}
         </pre>
       )}
@@ -343,11 +318,11 @@ export function DocumentDetail() {
       {!isDemoSession() && doc.data?.status === "active" && id && <DecisionScan documentId={id} canScan={canEdit} />}
 
       {!isDemoSession() && doc.data?.status === "active" && (
-        <section className="kn-card" style={{ marginBottom: 20 }} aria-label={t("documents.coverageTitle")}>
+        <section className="kn-mb-5 kn-card" aria-label={t("documents.coverageTitle")}>
           <strong>{t("documents.coverageTitle")}</strong>
           <p>{t("documents.coverageExplanation")}</p>
           {coverage.error && <p role="alert">{coverage.error.message}</p>}
-          {coverage.isPending && <p role="status">{t("common.loading")}</p>}
+          {coverage.isPending && <LoadingState />}
           {coverage.data && <>
             <p>{t("documents.coverageCounts", coverage.data.counts)}</p>
             {coverage.data.clauses.some((row) => row.inventory_status === "needs_review") && <div>
@@ -362,7 +337,7 @@ export function DocumentDetail() {
             {!!coverage.data.reference_issues?.length && <div>
               <strong>{t("documents.referenceIssuesTitle")}</strong>
               <p>{t("documents.referenceIssuesExplanation")}</p>
-              <ul style={{ maxHeight: 240, overflow: "auto" }}>
+              <ul className="kn-scroll-240">
                 {coverage.data.reference_issues.map((issue) => (
                   <li key={`${issue.source_clause_id}:${issue.label}:${issue.status}`}>
                     <button type="button" className="kn-btn-secondary" onClick={() => {
@@ -378,7 +353,7 @@ export function DocumentDetail() {
             </div>}
             <details>
               <summary>{t("documents.coverageInspect")}</summary>
-              <ul style={{ maxHeight: 240, overflow: "auto" }}>
+              <ul className="kn-scroll-240">
                 {coverage.data.clauses.filter((row) => row.status !== "cited").map((row) => (
                   <li key={row.clause_id}>
                     <button type="button" className="kn-btn-secondary" onClick={() => {
@@ -397,18 +372,10 @@ export function DocumentDetail() {
 
       {/* Split Inspector Workspace */}
       {!isDemoSession() && id && <OriginalSources key={id} documentId={id} />}
-      <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+      <div className="kn-doc-split">
         {/* Navigation Tree Pane */}
-        <nav
-          className="kn-card"
-          style={{
-            flex: "0 0 320px",
-            maxHeight: "75vh",
-            overflow: "auto",
-            padding: "16px 12px",
-          }}
-        >
-          <div style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-tertiary)", textTransform: "uppercase", padding: "0 8px 10px 8px", letterSpacing: "0.06em" }}>
+        <nav className="kn-card kn-doc-outline">
+          <div className="kn-toc-label">
             {t("documents.outline")}
           </div>
           {clauses.data && (
@@ -419,25 +386,18 @@ export function DocumentDetail() {
         {/* Clause Reader Pane */}
         <article
           id={selected ? `clause-${selected.id}` : undefined}
-          className="kn-card"
-          style={{
-            flex: 1,
-            minHeight: 280,
-            background: selected ? "var(--stage-card-hover)" : "var(--stage-card)",
-            border: selected ? "1px solid var(--accent-blue)" : "1px solid var(--stage-border)",
-            boxShadow: selected ? "var(--shadow-md)" : undefined,
-          }}
+          className={selected ? "kn-card kn-doc-reader is-selected" : "kn-card kn-doc-reader"}
         >
           {selected ? (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                <h3 style={{ margin: 0, fontSize: "1.2rem" }}>{selected.heading}</h3>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <code style={{ fontSize: "0.8125rem" }}>{selected.citation_label}</code>
+              <div className="kn-clause-head">
+                <h3 className="kn-clause-title">{selected.heading}</h3>
+                <div className="kn-row">
+                  <code className="kn-text-xs">{selected.citation_label}</code>
                   {selected.page_ref && <span className="kn-badge">p.{selected.page_ref}</span>}
                 </div>
               </div>
-              <p style={{ color: "var(--text-tertiary)", fontSize: "0.8125rem", marginBottom: 16 }}>
+              <p className="kn-clause-meta">
                 {selected.heading_path}
               </p>
               {/* 已替换的旧版是历史，条款不再拆合（后端也拒绝）：只读显示 */}
@@ -450,7 +410,7 @@ export function DocumentDetail() {
               />}
               {canEdit && doc.data?.status !== "superseded" ? (
                 <>
-                  <p style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", marginBottom: 8 }}>
+                  <p className="kn-clause-text">
                     {t("documents.splitHint")}
                   </p>
                   <textarea
@@ -459,22 +419,9 @@ export function DocumentDetail() {
                     defaultValue={selected.text}
                     key={selected.id + selected.text}
                     aria-label={selected.heading}
-                    style={{
-                      width: "100%",
-                      minHeight: 200,
-                      whiteSpace: "pre-wrap",
-                      font: "inherit",
-                      fontSize: "0.9375rem",
-                      lineHeight: 1.6,
-                      background: "var(--stage-card-subtle)",
-                      border: "1px solid var(--stage-border)",
-                      padding: 16,
-                      borderRadius: "var(--radius-sm)",
-                      color: "var(--text-primary)",
-                      resize: "vertical",
-                    }}
+                    className="kn-clause-body"
                   />
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12, alignItems: "center" }}>
+                  <div className="kn-clause-actions">
                     <button
                       type="button"
                       className="kn-btn-secondary kn-btn-sm"
@@ -485,7 +432,7 @@ export function DocumentDetail() {
                     >
                       {t("documents.split")}
                     </button>
-                    <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontSize: "0.8125rem" }}>
+                    <label className="kn-inline-check">
                       {t("documents.merge")}
                       <select
                         value={mergeInto}
@@ -513,33 +460,21 @@ export function DocumentDetail() {
                     </button>
                   </div>
                   {(split.error || merge.error) && (
-                    <p role="alert" style={{ marginTop: 8 }}>
+                    <p role="alert" className="kn-mt-2">
                       {(split.error ?? merge.error)?.message}
                     </p>
                   )}
                 </>
               ) : (
-                <pre
-                  style={{
-                    whiteSpace: "pre-wrap",
-                    font: "inherit",
-                    fontSize: "0.9375rem",
-                    lineHeight: 1.6,
-                    background: "var(--stage-card-subtle)",
-                    border: "1px solid var(--stage-border)",
-                    padding: 16,
-                    borderRadius: "var(--radius-sm)",
-                    color: "var(--text-primary)",
-                  }}
-                >
+                <pre className="kn-clause-body">
                   {selected.text}
                 </pre>
               )}
             </>
           ) : (
-            <div style={{ textAlign: "center", padding: "60px 20px", color: "var(--text-tertiary)" }}>
-              <div style={{ fontSize: "2rem", marginBottom: 8, opacity: 0.5 }}>📖</div>
-              <p style={{ color: "var(--text-secondary)" }}>{t("common.empty")}</p>
+            <div className="kn-empty-pane">
+              <div className="kn-empty-emoji">📖</div>
+              <EmptyState compact />
             </div>
           )}
         </article>

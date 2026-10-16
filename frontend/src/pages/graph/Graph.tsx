@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
@@ -11,6 +11,11 @@ import { Drawer } from "./Drawer";
 import { downloadGraph } from "./export";
 import { canvasHeight, MIN_CANVAS_HEIGHT, type LayoutKind } from "./layout";
 import type { GraphData, GraphEdgeData, GraphNodeData } from "./types";
+import { LoadingState } from "../../components/ui";
+import { useViewMode, ViewToggle } from "../../three/ViewToggle";
+
+// 3D 视图单独分包：只有切到 3D 才下载 three.js。
+const Graph3D = lazy(() => import("../../three/Graph3D"));
 
 const WIDTH = 960;
 
@@ -18,6 +23,7 @@ export function Graph() {
   const { t } = useTranslation();
   const [view, setView] = useState<"relations" | "mappings">("relations");
   const [layoutKind, setLayoutKind] = useState<LayoutKind>("document");
+  const [viewMode, setViewMode] = useViewMode("grc.graph.view");
   const [selectedNode, setSelectedNode] = useState<GraphNodeData | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<GraphEdgeData | null>(null);
   const [focus, setFocus] = useState<string>("");
@@ -104,7 +110,7 @@ export function Graph() {
 
       {/* 视图与布局切换区：独立醒目行 */}
       <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap", margin: "16px 0 14px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div className="kn-row">
           <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
             {t("graph.viewLabel")}:
           </span>
@@ -125,7 +131,7 @@ export function Graph() {
         </div>
 
         {view === "relations" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="kn-row">
             <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>
               {t("graph.layoutLabel")}:
             </span>
@@ -149,15 +155,14 @@ export function Graph() {
 
       {/* 过滤器与控制台 */}
       <div className="kn-graph-toolbar">
-        <label style={{ display: "inline-flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 500 }}>{t("graph.focus")}</span>
+        <label className="kn-inline-label">
+          <span className="kn-secondary kn-text-xs kn-medium">{t("graph.focus")}</span>
           <select
             value={focus}
             onChange={(event) => {
               setFocus(event.target.value);
               setFocusedControl(controls.find((control) => `control:${control.id}` === event.target.value) ?? null);
-            }}
-            style={{ padding: "6px 28px 6px 12px", fontSize: "0.8125rem" }}
+            }} className="kn-select-sm kn-text-xs"
           >
             <option value="">{t("graph.panorama")}</option>
             {documents?.map((document) => (
@@ -180,9 +185,9 @@ export function Graph() {
           onChange={(event) => setControlQuery(event.target.value)}
           style={{ padding: "6px 10px", fontSize: "0.8125rem", width: 180 }}
         />
-        <label style={{ display: "inline-flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 500 }}>{t("graph.hops")}</span>
-          <select value={hops} onChange={(event) => setHops(Number(event.target.value))} style={{ padding: "6px 28px 6px 12px", fontSize: "0.8125rem" }}>
+        <label className="kn-inline-label">
+          <span className="kn-secondary kn-text-xs kn-medium">{t("graph.hops")}</span>
+          <select value={hops} onChange={(event) => setHops(Number(event.target.value))} className="kn-select-sm kn-text-xs">
             <option value={1}>1</option>
             <option value={2}>2</option>
           </select>
@@ -207,9 +212,9 @@ export function Graph() {
           <input type="checkbox" checked={onlyConflicts} onChange={(event) => setOnlyConflicts(event.target.checked)} />
           {t("graph.filters.onlyConflicts")}
         </label>
-        <label style={{ display: "inline-flex", flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: "0.8125rem", color: "var(--text-secondary)", fontWeight: 500 }}>{t("graph.filters.framework")}</span>
-          <select value={frameworkId} onChange={(event) => setFrameworkId(event.target.value)} style={{ padding: "6px 28px 6px 12px", fontSize: "0.8125rem" }}>
+        <label className="kn-inline-label">
+          <span className="kn-secondary kn-text-xs kn-medium">{t("graph.filters.framework")}</span>
+          <select value={frameworkId} onChange={(event) => setFrameworkId(event.target.value)} className="kn-select-sm kn-text-xs">
             <option value="">{t("graph.filters.allFrameworks")}</option>
             {frameworks?.map((framework) => (
               <option key={framework.id} value={framework.id}>{framework.name_en}</option>
@@ -222,9 +227,9 @@ export function Graph() {
         </label>
       </div>
 
-      {isLoading && <p style={{ color: "var(--text-tertiary)" }}>{t("common.loading")}</p>}
+      {isLoading && <LoadingState />}
       {/* 没有这一行时，加载失败只是「加载中」消失、画布不出现，看起来像图是空的 */}
-      {error && <p role="alert" style={{ color: "var(--accent-ruby)" }}>{error.message}</p>}
+      {error && <p role="alert" className="kn-danger-text">{error.message}</p>}
       {data && (
         <>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, margin: "14px 0 12px" }}>
@@ -234,13 +239,14 @@ export function Graph() {
               {data.stats.truncated && ` · ${t("graph.truncated")}`}
               {view === "mappings" && ` · ${t("graph.gapCount", { count: data.nodes.filter((node) => node.is_gap).length })}`}
             </p>
-            <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <div className="kn-row">
+              <ViewToggle mode={viewMode} onChange={setViewMode} />
               <button type="button" className="kn-btn-secondary" style={{ padding: "6px 14px", fontSize: "0.8125rem" }} onClick={() => exportGraph("svg")}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="kn-mr-1"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 {t("graph.exportSvg")}
               </button>
               <button type="button" className="kn-btn-secondary" style={{ padding: "6px 14px", fontSize: "0.8125rem" }} onClick={() => exportGraph("png")}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 4 }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="kn-mr-1"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 {t("graph.exportPng")}
               </button>
               {exportError && (
@@ -254,6 +260,40 @@ export function Graph() {
           </div>
 
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+            {viewMode === "3d" ? (
+              <div className="kn-graph-canvas-box kn-graph-canvas-box--3d">
+                <Suspense fallback={<LoadingState />}>
+                  <div aria-hidden="true">
+                  <Graph3D
+                    data={data}
+                    height={MIN_CANVAS_HEIGHT}
+                    selectedNodeKey={selectedNode?.key}
+                    onSelectNode={(node) => {
+                      setSelectedEdge(null);
+                      setSelectedNode(node);
+                    }}
+                  />
+                  </div>
+                </Suspense>
+                <p className="g3d-hint">{t("view3d.hint")}</p>
+                {/* 画布对读屏不可见；这份节点列表让键盘与读屏用户同样能打开节点详情。 */}
+                <ul className="kn-sr-only" aria-label={t("view3d.nodeList")}>
+                  {data.nodes.map((node) => (
+                    <li key={node.key}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedEdge(null);
+                          setSelectedNode(node);
+                        }}
+                      >
+                        {node.code} {node.title}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
             <div ref={canvasWrapper} className="kn-graph-canvas-box" style={{ flex: 1, minWidth: 0, overflow: "auto", maxHeight: MIN_CANVAS_HEIGHT }}>
               <Canvas
                 data={data}
@@ -274,6 +314,7 @@ export function Graph() {
                 }}
               />
             </div>
+            )}
             <Drawer
               node={selectedNode}
               edge={selectedEdge}

@@ -29,7 +29,8 @@ async function mockApi(page: Page, passwordStatus = 200) {
 test("the account page is reachable from the user name in the sidebar", async ({ page }) => {
   await mockApi(page);
   await page.goto("/");
-  await page.getByRole("link", { name: "Account settings" }).click();
+  // 图标轨底部也有一个头像链接，这里点的是侧边面板里带名字的那个
+  await page.getByRole("complementary").getByRole("link", { name: "Account settings" }).click();
   await expect(page).toHaveURL(/\/account$/);
   await expect(page.getByRole("heading", { name: "Change password" })).toBeVisible();
 });

@@ -1,3 +1,4 @@
+import { getMockDetail } from "./mockDetail";
 // 离线演示模式的 mock 数据：形状必须与真实接口一致，否则页面会在演示里塌掉。
 
 export interface MockUser {
@@ -18,6 +19,8 @@ export const DEMO_TOKEN = "demo-mock-token";
 
 export function getMockResponse(path: string, _init: RequestInit = {}): unknown {
   const url = path.split("?")[0];
+  const detail = getMockDetail(url, _init);
+  if (detail !== undefined) return detail;
 
   // 离线演示没有后端可问。返回 ok 是为了不在演示里挂一盏假的红灯——
   // 演示模式本来就整套是示例数据，这里跟着示例走是一致的，不是在骗人。
@@ -151,6 +154,10 @@ export function getMockResponse(path: string, _init: RequestInit = {}): unknown 
       { id: 2, code: "IA-2", title: "Identification and Authentication", category: "Identification & Authentication", status: "in_progress", statement: "Require phishing-resistant multifactor authentication for internal network and privileged account access." },
       { id: 3, code: "SC-7", title: "Boundary Protection and Microsegmentation", category: "System & Communications", status: "implemented", statement: "Apply zero-trust microsegmentation and deep packet inspection between critical business systems." },
       { id: 4, code: "SI-4", title: "System Monitoring and Intrusion Detection", category: "System Integrity", status: "implemented", statement: "Continuously collect production system logs and audit trails and route them to the SIEM alerting center." },
+      { id: 5, code: "CP-9", title: "System Backup", category: "Contingency Planning", status: "in_progress", statement: "Back up core banking data daily and test restoration at least twice a year." },
+      { id: 6, code: "CM-3", title: "Configuration Change Control", category: "Configuration Management", status: "implemented", statement: "Route production changes through CAB approval with recorded rollback plans." },
+      { id: 7, code: "IR-4", title: "Incident Handling", category: "Incident Response", status: "implemented", statement: "Maintain an incident handling capability covering preparation, detection, containment and recovery." },
+      { id: 8, code: "SA-9", title: "External System Services", category: "System & Services Acquisition", status: "in_progress", statement: "Require third-party service providers to meet organizational security requirements and provide annual assurance." },
     ];
   }
 
@@ -215,9 +222,11 @@ export function getMockResponse(path: string, _init: RequestInit = {}): unknown 
   }
 
   if (url === "/api/settings/providers") {
+    // 字段名跟真实 ProviderOut 对齐：kind / api_key_masked / enabled。
+    // 以前写成 masked_key + is_active，Kind 和 API key 列就会空白（不是 DataTable 迁移引入的）。
     return [
-      { id: 1, name: "OpenAI Production", base_url: "https://api.openai.com/v1", model: "gpt-4o", masked_key: "sk-proj-****89Ab", is_active: true },
-      { id: 2, name: "Anthropic Claude Dedicated", base_url: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet", masked_key: "sk-ant-****55Ff", is_active: true },
+      { id: 1, name: "OpenAI Production", kind: "openai", base_url: "https://api.openai.com/v1", model: "gpt-4o", api_key_masked: "sk-proj-****89Ab", enabled: true, is_fallback: false, capabilities: ["chat", "embedding"] },
+      { id: 2, name: "Anthropic Claude Dedicated", kind: "anthropic", base_url: "https://api.anthropic.com/v1", model: "claude-3-5-sonnet", api_key_masked: "sk-ant-****55Ff", enabled: true, is_fallback: false, capabilities: ["chat"] },
     ];
   }
 
@@ -270,6 +279,31 @@ export function getMockResponse(path: string, _init: RequestInit = {}): unknown 
         },
       ],
     };
+  }
+
+  // 风险登记册的演示数据：形状对齐 RiskRegister.tsx 的 Risk / Owner，
+  // 分数覆盖热力图的高、中、低三档，否则演示里矩阵只有一格亮。
+  if (url === "/api/risks/owners") {
+    return [
+      { id: 1, name: "GRC Demo", email: "admin@example.com" },
+      { id: 2, name: "Dana Lee", email: "dana@acme.example" },
+      { id: 3, name: "Omar Haddad", email: "omar@acme.example" },
+    ];
+  }
+
+  if (url === "/api/risks") {
+    const r = (id: number, title: string, source: string, l: number, i: number, rl: number | null, ri: number | null, owner: number | null, due: string | null, status: string, mitigation: string) => ({
+      id, title, description: "", source, source_ref: {}, likelihood: l, impact: i, inherent_score: l * i, mitigation,
+      residual_likelihood: rl, residual_impact: ri, residual_score: rl && ri ? rl * ri : null, owner_user_id: owner, due_date: due, status,
+    });
+    return [
+      r(1, "Privileged access not reviewed quarterly", "gap", 4, 5, 2, 4, 2, "2026-11-15", "mitigating", "Automate quarterly entitlement review in IAM."),
+      r(2, "Backup restore never tested for core ledger", "audit_finding", 3, 5, null, null, 3, "2026-10-30", "open", ""),
+      r(3, "Conflicting password rotation clauses", "conflict", 3, 3, 1, 3, 1, "2026-12-01", "mitigating", "Align policy 4.3 with standard 2.1."),
+      r(4, "Vendor SOC report expired", "manual", 2, 4, 2, 2, 2, null, "accepted", "Compensating control: quarterly vendor attestation."),
+      r(5, "MFA gaps on legacy VPN", "gap", 4, 4, null, null, null, "2026-10-20", "open", ""),
+      r(6, "Log retention below 12 months", "gap", 2, 3, 1, 2, 3, "2026-09-30", "closed", "SIEM retention raised to 400 days."),
+    ];
   }
 
   // 没覆盖的路径返回 undefined，由 api.ts 转成一个**被处理的**错误。

@@ -96,6 +96,35 @@ test("risk register plots exposure and updates mitigation", async ({ page }) => 
   expect((await updated).postDataJSON()).toMatchObject({ mitigation: "Complete the rollout", residual_likelihood: 2, residual_impact: 2 });
 });
 
+test("a risk can be added on a phone-width screen", async ({ page }) => {
+  // 表单原先是写死的六列网格，至少要 909px 宽；窄了就把最右边的提交按钮裁到卡片外面
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.addInitScript(() => {
+    localStorage.setItem("grc.token", "mock-token");
+  });
+  await page.route("**/api/**", async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (url.pathname === "/api/auth/me") return route.fulfill({ json: { id: 1, email: "lead@example.com", name: "Lead", role: "grc_lead" } });
+    if (url.pathname === "/api/risks/owners") return route.fulfill({ json: [{ id: 1, name: "Lead", email: "lead@example.com" }] });
+    if (url.pathname === "/api/risks" && request.method() === "GET") return route.fulfill({ json: [] });
+    if (url.pathname === "/api/risks" && request.method() === "POST") return route.fulfill({ status: 201, json: { id: 9 } });
+    return route.fulfill({ json: [] });
+  });
+  await page.goto("/risks");
+
+  // 只点一下不够：Playwright 会把 overflow:hidden 里的按钮滚出来再点，用户却滑不到那里
+  const add = page.getByRole("button", { name: "Add risk" });
+  const form = await page.locator("form").filter({ has: add }).boundingBox();
+  const button = await add.boundingBox();
+  expect(button!.x + button!.width).toBeLessThanOrEqual(form!.x + form!.width);
+
+  await page.getByLabel("Risk title").fill("Backup restore never tested");
+  const created = page.waitForRequest((request) => request.url().endsWith("/api/risks") && request.method() === "POST");
+  await add.click();
+  expect((await created).postDataJSON()).toMatchObject({ title: "Backup restore never tested" });
+});
+
 // 定稿不可撤回，定稿后分数再也改不了——一次误点不能就把整份评估锁死。
 test("finalizing asks first, and a failure is shown", async ({ page }) => {
   await mockMaturity(page);

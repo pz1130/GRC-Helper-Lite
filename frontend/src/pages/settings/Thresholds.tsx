@@ -133,7 +133,7 @@ export function ThresholdsPage() {
           )}
 
           <div>
-            <button type="submit" className="kn-btn-primary" style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary">
               {t("common.save")}
             </button>
           </div>

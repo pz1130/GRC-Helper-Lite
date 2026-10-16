@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
+import { Card, DataTable } from "../../components/ui";
 
 type Ruleset = "generation" | "embedding";
 
@@ -65,7 +66,7 @@ export function Redaction() {
   return (
     <div>
       {/* Ruleset selector & Table Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
+      <Card className="kn-mb-6">
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 14 }}>
           <div>
             <h3 style={{ margin: 0, fontSize: "1.125rem" }}>{t("settings.redaction")}</h3>
@@ -73,7 +74,7 @@ export function Redaction() {
               {t("settings.redactionConfig.subtitle")}
             </p>
           </div>
-          <label style={{ flexDirection: "row", alignItems: "center", gap: 8, margin: 0 }}>
+          <label className="kn-inline-label kn-m-0">
             <span>{t("settings.redactionConfig.ruleset")}</span>
             <select
               value={ruleset}
@@ -88,17 +89,12 @@ export function Redaction() {
 
         {/* 脱敏决定哪些内容在发给模型前被遮住：规则没加载出来时，空表不能看起来像「没有规则」 */}
         {rules.error && <p role="alert">⚠️ {rules.error.message}</p>}
-        <div className="kn-table-container" style={{ margin: 0 }}>
-          <table>
-            <thead>
-              <tr>
+        <DataTable className="kn-m-0" head={<><tr>
                 <th>{t("settings.redactionConfig.type")}</th>
                 <th>{t("settings.redactionConfig.pattern")}</th>
                 <th>{t("settings.redactionConfig.prefix")}</th>
                 <th>{t("settings.redactionConfig.enabled")}</th>
-              </tr>
-            </thead>
-            <tbody>
+              </tr></>}>
               {rules.data
                 ?.filter((r) => r.ruleset === ruleset)
                 .map((r) => (
@@ -123,15 +119,13 @@ export function Redaction() {
                     </td>
                   </tr>
                 ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </DataTable>
+      </Card>
 
       {/* Add Rule Card */}
-      <div className="kn-card" style={{ marginBottom: 24 }}>
-        <h4 style={{ margin: "0 0 14px 0", fontSize: "1rem" }}>{t("common.add")}</h4>
-        <form onSubmit={submit} style={{ display: "grid", gap: 12, maxWidth: 520 }}>
+      <Card className="kn-mb-6">
+        <h4 className="kn-m-0 kn-mb-3 kn-text-md">{t("common.add")}</h4>
+        <form onSubmit={submit} className="kn-stack-3 kn-max-w-md">
           <select
             aria-label={t("settings.redactionConfig.type")}
             value={form.pattern_type}
@@ -162,16 +156,16 @@ export function Redaction() {
           />
           {create.error && <p role="alert">⚠️ {create.error.message}</p>}
           <div>
-            <button type="submit" className="kn-btn-primary" disabled={create.isPending} style={{ padding: "8px 24px" }}>
+            <button type="submit" className="kn-btn-wide kn-btn-primary" disabled={create.isPending}>
               {t("common.save")}
             </button>
           </div>
         </form>
-      </div>
+      </Card>
 
       {/* Live Preview Sandbox Card */}
-      <div className="kn-card">
-        <h4 style={{ margin: "0 0 4px 0", fontSize: "1rem" }}>{t("settings.redactionConfig.sendPreview")}</h4>
+      <Card>
+        <h4 className="kn-m-0 kn-mb-1 kn-text-md">{t("settings.redactionConfig.sendPreview")}</h4>
         <p style={{ color: "var(--text-secondary)", fontSize: "0.8125rem", marginBottom: 14 }}>
           {t("settings.redactionConfig.sendPreviewHint")}
         </p>
@@ -206,7 +200,7 @@ export function Redaction() {
             {"\n\n" + t("settings.redactionConfig.hits") + ": " + JSON.stringify(preview.data.hits)}
           </pre>
         )}
-      </div>
+      </Card>
     </div>
   );
 }
