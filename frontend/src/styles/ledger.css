@@ -331,6 +331,14 @@ details[open] > summary::before { transform: rotate(45deg); }
    而内容区上限 1760px——与矩阵并排在任何宽度下都不够，所以始终上下排列。 */
 .kn-risk-layout { display: grid; grid-template-columns: 1fr; gap: 20px; }
 .kn-risk-layout .kn-graph-canvas-box--3d, .kn-risk-layout canvas { max-height: 460px; }
+/* 新增风险的表单：放得下就一行，放不下就换行。原先写死六列网格，至少要 909px，
+ * 手机和开着侧边面板的 1024 宽笔记本都把最右边的「Add risk」裁掉、点不到。 */
+.kn-risk-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 20px; }
+.kn-risk-form > label { flex: 1 1 150px; min-width: 0; }
+.kn-risk-form > label:first-child { flex: 3 1 220px; }
+.kn-risk-form > label:nth-child(2), .kn-risk-form > label:nth-child(3) { flex-basis: 100px; }
+.kn-risk-form > button { flex: none; }
+.kn-risk-form > [role="alert"] { flex-basis: 100%; }
 .kn-risk-table td { vertical-align: top; }
 .kn-risk-table td:nth-child(3) { min-width: 200px; }
 .kn-risk-table td:nth-child(4) { min-width: 240px; }
