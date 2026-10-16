@@ -176,6 +176,8 @@ th { text-transform: none; letter-spacing: 0; font-size: 0.75rem; font-weight: 5
   .ws-rail { display: none; }
   .ws-content { grid-column: 1; }
   .ws-panel { left: 0; width: min(300px, 86vw); overflow-y: auto; box-shadow: 0 0 40px rgba(0,0,0,.25); }
+  /* 宽屏收起面板的偏好不该带进窄屏：抽屉自己管开合，否则这里永远打不开 */
+  .ws-shell--collapsed .ws-panel { visibility: visible; border-right: 1px solid var(--stage-border); padding: 14px 10px; }
   .ws-panel-list { display: flex; }
   .ws-panel-list--active .ws-panel-group-title { display: block; }
   .ws-panel-head { display: none; }

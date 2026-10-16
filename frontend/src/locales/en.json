@@ -29,7 +29,8 @@
     "maturity": "Maturity Model",
     "risks": "Risk Register",
     "openMenu": "Open navigation",
-    "menu": "Menu"
+    "menu": "Menu",
+    "sidePanel": "Side panel"
   },
   "topbar": {
     "searchPlaceholder": "Search controls, documents, frameworks... (⌘K)",
