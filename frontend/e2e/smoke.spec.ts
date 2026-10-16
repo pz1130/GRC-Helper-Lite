@@ -201,6 +201,9 @@ test("窄屏下侧边栏收进抽屉，内容区不被挤掉也不横向溢出",
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
   expect(overflow).toBeLessThanOrEqual(1);
+  // 不溢出还不够：内容区曾被宽屏的三列网格挤进 64px 的第一列，照样不溢出
+  const main = await page.getByRole("main").boundingBox();
+  expect(main?.width).toBeGreaterThan(360);
 
   // 打得开、进得去
   await page.getByRole("navigation").getByRole("button", { name: "Menu" }).click();

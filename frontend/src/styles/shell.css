@@ -542,8 +542,12 @@ pre.kn-clause-body { min-height: 0; resize: none; }
 /* ---------- 修订：图标轨加宽、底部区域重排 ----------
  * Windows 上 125%/150% 缩放时 56px 的轨与 18px 图标显得太小、难点；改为 64px 轨、44px 点击区、22px 图标，
  * 提示文字也放大。 */
-.ws-shell { grid-template-columns: 64px 240px minmax(0, 1fr); }
-.ws-shell--collapsed { grid-template-columns: 64px 0 minmax(0, 1fr); }
+/* 只管宽屏：这两条排在窄屏 @media 之后、特异性相同，不加限定就会把窄屏的单列网格
+ * 盖回三列，内容区被挤进 64px 的第一列。 */
+@media (min-width: 901px) {
+  .ws-shell { grid-template-columns: 64px 240px minmax(0, 1fr); }
+  .ws-shell--collapsed { grid-template-columns: 64px 0 minmax(0, 1fr); }
+}
 .ws-rail { padding: 14px 0; gap: 14px; }
 .ws-rail-items { gap: 12px; padding: 0 10px; }
 .ws-rail-group { gap: 4px; padding-bottom: 12px; }
