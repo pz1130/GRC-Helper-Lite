@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -7,6 +7,7 @@ import { BrandLogo, BrandWordmark } from "./BrandLogo";
 import { CommandPalette } from "./CommandPalette";
 import { useNavModel } from "./nav";
 import { HealthPill, MotionToggle, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
+import { LoadingState } from "./ui";
 
 const PANEL_KEY = "grc.ws.panel";
 // 窄屏底部标签栏放最常用的四页，其余进抽屉。
@@ -194,7 +195,10 @@ export function Layout() {
           <PageErrorBoundary>
             {/* 换路由时重新挂载这层外壳，触发入场动画（styles/motion.css） */}
             <div key={location.pathname} className="ws-route">
-              <Outlet />
+              {/* 页面按路由拆包（App.tsx），下载期间只占内容区，外壳不动 */}
+              <Suspense fallback={<LoadingState />}>
+                <Outlet />
+              </Suspense>
             </div>
           </PageErrorBoundary>
         </main>
