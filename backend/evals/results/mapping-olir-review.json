@@ -1,0 +1,37 @@
+{
+  "suite": "mapping",
+  "label": "olir-review",
+  "chat_model": "MiniMax-M3",
+  "embed_model": "embo-01",
+  "max_tokens": 16384,
+  "batches": 30,
+  "attempted": 30,
+  "rejected": 0,
+  "failed": 0,
+  "dropped_mappings": 11,
+  "batch_validation_pass_rate": 1.0,
+  "candidate_vector_used": true,
+  "mapping": {
+    "tp": 151,
+    "predicted": 286,
+    "expected": 716,
+    "precision": 0.528,
+    "recall": 0.2109,
+    "f1": 0.3014
+  },
+  "citation_repairs": 0,
+  "proposals": 286,
+  "usage": {
+    "framework_mapping:ok": {
+      "calls": 30,
+      "tokens_in": 97307,
+      "tokens_out": 111331
+    },
+    "embedding:ok": {
+      "calls": 3,
+      "tokens_in": 22320,
+      "tokens_out": 0
+    }
+  },
+  "elapsed_s": 834.4
+}
