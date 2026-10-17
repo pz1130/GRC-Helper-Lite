@@ -31,3 +31,28 @@ def test_extraction_corpus_is_deterministic():
     assert first == second
     assert [family for family, _, _ in first] == list(corpus.EXTRACTION_FAMILIES)
     assert all(len(controls) == corpus.EXTRACTION_PER_FAMILY for _, _, controls in first)
+
+
+async def test_failure_reasons_are_grouped_by_the_check_that_failed(db_session):
+    # K15：通过率 0.83 的成因要从这里看——原来报告只有「被拒 N 批」，原因留在
+    # llm_call.error 里没人导出。重试 3 次与 2 次结果一样，只靠次数调参已经走不通。
+    from app.llm.models import LLMCall
+    from evals.harness import _failures
+
+    def call(status: str, error: str | None) -> LLMCall:
+        return LLMCall(model="m", task_key="control_extract", prompt_hash="h", ruleset="generation",
+                       status=status, error=error)
+
+    db_session.add_all([
+        call("error", "schema: suggestions: field required"),
+        call("error", "schema: Expecting ',' delimiter"),
+        call("error", "citation: quote not found in clause 12"),
+        call("error", "ReadTimeout"),
+        call("ok", None),
+    ])
+    await db_session.flush()
+
+    report = await _failures(db_session)
+
+    assert report["counts"] == {"schema": 2, "citation": 1, "other": 1}
+    assert report["samples"]["citation"] == ["quote not found in clause 12"]
