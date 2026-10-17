@@ -9,7 +9,7 @@
 # APP_SECRET_KEY）和 backups/ 后运行它，确认无误再按 OPERATIONS.md 正式恢复。
 #
 # 核对项：清单 sha256 → APP_SECRET_KEY 指纹 → 迁移版本 → 每表行数 → 原文文件数 →
-#         全栈起来后经 HTTPS 访问 /api/health。
+#         迁到 head 后起全栈，经 HTTPS 访问 /api/health（含库版本比对）。
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -91,7 +91,11 @@ got_docs="$("${COMPOSE[@]}" run --rm --no-deps -T worker sh -c 'find /data/docum
 [[ "$got_docs" == "$(man document_files)" ]] || die "原文文件数 $got_docs ≠ 清单 $(man document_files)"
 log "  原文 $got_docs 个文件"
 
-log "6/6 起全栈，经 HTTPS 访问健康检查"
+log "6/6 迁到当前代码的 head，起全栈，经 HTTPS 访问健康检查"
+# 备份比代码旧时（G3：先备份、再升级、再迁移，之后演练用的是升级前那份），真实恢复
+# 也要先迁移。健康检查会比对库版本与代码 head，不迁就起不来——原来不迁照样「通过」，
+# 演练的其实是新代码连旧 schema。行数在上一步按备份原样核过，迁移放在核对之后。
+"${COMPOSE[@]}" run --rm api alembic upgrade head
 "${COMPOSE[@]}" up -d --wait
 ok=0
 for _ in $(seq 1 30); do

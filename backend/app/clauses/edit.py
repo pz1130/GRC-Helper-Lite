@@ -125,11 +125,13 @@ async def merge_clauses(
         )
     )
     sources = list(await session.scalars(select(ControlSource).where(ControlSource.clause_id == loser.id)))
+    moved: list[int] = []
     for source in sources:
         if source.control_id in occupied:
             continue
         source.clause_id = winner.id
         occupied.add(source.control_id)
+        moved.append(source.control_id)
 
     loser.status = "merged"
     loser.merged_into_id = winner.id
@@ -142,6 +144,8 @@ async def merge_clauses(
         entity_type="Clause",
         entity_id=loser.id,
         before={"text": loser.text, "heading": loser.heading},
-        after={"merged_into": winner.id},
+        # 挪走的出处要记下来：之后控制点的出处显示的是胜者，「原来引的是哪句」
+        # 只能从这里查到（K8）。
+        after={"merged_into": winner.id, "moved_source_control_ids": sorted(moved)},
     )
     return winner

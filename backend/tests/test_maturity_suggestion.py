@@ -762,3 +762,128 @@ async def test_an_assessment_finalized_during_the_run_takes_no_more_ai_scores(db
     assert await db_session.scalar(
         select(MaturityScore).where(MaturityScore.assessment_id == assessment.id)
     ) is None
+
+
+# ---- 中途出错（K7）：已提交的批次留着，这一轮停在哪、为什么停，要能从审计里看出来 ----
+
+
+async def _two_leaves(session):
+    framework, first = await _framework_with_item(session, code="PR.AA-01")
+    second = FrameworkItem(
+        framework_id=framework.id, code="PR.AA-02", title="Second item",
+        description="Another leaf.", level=1, order_index=2,
+    )
+    session.add(second)
+    await session.flush()
+    return framework, first, second
+
+
+def _scored(item: FrameworkItem):
+    from app.llm.runner import ValidatedResult
+
+    return ValidatedResult(
+        payload={"suggestions": [{
+            "framework_item_id": item.id, "doc_score": 2, "impl_score": 2,
+            "doc_rationale": "AI", "impl_rationale": "AI",
+        }]},
+        confidence=0.9, llm_call_id=None,
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_rejected_batch_is_counted_and_the_next_batch_still_runs(db_session):
+    # 原来校验失败直接冲出整轮：后面的批次不跑，失败那次调用的 llm_call（连同花费）
+    # 随会话一起丢掉，预算因此少计。映射任务早就是逐批计数、继续。
+    from unittest.mock import AsyncMock, patch
+
+    from app.llm.validation import ValidationFailure
+    from app.maturity.tasks import suggest_scores
+
+    framework, _first, second = await _two_leaves(db_session)
+    assessment = await _assessment(db_session, framework)
+    run = AsyncMock(side_effect=[ValidationFailure("schema: bad"), _scored(second)])
+
+    with patch("app.maturity.tasks.run", run), patch("app.maturity.tasks.MAX_SUGGESTIONS", 1):
+        summary = await suggest_scores(db_session, assessment_id=assessment.id)
+
+    assert summary["rejected"] == 1
+    assert summary["written"] == 1
+
+
+@pytest.mark.asyncio
+async def test_a_provider_failure_is_counted_apart_from_rejections(db_session):
+    # 供应商故障不是质量信号：与 rejected 分开计，不让一次超时作废整轮。
+    from unittest.mock import AsyncMock, patch
+
+    from app.llm.providers.base import ProviderError
+    from app.maturity.tasks import suggest_scores
+
+    framework, _first, second = await _two_leaves(db_session)
+    assessment = await _assessment(db_session, framework)
+    run = AsyncMock(side_effect=[ProviderError("timeout", retryable=True), _scored(second)])
+
+    with patch("app.maturity.tasks.run", run), patch("app.maturity.tasks.MAX_SUGGESTIONS", 1):
+        summary = await suggest_scores(db_session, assessment_id=assessment.id)
+
+    assert summary["failed"] == 1
+    assert summary["rejected"] == 0
+    assert summary["written"] == 1
+
+
+@pytest.mark.asyncio
+async def test_budget_running_out_mid_run_stops_with_the_reason_in_the_summary(db_session):
+    from unittest.mock import AsyncMock, patch
+
+    from app.llm.budget import BudgetExceeded
+    from app.maturity.models import MaturityScore
+    from app.maturity.tasks import suggest_scores
+
+    framework, first, _second = await _two_leaves(db_session)
+    assessment = await _assessment(db_session, framework)
+    run = AsyncMock(side_effect=[
+        _scored(first), BudgetExceeded("exhausted", code="budget.exhausted"),
+    ])
+
+    with patch("app.maturity.tasks.run", run), patch("app.maturity.tasks.MAX_SUGGESTIONS", 1):
+        summary = await suggest_scores(db_session, assessment_id=assessment.id)
+
+    assert summary["stopped_by"] == "budget.exhausted"
+    assert summary["written"] == 1
+    kept = await db_session.scalar(
+        select(MaturityScore).where(MaturityScore.framework_item_id == first.id)
+    )
+    assert kept is not None
+
+
+@pytest.mark.asyncio
+async def test_a_run_stopped_midway_still_leaves_its_summary_in_the_audit_log(db_session):
+    from unittest.mock import AsyncMock, patch
+
+    from app.iam.models import AuditLog, User
+    from app.iam.permissions import Role
+    from app.iam.security import hash_password
+    from app.llm.budget import BudgetExceeded
+    from app.maturity.tasks import suggest_maturity_scores
+
+    lead = User(email="lead@k7.test", name="lead", role=Role.GRC_LEAD, password_hash=hash_password("pw"))
+    db_session.add(lead)
+    framework, first, _second = await _two_leaves(db_session)
+    assessment = await _assessment(db_session, framework)
+    run = AsyncMock(side_effect=[
+        _scored(first), BudgetExceeded("exhausted", code="budget.exhausted"),
+    ])
+
+    with (
+        patch("app.maturity.tasks.session_factory") as factory,
+        patch("app.maturity.tasks.run", run),
+        patch("app.maturity.tasks.MAX_SUGGESTIONS", 1),
+    ):
+        factory.return_value.__aenter__.return_value = db_session
+        await suggest_maturity_scores({}, assessment.id, lead.id)
+
+    entry = await db_session.scalar(
+        select(AuditLog).where(AuditLog.action == "maturity_score.suggest")
+    )
+    assert entry is not None
+    assert entry.after["stopped_by"] == "budget.exhausted"
+    assert entry.after["written"] == 1

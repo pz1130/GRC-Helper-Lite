@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, Request, status
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -119,6 +119,11 @@ def _snapshot(user: User) -> dict:
     }
 
 
+# 「最后一名管理员」检查的事务级锁（K6）。值是 "grc_admn" 的 ASCII，与 budget.py 的
+# BUDGET_LOCK_KEY 同一种取法，免得和别处的数字键撞上。
+ADMIN_LOCK_KEY = 0x6772635F61646D6E
+
+
 async def _would_orphan_admin(
     session: AsyncSession, target: User, data: dict
 ) -> bool:
@@ -143,6 +148,9 @@ async def _would_orphan_admin(
     if stays_admin and stays_active and stays_unexpired:
         return False
 
+    # 只在「这次会少一名可用管理员」时才锁：两名管理员同时互相降级，不锁的话两边
+    # 都数到「还有另一个」，都通过。锁持有到事务提交，后到的那个数到的是提交后的人数。
+    await session.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": ADMIN_LOCK_KEY})
     others = await session.scalar(
         select(func.count())
         .select_from(User)

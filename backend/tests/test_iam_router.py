@@ -253,3 +253,43 @@ async def test_audit_log_rejects_nonsense_paging_instead_of_crashing(client, db_
     headers = await _auth(client, "admin@example.com")
     resp = await client.get(f"/api/audit-log?{query}", headers=headers)
     assert resp.status_code == 422
+
+
+async def _holds_admin_lock(db_session) -> bool:
+    from sqlalchemy import text
+
+    from app.iam.router import ADMIN_LOCK_KEY
+
+    count = await db_session.scalar(
+        text(
+            "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' "
+            "AND pid = pg_backend_pid() "
+            "AND ((classid::bigint << 32) | objid::bigint) = :key"
+        ),
+        {"key": ADMIN_LOCK_KEY},
+    )
+    return bool(count)
+
+
+@pytest.mark.asyncio
+async def test_demoting_an_admin_serialises_on_the_admin_lock(client, db_session):
+    """K6：两名管理员同时互相降级，不加锁时两边都数到「还有另一个」，都通过。"""
+    await _seed(db_session, Role.ADMIN, "admin@example.com")
+    other = await _seed(db_session, Role.ADMIN, "other@example.com")
+    headers = await _auth(client, "admin@example.com")
+
+    resp = await client.patch(f"/api/users/{other.id}", json={"role": "viewer"}, headers=headers)
+
+    assert resp.status_code == 200
+    assert await _holds_admin_lock(db_session)
+
+
+@pytest.mark.asyncio
+async def test_an_edit_that_keeps_every_admin_takes_no_lock(client, db_session):
+    await _seed(db_session, Role.ADMIN, "admin@example.com")
+    target = await _seed(db_session, Role.VIEWER, "v@example.com")
+    headers = await _auth(client, "admin@example.com")
+
+    await client.patch(f"/api/users/{target.id}", json={"name": "Renamed"}, headers=headers)
+
+    assert not await _holds_admin_lock(db_session)
