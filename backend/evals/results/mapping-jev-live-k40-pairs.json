@@ -1,0 +1,4238 @@
+{
+ "missed": [
+  {
+   "csf": "DE.AE-02",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "AU-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "IR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "IR-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "PM-16",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "PM-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "PM-28",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "PM-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "PM-15",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "PM-16",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "RA-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "RA-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.AE-07",
+   "control": "RA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-01",
+   "control": "AC-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-01",
+   "control": "CM-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-01",
+   "control": "SC-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-02",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-02",
+   "control": "PE-20",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-02",
+   "control": "PE-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "AC-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "AU-12",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "AU-13",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "CM-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "PS-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "SA-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "SI-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "AC-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "AC-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "AU-12",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "CM-10",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "CM-11",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "CM-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "CM-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "SC-34",
+   "in_candidates": false
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "SC-35",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "PM-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "SR-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "SR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "AC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "AT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "AU-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "CA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "CP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "IA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "IR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "MA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "MP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PE-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PL-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PM-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PM-28",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PS-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PT-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "RA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "SA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "SC-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "SI-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "SR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-05",
+   "control": "PM-30",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-05",
+   "control": "RA-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OC-05",
+   "control": "SR-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "AC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "AT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "AU-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "CP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "IA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "IR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "MA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "MP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PE-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PL-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PM-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PS-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "RA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "SA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "SC-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "SI-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "SR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "PM-19",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "PM-31",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-03",
+   "control": "PM-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-03",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.OV-03",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "AT-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "AU-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "CP-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "IA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "IR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "MA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "MP-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PE-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PL-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PS-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PT-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "SA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "SC-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "SI-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "SR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "AC-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "AT-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "AU-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "CM-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "CP-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "IA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "IR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "MA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "MP-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PE-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PL-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PS-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PT-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "RA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "SA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "SC-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "SI-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "SR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-01",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-01",
+   "control": "SR-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "PM-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "SR-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-04",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-04",
+   "control": "SR-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "PM-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-06",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RM-06",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RM-07",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RM-07",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.RR-01",
+   "control": "PM-19",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RR-01",
+   "control": "PM-23",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RR-01",
+   "control": "PM-24",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RR-02",
+   "control": "PM-13",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RR-02",
+   "control": "PM-19",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.RR-02",
+   "control": "PM-24",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-01",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "SR-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "SR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "AC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "AT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "AU-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "CP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "IA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "IR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "MA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "MP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PE-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PL-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PM-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PM-31",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PS-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "RA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "SA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "SC-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "SI-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "SR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-04",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "SR-10",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-06",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-06",
+   "control": "SR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "RA-9",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "SA-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "CP-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "IR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "SA-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "SR-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "PM-19",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "PM-28",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "PM-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "RA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "SA-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "SR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "PM-31",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "RA-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "RA-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "RA-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SA-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SR-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-02",
+   "control": "AC-20",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-02",
+   "control": "SA-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.AM-02",
+   "control": "SA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-03",
+   "control": "PL-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-03",
+   "control": "PL-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-03",
+   "control": "PM-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-04",
+   "control": "AC-20",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-07",
+   "control": "SI-12",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "CM-13",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "MA-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "MA-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "PL-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "PM-22",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "PM-23",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "SA-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "SA-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "SI-18",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.AM-08",
+   "control": "SR-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "AC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "AT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "AU-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "CA-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "CP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "CP-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "IA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "IR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "IR-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "IR-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "MA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "MP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "PE-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "PL-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "PL-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "PM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "PS-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "PT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "RA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "RA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "RA-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SA-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SA-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SI-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SI-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SI-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-01",
+   "control": "SR-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "AC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "AT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "AU-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "CA-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "CP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "CP-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "IA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "IR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "IR-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "IR-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "MA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "MP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PE-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PL-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PL-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PM-31",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PM-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PS-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "PT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "RA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "RA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "RA-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SA-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SI-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SI-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SI-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "AC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "AT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "AU-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "CA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "CA-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "CA-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "CM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "CP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "CP-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "IA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "IR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "IR-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "IR-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "MA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "MP-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PE-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PL-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PL-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PM-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PM-31",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PS-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PT-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "RA-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "RA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SA-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SA-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SA-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SA-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SC-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SI-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SI-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SI-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SR-1",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "SR-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "IR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-01",
+   "control": "CA-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-01",
+   "control": "CA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-01",
+   "control": "SI-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-02",
+   "control": "SI-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-03",
+   "control": "PM-12",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-04",
+   "control": "PM-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-04",
+   "control": "PM-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-04",
+   "control": "RA-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-04",
+   "control": "RA-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-05",
+   "control": "PM-16",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-05",
+   "control": "RA-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-06",
+   "control": "PM-18",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-06",
+   "control": "PM-30",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-07",
+   "control": "CA-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SA-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SA-15",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SA-17",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SA-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SA-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "AC-14",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "AC-12",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "AC-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "IA-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "IA-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "IA-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "IA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-05",
+   "control": "AC-10",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.AA-05",
+   "control": "AC-16",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.AA-05",
+   "control": "AC-17",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-05",
+   "control": "AC-18",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-05",
+   "control": "AC-19",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-06",
+   "control": "PE-19",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.AA-06",
+   "control": "PE-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AA-06",
+   "control": "PE-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.AT-01",
+   "control": "AT-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "CA-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "CP-9",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SC-32",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SC-39",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SC-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SC-43",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SC-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SI-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "SI-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "AU-16",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "CA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SC-12",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SC-16",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SC-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SC-40",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SC-43",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SI-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SI-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "SI-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "AC-2",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "AC-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "AC-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "AU-13",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "AU-9",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "CA-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "CP-9",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SA-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-11",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-13",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-24",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-40",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-43",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SI-10",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SI-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SI-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SI-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.IR-01",
+   "control": "SC-4",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.IR-01",
+   "control": "SC-5",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.IR-02",
+   "control": "CP-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.IR-02",
+   "control": "PE-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.IR-02",
+   "control": "PE-12",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "SA-8",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "SC-39",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "SC-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.IR-04",
+   "control": "PM-9",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.PS-01",
+   "control": "CM-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.PS-01",
+   "control": "CM-11",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.PS-01",
+   "control": "CM-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.PS-01",
+   "control": "CM-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.PS-01",
+   "control": "CM-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.PS-02",
+   "control": "SI-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "SC-49",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "SC-51",
+   "in_candidates": false
+  },
+  {
+   "csf": "PR.PS-04",
+   "control": "AU-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "PR.PS-06",
+   "control": "SA-17",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.CO-04",
+   "control": "CP-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-01",
+   "control": "CP-10",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-02",
+   "control": "IR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-03",
+   "control": "CP-2",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-03",
+   "control": "CP-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-04",
+   "control": "IR-1",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-04",
+   "control": "IR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "RC.RP-04",
+   "control": "PM-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-03",
+   "control": "AU-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "AU-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "IR-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "IR-6",
+   "in_candidates": false
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "AU-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "IR-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "IR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-08",
+   "control": "IR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-08",
+   "control": "RA-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.AN-08",
+   "control": "RA-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.CO-02",
+   "control": "IR-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.CO-02",
+   "control": "SR-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "RS.CO-02",
+   "control": "SR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.CO-03",
+   "control": "IR-4",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.CO-03",
+   "control": "IR-7",
+   "in_candidates": false
+  },
+  {
+   "csf": "RS.CO-03",
+   "control": "SR-3",
+   "in_candidates": false
+  },
+  {
+   "csf": "RS.CO-03",
+   "control": "SR-8",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.MA-01",
+   "control": "IR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.MA-01",
+   "control": "IR-7",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.MA-01",
+   "control": "SR-3",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.MA-02",
+   "control": "IR-5",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.MA-03",
+   "control": "IR-6",
+   "in_candidates": true
+  },
+  {
+   "csf": "RS.MA-04",
+   "control": "IR-5",
+   "in_candidates": true
+  }
+ ],
+ "extra": [
+  {
+   "csf": "DE.AE-02",
+   "control": "IR-5",
+   "strength": "partial",
+   "rationale": "IR-5 tracks and documents incidents, which enables the analysis needed to understand associated activities surrounding potentially adverse events."
+  },
+  {
+   "csf": "DE.AE-02",
+   "control": "RA-10",
+   "strength": "supporting",
+   "rationale": "RA-10 establishes a cyber threat hunting capability to search for indicators of compromise and detect, track, and disrupt threats, feeding into analysis of adverse events."
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "AU-16",
+   "strength": "partial",
+   "rationale": "AU-16 explicitly coordinates audit information among external organizations when audit information crosses organizational boundaries, providing multi-source correlation."
+  },
+  {
+   "csf": "DE.AE-03",
+   "control": "AU-7",
+   "strength": "supporting",
+   "rationale": "AU-7 provides audit record reduction and report generation across diverse records, supporting on-demand analysis that correlates data from multiple sources without altering originals."
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "CM-4",
+   "strength": "supporting",
+   "rationale": "CM-4 analyzes changes to determine potential security and privacy impacts, providing an impact-analysis methodology that can inform understanding of adverse event impact."
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "IR-4",
+   "strength": "partial",
+   "rationale": "IR-4 incident handling covers detection and analysis, containment, eradication, and recovery; analysis activities must characterize impact and scope of adverse events to drive containment decisions."
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "IR-5",
+   "strength": "partial",
+   "rationale": "IR-5 requires tracking and documenting incidents, building the historical record and ongoing status that informs understanding of the impact and scope of adverse events."
+  },
+  {
+   "csf": "DE.AE-04",
+   "control": "RA-3",
+   "strength": "partial",
+   "rationale": "RA-3 determines the likelihood and magnitude of harm from unauthorized access/use/disclosure/disruption/modification/destruction, directly estimating impact and scope for adverse events."
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "AU-6",
+   "strength": "partial",
+   "rationale": "AU-6 requires reviewing and analyzing audit records and reporting findings to personnel or roles, which supports disseminating information on adverse events to authorized staff."
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "AU-7",
+   "strength": "supporting",
+   "rationale": "AU-7 audit record reduction and report generation supports on-demand audit review, analysis, and reporting, enabling the provision of event information to authorized tools and personnel."
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "SI-4",
+   "strength": "supporting",
+   "rationale": "SI-4 system monitoring detects attacks and indicators of potential attacks, generating the adverse event information that can then be provided to authorized staff and tools."
+  },
+  {
+   "csf": "DE.AE-06",
+   "control": "SI-5",
+   "strength": "partial",
+   "rationale": "SI-5 generates internal security alerts, advisories, and directives and disseminates them to personnel, providing a mechanism for delivering adverse event information to authorized staff."
+  },
+  {
+   "csf": "DE.AE-07",
+   "control": "PM-15",
+   "strength": "supporting",
+   "rationale": "PM-15 establishes contact with security and privacy groups to maintain currency with recommended practices and threat context, supporting the integration of contextual information."
+  },
+  {
+   "csf": "DE.AE-07",
+   "control": "SI-5",
+   "strength": "partial",
+   "rationale": "SI-5 receives system security alerts, advisories, and directives from external organizations on an ongoing basis, providing contextual cyber threat intelligence that can be integrated into analysis."
+  },
+  {
+   "csf": "DE.AE-08",
+   "control": "IR-1",
+   "strength": "supporting",
+   "rationale": "IR-1 establishes incident response policy that addresses purpose, scope, roles, and responsibilities, providing governance for the incident declaration process."
+  },
+  {
+   "csf": "DE.AE-08",
+   "control": "IR-5",
+   "strength": "supporting",
+   "rationale": "IR-5 requires tracking and documentation of incidents, supporting the formal declaration process when adverse events meet the defined incident criteria."
+  },
+  {
+   "csf": "DE.CM-01",
+   "control": "AU-6",
+   "strength": "partial",
+   "rationale": "AU-6 reviews and analyzes audit records for indications of inappropriate or unusual activity, which feeds into network-service monitoring outputs."
+  },
+  {
+   "csf": "DE.CM-01",
+   "control": "RA-10",
+   "strength": "partial",
+   "rationale": "RA-10 establishes a threat-hunting capability to search for indicators of compromise in organizational systems and detect, track, and disrupt threats — supporting proactive network monitoring."
+  },
+  {
+   "csf": "DE.CM-01",
+   "control": "SC-35",
+   "strength": "partial",
+   "rationale": "SC-35 includes system components that proactively seek to identify network-based malicious code or malicious websites, contributing to network-service adverse-event detection."
+  },
+  {
+   "csf": "DE.CM-02",
+   "control": "PE-13",
+   "strength": "partial",
+   "rationale": "PE-13 employs and maintains fire detection and suppression systems supported by an independent energy source, providing detection of adverse physical-environment events."
+  },
+  {
+   "csf": "DE.CM-02",
+   "control": "PE-14",
+   "strength": "partial",
+   "rationale": "PE-14 maintains and monitors temperature, humidity, pressure, radiation, and other environmental control levels at defined frequencies, detecting adverse physical-environment events."
+  },
+  {
+   "csf": "DE.CM-02",
+   "control": "PE-15",
+   "strength": "partial",
+   "rationale": "PE-15 protects the system from water damage by providing master shutoff/isolation valves, supporting detection and response to water-related adverse events in the physical environment."
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "AU-2",
+   "strength": "partial",
+   "rationale": "AU-2 identifies the types of events the system is capable of logging, providing foundational event coverage that underpins monitoring of personnel activity and technology usage."
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "AU-3",
+   "strength": "supporting",
+   "rationale": "AU-3 ensures audit records establish who, what, when, where, source, and outcome — including identity of individuals — enabling attribution of activity to personnel in monitoring."
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "AU-6",
+   "strength": "partial",
+   "rationale": "AU-6 reviews and analyzes system audit records for indications of inappropriate or unusual activity, directly supporting personnel-activity and technology-usage monitoring."
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "PM-12",
+   "strength": "partial",
+   "rationale": "PM-12 implements an insider threat program with a cross-discipline incident handling team, providing an organizational capability specifically aimed at monitoring personnel activity for adverse events."
+  },
+  {
+   "csf": "DE.CM-03",
+   "control": "SI-4",
+   "strength": "partial",
+   "rationale": "SI-4 includes identifying unauthorized local, network, and remote connections and unauthorized use of the system, directly supporting monitoring of personnel activity and technology usage."
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "AC-20",
+   "strength": "partial",
+   "rationale": "AC-20 establishes terms and conditions consistent with trust relationships for use of external systems, providing partial coverage of oversight over external service provider activities."
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "AU-16",
+   "strength": "partial",
+   "rationale": "AU-16 employs methods for coordinating audit information among external organizations when audit information crosses organizational boundaries, supporting monitoring of external service provider activities."
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "CA-3",
+   "strength": "partial",
+   "rationale": "CA-3 approves and manages the exchange of information between the system and other systems via agreements, providing oversight structures supporting monitoring of external services."
+  },
+  {
+   "csf": "DE.CM-06",
+   "control": "SR-6",
+   "strength": "supporting",
+   "rationale": "SR-6 assesses and reviews supply chain-related risks associated with suppliers or contractors at a defined frequency, enabling monitoring of external service provider posture."
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "AU-6",
+   "strength": "partial",
+   "rationale": "AU-6 requires review and analysis of audit records for indications of inappropriate or unusual activity and reporting findings, which is a key technique for finding adverse events in monitored data."
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "PE-6",
+   "strength": "supporting",
+   "rationale": "PE-6 monitors physical access to facilities where systems reside, detecting physical security incidents that constitute adverse events affecting computing hardware."
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "PM-31",
+   "strength": "supporting",
+   "rationale": "PM-31 defines the organization-wide continuous monitoring strategy, frequencies, and metrics that provide the governance layer under which system-level monitoring operates."
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "SC-7",
+   "strength": "supporting",
+   "rationale": "SC-7 monitors and controls communications at external and key internal managed interfaces, contributing to monitoring of network-borne adverse events."
+  },
+  {
+   "csf": "DE.CM-09",
+   "control": "SI-3",
+   "strength": "supporting",
+   "rationale": "SI-3 implements malicious code protection mechanisms at entry/exit points to detect and eradicate malicious code, supporting detection of one class of adverse events."
+  },
+  {
+   "csf": "GV.OC-01",
+   "control": "CP-2",
+   "strength": "supporting",
+   "rationale": "CP-2 requires the contingency plan to identify essential mission and business functions, which contributes to understanding the organizational mission that drives cybersecurity risk management."
+  },
+  {
+   "csf": "GV.OC-01",
+   "control": "PL-2",
+   "strength": "supporting",
+   "rationale": "PL-2 requires describing the operational context of the system in terms of mission and business processes, supporting how the mission informs cybersecurity planning at the system level."
+  },
+  {
+   "csf": "GV.OC-01",
+   "control": "PM-1",
+   "strength": "supporting",
+   "rationale": "PM-1 develops and disseminates an organization-wide information security program plan that provides an overview of security program requirements, supporting the governance structure around mission-informed cybersecurity risk management."
+  },
+  {
+   "csf": "GV.OC-01",
+   "control": "PM-9",
+   "strength": "supporting",
+   "rationale": "PM-9 develops a comprehensive strategy to manage security risk to organizational operations and assets, providing strategic direction informed by mission considerations."
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "PM-15",
+   "strength": "partial",
+   "rationale": "PM-15 establishes and institutionalizes contact with selected groups and associations within the security and privacy communities, supporting the understanding of external stakeholder needs and expectations."
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "PS-7",
+   "strength": "partial",
+   "rationale": "PS-7 establishes personnel security requirements and roles/responsibilities for external providers, requiring them to comply with organizational security policies, partially addressing external stakeholder needs."
+  },
+  {
+   "csf": "GV.OC-02",
+   "control": "SA-9",
+   "strength": "partial",
+   "rationale": "SA-9 requires that providers of external system services comply with organizational security and privacy requirements and defines oversight and user roles, addressing how external service-provider stakeholders' obligations are considered."
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "CM-10",
+   "strength": "partial",
+   "rationale": "CM-10 requires software and associated documentation to be used in accordance with contract agreements and copyright laws, addressing contractual cybersecurity requirements."
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "PM-18",
+   "strength": "supporting",
+   "rationale": "PM-18 develops an organization-wide privacy program plan that provides an overview of the privacy program and includes a description of program structure and resources, supporting management of privacy obligations."
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "RA-8",
+   "strength": "supporting",
+   "rationale": "RA-8 requires privacy impact assessments for systems processing personally identifiable information, supporting understanding and management of privacy obligations."
+  },
+  {
+   "csf": "GV.OC-03",
+   "control": "SI-12",
+   "strength": "partial",
+   "rationale": "SI-12 requires managing and retaining information within the system in accordance with applicable laws, executive orders, directives, regulations, policies, standards, guidelines and operational requirements, directly supporting management of legal/regulatory obligations."
+  },
+  {
+   "csf": "GV.OC-04",
+   "control": "CP-2",
+   "strength": "partial",
+   "rationale": "CP-2 requires identifying essential mission and business functions and associated contingency requirements, surfacing the critical capabilities and services stakeholders depend upon."
+  },
+  {
+   "csf": "GV.OC-04",
+   "control": "PL-2",
+   "strength": "supporting",
+   "rationale": "PL-2 requires system security and privacy plans to describe the operational context of the system in terms of mission and business processes, supporting communication of capabilities and services."
+  },
+  {
+   "csf": "GV.OC-05",
+   "control": "PL-2",
+   "strength": "partial",
+   "rationale": "PL-2 requires describing the operational context of the system in terms of mission and business processes, partially addressing understanding of capabilities and services the organization depends on."
+  },
+  {
+   "csf": "GV.OC-05",
+   "control": "PM-5",
+   "strength": "supporting",
+   "rationale": "PM-5 System Inventory maintains an inventory of organizational systems, which provides an enabling input for understanding which services/capabilities the organization relies on, but does not itself capture outcomes or communicate them."
+  },
+  {
+   "csf": "GV.OC-05",
+   "control": "RA-9",
+   "strength": "partial",
+   "rationale": "RA-9 Criticality Analysis identifies critical system components and functions, directly supporting identification of the outcomes, capabilities, and services that the organization depends on. Communication of these dependencies is not directly addressed."
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "CA-7",
+   "strength": "supporting",
+   "rationale": "CA-7 implements system-level continuous monitoring with metrics, providing the operational-level outcome data that aggregates up to inform strategy review."
+  },
+  {
+   "csf": "GV.OV-01",
+   "control": "PM-6",
+   "strength": "partial",
+   "rationale": "PM-6 requires developing, monitoring, and reporting on information security and privacy measures of performance, directly producing the outcome evidence used to inform and adjust the strategy."
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "PM-11",
+   "strength": "supporting",
+   "rationale": "PM-11 requires defining organizational mission and business processes with consideration for information security risk, defining the requirements the strategy must address."
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "PM-28",
+   "strength": "supporting",
+   "rationale": "PM-28 requires identifying and documenting assumptions, constraints, priorities, and trade-offs for risk management, providing the structured framing inputs that determine coverage adequacy of the strategy."
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "PM-7",
+   "strength": "supporting",
+   "rationale": "PM-7 requires developing and maintaining an enterprise architecture with consideration for information security and resulting risk, helping ensure the strategy aligns with and covers organizational requirements."
+  },
+  {
+   "csf": "GV.OV-02",
+   "control": "RA-3",
+   "strength": "supporting",
+   "rationale": "RA-3 requires a risk assessment that identifies threats, vulnerabilities, likelihood, and magnitude of harm, supplying the empirical evidence of risks that the strategy must cover."
+  },
+  {
+   "csf": "GV.OV-03",
+   "control": "CA-2",
+   "strength": "supporting",
+   "rationale": "CA-2 selects assessors and develops assessment plans to assess control effectiveness, providing the periodic evaluation component of overall risk management performance review."
+  },
+  {
+   "csf": "GV.OV-03",
+   "control": "CA-7",
+   "strength": "supporting",
+   "rationale": "CA-7 implements system-level continuous monitoring, producing the performance data that informs organizational-level performance evaluation."
+  },
+  {
+   "csf": "GV.OV-03",
+   "control": "PM-31",
+   "strength": "supporting",
+   "rationale": "PM-31 establishes an organization-wide continuous monitoring strategy with defined metrics and assessment frequencies, the structural enabler for performance evaluation and adjustment decisions."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PL-2",
+   "strength": "partial",
+   "rationale": "PL-2 System Security and Privacy Plans requires describing the operational context of the system in terms of mission and business, contributing to the organizational context for risk management policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PM-11",
+   "strength": "partial",
+   "rationale": "PM-11 Mission and Business Process Definition requires defining organizational mission and business processes with consideration for information security and resulting risk, establishing the organizational context for the policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PM-2",
+   "strength": "supporting",
+   "rationale": "PM-2 appoints a senior agency information security officer with mission and resources to coordinate, develop, implement, and maintain the security program — providing leadership needed to enforce the risk policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PM-28",
+   "strength": "partial",
+   "rationale": "PM-28 Risk Framing explicitly identifies and documents priorities and trade-offs considered by the organization for managing risk, satisfying the priorities aspect of the policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PM-29",
+   "strength": "partial",
+   "rationale": "PM-29 Risk Management Program Leadership Roles aligns organizational information security management processes with strategic, operational, and budgetary planning processes, supporting the strategy basis of the policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PM-4",
+   "strength": "supporting",
+   "rationale": "PM-4 implements a process for developing and maintaining plans of action and milestones for the information security program, supporting the operational maintenance of the risk management policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PM-9",
+   "strength": "partial",
+   "rationale": "PM-9 requires developing a comprehensive strategy to manage security risk to organizational operations and assets, directly establishing the cybersecurity strategy basis for the risk management policy."
+  },
+  {
+   "csf": "GV.PO-01",
+   "control": "PS-9",
+   "strength": "supporting",
+   "rationale": "PS-9 incorporates security and privacy roles and responsibilities into organizational position descriptions, enabling accountability and enforcement of the cybersecurity risk management policy."
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PM-2",
+   "strength": "supporting",
+   "rationale": "PM-2 appoints a senior agency information security officer with mission and resources to coordinate, develop, implement, and maintain the program, supplying the leadership authority needed to enforce the cybersecurity risk policy."
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PM-29",
+   "strength": "supporting",
+   "rationale": "PM-29 establishes a Senior Accountable Official for Risk Management and a Risk Executive function to align information security management with strategic, operational, and budgetary planning, supporting enforcement across the organization."
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PM-31",
+   "strength": "supporting",
+   "rationale": "PM-31 establishes an organization-wide continuous monitoring strategy with defined metrics and frequencies, enabling ongoing review of whether the cybersecurity risk policy remains effective."
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PM-4",
+   "strength": "supporting",
+   "rationale": "PM-4 requires a process to develop and maintain plans of action and milestones, providing the remediation-tracking mechanism that drives the review and update of policy in response to identified weaknesses."
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PM-6",
+   "strength": "supporting",
+   "rationale": "PM-6 requires developing, monitoring, and reporting on information security measures of performance, providing the performance evidence used to determine when the policy needs to be reviewed and updated."
+  },
+  {
+   "csf": "GV.PO-02",
+   "control": "PM-9",
+   "strength": "partial",
+   "rationale": "PM-9 requires the organization to develop a comprehensive strategy to manage security and privacy risk, which is the substantive cybersecurity risk policy whose lifecycle GV.PO-02 governs; it covers the core content but not the review/update/communicate/enforce mechanics."
+  },
+  {
+   "csf": "GV.RM-01",
+   "control": "PM-23",
+   "strength": "supporting",
+   "rationale": "PM-23 establishes a Data Governance Body consisting of roles with responsibilities, providing a stakeholder forum that can support agreement on risk management objectives."
+  },
+  {
+   "csf": "GV.RM-01",
+   "control": "PM-28",
+   "strength": "supporting",
+   "rationale": "PM-28 Risk Framing documents assumptions, constraints, priorities and trade-offs that inform risk management objectives, providing supporting input but not directly establishing or securing stakeholder agreement."
+  },
+  {
+   "csf": "GV.RM-01",
+   "control": "PM-29",
+   "strength": "partial",
+   "rationale": "PM-29 appoints a Senior Accountable Official for Risk Management and establishes a Risk Executive (function) to view organization-wide risk, supporting agreement of risk management objectives across stakeholders."
+  },
+  {
+   "csf": "GV.RM-02",
+   "control": "PM-28",
+   "strength": "partial",
+   "rationale": "PM-28 Risk Framing identifies and documents priorities and trade-offs informing risk decisions, supporting establishment of risk appetite and tolerance but not their explicit communication or ongoing maintenance."
+  },
+  {
+   "csf": "GV.RM-02",
+   "control": "RA-7",
+   "strength": "partial",
+   "rationale": "RA-7 Risk Response explicitly requires responding to findings in accordance with organizational risk tolerance, demonstrating that tolerance statements are used and operationalized but not necessarily establishing or communicating them."
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "PM-1",
+   "strength": "supporting",
+   "rationale": "PM-1 provides an organization-wide information security program plan with overview of requirements and management controls, enabling integration of cybersecurity activities into broader enterprise risk management."
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "PM-29",
+   "strength": "full",
+   "rationale": "PM-29 explicitly aligns organizational information security and privacy management processes with strategic, operational, and budgetary planning processes, directly integrating cybersecurity risk into enterprise risk management processes."
+  },
+  {
+   "csf": "GV.RM-03",
+   "control": "PM-7",
+   "strength": "partial",
+   "rationale": "PM-7 Enterprise Architecture is developed with consideration for information security, providing a structural framework that incorporates cybersecurity risk management activities into enterprise-level processes."
+  },
+  {
+   "csf": "GV.RM-04",
+   "control": "PM-29",
+   "strength": "supporting",
+   "rationale": "PM-29 establishes a Risk Executive function and Senior Accountable Official for Risk Management, providing the leadership structure needed to establish and communicate strategic risk response direction."
+  },
+  {
+   "csf": "GV.RM-04",
+   "control": "RA-1",
+   "strength": "supporting",
+   "rationale": "RA-1 develops and disseminates a risk assessment policy addressing purpose, scope, roles, responsibilities, and management commitment, supporting the establishment and communication of risk response direction."
+  },
+  {
+   "csf": "GV.RM-04",
+   "control": "RA-7",
+   "strength": "full",
+   "rationale": "RA-7 (Risk Response) directly addresses responding to findings in accordance with organizational risk tolerance, which operationalizes the appropriate risk response options described in the framework item."
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "CA-3",
+   "strength": "supporting",
+   "rationale": "CA-3 approves and manages the exchange of information between systems via interconnection security agreements and similar instruments, establishing formal communication channels with external entities."
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "PM-15",
+   "strength": "partial",
+   "rationale": "PM-15 institutionalizes contact with selected groups and associations within the security and privacy communities, establishing ongoing communication channels for cybersecurity matters across the organization."
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "PM-16",
+   "strength": "partial",
+   "rationale": "PM-16 implements a threat awareness program with a cross-organization information-sharing capability, directly establishing communication lines across organizational boundaries for threat/risk information."
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "SI-5",
+   "strength": "partial",
+   "rationale": "SI-5 establishes two-way communication of security alerts, advisories, and directives from/to external organizations and internal dissemination, forming communication lines for cybersecurity risks."
+  },
+  {
+   "csf": "GV.RM-05",
+   "control": "SR-8",
+   "strength": "partial",
+   "rationale": "SR-8 establishes agreements and procedures with supply chain entities for notification of supply chain compromises and assessment results, enabling communication specifically with suppliers and third parties."
+  },
+  {
+   "csf": "GV.RM-06",
+   "control": "PM-6",
+   "strength": "supporting",
+   "rationale": "PM-6 develops, monitors, and reports on information security and privacy measures of performance, supplying the metrics that underpin standardized calculation and reporting of risk."
+  },
+  {
+   "csf": "GV.RM-06",
+   "control": "RA-1",
+   "strength": "supporting",
+   "rationale": "RA-1 develops and disseminates the risk assessment policy that governs the standardized risk calculation/prioritization methods used across the organization."
+  },
+  {
+   "csf": "GV.RM-06",
+   "control": "RA-2",
+   "strength": "partial",
+   "rationale": "RA-2 categorizes the system and information and documents the results with supporting rationale, providing a standardized basis for categorizing and prioritizing cybersecurity risks."
+  },
+  {
+   "csf": "GV.RM-06",
+   "control": "RA-9",
+   "strength": "partial",
+   "rationale": "RA-9 identifies critical system components and functions through criticality analysis at decision points in the SDLC, providing a structured basis for risk prioritization."
+  },
+  {
+   "csf": "GV.RM-07",
+   "control": "PM-11",
+   "strength": "supporting",
+   "rationale": "PM-11 defines organizational mission and business processes with consideration for information security risk, providing the mission context that frames opportunities in risk discussions."
+  },
+  {
+   "csf": "GV.RR-01",
+   "control": "PM-1",
+   "strength": "supporting",
+   "rationale": "PM-1 develops and disseminates an organization-wide information security program plan that establishes management structure and oversight, supporting leadership responsibility."
+  },
+  {
+   "csf": "GV.RR-01",
+   "control": "PM-16",
+   "strength": "supporting",
+   "rationale": "PM-16 implements a threat awareness program with cross-organization information sharing, which fosters a risk-aware culture across the organization."
+  },
+  {
+   "csf": "GV.RR-01",
+   "control": "PM-6",
+   "strength": "partial",
+   "rationale": "PM-6 requires developing, monitoring, and reporting on information security and privacy measures of performance, operationalizing continual improvement of the security program."
+  },
+  {
+   "csf": "GV.RR-02",
+   "control": "AC-2",
+   "strength": "supporting",
+   "rationale": "AC-2 assigns account managers and defines types of accounts allowed/prohibited, reinforcing accountability for access roles."
+  },
+  {
+   "csf": "GV.RR-02",
+   "control": "AC-5",
+   "strength": "partial",
+   "rationale": "AC-5 identifies and documents duties of individuals and defines system access authorizations to support separation of duties, clarifying role-based responsibilities."
+  },
+  {
+   "csf": "GV.RR-02",
+   "control": "PS-9",
+   "strength": "partial",
+   "rationale": "PS-9 incorporates security and privacy roles and responsibilities into organizational position descriptions, formally establishing and communicating these roles."
+  },
+  {
+   "csf": "GV.RR-03",
+   "control": "PM-2",
+   "strength": "partial",
+   "rationale": "PM-2 ensures the senior information security officer is provided resources to coordinate, develop, implement, and maintain the security program."
+  },
+  {
+   "csf": "GV.RR-03",
+   "control": "PM-29",
+   "strength": "partial",
+   "rationale": "PM-29 aligns information security and privacy management with strategic, operational, and budgetary planning processes, supporting resource allocation."
+  },
+  {
+   "csf": "GV.RR-03",
+   "control": "PM-9",
+   "strength": "supporting",
+   "rationale": "PM-9 develops a comprehensive risk management strategy that informs what resources are needed commensurate with risk."
+  },
+  {
+   "csf": "GV.RR-03",
+   "control": "SC-6",
+   "strength": "supporting",
+   "rationale": "SC-6 protects availability of resources through allocation by priority, quota, or controls, supporting resource allocation practices."
+  },
+  {
+   "csf": "GV.RR-04",
+   "control": "AT-2",
+   "strength": "supporting",
+   "rationale": "AT-2 provides security and privacy literacy training to system users including managers, supporting HR-driven security training."
+  },
+  {
+   "csf": "GV.RR-04",
+   "control": "AT-3",
+   "strength": "supporting",
+   "rationale": "AT-3 provides role-based security and privacy training before authorizing access, integrating cybersecurity into onboarding/HR training workflows."
+  },
+  {
+   "csf": "GV.RR-04",
+   "control": "PM-12",
+   "strength": "supporting",
+   "rationale": "PM-12 implements an insider threat program with a cross-discipline incident handling team, addressing the human element within HR-adjacent processes."
+  },
+  {
+   "csf": "GV.SC-01",
+   "control": "PM-1",
+   "strength": "partial",
+   "rationale": "PM-1 develops and disseminates an organization-wide information security program plan, supporting the program element of the supply chain risk management framework item."
+  },
+  {
+   "csf": "GV.SC-01",
+   "control": "PM-2",
+   "strength": "supporting",
+   "rationale": "PM-2 appoints a senior information security officer with resources to coordinate, develop, implement, and maintain the program, enabling stakeholder agreement through senior leadership engagement."
+  },
+  {
+   "csf": "GV.SC-01",
+   "control": "SR-1",
+   "strength": "full",
+   "rationale": "SR-1 Policy and Procedures mandates developing and disseminating a supply chain risk management policy that addresses purpose, scope, roles, responsibilities, management commitment, and coordination—directly satisfying the policy element of GV.SC-01."
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "AT-3",
+   "strength": "supporting",
+   "rationale": "AT-3 role-based training ensures personnel with security roles understand their responsibilities, supporting the communication and coordination of those roles internally."
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "CA-3",
+   "strength": "supporting",
+   "rationale": "CA-3 approves and manages the exchange of information between systems using interconnection security agreements, MOUs, SLAs, etc., enabling external coordination."
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "PS-7",
+   "strength": "partial",
+   "rationale": "PS-7 establishes personnel security requirements and security roles and responsibilities for external providers, and requires those providers to comply with organizational policies—directly addressing responsibilities for suppliers."
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "PS-9",
+   "strength": "partial",
+   "rationale": "PS-9 incorporates security and privacy roles and responsibilities into organizational position descriptions, supporting the establishment and communication of responsibilities."
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "SA-9",
+   "strength": "partial",
+   "rationale": "SA-9 requires that providers of external system services comply with organizational security/privacy requirements and defines/organizes oversight and user roles and responsibilities with regard to external providers."
+  },
+  {
+   "csf": "GV.SC-02",
+   "control": "SR-8",
+   "strength": "partial",
+   "rationale": "SR-8 establishes agreements and procedures with supply chain entities for notification of compromises and audit/assessment results, supporting external coordination."
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "CA-5",
+   "strength": "partial",
+   "rationale": "CA-5 develops a plan of action and milestones documenting remediation actions to correct weaknesses, reduce/eliminate vulnerabilities, supporting the improvement process element."
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PM-28",
+   "strength": "supporting",
+   "rationale": "PM-28 Risk Framing identifies assumptions, constraints, and priorities/trade-offs affecting risk assessments and responses, enabling integration of supply chain risk into enterprise risk management."
+  },
+  {
+   "csf": "GV.SC-03",
+   "control": "PM-4",
+   "strength": "partial",
+   "rationale": "PM-4 implements a process to ensure plans of action and milestones for information security, privacy, and supply chain risk management programs are developed/maintained, directly supporting improvement processes."
+  },
+  {
+   "csf": "GV.SC-04",
+   "control": "CM-8",
+   "strength": "partial",
+   "rationale": "CM-8 develops and documents an inventory of system components at the level deemed necessary, providing component-level visibility into supplier-provided elements."
+  },
+  {
+   "csf": "GV.SC-04",
+   "control": "PM-5",
+   "strength": "partial",
+   "rationale": "PM-5 develops and updates an inventory of organizational systems, enabling the organization to know which supplier-provided systems are in scope."
+  },
+  {
+   "csf": "GV.SC-04",
+   "control": "SR-3",
+   "strength": "supporting",
+   "rationale": "SR-3 establishes processes to identify and address weaknesses/deficiencies in supply chain elements and employs controls to protect against risks, enabling prioritized treatment of known suppliers."
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "AC-20",
+   "strength": "supporting",
+   "rationale": "AC-20 requires establishing terms and conditions consistent with trust relationships with organizations owning external systems, supporting third-party agreement conditions."
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "CA-3",
+   "strength": "supporting",
+   "rationale": "CA-3 manages information exchange using interconnection security agreements, SLAs, MOUs and similar agreements, supporting the 'other types of agreements' component of the framework item."
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "PM-30",
+   "strength": "partial",
+   "rationale": "PM-30 requires developing an organization-wide strategy for managing supply chain risks associated with development, acquisition, maintenance, and disposal, establishing and prioritizing supply chain requirements."
+  },
+  {
+   "csf": "GV.SC-05",
+   "control": "SR-1",
+   "strength": "partial",
+   "rationale": "SR-1 requires developing and disseminating a supply chain risk management policy with purpose, scope, roles, responsibilities, and compliance requirements, which establishes supply chain cybersecurity requirements."
+  },
+  {
+   "csf": "GV.SC-06",
+   "control": "PM-30",
+   "strength": "partial",
+   "rationale": "PM-30 mandates an organization-wide SCRM strategy for development, acquisition, maintenance, and disposal, providing the planning foundation that supports pre-relationship risk reduction."
+  },
+  {
+   "csf": "GV.SC-06",
+   "control": "RA-9",
+   "strength": "supporting",
+   "rationale": "RA-9 performs criticality analyses for systems, components, or services at decision points in the SDLC, informing pre-relationship risk awareness."
+  },
+  {
+   "csf": "GV.SC-06",
+   "control": "SR-2",
+   "strength": "partial",
+   "rationale": "SR-2 requires developing a plan managing supply chain risks across the SDLC stages, contributing to pre-engagement planning and due diligence."
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "PM-31",
+   "strength": "partial",
+   "rationale": "PM-31 establishes an organization-wide continuous monitoring strategy with metrics and frequencies, enabling ongoing monitoring across the supplier relationship lifecycle."
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "RA-3",
+   "strength": "supporting",
+   "rationale": "RA-3 conducts a risk assessment identifying threats, vulnerabilities, likelihood, and magnitude of harm, supporting the assessment component for supplier and third-party risks."
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "RA-7",
+   "strength": "partial",
+   "rationale": "RA-7 requires responding to findings from security and privacy assessments, monitoring, and audits in accordance with organizational risk tolerance, directly addressing the 'responded to' requirement."
+  },
+  {
+   "csf": "GV.SC-07",
+   "control": "SR-2",
+   "strength": "partial",
+   "rationale": "SR-2 develops a plan that records, prioritizes, and addresses supply chain risks across the SDLC, contributing to understanding, recording, and prioritizing supplier risks."
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "IR-4",
+   "strength": "supporting",
+   "rationale": "IR-4 implements incident handling (preparation, detection, analysis, containment, eradication, recovery) and coordinates incident handling activities with stakeholders including external parties, supporting third-party incident response."
+  },
+  {
+   "csf": "GV.SC-08",
+   "control": "IR-8",
+   "strength": "supporting",
+   "rationale": "IR-8 develops an incident response plan providing a roadmap, structure, and approach, forming the planning foundation that can incorporate third-party supplier roles."
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "PM-6",
+   "strength": "supporting",
+   "rationale": "PM-6 requires developing, monitoring, and reporting on results of information security and privacy measures of performance. This enables reporting on supply chain security performance as part of the broader monitoring program."
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "RA-9",
+   "strength": "partial",
+   "rationale": "RA-9 requires identifying critical system components and functions at decision points in the system development life cycle. This supports life cycle integration by embedding supply chain risk analysis at each stage."
+  },
+  {
+   "csf": "GV.SC-09",
+   "control": "SR-1",
+   "strength": "supporting",
+   "rationale": "SR-1 requires developing and disseminating an organization-wide supply chain risk management policy addressing purpose, scope, roles, responsibilities, and management commitment. This policy foundation enables integration into cybersecurity and ERM programs."
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "PM-30",
+   "strength": "supporting",
+   "rationale": "PM-30's strategy explicitly references 'disposal' as part of the supply chain risk management life cycle, providing top-level strategic guidance that supports plans addressing activities after a partnership or service agreement concludes."
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SA-22",
+   "strength": "supporting",
+   "rationale": "SA-22 requires replacing components or providing alternative sources for continued support when vendor support is no longer available. This addresses a key post-conclusion scenario where supplier agreements have ended."
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SI-12",
+   "strength": "supporting",
+   "rationale": "SI-12 requires managing and retaining information within the system and information output from the system per applicable laws and operational requirements. This supports post-conclusion handling of information generated or held during a supplier relationship."
+  },
+  {
+   "csf": "GV.SC-10",
+   "control": "SR-12",
+   "strength": "partial",
+   "rationale": "SR-12 requires disposal of data, documentation, tools, or system components using defined techniques and methods. This directly addresses post-conclusion activities such as sanitizing and disposing of supplier-provided assets and information."
+  },
+  {
+   "csf": "ID.AM-01",
+   "control": "PE-20",
+   "strength": "supporting",
+   "rationale": "PE-20 employs asset location technologies to track and monitor the location and movement of assets within controlled areas, which feeds supplemental location data into hardware inventories but does not itself maintain an inventory."
+  },
+  {
+   "csf": "ID.AM-02",
+   "control": "CM-10",
+   "strength": "partial",
+   "rationale": "CM-10 requires tracking the use of software and associated documentation and controlling/documenting its use. This contributes to software inventory practices but is more oriented to licensing than to a full software/services inventory."
+  },
+  {
+   "csf": "ID.AM-03",
+   "control": "SC-16",
+   "strength": "supporting",
+   "rationale": "SC-16 associates security and privacy attributes with information exchanged between systems and components, supporting the maintenance of richer representations of network data flows."
+  },
+  {
+   "csf": "ID.AM-03",
+   "control": "SC-7",
+   "strength": "partial",
+   "rationale": "SC-7 monitors and controls communications at external managed interfaces and at key internal managed interfaces within the system, which directly informs representations of authorized network communications and data flows."
+  },
+  {
+   "csf": "ID.AM-04",
+   "control": "PM-30",
+   "strength": "supporting",
+   "rationale": "PM-30 develops an organization-wide strategy for managing supply chain risks associated with the acquisition and disposal of systems, components, and services, supporting visibility into supplier-provided services."
+  },
+  {
+   "csf": "ID.AM-04",
+   "control": "SR-6",
+   "strength": "partial",
+   "rationale": "SR-6 assesses and reviews the supply chain-related risks associated with suppliers or contractors and the systems, components, or services they provide, supplying recurring supplier-services information."
+  },
+  {
+   "csf": "ID.AM-05",
+   "control": "PL-2",
+   "strength": "supporting",
+   "rationale": "PL-2 System Security and Privacy Plans describe the operational context of the system in terms of mission and business processes, supporting evaluation of mission impact but not directly prioritizing assets."
+  },
+  {
+   "csf": "ID.AM-05",
+   "control": "SC-6",
+   "strength": "supporting",
+   "rationale": "SC-6 Resource Availability allocates resources by priority, quota, or controls, supporting prioritization of resources but not classification, criticality, or mission impact."
+  },
+  {
+   "csf": "ID.AM-07",
+   "control": "CM-8",
+   "strength": "partial",
+   "rationale": "CM-8 System Component Inventory develops and documents an inventory of system components at the level of granularity deemed necessary, partially supporting the maintenance of data inventories but focused on components rather than data types and metadata."
+  },
+  {
+   "csf": "ID.AM-07",
+   "control": "PM-5",
+   "strength": "supporting",
+   "rationale": "PM-5 System Inventory develops and updates an inventory of organizational systems, supporting data inventory maintenance at the system level but not data-type or metadata granularity."
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SR-6",
+   "strength": "partial",
+   "rationale": "SR-6 (Supplier Assessments and Reviews) enables ID.IM-02 by establishing the mechanism to assess and review suppliers, supporting the coordination with suppliers and third parties element."
+  },
+  {
+   "csf": "ID.IM-02",
+   "control": "SR-8",
+   "strength": "supporting",
+   "rationale": "SR-8 (Notification Agreements) supports ID.IM-02 by establishing procedures and agreements with supply chain entities for notification of compromises and audit results, enabling coordination on tests and exercises."
+  },
+  {
+   "csf": "ID.IM-03",
+   "control": "PM-6",
+   "strength": "partial",
+   "rationale": "PM-6 (Measures of Performance) supports ID.IM-03 by developing, monitoring, and reporting on performance results of operational processes, which surface needed improvements."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "CP-1",
+   "strength": "full",
+   "rationale": "CP-1 requires developing, documenting, and disseminating a contingency planning policy addressing purpose, scope, roles, and responsibilities, thereby establishing and communicating the policy underpinning the CP."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "CP-10",
+   "strength": "supporting",
+   "rationale": "CP-10 provides for recovery and reconstitution of the system to a known state, operationalizing maintenance of operational capability after disruption."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "CP-4",
+   "strength": "partial",
+   "rationale": "CP-4 tests the contingency plan, reviews test results, and initiates corrective actions, directly supporting the improvement of the contingency plan."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "IR-3",
+   "strength": "partial",
+   "rationale": "IR-3 tests the effectiveness of the incident response capability, which directly supports improvement of the IR plan through validation and identification of needed updates."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "IR-4",
+   "strength": "supporting",
+   "rationale": "IR-4 implements incident handling consistent with the IR plan; lessons from real incidents inform plan improvements but the control itself does not establish or maintain the plan."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "IR-5",
+   "strength": "supporting",
+   "rationale": "IR-5 tracks and documents incidents, providing data that informs improvements to the incident response plan over time but does not establish, communicate, or maintain the plan itself."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "PM-1",
+   "strength": "full",
+   "rationale": "PM-1 requires developing and disseminating an organization-wide information security program plan that provides an overview of requirements and describes security program management controls—a foundational cybersecurity plan affecting operations."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "PM-2",
+   "strength": "supporting",
+   "rationale": "PM-2 appoints a senior information security officer to coordinate, develop, implement, and maintain the organization-wide program, providing leadership that enables plan establishment and maintenance."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "PM-8",
+   "strength": "partial",
+   "rationale": "PM-8 requires addressing information security and privacy in the development, documentation, and updating of a critical infrastructure and key resources protection plan—an operational cybersecurity plan."
+  },
+  {
+   "csf": "ID.IM-04",
+   "control": "RA-7",
+   "strength": "supporting",
+   "rationale": "RA-7 responds to findings from assessments and audits according to risk tolerance, supporting improvement of cybersecurity plans through remediation of identified gaps."
+  },
+  {
+   "csf": "ID.RA-01",
+   "control": "CA-5",
+   "strength": "supporting",
+   "rationale": "CA-5 Plan of Action and Milestones documents planned remediation actions to correct weaknesses, deficiencies, and known vulnerabilities identified during assessments, supporting the recording aspect."
+  },
+  {
+   "csf": "ID.RA-01",
+   "control": "RA-10",
+   "strength": "partial",
+   "rationale": "RA-10 Threat Hunting searches for indicators of compromise and detects, tracks, and disrupts threats that evade existing controls, supporting proactive vulnerability/threat identification."
+  },
+  {
+   "csf": "ID.RA-01",
+   "control": "SI-2",
+   "strength": "partial",
+   "rationale": "SI-2 Flaw Remediation identifies, reports, and corrects system flaws and tests software/firmware updates, partially addressing vulnerability identification and recording but focused on remediation rather than systematic validation."
+  },
+  {
+   "csf": "ID.RA-03",
+   "control": "IR-5",
+   "strength": "supporting",
+   "rationale": "IR-5 requires tracking and documenting incidents, providing a recording mechanism that supports the broader threat identification and recording process."
+  },
+  {
+   "csf": "ID.RA-03",
+   "control": "RA-10",
+   "strength": "partial",
+   "rationale": "RA-10 establishes a cyber threat hunting capability to search for indicators of compromise and detect threats that evade existing controls, supporting threat identification across the organization."
+  },
+  {
+   "csf": "ID.RA-04",
+   "control": "CM-4",
+   "strength": "supporting",
+   "rationale": "CM-4 requires analyzing changes to the system to determine potential security and privacy impacts prior to implementation, contributing to impact identification in the context of vulnerabilities."
+  },
+  {
+   "csf": "ID.RA-05",
+   "control": "CA-5",
+   "strength": "supporting",
+   "rationale": "CA-5 develops a plan of action and milestones documenting planned remediation to correct weaknesses and reduce or eliminate known vulnerabilities, enabling risk response prioritization."
+  },
+  {
+   "csf": "ID.RA-05",
+   "control": "PM-9",
+   "strength": "supporting",
+   "rationale": "PM-9 develops a comprehensive strategy to manage security risk to operations and assets, providing the overarching framework within which threats, vulnerabilities, likelihoods, and impacts are used to understand inherent risk and prioritize responses."
+  },
+  {
+   "csf": "ID.RA-06",
+   "control": "CA-5",
+   "strength": "partial",
+   "rationale": "CA-5 requires a plan of action and milestones to document planned remediation actions to correct weaknesses and reduce known vulnerabilities, supporting the planning and tracking portions of risk response, but does not address choosing/prioritizing responses across risks."
+  },
+  {
+   "csf": "ID.RA-06",
+   "control": "PM-28",
+   "strength": "supporting",
+   "rationale": "PM-28 identifies assumptions, constraints, and priorities/trade-offs considered for managing risk, providing inputs that enable the prioritization of risk responses but does not itself execute responses."
+  },
+  {
+   "csf": "ID.RA-06",
+   "control": "PM-29",
+   "strength": "supporting",
+   "rationale": "PM-29 establishes a Senior Accountable Official and Risk Executive to align risk management processes with strategic planning, enabling organizational coordination of risk response selection and communication."
+  },
+  {
+   "csf": "ID.RA-06",
+   "control": "PM-4",
+   "strength": "partial",
+   "rationale": "PM-4 implements a process ensuring POA&Ms are developed, maintained, and report remedial information, supporting the planning and tracking of risk responses across the program."
+  },
+  {
+   "csf": "ID.RA-07",
+   "control": "CA-5",
+   "strength": "supporting",
+   "rationale": "CA-5 documents planned remediation actions for weaknesses and deficiencies noted during assessments, supporting the tracking and recording of deficiencies identified through change-related risk assessments."
+  },
+  {
+   "csf": "ID.RA-08",
+   "control": "PM-16",
+   "strength": "supporting",
+   "rationale": "PM-16 implements a threat awareness program with cross-organization information-sharing capability for threat intelligence, enabling the receipt of externally sourced vulnerability information."
+  },
+  {
+   "csf": "ID.RA-08",
+   "control": "SI-2",
+   "strength": "supporting",
+   "rationale": "SI-2 requires identifying, reporting, and correcting system flaws and installing security-relevant updates within defined time periods, supporting the responding component of vulnerability disclosures."
+  },
+  {
+   "csf": "ID.RA-08",
+   "control": "SI-5",
+   "strength": "full",
+   "rationale": "SI-5 requires receiving system security alerts, advisories, and directives from external organizations on an ongoing basis, generating internal alerts, and disseminating them to personnel, which operationalizes the receiving and responding portions of vulnerability disclosure processes."
+  },
+  {
+   "csf": "ID.RA-09",
+   "control": "SC-34",
+   "strength": "supporting",
+   "rationale": "SC-34 loads and executes the operating environment and applications from hardware-enforced, read-only media, supporting integrity protection of software after acquisition but not directly assessing authenticity prior to use."
+  },
+  {
+   "csf": "ID.RA-10",
+   "control": "PM-30",
+   "strength": "supporting",
+   "rationale": "PM-30 (Supply Chain Risk Management Strategy) enables ID.RA-10 by establishing the organization-wide strategy and processes for managing supply chain risks associated with acquisition of systems and services."
+  },
+  {
+   "csf": "ID.RA-10",
+   "control": "RA-9",
+   "strength": "supporting",
+   "rationale": "RA-9 (Criticality Analysis) supports ID.RA-10 by identifying which system components, functions, and associated services are critical, enabling the organization to know which suppliers fall into the 'critical' category."
+  },
+  {
+   "csf": "ID.RA-10",
+   "control": "SA-4",
+   "strength": "partial",
+   "rationale": "SA-4 (Acquisition Process) supports ID.RA-10 by requiring that security and supply chain risk requirements be included in acquisition contracts, enabling assessment requirements to flow into supplier assessment before acquisition decisions."
+  },
+  {
+   "csf": "ID.RA-10",
+   "control": "SA-9",
+   "strength": "supporting",
+   "rationale": "SA-9 (External System Services) enables ID.RA-10 by requiring external providers to comply with organizational security requirements, supporting the assessment basis for critical suppliers."
+  },
+  {
+   "csf": "ID.RA-10",
+   "control": "SR-2",
+   "strength": "partial",
+   "rationale": "SR-2 (Supply Chain Risk Management Plan) partially satisfies ID.RA-10 by requiring a documented plan to manage supply chain risks associated with the acquisition and integration phases, covering the 'prior to acquisition' element."
+  },
+  {
+   "csf": "ID.RA-10",
+   "control": "SR-5",
+   "strength": "supporting",
+   "rationale": "SR-5 (Acquisition Strategies, Tools, and Methods) enables ID.RA-10 by providing the acquisition-side strategies and procurement methods used to identify and mitigate supply chain risks before acquiring from suppliers."
+  },
+  {
+   "csf": "PR.AA-01",
+   "control": "IA-13",
+   "strength": "full",
+   "rationale": "IA-13 requires employment of identity providers and authorization servers to centrally manage user, device, and non-person entity identities, attributes, and access rights."
+  },
+  {
+   "csf": "PR.AA-02",
+   "control": "IA-10",
+   "strength": "partial",
+   "rationale": "IA-10 (Adaptive Authentication) requires supplemental authentication mechanisms under specific circumstances/situations, addressing the context-based binding aspect of the item."
+  },
+  {
+   "csf": "PR.AA-02",
+   "control": "IA-13",
+   "strength": "partial",
+   "rationale": "IA-13's identity providers bind managed identities to credentials/authenticators and support subsequent authentication decisions."
+  },
+  {
+   "csf": "PR.AA-02",
+   "control": "IA-5",
+   "strength": "partial",
+   "rationale": "IA-5 verifies the identity of the individual/group/role/service/device receiving authenticators, partially supporting the binding of credentials to proofed identities."
+  },
+  {
+   "csf": "PR.AA-03",
+   "control": "AC-3",
+   "strength": "supporting",
+   "rationale": "AC-3 enforces approved authorizations at access decision points but relies on prior authentication from IA controls; supports authentication by gating access."
+  },
+  {
+   "csf": "PR.AA-04",
+   "control": "SC-11",
+   "strength": "partial",
+   "rationale": "SC-11 provides a physically/logically isolated trusted communications path for communications between users and trusted components, supporting protected conveyance of identity assertions."
+  },
+  {
+   "csf": "PR.AA-04",
+   "control": "SC-13",
+   "strength": "partial",
+   "rationale": "SC-13 (Cryptographic Protection) implements required cryptography, supporting confidentiality, integrity, and authenticity protections on identity assertions."
+  },
+  {
+   "csf": "PR.AA-04",
+   "control": "SC-8",
+   "strength": "partial",
+   "rationale": "SC-8 protects the confidentiality and integrity of transmitted information, covering the conveyance and protection of identity assertions in transit."
+  },
+  {
+   "csf": "PR.AA-06",
+   "control": "PE-1",
+   "strength": "partial",
+   "rationale": "PE-1 establishes the physical and environmental protection policy addressing purpose, scope, roles, and responsibilities, supporting the policy/governance aspect of managing physical access to assets."
+  },
+  {
+   "csf": "PR.AT-01",
+   "control": "AT-1",
+   "strength": "partial",
+   "rationale": "AT-1 establishes the awareness and training policy addressing purpose, scope, roles, and responsibilities, providing the policy foundation for the framework item's requirement that personnel be provided with awareness and training."
+  },
+  {
+   "csf": "PR.AT-02",
+   "control": "AT-1",
+   "strength": "supporting",
+   "rationale": "AT-1 establishes the awareness and training policy that provides the foundation for role-based specialized training, supporting the 'awareness and training' element of the framework item."
+  },
+  {
+   "csf": "PR.AT-02",
+   "control": "PM-13",
+   "strength": "supporting",
+   "rationale": "PM-13 establishes a security and privacy workforce development and improvement program, supporting the framework item by enabling the workforce capability for specialized roles."
+  },
+  {
+   "csf": "PR.AT-02",
+   "control": "PM-15",
+   "strength": "supporting",
+   "rationale": "PM-15 supports the 'awareness and training' requirement by establishing contact with security and privacy groups/associations to facilitate ongoing security and privacy education and training for organizational personnel."
+  },
+  {
+   "csf": "PR.AT-02",
+   "control": "PS-9",
+   "strength": "supporting",
+   "rationale": "PS-9 supports the framework item by incorporating security and privacy roles and responsibilities into organizational position descriptions, clarifying specialized roles and enabling role-based training."
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "AC-3",
+   "strength": "partial",
+   "rationale": "AC-3 enforces approved authorizations for logical access, supporting confidentiality of data-at-rest by restricting who can read stored data."
+  },
+  {
+   "csf": "PR.DS-01",
+   "control": "PE-3",
+   "strength": "partial",
+   "rationale": "PE-3 enforces physical access authorizations, contributing to physical protection of data-at-rest stored on premises, particularly against unauthorized access."
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "AC-4",
+   "strength": "partial",
+   "rationale": "AC-4 enforces information flow control policies within and between connected systems, supporting protection of data-in-transit."
+  },
+  {
+   "csf": "PR.DS-02",
+   "control": "PE-4",
+   "strength": "partial",
+   "rationale": "PE-4 controls physical access to system distribution and transmission lines, protecting the physical layer of data-in-transit."
+  },
+  {
+   "csf": "PR.DS-10",
+   "control": "SC-34",
+   "strength": "partial",
+   "rationale": "SC-34 loads operating environments and applications from hardware-enforced read-only media, supporting the integrity component of data-in-use protection."
+  },
+  {
+   "csf": "PR.DS-11",
+   "control": "CP-10",
+   "strength": "partial",
+   "rationale": "CP-10 provides for recovery and reconstitution of the system after disruption, supporting the 'protected' aspect of backups by ensuring their usability for restoration."
+  },
+  {
+   "csf": "PR.DS-11",
+   "control": "CP-4",
+   "strength": "partial",
+   "rationale": "CP-4 tests the contingency plan at defined frequencies, covering the 'tested' aspect of the backup framework item by validating backup recovery readiness."
+  },
+  {
+   "csf": "PR.DS-11",
+   "control": "SC-28",
+   "strength": "supporting",
+   "rationale": "SC-28 protects information at rest including backup data, enabling the protected aspect of the backup framework item but not directly addressing creation, maintenance, or testing."
+  },
+  {
+   "csf": "PR.IR-01",
+   "control": "AC-17",
+   "strength": "partial",
+   "rationale": "AC-17 (Remote Access) establishes usage restrictions, configuration/connection requirements, and authorizes remote access types, partially protecting networks from unauthorized access."
+  },
+  {
+   "csf": "PR.IR-01",
+   "control": "SC-32",
+   "strength": "partial",
+   "rationale": "SC-32 (System Partitioning) partitions systems into components residing in separate physical or logical domains, supporting protection of network environments."
+  },
+  {
+   "csf": "PR.IR-01",
+   "control": "SI-4",
+   "strength": "supporting",
+   "rationale": "SI-4 (System Monitoring) detects attacks, indicators of potential attacks, and unauthorized local, network, and remote connections, supporting protection from unauthorized access."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-10",
+   "strength": "partial",
+   "rationale": "CP-10 implements a mechanism (recovery and reconstitution to a known state after disruption, compromise, or failure) that directly addresses resilience in adverse situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-2",
+   "strength": "partial",
+   "rationale": "CP-2 establishes a contingency plan that defines recovery objectives, restoration priorities, and roles—core resilience mechanisms for adverse situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-4",
+   "strength": "partial",
+   "rationale": "CP-4 tests the contingency plan to determine effectiveness and readiness, validating that resilience mechanisms will work in adverse situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-6",
+   "strength": "partial",
+   "rationale": "CP-6 establishes an alternate storage site with equivalent controls to the primary, a key resilience mechanism for adverse situations when primary storage is unavailable."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-7",
+   "strength": "partial",
+   "rationale": "CP-7 establishes an alternate processing site to resume essential operations when primary processing is unavailable—a resilience mechanism for adverse situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-8",
+   "strength": "partial",
+   "rationale": "CP-8 establishes alternate telecommunications services to resume operations when primary telecom is unavailable, supporting resilience in adverse situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "CP-9",
+   "strength": "partial",
+   "rationale": "CP-9 implements system, user-level, and documentation backups—a foundational resilience mechanism enabling recovery from adverse events."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "IR-4",
+   "strength": "partial",
+   "rationale": "IR-4 implements an incident handling capability (preparation, detection, containment, eradication, recovery)—a resilience mechanism for adverse cybersecurity situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "PE-11",
+   "strength": "partial",
+   "rationale": "PE-11 provides uninterruptible power supply enabling orderly shutdown or transition to alternate power—a resilience mechanism for adverse power loss."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "PE-13",
+   "strength": "partial",
+   "rationale": "PE-13 employs fire detection and suppression systems on independent power—environmental resilience mechanism for adverse fire situations."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "PE-14",
+   "strength": "partial",
+   "rationale": "PE-14 maintains and monitors environmental control levels—a resilience mechanism that mitigates adverse environmental conditions."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "RA-9",
+   "strength": "supporting",
+   "rationale": "RA-9 identifies critical system components and functions via criticality analysis, supporting prioritization of resilience mechanisms but not implementing them directly."
+  },
+  {
+   "csf": "PR.IR-03",
+   "control": "SC-5",
+   "strength": "partial",
+   "rationale": "SC-5 implements controls to protect against and limit effects of denial-of-service events—a resilience mechanism specifically for adverse attack situations."
+  },
+  {
+   "csf": "PR.IR-04",
+   "control": "MA-6",
+   "strength": "partial",
+   "rationale": "MA-6 ensures spare parts are obtained within a defined period, providing the physical resource capacity to maintain availability of system components."
+  },
+  {
+   "csf": "PR.IR-04",
+   "control": "PE-11",
+   "strength": "partial",
+   "rationale": "PE-11 provides uninterruptible power capacity, contributing to resource capacity (power) required to maintain availability during primary power loss."
+  },
+  {
+   "csf": "PR.IR-04",
+   "control": "SC-36",
+   "strength": "partial",
+   "rationale": "SC-36 distributes processing and storage across multiple locations/domains, expanding effective resource capacity and supporting availability."
+  },
+  {
+   "csf": "PR.IR-04",
+   "control": "SC-6",
+   "strength": "full",
+   "rationale": "SC-6 directly addresses resource availability by allocating resources via priority, quota, or controls—fully satisfying the requirement to maintain adequate resource capacity for availability."
+  },
+  {
+   "csf": "PR.IR-04",
+   "control": "SI-13",
+   "strength": "partial",
+   "rationale": "SI-13 provides substitute system components and a means to exchange active/standby components, contributing to resource capacity for availability."
+  },
+  {
+   "csf": "PR.PS-02",
+   "control": "CM-10",
+   "strength": "partial",
+   "rationale": "CM-10 governs the use of software in accordance with contract agreements, tracks quantity-licensed software, and controls use of peer-to-peer file sharing, supporting software lifecycle management."
+  },
+  {
+   "csf": "PR.PS-02",
+   "control": "SA-22",
+   "strength": "partial",
+   "rationale": "SA-22 requires replacing system components when support for the components is no longer available from the developer, vendor, or manufacturer, supporting software replacement."
+  },
+  {
+   "csf": "PR.PS-02",
+   "control": "SR-12",
+   "strength": "partial",
+   "rationale": "SR-12 requires disposing of data, documentation, tools, or system components using organization-defined techniques and methods, supporting software removal."
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "MA-1",
+   "strength": "supporting",
+   "rationale": "MA-1 develops, documents, and disseminates a system-level maintenance policy that provides the governance foundation for hardware maintenance and replacement."
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "MA-2",
+   "strength": "partial",
+   "rationale": "MA-2 requires scheduling, documenting, and reviewing records of maintenance, repair, and replacement on system components, supporting hardware maintenance and replacement."
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "MA-6",
+   "strength": "partial",
+   "rationale": "MA-6 requires obtaining maintenance support and/or spare parts for system components within defined time periods, supporting timely hardware maintenance."
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "SA-22",
+   "strength": "partial",
+   "rationale": "SA-22 requires replacing hardware components when support is no longer available, supporting hardware replacement commensurate with risk."
+  },
+  {
+   "csf": "PR.PS-03",
+   "control": "SR-12",
+   "strength": "partial",
+   "rationale": "SR-12 requires disposing of hardware components using approved techniques and methods, supporting hardware removal commensurate with risk."
+  },
+  {
+   "csf": "PR.PS-04",
+   "control": "AU-1",
+   "strength": "supporting",
+   "rationale": "AU-1 develops, documents, and disseminates an audit and accountability policy that provides the governance foundation for the generation and availability of log records."
+  },
+  {
+   "csf": "PR.PS-04",
+   "control": "AU-9",
+   "strength": "supporting",
+   "rationale": "AU-9 protects audit information and audit logging tools from unauthorized access, modification, and deletion, preserving the availability of log records for continuous monitoring."
+  },
+  {
+   "csf": "PR.PS-04",
+   "control": "CA-7",
+   "strength": "partial",
+   "rationale": "CA-7 develops and implements a system-level continuous monitoring strategy and ongoing monitoring assessments, making log records available for continuous monitoring activities."
+  },
+  {
+   "csf": "PR.PS-05",
+   "control": "CM-11",
+   "strength": "full",
+   "rationale": "CM-11 (User-installed Software) directly establishes policies governing installation of software by users and enforces those policies, fully preventing the installation and execution of unauthorized software."
+  },
+  {
+   "csf": "PR.PS-05",
+   "control": "CM-7",
+   "strength": "partial",
+   "rationale": "CM-7 (Least Functionality) prohibits or restricts specific software, ports, protocols, and services, helping to prevent unauthorized software but not directly addressing user installation or runtime execution enforcement."
+  },
+  {
+   "csf": "PR.PS-05",
+   "control": "SI-16",
+   "strength": "partial",
+   "rationale": "SI-16 (Memory Protection) implements controls to protect system memory from unauthorized code execution, addressing part of the framework item but not installation prevention."
+  },
+  {
+   "csf": "PR.PS-05",
+   "control": "SI-3",
+   "strength": "supporting",
+   "rationale": "SI-3 (Malicious Code Protection) detects and eradicates malicious code at entry and exit points, supporting prevention of unauthorized software execution."
+  },
+  {
+   "csf": "PR.PS-05",
+   "control": "SI-7",
+   "strength": "supporting",
+   "rationale": "SI-7 (Software, Firmware, and Information Integrity) employs integrity verification tools to detect unauthorized changes to software, supporting prevention of unauthorized installations."
+  },
+  {
+   "csf": "PR.PS-06",
+   "control": "PM-6",
+   "strength": "partial",
+   "rationale": "PM-6 (Measures of Performance) develops, monitors, and reports on information security and privacy measures of performance, partially addressing performance monitoring of secure development practices."
+  },
+  {
+   "csf": "RC.CO-03",
+   "control": "CP-2",
+   "strength": "supporting",
+   "rationale": "CP-2 (Contingency Plan) addresses contingency roles and responsibilities, supporting coordination and stakeholder communication during recovery activities."
+  },
+  {
+   "csf": "RC.CO-03",
+   "control": "IR-8",
+   "strength": "partial",
+   "rationale": "IR-8 (Incident Response Plan) describes the structure and organization of the incident response capability and a high-level approach that can encompass stakeholder communication during recovery."
+  },
+  {
+   "csf": "RC.CO-04",
+   "control": "IR-1",
+   "strength": "supporting",
+   "rationale": "IR-1 (Policy and Procedures) establishes the incident response policy framework that can define approved methods and messaging for public communications during recovery."
+  },
+  {
+   "csf": "RC.CO-04",
+   "control": "IR-8",
+   "strength": "partial",
+   "rationale": "IR-8 (Incident Response Plan) provides the structure and organization of the incident response capability, which can include approved communication methods and messaging for public updates."
+  },
+  {
+   "csf": "RC.RP-01",
+   "control": "IR-1",
+   "strength": "supporting",
+   "rationale": "IR-1 establishes the overarching incident response policy and procedures that authorise and govern the plan execution but does not contain operational recovery content."
+  },
+  {
+   "csf": "RC.RP-02",
+   "control": "CP-2",
+   "strength": "partial",
+   "rationale": "CP-2 requires the contingency plan to identify essential mission functions, provide recovery objectives, restoration priorities, and metrics—directly supporting selection, scoping, and prioritisation of recovery actions."
+  },
+  {
+   "csf": "RC.RP-02",
+   "control": "CP-4",
+   "strength": "supporting",
+   "rationale": "CP-4 tests the contingency plan using defined tests and initiates corrective actions—validating that selected/scoped/prioritised recovery actions actually work when performed."
+  },
+  {
+   "csf": "RC.RP-03",
+   "control": "SC-28",
+   "strength": "supporting",
+   "rationale": "SC-28 protects the integrity of information at rest, providing a baseline protective measure for backup assets that supports later integrity verification prior to use in restoration."
+  },
+  {
+   "csf": "RC.RP-03",
+   "control": "SI-2",
+   "strength": "supporting",
+   "rationale": "SI-2 requires testing of software and firmware updates for effectiveness and potential side effects before installation, contributing to integrity assurance practices applied to restoration assets."
+  },
+  {
+   "csf": "RC.RP-03",
+   "control": "SI-7",
+   "strength": "partial",
+   "rationale": "SI-7 employs integrity verification tools to detect unauthorized changes to software, firmware, and information—directly supporting the verification of integrity for backups (information) before restoration."
+  },
+  {
+   "csf": "RC.RP-04",
+   "control": "CP-2",
+   "strength": "partial",
+   "rationale": "CP-2 requires identification of essential mission and business functions and associated contingency requirements, providing the foundation for considering critical mission functions post-incident."
+  },
+  {
+   "csf": "RC.RP-04",
+   "control": "PM-28",
+   "strength": "supporting",
+   "rationale": "PM-28 documents assumptions, constraints, priorities, and trade-offs for risk assessments/responses/monitoring, supporting consistent risk framing when establishing post-incident operational norms."
+  },
+  {
+   "csf": "RC.RP-04",
+   "control": "RA-9",
+   "strength": "partial",
+   "rationale": "RA-9 performs criticality analysis to identify critical system components and functions at decision points in the SDLC, directly supporting identification of critical mission functions for post-incident norms."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "CP-2",
+   "strength": "supporting",
+   "rationale": "CP-2 (Contingency Plan) requires a plan identifying recovery objectives, restoration priorities and metrics, supporting the restoration of systems and services."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "CP-4",
+   "strength": "supporting",
+   "rationale": "CP-4 (Contingency Plan Testing) tests the effectiveness and readiness of the contingency plan, helping confirm that normal operating status has been achieved."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "CP-6",
+   "strength": "supporting",
+   "rationale": "CP-6 (Alternate Storage Site) establishes agreements and equivalent controls at an alternate storage site, enabling retrieval of backup information needed for restoration."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "CP-7",
+   "strength": "supporting",
+   "rationale": "CP-7 (Alternate Processing Site) provides alternate processing capabilities that enable the transfer and resumption of system operations for essential functions during recovery."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "CP-9",
+   "strength": "supporting",
+   "rationale": "CP-9 (System Backup) requires backups of user-level, system-level information and documentation, which is foundational to enabling the restoration of systems and services."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "IR-4",
+   "strength": "partial",
+   "rationale": "IR-4 (Incident Handling) explicitly includes recovery as part of the incident lifecycle (preparation, detection and analysis, containment, eradication, and recovery), supporting the restoration aspect."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "SI-7",
+   "strength": "partial",
+   "rationale": "SI-7 (Software, Firmware, and Information Integrity) requires employing integrity verification tools to detect unauthorized changes, directly supporting verification of integrity for restored assets."
+  },
+  {
+   "csf": "RC.RP-05",
+   "control": "SR-10",
+   "strength": "supporting",
+   "rationale": "SR-10 (Inspection of Systems or Components) requires inspecting systems/components to detect tampering, supporting verification of integrity for restored assets."
+  },
+  {
+   "csf": "RC.RP-06",
+   "control": "AU-11",
+   "strength": "supporting",
+   "rationale": "AU-11 (Audit Record Retention) retains audit records to support after-the-fact investigations, enabling the availability of incident-related documentation."
+  },
+  {
+   "csf": "RC.RP-06",
+   "control": "IR-5",
+   "strength": "partial",
+   "rationale": "IR-5 (Incident Monitoring) requires tracking and documenting incidents across the incident lifecycle, directly supporting the completion of incident-related documentation."
+  },
+  {
+   "csf": "RC.RP-06",
+   "control": "IR-6",
+   "strength": "supporting",
+   "rationale": "IR-6 (Incident Reporting) requires personnel to report suspected incidents and to report incident information to authorities, contributing to completeness of incident-related documentation."
+  },
+  {
+   "csf": "RS.AN-03",
+   "control": "AU-6",
+   "strength": "partial",
+   "rationale": "AU-6 (Audit Record Review, Analysis, and Reporting) requires review and analysis of system audit records 'for indications of inappropriate or unusual activity,' which is foundational to incident and root cause analysis. However, it focuses on audit records rather than the full scope of incident analysis."
+  },
+  {
+   "csf": "RS.AN-03",
+   "control": "IR-5",
+   "strength": "supporting",
+   "rationale": "IR-5 (Incident Monitoring) tracks and documents incidents, providing the data inputs that enable root cause analysis. It supports but does not itself perform root cause analysis."
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "AU-12",
+   "strength": "partial",
+   "rationale": "AU-12 (Audit Record Generation) provides audit record generation capability for defined event types, supporting the recording of actions performed. It enables recording but does not itself preserve integrity and provenance."
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "AU-2",
+   "strength": "partial",
+   "rationale": "AU-2 (Event Logging) identifies the types of events that the system is capable of logging, providing the foundation for what gets recorded during an investigation. It supports the recording component but is not itself the recording mechanism."
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "AU-3",
+   "strength": "partial",
+   "rationale": "AU-3 (Content of Audit Records) ensures audit records contain information about 'What type of event occurred,' 'When,' 'Where,' 'Source,' 'Outcome,' and 'Identity'—recording actions performed during investigative activities. It supports recording but is scoped to system audit events rather than all investigation actions."
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "AU-9",
+   "strength": "partial",
+   "rationale": "AU-9 (Protection of Audit Information) protects audit information and audit logging tools from 'unauthorized access, modification, and deletion' and alerts on detection, directly addressing integrity preservation of records. It supports provenance preservation but is focused on audit information specifically."
+  },
+  {
+   "csf": "RS.AN-06",
+   "control": "SI-7",
+   "strength": "supporting",
+   "rationale": "SI-7 (Software, Firmware, and Information Integrity) employs integrity verification tools to detect unauthorized changes, supporting the integrity preservation aspect of investigation records. It is an enabling control for integrity but does not directly address investigation record provenance."
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "AC-16",
+   "strength": "supporting",
+   "rationale": "AC-16 (Security and Privacy Attributes) provides the means to associate types of security and privacy attributes with attribute values for information, supporting provenance tracking and integrity of data through attribute association."
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "AU-12",
+   "strength": "partial",
+   "rationale": "AU-12 (Audit Record Generation) provides the generation capability for event types, which is the mechanism by which incident data and metadata are collected. It enables collection of the data."
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "AU-2",
+   "strength": "partial",
+   "rationale": "AU-2 (Event Logging) identifies and coordinates the types of events the system logs, defining what data and metadata are collected. It supports the collection requirement but is scoped to audit event types."
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "AU-3",
+   "strength": "partial",
+   "rationale": "AU-3 (Content of Audit Records) ensures audit records include the data and metadata fields needed (what, when, where, source, outcome, identity), directly addressing collection of incident data and metadata content."
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "AU-9",
+   "strength": "partial",
+   "rationale": "AU-9 (Protection of Audit Information) protects audit information from unauthorized access, modification, and deletion, preserving the integrity of collected incident data and metadata. It supports provenance preservation as well through these protections."
+  },
+  {
+   "csf": "RS.AN-07",
+   "control": "IR-5",
+   "strength": "partial",
+   "rationale": "IR-5 (Incident Monitoring) explicitly tracks and documents incidents, directly collecting incident data and metadata across the incident lifecycle. It contributes to collection but does not address integrity and provenance preservation."
+  },
+  {
+   "csf": "RS.AN-08",
+   "control": "AU-6",
+   "strength": "supporting",
+   "rationale": "AU-6 review and analysis of audit records for 'potential impact' supplies evidence used to estimate magnitude, but is general audit review rather than dedicated incident magnitude validation."
+  },
+  {
+   "csf": "RS.AN-08",
+   "control": "IR-5",
+   "strength": "supporting",
+   "rationale": "IR-5 'Track and document incidents' provides the ongoing record-keeping that enables analysts to revisit and validate an incident's magnitude, but does not itself perform the estimation."
+  },
+  {
+   "csf": "RS.AN-08",
+   "control": "SI-4",
+   "strength": "supporting",
+   "rationale": "SI-4 detects 'attacks and indicators of potential attacks,' providing the raw detection data needed to scope an incident, but does not itself estimate or validate magnitude."
+  },
+  {
+   "csf": "RS.CO-02",
+   "control": "IR-8",
+   "strength": "supporting",
+   "rationale": "IR-8 Incident Response Plan establishes the structure and approach for incident response, which would include notification procedures; enabling but not performing notification itself."
+  },
+  {
+   "csf": "RS.CO-03",
+   "control": "AU-16",
+   "strength": "supporting",
+   "rationale": "AU-16 'coordinate audit information among external organizations' is focused on audit-related information across boundaries, supporting broader cross-stakeholder information sharing but for audit context specifically."
+  },
+  {
+   "csf": "RS.CO-03",
+   "control": "PM-16",
+   "strength": "partial",
+   "rationale": "PM-16 establishes 'a cross-organization information-sharing capability for threat intelligence,' directly supporting sharing of security information with designated stakeholders, but scoped to threat intelligence."
+  },
+  {
+   "csf": "RS.MA-01",
+   "control": "AU-16",
+   "strength": "supporting",
+   "rationale": "AU-16 employs methods for coordinating audit information among external organizations when audit information crosses organizational boundaries, enabling joint incident analysis with relevant third parties."
+  },
+  {
+   "csf": "RS.MA-01",
+   "control": "CA-3",
+   "strength": "supporting",
+   "rationale": "CA-3 approves and manages the exchange of information between the system and other systems using interconnection security agreements, MOUs, SLAs, etc., establishing the governance basis for third-party coordination during incidents."
+  },
+  {
+   "csf": "RS.MA-01",
+   "control": "IR-4",
+   "strength": "partial",
+   "rationale": "IR-4 implements the incident handling capability and explicitly coordinates incident handling activities with contingency planning and other organizational activities, directly supporting the coordination requirement."
+  },
+  {
+   "csf": "RS.MA-02",
+   "control": "AU-11",
+   "strength": "supporting",
+   "rationale": "AU-11 retains audit records to provide support for after-the-fact investigations of incidents, preserving evidence used in triage and validation activities."
+  },
+  {
+   "csf": "RS.MA-02",
+   "control": "AU-3",
+   "strength": "supporting",
+   "rationale": "AU-3 ensures audit records contain event type, time, location, source, outcome, and identity information, supplying the structured data needed to triage and validate incidents."
+  },
+  {
+   "csf": "RS.MA-02",
+   "control": "AU-6",
+   "strength": "supporting",
+   "rationale": "AU-6 review and analysis of audit records for indications of inappropriate or unusual activity provides supporting evidence used to triage and validate incident reports."
+  },
+  {
+   "csf": "RS.MA-03",
+   "control": "RA-2",
+   "strength": "supporting",
+   "rationale": "RA-2 security categorization of the system and the information it processes establishes baseline impact levels that inform incident categorization decisions."
+  },
+  {
+   "csf": "RS.MA-04",
+   "control": "IR-8",
+   "strength": "supporting",
+   "rationale": "IR-8 develops the incident response plan that describes the structure and organization of the IR capability, including escalation roles and thresholds."
+  },
+  {
+   "csf": "RS.MA-05",
+   "control": "CP-10",
+   "strength": "supporting",
+   "rationale": "CP-10 (System Recovery and Reconstitution) provides for recovery and reconstitution 'to a known state within organization-defined time period consistent with recovery time and recovery point objectives,' enabling recovery operations. It supports but is not specifically about initiating incident recovery criteria."
+  },
+  {
+   "csf": "RS.MA-05",
+   "control": "CP-2",
+   "strength": "supporting",
+   "rationale": "CP-2 (Contingency Plan) identifies essential mission and business functions and provides recovery objectives, restoration priorities, and metrics. It supports the broader recovery framework but is focused on continuity rather than incident-driven recovery criteria."
+  },
+  {
+   "csf": "RS.MI-01",
+   "control": "IR-3",
+   "strength": "supporting",
+   "rationale": "IR-3 tests the effectiveness of the incident response capability, validating that containment procedures work as designed, but does not directly contain incidents."
+  },
+  {
+   "csf": "RS.MI-01",
+   "control": "IR-8",
+   "strength": "supporting",
+   "rationale": "IR-8 Incident Response Plan provides the roadmap and structure that defines how containment activities are executed, enabling but not performing containment."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "CP-10",
+   "strength": "supporting",
+   "rationale": "CP-10 provides recovery and reconstitution of the system 'to a known state... after a disruption, compromise, or failure', which typically follows eradication and confirms the system is clean."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "RA-10",
+   "strength": "supporting",
+   "rationale": "RA-10 threat hunting 'Detect[s], track[s], and disrupt[s] threats that evade existing controls', helping ensure persistent threats are identified and removed as part of eradication."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "SC-35",
+   "strength": "supporting",
+   "rationale": "SC-35 uses components that 'proactively seek to identify network-based malicious code or malicious websites', supporting eradication by surfacing malicious artifacts that must be removed."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "SI-2",
+   "strength": "partial",
+   "rationale": "SI-2 requires the organization to 'Identify, report, and correct system flaws' and install security updates within defined time periods, which is a primary mechanism for eradicating vulnerabilities exploited during incidents."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "SI-3",
+   "strength": "partial",
+   "rationale": "SI-3 requires malicious code protection mechanisms that 'detect and eradicate malicious code', covering eradication of malicious-code incidents but not all incident types."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "SI-4",
+   "strength": "supporting",
+   "rationale": "SI-4 monitoring detects attacks, indicators of potential attacks, and unauthorized use, providing the visibility needed to know when eradication actions are complete."
+  },
+  {
+   "csf": "RS.MI-02",
+   "control": "SI-7",
+   "strength": "supporting",
+   "rationale": "SI-7 uses integrity verification tools and prescribes actions when unauthorized changes are detected, which helps remove attacker artifacts and re-establish a clean state during eradication."
+  }
+ ]
+}

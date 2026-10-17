@@ -1,0 +1,44 @@
+{
+  "suite": "mapping",
+  "label": "jev-live-k40",
+  "chat_model": "MiniMax-M3",
+  "embed_model": "embo-01",
+  "max_tokens": 16384,
+  "batches": 30,
+  "attempted": 30,
+  "rejected": 0,
+  "failed": 0,
+  "dropped_mappings": 9,
+  "batch_validation_pass_rate": 1.0,
+  "candidate_vector_used": false,
+  "candidate_source": "jev",
+  "candidate_fallback_reason": null,
+  "mapping": {
+    "tp": 244,
+    "predicted": 556,
+    "expected": 716,
+    "precision": 0.4388,
+    "recall": 0.3408,
+    "f1": 0.3836
+  },
+  "citation_repairs": 0,
+  "proposals": 556,
+  "usage": {
+    "framework_mapping:ok": {
+      "calls": 30,
+      "tokens_in": 155527,
+      "tokens_out": 150515
+    },
+    "mapping_jev_prefilter:ok": {
+      "calls": 106,
+      "tokens_in": 1842078,
+      "tokens_out": 373650
+    },
+    "embedding:ok": {
+      "calls": 2,
+      "tokens_in": 12344,
+      "tokens_out": 0
+    }
+  },
+  "elapsed_s": 1095.1
+}
