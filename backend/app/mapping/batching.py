@@ -105,7 +105,7 @@ def split_to_fit(
     """批次 → [(子批次, 候选控制点 id)]。候选并集渲染超限时按框架项对半拆。
 
     `render_size(control_ids)` 返回这些控制点渲染后的字符数。单个框架项的候选
-    仍超限时原样返回，交给 render_controls 报错（TOP_K=20 时实际不会发生）。
+    仍超限时原样返回，交给 render_controls 报错（TOP_K=40 时，候选平均要超过 1500 字才会发生）。
     """
     union = sorted({cid for item_id in batch.mappable_ids for cid in candidates.get(item_id, [])})
     if render_size(union) <= max_chars or len(batch.mappable_ids) <= 1:

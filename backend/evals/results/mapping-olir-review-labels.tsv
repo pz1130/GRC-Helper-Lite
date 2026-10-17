@@ -1,0 +1,73 @@
+# K16 抽样标注（Claude 单人，2026-10-17）。label：F 满足 / P 部分 / S 支撑 / N 无关，按 MAPPING_SYSTEM 的强度定义；
+# 抽样来自 mapping-olir-review-pairs.json（evals.review_sheet，种子 17）。未经人工复核。
+kind	csf	control	label	reason
+extra	DE.AE-04	IR-4	P	事件分析阶段确定影响与范围
+extra	DE.AE-06	IR-6	P	向事件响应团队报告疑似事件
+extra	DE.CM-09	AU-6	P	审计记录分析是监控发现异常的一种手段
+extra	GV.OC-01	PL-2	S	安全计划描述使命背景，支撑对使命的理解
+extra	GV.OV-02	RA-3	S	风险评估为策略复审提供输入
+extra	GV.PO-01	PM-7	N	企业架构不制定制度
+extra	GV.PO-02	PM-9	S	复审的是策略，不是制度
+extra	GV.RM-01	PM-29	S	风险执行职能为确立风险目标提供治理结构，本身不确立目标
+extra	GV.RR-03	PM-9	S	风险策略与资源配置间接相关
+extra	GV.SC-04	SR-2	S	供应链风险计划支撑识别关键供应商
+extra	GV.SC-06	PM-30	P	供应链风险策略覆盖采购前规划
+extra	ID.AM-04	SR-6	S	供应商评估需要先有供应商清单，支撑清单维护
+extra	ID.AM-05	CP-2	P	恢复优先级按业务关键性排序
+extra	ID.IM-04	CA-5	S	整改计划不是运营计划，但支撑计划的改进
+extra	PR.AA-01	IA-12	P	身份核验是身份管理的一部分
+extra	PR.AA-04	IA-2	P	鉴别及其增强（防重放等）保护身份断言的一部分
+extra	PR.IR-03	PE-13	P	消防是应对不利情形的韧性机制之一
+extra	PR.PS-04	PM-31	S	监控策略决定需要哪些日志
+extra	PR.PS-05	CM-7	F	最小功能及其执行限制与白名单增强
+extra	PR.PS-05	SI-16	P	内存保护阻止未授权代码执行
+extra	RC.RP-02	CP-2	P	应急计划选定并排序恢复行动；执行靠 CP-10/IR-4
+extra	RC.RP-03	SI-7	P	完整性校验可用于恢复前验证备份
+extra	RS.AN-06	IR-5	P	跟踪并记录事件
+extra	RS.AN-07	AU-3	S	审计记录内容是事件数据的来源
+extra	RS.CO-03	PM-16	P	威胁情报共享是信息共享的一部分
+missed_seen	DE.CM-02	CA-7	S	CA-7 管系统层面；物理环境监控靠 PE-6
+missed_seen	DE.CM-03	CA-7	P	持续监控方案覆盖技术使用监控的一部分
+missed_seen	GV.OC-03	PM-28	P	风险框定识别的约束包括法律、监管与合同要求
+missed_seen	GV.OV-01	PM-30	S	供应链风险策略的复审是总体复审的一部分输入
+missed_seen	GV.PO-01	IA-1	P	领域制度是网络风险管理制度体系的一部分
+missed_seen	GV.RM-07	PM-30	N	供应链风险策略不涉及正向风险
+missed_seen	GV.RM-07	PM-9	S	风险策略是讨论机会的框架，未涉及正向风险
+missed_seen	GV.RR-02	PM-19	P	隐私风险管理角色属风险管理角色的一部分
+missed_seen	GV.SC-03	PM-31	S	组织级监控可纳入供应链风险
+missed_seen	GV.SC-03	SR-3	S	供应链缺陷识别流程为风险评估提供输入
+missed_seen	GV.SC-08	CP-1	S	应急制度为纳入供应商提供依据
+missed_seen	ID.AM-08	CM-13	S	数据行为映射支撑数据生命周期管理
+missed_seen	ID.IM-01	CA-7	P	持续监控含持续评估与响应行动
+missed_seen	ID.IM-01	RA-5	S	扫描结果是评估输入
+missed_seen	ID.IM-02	CA-7	S	监控结果可作为改进的输入，但不是测试与演练
+missed_seen	ID.RA-04	RA-8	P	隐私影响评估识别其中一类影响
+missed_seen	ID.RA-06	PM-30	P	供应链领域的风险应对
+missed_seen	PR.AA-01	IA-2	P	标识与鉴别是身份与凭据管理的一部分
+missed_seen	PR.AA-01	IA-8	P	非本组织用户的标识与鉴别属身份管理
+missed_seen	PR.AT-01	AT-3	P	角色培训覆盖部分人员的意识与技能
+missed_seen	PR.DS-01	SI-7	P	信息完整性校验保护静态数据完整性
+missed_seen	PR.DS-10	AC-2	S	账号管理限制谁能接触使用中的数据
+missed_seen	PR.IR-02	PE-10	P	紧急断电是环境防护的一项
+missed_seen	PR.IR-02	PE-9	P	电力设备与线缆防护
+missed_seen	PR.PS-03	SC-49	N	硬件强制隔离与硬件生命周期无关
+missed_seen	PR.PS-03	SC-51	N	固件写保护与硬件生命周期无关
+missed_seen	RC.CO-04	IR-4	S	事件处置能力支撑恢复期沟通，但不规定对外发布
+missed_seen	RC.RP-06	IR-8	S	响应计划为恢复收尾提供依据，不规定结束标准
+missed_seen	RS.CO-02	IR-7	S	协助资源支撑通报
+missed_seen	RS.MA-04	IR-7	S	协助资源支撑事件上报，不是升级机制
+missed_unseen	GV.OV-01	CA-1	S	评估领域制度支撑监督
+missed_unseen	GV.OV-01	SA-1	N	采购领域制度与复审风险策略的结果无关
+missed_unseen	GV.PO-01	RA-1	P	风险评估领域制度
+missed_unseen	GV.PO-02	AU-1	P	领域制度的复审与更新
+missed_unseen	GV.SC-06	SA-9	P	SA-9 及 SA-9(1) 引入前风险评估覆盖尽调的一部分
+missed_unseen	ID.IM-02	SI-1	N	完整性领域制度与从测试中识别改进无关
+missed_unseen	ID.IM-02	SR-5	N	采购策略与从测试中识别改进无关
+missed_unseen	ID.IM-03	CP-2	P	CP-2 要求按执行与测试中遇到的问题更新计划
+missed_unseen	ID.RA-08	RA-5	F	RA-5(11) 公开漏洞披露渠道加漏洞处置
+missed_unseen	PR.AA-05	AC-17	P	远程访问授权是权限管理的一部分
+missed_unseen	PR.DS-01	SC-32	S	分区限制暴露面，间接保护静态数据
+missed_unseen	PR.DS-01	SI-3	S	防恶意代码间接保护数据完整性
+missed_unseen	PR.IR-02	PE-12	S	应急照明保障人员疏散，间接相关
+missed_unseen	PR.IR-03	SC-39	S	进程隔离提高故障隔离能力
+missed_unseen	PR.PS-01	CM-11	P	用户自装软件管控是一项配置管理实践
