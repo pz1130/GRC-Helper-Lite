@@ -327,3 +327,19 @@ async def test_flag_off_reports_no_fallback_reason(harness, monkeypatch):
     summary = await tasks.run_mapping(harness.session, 3)
     assert summary["candidate_source"] == "keyword_vector"
     assert summary["candidate_fallback_reason"] is None
+
+
+async def test_the_keyword_vector_prefilter_takes_the_current_top_k(harness, monkeypatch):
+    # B1 要比较 TOP_K=20 与 40。rank_candidates 原来不传 top_k，用的是它定义时绑定的
+    # 默认值——改 tasks.TOP_K 只改了「要不要预筛」，候选数仍是 20；Jev 那一路倒是传了。
+    huge = [
+        SimpleNamespace(id=n, code=f"C-{n:04d}", title="Identity management",
+                        statement="Identities are managed. " + "x" * 100)
+        for n in range(1, 200)
+    ]
+    monkeypatch.setattr(tasks, "TOP_K", 40)
+    monkeypatch.setattr(tasks, "load_vectors", AsyncMock(return_value=({}, {})))
+    harness.session.scalars = AsyncMock(side_effect=[huge, harness.items])
+    await tasks.run_mapping(harness.session, 3)
+    prompt = harness.run.await_args.kwargs["prompt"]
+    assert prompt.count("[control_id=") == 40

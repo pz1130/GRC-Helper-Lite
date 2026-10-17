@@ -215,6 +215,9 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
         from app.mapping import tasks as mapping_tasks
         from app.mapping.tasks import run_mapping
+        # 放在这里而不是 main()：app 的配置要等 _configure_env 设好评估库之后再加载。
+        if args.top_k:
+            mapping_tasks.TOP_K = args.top_k
         if args.candidates == "jev":
             # 实验：用 Jev 打分（evals/jev.py 的缓存）替换预筛排序，其余流程不变。
             from evals.jev import score
@@ -366,6 +369,7 @@ def main() -> None:
     parser.add_argument("--retries", type=int)
     parser.add_argument("--embed-controls", action="store_true", default=True)
     parser.add_argument("--candidates", choices=["hybrid", "jev"], default="hybrid")
+    parser.add_argument("--top-k", type=int, help="映射候选数（默认用 TOP_K）；B1 比较 20 与 40")
     args = parser.parse_args()
 
     if args.suite == "prefilter":
@@ -375,7 +379,8 @@ def main() -> None:
     else:
         report = asyncio.run(run_extraction_eval(args))
     report = {"suite": args.suite, "label": args.label, "chat_model": CHAT_MODEL,
-              "embed_model": EMBED_MODEL, "max_tokens": MAX_TOKENS, **report}
+              "embed_model": EMBED_MODEL, "max_tokens": MAX_TOKENS,
+              **({"top_k": args.top_k} if args.top_k else {}), **report}
     RESULTS.mkdir(exist_ok=True)
     out = RESULTS / f"{args.suite}-{args.label}.json"
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
