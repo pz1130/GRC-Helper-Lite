@@ -1,7 +1,7 @@
 """RCSA 接口的请求与响应结构。请求一律拒绝多余字段。"""
 
 from datetime import date, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -195,3 +195,125 @@ class ItemOut(_Out):
     current_response_id: int | None
     provider_type: str
     version: int
+
+
+# ── 响应（answer v1）────────────────────────────────────────
+
+Effectiveness = Literal["effective", "partially_effective", "ineffective", "not_assessed"]
+TestStatus = Literal["provided", "not_provided", "not_applicable"]
+
+
+class Rating(_In):
+    """设计有效性与运行有效性分开评，各带理由；缺证据不等于有效。"""
+
+    rating: Effectiveness | None = None
+    rationale: Text = ""
+
+
+class Followup(_In):
+    owner_id: Id
+    due_at: date
+    description: Annotated[str, Field(min_length=1, max_length=2000)]
+
+
+class AnswerV1(_In):
+    """`rcsa_responses.answer` 的第 1 版结构（answer_schema = 1）。
+
+    草稿可以不完整；完整性在提交时检查，缺什么以 problem code 列出。
+    """
+
+    design: Rating = Rating()
+    operating: Rating = Rating()
+    assessment_period_start: date | None = None
+    assessment_period_end: date | None = None
+    limitations: Text = ""
+    independent_test_status: TestStatus | None = None
+    independent_test_reason: Text = ""
+    not_assessed_reason: Text = ""
+    evidence_followup: Followup | None = None
+    no_risk_rationale: Text = ""
+    evidence_limitations_acknowledged: bool = False
+
+
+class AnswerIn(_In):
+    answer: AnswerV1
+    expected_version: Version
+
+
+class EvidenceIn(_In):
+    evidence_item_id: Id | None = None
+    external_location: Annotated[str, Field(max_length=2000)] | None = None
+    purpose: Literal["self_assessment", "independent_test"]
+    # 外部引用自己报的日期（有就参与有效期检查）与用途/期间覆盖说明。
+    collected_at: date | None = None
+    valid_until: date | None = None
+    coverage_note: Annotated[str, Field(max_length=2000)] = ""
+    tester_user_id: Id | None = None
+    tester_name: Annotated[str, Field(max_length=200)] | None = None
+    tested_at: date | None = None
+    test_scope: Annotated[str, Field(max_length=5000)] = ""
+    conclusion: Annotated[str, Field(max_length=5000)] = ""
+    independence_basis: Annotated[str, Field(max_length=5000)] = ""
+
+    @model_validator(mode="after")
+    def reference_and_test_fields(self) -> "EvidenceIn":
+        if self.evidence_item_id is None and not (self.external_location or "").strip():
+            raise ValueError("give a registered evidence item or an external location")
+        if self.purpose == "independent_test" and not (
+            (self.tester_user_id or (self.tester_name or "").strip())
+            and self.tested_at and self.test_scope and self.conclusion and self.independence_basis
+        ):
+            raise ValueError(
+                "an independent test needs a tester, test date, scope, conclusion and independence basis"
+            )
+        return self
+
+
+class EvidenceOut(_Out):
+    id: int
+    response_id: int
+    evidence_item_id: int | None
+    external_location: str | None
+    purpose: str
+    snapshot: dict[str, Any]
+    tester_user_id: int | None
+    tester_name: str | None
+    tested_at: date | None
+    test_scope: str
+    conclusion: str
+    independence_basis: str
+    created_at: datetime
+
+
+class ResponseOut(_Out):
+    id: int
+    item_id: int
+    revision: int
+    status: str
+    answer_schema: int
+    answer: dict[str, Any]
+    risk_snapshot: list[dict[str, Any]] | None
+    submitted_by: int | None
+    submitted_at: datetime | None
+    version: int
+    evidence: list[EvidenceOut] = []
+
+
+class ReviewIn(_In):
+    decision: Literal["approve", "return"]
+    reason: Annotated[str, Field(max_length=5000)] = ""
+    expected_version: Version
+
+
+class ReviewOut(_Out):
+    id: int
+    response_id: int | None
+    item_id: int | None
+    item_risk_id: int | None
+    action_id: int | None
+    trigger_id: int | None
+    decision: str
+    target_version: int
+    reviewer_id: int
+    reason: str
+    at: datetime

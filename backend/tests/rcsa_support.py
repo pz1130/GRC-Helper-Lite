@@ -121,3 +121,94 @@ CAMPAIGN_BODY = {
     "due_at": "2026-04-30",
     "timezone": "UTC",
 }
+
+
+async def acme_world(client: AsyncClient, db_session: AsyncSession, controls: int = 3) -> dict:
+    """负责人、复核人、作答人、只读者，一个已映射的框架和一份已批准的评分档案。"""
+    lead = await person(client, db_session, "lead", Role.GRC_LEAD)
+    reviewer = await person(client, db_session, "reviewer", Role.GRC_LEAD)
+    assignee = await person(client, db_session, "assignee", Role.CONTRIBUTOR)
+    viewer = await person(client, db_session, "viewer", Role.VIEWER)
+    lib = await library(db_session, owner=assignee.user, controls=controls)
+    profile = await approved_profile(db_session, lead.user)
+    return {
+        "lead": lead, "reviewer": reviewer, "assignee": assignee, "viewer": viewer,
+        "lib": lib, "profile": profile,
+    }
+
+
+async def activated(client: AsyncClient, world: dict, controls: int = 1) -> tuple[dict, list[dict]]:
+    """一个已激活的活动：前 n 个控制点，作答人是控制 owner，复核人是 reviewer。"""
+    body = CAMPAIGN_BODY | {"framework_id": world["lib"].framework.id, "profile_id": world["profile"].id}
+    campaign = (await client.post("/api/rcsa/campaigns", json=body, headers=world["lead"].headers)).json()
+    items = await client.post(
+        f"/api/rcsa/campaigns/{campaign['id']}/items",
+        json={
+            "control_ids": [c.id for c in world["lib"].controls[:controls]],
+            "reviewer_id": world["reviewer"].id,
+        },
+        headers=world["lead"].headers,
+    )
+    assert items.status_code == 201, items.text
+    active = await client.post(
+        f"/api/rcsa/campaigns/{campaign['id']}/activate",
+        json={"expected_version": campaign["version"]},
+        headers=with_key(world["lead"], f"activate-{campaign['id']}"),
+    )
+    assert active.status_code == 200, active.text
+    listing = await client.get(f"/api/rcsa/campaigns/{campaign['id']}/items", headers=world["lead"].headers)
+    return active.json(), listing.json()
+
+
+COMPLETE_ANSWER = {
+    "design": {"rating": "effective", "rationale": "Every privileged account is in the review list"},
+    "operating": {"rating": "partially_effective", "rationale": "Two reviews closed late"},
+    "assessment_period_start": "2026-01-01",
+    "assessment_period_end": "2026-03-31",
+    "limitations": "",
+    "independent_test_status": "not_provided",
+    "independent_test_reason": "No internal audit coverage this quarter",
+    "no_risk_rationale": "Residual exposure is within the accepted baseline",
+}
+
+
+async def draft(client: AsyncClient, who: Person, item: dict) -> dict:
+    created = await client.post(
+        f"/api/rcsa/items/{item['id']}/responses",
+        json={"expected_version": item["version"]}, headers=who.headers,
+    )
+    assert created.status_code == 201, created.text
+    return created.json()
+
+
+async def save(client: AsyncClient, who: Person, response: dict, answer: dict) -> dict:
+    saved = await client.patch(
+        f"/api/rcsa/responses/{response['id']}",
+        json={"answer": answer, "expected_version": response["version"]}, headers=who.headers,
+    )
+    assert saved.status_code == 200, saved.text
+    return saved.json()
+
+
+async def submit(client: AsyncClient, who: Person, response: dict, key: str = "submit-1"):
+    return await client.post(
+        f"/api/rcsa/responses/{response['id']}/submit",
+        json={"expected_version": response["version"]}, headers=with_key(who, key),
+    )
+
+
+async def submitted(client: AsyncClient, world: dict, item: dict, answer: dict | None = None) -> dict:
+    response = await save(client, world["assignee"], await draft(client, world["assignee"], item),
+                          answer or COMPLETE_ANSWER)
+    done = await submit(client, world["assignee"], response, key=f"submit-{response['id']}")
+    assert done.status_code == 200, done.text
+    return done.json()
+
+
+async def review(client: AsyncClient, who: Person, response: dict, decision: str, reason: str = "",
+                 key: str | None = None):
+    return await client.post(
+        f"/api/rcsa/responses/{response['id']}/review",
+        json={"decision": decision, "reason": reason, "expected_version": response["version"]},
+        headers=with_key(who, key or f"review-{response['id']}-{decision}"),
+    )

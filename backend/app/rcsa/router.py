@@ -7,20 +7,43 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_session
-from app.rcsa import campaigns
-from app.rcsa.access import ClientKey, Manager, Reader, fetch, module_enabled
-from app.rcsa.models import CampaignStatus, RcsaCampaign, RcsaItem, RcsaScoringProfile
+from app.rcsa import campaigns, responses
+from app.rcsa.access import (
+    ClientKey,
+    Manager,
+    Reader,
+    Responder,
+    ReviewerUser,
+    fetch,
+    module_enabled,
+)
+from app.rcsa.models import (
+    CampaignStatus,
+    RcsaCampaign,
+    RcsaItem,
+    RcsaResponse,
+    RcsaResponseEvidence,
+    RcsaReview,
+    RcsaScoringProfile,
+)
 from app.rcsa.schemas import (
+    AnswerIn,
     AssignIn,
     CampaignCreateIn,
     CampaignOut,
     CampaignUpdateIn,
+    EvidenceIn,
+    EvidenceOut,
     ItemOut,
     ItemsAddIn,
     Page,
     ProfileCreateIn,
     ProfileOut,
     ProfileUpdateIn,
+    ReasonIn,
+    ResponseOut,
+    ReviewIn,
+    ReviewOut,
     ScopeRow,
     VersionIn,
 )
@@ -170,3 +193,82 @@ async def assign_item(item_id: RowId, payload: AssignIn, actor: Manager, session
     item = await campaigns.assign(session, item_id, payload, actor)
     await session.commit()
     return item
+
+
+# ── 作答与复核 ──────────────────────────────────────────────
+
+
+@router.get("/items/{item_id}/responses", response_model=list[ResponseOut])
+async def item_responses(item_id: RowId, actor: Reader, session: Session) -> list[ResponseOut]:
+    return [await responses.response_out(session, row) for row in await responses.history(session, item_id)]
+
+
+@router.post("/items/{item_id}/responses", response_model=ResponseOut, status_code=status.HTTP_201_CREATED)
+async def open_draft(item_id: RowId, payload: VersionIn, actor: Responder, session: Session) -> ResponseOut:
+    response = await responses.open_draft(session, item_id, payload.expected_version, actor)
+    await session.commit()
+    return await responses.response_out(session, response)
+
+
+@router.get("/items/{item_id}/reviews", response_model=list[ReviewOut])
+async def item_reviews(item_id: RowId, actor: Reader, session: Session) -> list[RcsaReview]:
+    return await responses.item_reviews(session, item_id)
+
+
+@router.post("/items/{item_id}/exclude", response_model=ItemOut)
+async def exclude_item(
+    item_id: RowId, payload: ReasonIn, actor: ReviewerUser, key: ClientKey, session: Session
+) -> RcsaItem:
+    item = await responses.exclude(session, item_id, payload.reason, payload.expected_version, actor, key)
+    await session.commit()
+    return item
+
+
+@router.get("/responses/{response_id}", response_model=ResponseOut)
+async def get_response(response_id: RowId, actor: Reader, session: Session) -> ResponseOut:
+    response = await fetch(session, RcsaResponse, response_id, code="rcsa.response_not_found")
+    return await responses.response_out(session, response)
+
+
+@router.patch("/responses/{response_id}", response_model=ResponseOut)
+async def save_answer(response_id: RowId, payload: AnswerIn, actor: Responder, session: Session) -> ResponseOut:
+    response = await responses.save_answer(session, response_id, payload.answer, payload.expected_version, actor)
+    await session.commit()
+    return await responses.response_out(session, response)
+
+
+@router.post(
+    "/responses/{response_id}/evidence", response_model=EvidenceOut, status_code=status.HTTP_201_CREATED
+)
+async def attach_evidence(
+    response_id: RowId, payload: EvidenceIn, actor: Responder, session: Session
+) -> RcsaResponseEvidence:
+    row = await responses.attach_evidence(session, response_id, payload, actor)
+    await session.commit()
+    return row
+
+
+@router.delete("/responses/{response_id}/evidence/{evidence_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def detach_evidence(
+    response_id: RowId, evidence_id: RowId, actor: Responder, session: Session
+) -> None:
+    await responses.detach_evidence(session, response_id, evidence_id, actor)
+    await session.commit()
+
+
+@router.post("/responses/{response_id}/submit", response_model=ResponseOut)
+async def submit_response(
+    response_id: RowId, payload: VersionIn, actor: Responder, key: ClientKey, session: Session
+) -> ResponseOut:
+    response = await responses.submit(session, response_id, payload.expected_version, actor, key)
+    await session.commit()
+    return await responses.response_out(session, response)
+
+
+@router.post("/responses/{response_id}/review", response_model=ResponseOut)
+async def review_response(
+    response_id: RowId, payload: ReviewIn, actor: ReviewerUser, key: ClientKey, session: Session
+) -> ResponseOut:
+    response = await responses.review(session, response_id, payload, actor, key)
+    await session.commit()
+    return await responses.response_out(session, response)
