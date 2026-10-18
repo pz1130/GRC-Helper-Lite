@@ -196,6 +196,7 @@ async def test_accepting_the_same_control_twice_reuses_it(db_session):
 
 def test_only_materialize_writes_the_control_table():
     """铁律 2：Control 与 Mapping 只能由 review.materialize 写入。"""
+    import re
     from pathlib import Path
 
     root = Path("backend/app") if Path("backend/app").is_dir() else Path("app")
@@ -211,7 +212,8 @@ def test_only_materialize_writes_the_control_table():
         if path in allowed:
             continue
         source = path.read_text(encoding="utf-8")
-        if any(name + "(" in source for name in ("Control", "ControlSource", "ControlRelation", "Mapping")):
+        # 按整词匹配：RcsaTriggerControl( 之类以这些名字结尾的类不是在写正式表。
+        if re.search(r"\b(Control|ControlSource|ControlRelation|Mapping)\(", source):
             offenders.append(str(path))
     assert not offenders, f"这些模块绕开了确认队列直接写正式表：{offenders}"
 
