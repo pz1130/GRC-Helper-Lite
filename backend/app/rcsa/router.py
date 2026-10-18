@@ -7,31 +7,40 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_session
-from app.rcsa import campaigns, responses
+from app.rcsa import campaigns, responses, risks
 from app.rcsa.access import (
+    ActionUpdater,
     ClientKey,
     Manager,
     Reader,
     Responder,
     ReviewerUser,
+    RiskApprover,
     fetch,
     module_enabled,
 )
 from app.rcsa.models import (
     CampaignStatus,
+    RcsaAction,
     RcsaCampaign,
     RcsaItem,
+    RcsaItemRisk,
     RcsaResponse,
     RcsaResponseEvidence,
     RcsaReview,
     RcsaScoringProfile,
 )
 from app.rcsa.schemas import (
+    ActionIn,
+    ActionOut,
+    ActionUpdateIn,
     AnswerIn,
     AssignIn,
     CampaignCreateIn,
     CampaignOut,
     CampaignUpdateIn,
+    DispositionIn,
+    DispositionReviewIn,
     EvidenceIn,
     EvidenceOut,
     ItemOut,
@@ -40,11 +49,17 @@ from app.rcsa.schemas import (
     ProfileCreateIn,
     ProfileOut,
     ProfileUpdateIn,
+    PublishIn,
     ReasonIn,
     ResponseOut,
     ReviewIn,
     ReviewOut,
+    RiskIn,
+    RiskOut,
+    RiskOwnerIn,
+    RiskUpdateIn,
     ScopeRow,
+    VerifyIn,
     VersionIn,
 )
 
@@ -272,3 +287,111 @@ async def review_response(
     response = await responses.review(session, response_id, payload, actor, key)
     await session.commit()
     return await responses.response_out(session, response)
+
+
+# ── 风险、处置与行动 ────────────────────────────────────────
+
+
+@router.get("/items/{item_id}/risks", response_model=list[RiskOut])
+async def item_risks(item_id: RowId, actor: Reader, session: Session) -> list[RcsaItemRisk]:
+    return await risks.list_risks(session, item_id)
+
+
+@router.post("/items/{item_id}/risks", response_model=RiskOut, status_code=status.HTTP_201_CREATED)
+async def add_risk(item_id: RowId, payload: RiskIn, actor: Responder, session: Session) -> RcsaItemRisk:
+    risk = await risks.add_risk(session, item_id, payload, actor)
+    await session.commit()
+    return risk
+
+
+@router.patch("/item-risks/{risk_id}", response_model=RiskOut)
+async def update_risk(risk_id: RowId, payload: RiskUpdateIn, actor: Responder, session: Session) -> RcsaItemRisk:
+    risk = await risks.update_risk(session, risk_id, payload, actor)
+    await session.commit()
+    return risk
+
+
+@router.delete("/item-risks/{risk_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_risk(risk_id: RowId, actor: Responder, session: Session) -> None:
+    await risks.remove_risk(session, risk_id, actor)
+    await session.commit()
+
+
+@router.patch("/item-risks/{risk_id}/owner", response_model=RiskOut)
+async def reassign_risk_owner(
+    risk_id: RowId, payload: RiskOwnerIn, actor: Manager, session: Session
+) -> RcsaItemRisk:
+    risk = await risks.reassign_risk_owner(session, risk_id, payload.owner_id, payload.expected_version, actor)
+    await session.commit()
+    return risk
+
+
+@router.post("/item-risks/{risk_id}/disposition", response_model=RiskOut)
+async def propose_disposition(
+    risk_id: RowId, payload: DispositionIn, actor: Responder, session: Session
+) -> RcsaItemRisk:
+    risk = await risks.propose(session, risk_id, payload, actor)
+    await session.commit()
+    return risk
+
+
+@router.post("/item-risks/{risk_id}/review-disposition", response_model=RiskOut)
+async def review_disposition(
+    risk_id: RowId, payload: DispositionReviewIn, actor: RiskApprover, key: ClientKey, session: Session
+) -> RcsaItemRisk:
+    risk = await risks.review_disposition(session, risk_id, payload, actor, key)
+    await session.commit()
+    return risk
+
+
+@router.get("/item-risks/{risk_id}/reviews", response_model=list[ReviewOut])
+async def risk_reviews(risk_id: RowId, actor: Reader, session: Session) -> list[RcsaReview]:
+    return await risks.risk_reviews(session, risk_id)
+
+
+@router.post("/item-risks/{risk_id}/publish", response_model=RiskOut)
+async def publish_risk(
+    risk_id: RowId, payload: PublishIn, actor: Manager, key: ClientKey, session: Session
+) -> RcsaItemRisk:
+    risk = await risks.publish(session, risk_id, payload, actor, key)
+    await session.commit()
+    return risk
+
+
+@router.get("/item-risks/{risk_id}/actions", response_model=list[ActionOut])
+async def risk_actions(risk_id: RowId, actor: Reader, session: Session) -> list[RcsaAction]:
+    return await risks.list_actions(session, risk_id)
+
+
+@router.post("/item-risks/{risk_id}/actions", response_model=ActionOut, status_code=status.HTTP_201_CREATED)
+async def add_action(risk_id: RowId, payload: ActionIn, actor: Responder, session: Session) -> RcsaAction:
+    action = await risks.add_action(session, risk_id, payload, actor)
+    await session.commit()
+    return action
+
+
+@router.patch("/actions/{action_id}", response_model=ActionOut)
+async def update_action(
+    action_id: RowId, payload: ActionUpdateIn, actor: ActionUpdater, session: Session
+) -> RcsaAction:
+    action = await risks.update_action(session, action_id, payload, actor)
+    await session.commit()
+    return action
+
+
+@router.post("/actions/{action_id}/verify", response_model=ActionOut)
+async def verify_action(
+    action_id: RowId, payload: VerifyIn, actor: ReviewerUser, key: ClientKey, session: Session
+) -> RcsaAction:
+    action = await risks.verify(session, action_id, payload, actor, key)
+    await session.commit()
+    return action
+
+
+@router.post("/actions/{action_id}/cancel", response_model=ActionOut)
+async def cancel_action(
+    action_id: RowId, payload: ReasonIn, actor: ReviewerUser, session: Session
+) -> RcsaAction:
+    action = await risks.cancel_action(session, action_id, payload.reason, payload.expected_version, actor)
+    await session.commit()
+    return action

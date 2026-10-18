@@ -317,3 +317,155 @@ class ReviewOut(_Out):
     reviewer_id: int
     reason: str
     at: datetime
+
+
+# ── 风险情景、处置与行动 ────────────────────────────────────
+
+Score = Annotated[int, Field(strict=True, ge=1, le=5)]
+Slug = Annotated[str, Field(min_length=1, max_length=64, pattern=r"^[a-z0-9][a-z0-9._-]*$")]
+Required = Annotated[str, Field(min_length=1, max_length=5000)]
+
+
+class RiskIn(_In):
+    scenario_key: Slug
+    cause: Required
+    event: Required
+    impact: Required
+    inherent_likelihood: Score
+    inherent_impact: Score
+    inherent_rationale: Text = ""
+    residual_likelihood: Score | None = None
+    residual_impact: Score | None = None
+    residual_rationale: Text = ""
+    owner_id: Id
+
+    @model_validator(mode="after")
+    def residual_is_a_pair(self) -> "RiskIn":
+        if (self.residual_likelihood is None) != (self.residual_impact is None):
+            raise ValueError("residual likelihood and residual impact must be given together")
+        return self
+
+
+class RiskUpdateIn(_In):
+    cause: Required | None = None
+    event: Required | None = None
+    impact: Required | None = None
+    inherent_likelihood: Score | None = None
+    inherent_impact: Score | None = None
+    inherent_rationale: Text | None = None
+    residual_likelihood: Score | None = None
+    residual_impact: Score | None = None
+    residual_rationale: Text | None = None
+    expected_version: Version
+
+    @model_validator(mode="after")
+    def residual_is_a_pair(self) -> "RiskUpdateIn":
+        given = self.model_fields_set
+        if ("residual_likelihood" in given) != ("residual_impact" in given):
+            raise ValueError("residual likelihood and residual impact must be changed together")
+        return self
+
+
+class RiskOwnerIn(_In):
+    owner_id: Id
+    expected_version: Version
+
+
+class DispositionIn(_In):
+    disposition: Literal["accept", "reduce", "transfer", "avoid", "terminate"]
+    details: dict[str, Any] = {}
+    accept_until: date | None = None
+    reassess_at: date | None = None
+    expected_version: Version
+
+
+class DispositionReviewIn(_In):
+    decision: Literal["approve", "return"]
+    reason: Annotated[str, Field(max_length=5000)] = ""
+    expected_version: Version
+
+
+class PublishIn(_In):
+    mode: Literal["create", "link"]
+    register_risk_id: Id | None = None
+    expected_version: Version
+
+
+class RiskOut(_Out):
+    id: int
+    item_id: int
+    scenario_key: str
+    register_risk_id: int | None
+    cause: str
+    event: str
+    impact: str
+    inherent_likelihood: int
+    inherent_impact: int
+    inherent_score: int
+    inherent_rationale: str
+    residual_likelihood: int | None
+    residual_impact: int | None
+    residual_score: int | None
+    residual_rationale: str
+    owner_id: int
+    disposition: str | None
+    disposition_status: str
+    disposition_revision: int
+    disposition_proposed_by: int | None
+    disposition_proposed_at: datetime | None
+    accept_until: date | None
+    reassess_at: date | None
+    disposition_details: dict[str, Any]
+    version: int
+
+
+class ImplementationEvidence(_In):
+    description: Annotated[str, Field(min_length=1, max_length=2000)]
+    location: Annotated[str, Field(max_length=2000)] = ""
+
+
+class ActionIn(_In):
+    title: Annotated[str, Field(min_length=1, max_length=300)]
+    root_cause: Text = ""
+    measure: Text = ""
+    owner_id: Id
+    verifier_id: Id
+    due_at: date
+    success_criteria: Required
+
+
+class ActionUpdateIn(_In):
+    """负责人更新进度；改负责人、验证人或期限要 RCSA 管理权限并写明理由。"""
+
+    status: Literal["open", "in_progress", "pending_verification"] | None = None
+    implementation_evidence: Annotated[list[ImplementationEvidence], Field(max_length=50)] | None = None
+    root_cause: Text | None = None
+    measure: Text | None = None
+    owner_id: Id | None = None
+    verifier_id: Id | None = None
+    due_at: date | None = None
+    reason: Annotated[str, Field(max_length=5000)] = ""
+    expected_version: Version
+
+
+class VerifyIn(_In):
+    decision: Literal["pass", "fail"]
+    result: Required
+    expected_version: Version
+
+
+class ActionOut(_Out):
+    id: int
+    item_risk_id: int
+    title: str
+    root_cause: str
+    measure: str
+    owner_id: int
+    verifier_id: int
+    due_at: date
+    success_criteria: str
+    status: str
+    implementation_evidence: list[dict[str, Any]]
+    verification_result: str
+    verified_at: datetime | None
+    version: int

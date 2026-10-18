@@ -81,13 +81,15 @@ async def item_reviews(session: AsyncSession, item_id: int) -> list[RcsaReview]:
 # ── 锁与身份 ────────────────────────────────────────────────
 
 
-async def _locked_item(session: AsyncSession, item_id: int) -> tuple[RcsaCampaign, RcsaItem]:
-    """子项写入：活动 FOR SHARE、评估项 FOR UPDATE，并要求活动在 active。"""
+async def locked_item(
+    session: AsyncSession, item_id: int, allowed: tuple[CampaignStatus, ...] = (CampaignStatus.ACTIVE,)
+) -> tuple[RcsaCampaign, RcsaItem]:
+    """子项写入：活动 FOR SHARE、评估项 FOR UPDATE，并要求活动处在允许的状态。"""
     item = await fetch(session, RcsaItem, item_id, code="rcsa.item_not_found")
     campaign = await lock(session, RcsaCampaign, item.campaign_id, code="rcsa.campaign_not_found", share=True)
-    if campaign.status != CampaignStatus.ACTIVE:
+    if campaign.status not in allowed:
         raise Conflict(
-            "活动当前状态不允许作答或复核",
+            "活动当前状态不允许这个操作",
             code="rcsa.campaign_state",
             params={"status": str(campaign.status)},
         )
@@ -99,12 +101,12 @@ async def _locked_response(
     session: AsyncSession, response_id: int
 ) -> tuple[RcsaCampaign, RcsaItem, RcsaResponse]:
     response = await fetch(session, RcsaResponse, response_id, code="rcsa.response_not_found")
-    campaign, item = await _locked_item(session, response.item_id)
+    campaign, item = await locked_item(session, response.item_id)
     response = await lock(session, RcsaResponse, response_id, code="rcsa.response_not_found")
     return campaign, item, response
 
 
-def _require_assignee(item: RcsaItem, actor: User) -> None:
+def require_assignee(item: RcsaItem, actor: User) -> None:
     if item.assignee_id != actor.id:
         raise Forbidden("只有指派的作答人能作答", code="rcsa.not_assignee")
 
@@ -123,13 +125,21 @@ def _require_draft(response: RcsaResponse) -> None:
 
 
 async def open_draft(session: AsyncSession, item_id: int, expected_version: int, actor: User) -> RcsaResponse:
-    _, item = await _locked_item(session, item_id)
-    _require_assignee(item, actor)
+    _, item = await locked_item(session, item_id)
+    require_assignee(item, actor)
     check_version(item, expected_version)
     if item.status == ItemStatus.DRAFT:
         raise Conflict("这个评估项已经有一份草稿", code="rcsa.draft_exists")
     if item.status not in (ItemStatus.PENDING, ItemStatus.RETURNED):
         raise Conflict("评估项当前状态不能新建草稿", code="rcsa.item_state", params={"status": str(item.status)})
+    response = await new_revision(session, item, actor)
+    await audit(session, actor, "response_open", "RcsaResponse", response.id,
+                {"item_id": item.id, "revision": response.revision})
+    return response
+
+
+async def new_revision(session: AsyncSession, item: RcsaItem, actor: User) -> RcsaResponse:
+    """在评估项上开下一版草稿。调用方已锁住评估项并检查过状态。"""
     previous = await session.scalar(
         select(RcsaResponse).where(RcsaResponse.item_id == item.id).order_by(RcsaResponse.revision.desc()).limit(1)
     )
@@ -156,8 +166,6 @@ async def open_draft(session: AsyncSession, item_id: int, expected_version: int,
     item.status = ItemStatus.DRAFT
     bump(item, actor)
     await session.flush()
-    await audit(session, actor, "response_open", "RcsaResponse", response.id,
-                {"item_id": item.id, "revision": response.revision})
     return response
 
 
@@ -176,7 +184,7 @@ async def save_answer(
     session: AsyncSession, response_id: int, answer: AnswerV1, expected_version: int, actor: User
 ) -> RcsaResponse:
     _, item, response = await _locked_response(session, response_id)
-    _require_assignee(item, actor)
+    require_assignee(item, actor)
     _require_draft(response)
     check_version(response, expected_version)
     response.answer = answer.model_dump(mode="json")
@@ -206,7 +214,7 @@ async def attach_evidence(
     session: AsyncSession, response_id: int, payload: EvidenceIn, actor: User
 ) -> RcsaResponseEvidence:
     _, item, response = await _locked_response(session, response_id)
-    _require_assignee(item, actor)
+    require_assignee(item, actor)
     _require_draft(response)
     if payload.external_location and _carries_credentials(payload.external_location):
         raise AppError(
@@ -271,7 +279,7 @@ async def _registered_snapshot(session: AsyncSession, evidence: EvidenceItem) ->
 
 async def detach_evidence(session: AsyncSession, response_id: int, evidence_id: int, actor: User) -> None:
     _, item, response = await _locked_response(session, response_id)
-    _require_assignee(item, actor)
+    require_assignee(item, actor)
     _require_draft(response)
     row = await session.get(RcsaResponseEvidence, evidence_id)
     if row is None or row.response_id != response.id:
@@ -365,7 +373,7 @@ async def submit(
                       {"expected_version": expected_version})
     if await command.replay(session) is not None:
         return response
-    _require_assignee(item, actor)
+    require_assignee(item, actor)
     _require_draft(response)
     check_version(response, expected_version)
     evidence = list(
@@ -440,7 +448,7 @@ async def review(
 async def exclude(
     session: AsyncSession, item_id: int, reason: str, expected_version: int, actor: User, client_key: str
 ) -> RcsaItem:
-    _, item = await _locked_item(session, item_id)
+    _, item = await locked_item(session, item_id)
     command = Command(actor, "exclude", "RcsaItem", item.id, client_key,
                       {"reason": reason, "expected_version": expected_version})
     if await command.replay(session) is not None:
