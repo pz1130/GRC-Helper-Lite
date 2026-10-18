@@ -256,6 +256,72 @@ that provider (KNOWN_ISSUES K17).
 
 ---
 
+## Risk and control self-assessment (RCSA, off by default)
+
+RCSA lets internal IT staff assess confirmed controls against a framework: freeze a scope, answer
+design and operating effectiveness with evidence references, have someone else review each
+answer, decide what to do about each risk scenario, track remediation until a different person
+verifies it, and close the period with a fixed report. It is a manual workflow; no model is
+called anywhere in it.
+
+**Turning it on.** Set `RCSA_ENABLED=true` in `.env` and restart the API. While it is off, every
+`/api/rcsa` route except `/api/rcsa/status` answers 404 and the navigation shows no RCSA entry.
+Audit-scoped accounts are always refused. Turn it on in production only after the release
+checks below have passed on that build and the pilot has been agreed (KNOWN_ISSUES G7).
+
+**Before the first campaign.**
+
+```bash
+make prod-seed-rcsa-profile   # loads an unapproved default 5x5 scoring profile; safe to repeat
+```
+
+The seeded labels and band thresholds are product suggestions, not a regulatory standard or your
+risk appetite. A GRC lead or admin fills in the assessment horizon, the criteria for each
+likelihood and impact level, the impact dimensions and gap-free bands under RCSA → Scoring
+profiles, then approves it. Only an approved profile can be used to activate a campaign, and an
+approved profile can no longer change: a change in method is a new revision, and campaigns
+scored with different revisions are never compared as if they were the same.
+
+You need at least two people with the GRC lead or admin role: reviewers cannot review answers they
+submitted, and whoever proposes a risk disposition cannot approve it. Admins get no exception.
+
+**Deploying and rolling back.** Follow *Upgrading* (back up, upgrade, migrate). Migration `0034`
+adds the RCSA tables; the module stays off until you enable it. Rolling back:
+
+- If no RCSA data has been written yet, `alembic downgrade 0033` removes the tables. The seeded
+  scoring profile counts as data, so seed it only when you mean to keep the module.
+- Once any RCSA record exists, the downgrade refuses to run rather than drop it. Set
+  `RCSA_ENABLED=false` to take the module out of use and fix forward. Restoring an earlier backup
+  loses everything written after that backup, so plan how to re-enter it before you choose that.
+
+**Backups.** The RCSA tables are ordinary tables in the database dump, and the restore drill's
+row counts include them. Before a release, also run:
+
+```bash
+make rcsa-restore-check
+```
+
+It drives a synthetic campaign to closed in a scratch database, backs it up with `pg_dump`,
+restores it into a second scratch database with `psql`, and compares scoring revisions, response
+revisions, RCSA audit events, trigger links, register links, the closed snapshot and report, and
+the freeze triggers. It also checks that the restored copy still refuses to edit a closed
+campaign. It uses only the dev stack's db container, and drops both scratch databases when it
+finishes.
+
+**Capacity.** The report, campaign, item list, campaign list and my-work endpoints run the same
+number of SQL queries whatever the number of items (`backend/tests/test_rcsa_scaling.py`).
+No throughput or latency target has been measured at your size; agree the expected volume
+(controls per campaign, concurrent assessors) and measure on a copy before relying on it
+(KNOWN_ISSUES K22).
+
+**Not in this release.** AI prefill and evidence ranking (K20), loss events and KRIs, third-party
+assessments (only internally performed controls can be activated), e-mail notifications (the
+work list is computed when you open it), and automatic detection of changes or incidents
+(triggers are registered by hand). A self-assessment record is not proof that a control works or
+that remediation is complete, and the module makes no regulatory compliance claim (K23).
+
+---
+
 ## Master key
 
 `APP_SECRET_KEY` is a Fernet key. It encrypts every AI provider API key stored in the database.
