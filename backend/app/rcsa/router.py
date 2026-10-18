@@ -7,7 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_session
-from app.rcsa import campaigns, responses, risks
+from app.errors import NotFound
+from app.rcsa import campaigns, closing, responses, risks, triggers, work
 from app.rcsa.access import (
     ActionUpdater,
     ClientKey,
@@ -29,6 +30,8 @@ from app.rcsa.models import (
     RcsaResponseEvidence,
     RcsaReview,
     RcsaScoringProfile,
+    RcsaTrigger,
+    TriggerStatus,
 )
 from app.rcsa.schemas import (
     ActionIn,
@@ -39,12 +42,14 @@ from app.rcsa.schemas import (
     CampaignCreateIn,
     CampaignOut,
     CampaignUpdateIn,
+    CloseIn,
     DispositionIn,
     DispositionReviewIn,
     EvidenceIn,
     EvidenceOut,
     ItemOut,
     ItemsAddIn,
+    MyWork,
     Page,
     ProfileCreateIn,
     ProfileOut,
@@ -59,6 +64,12 @@ from app.rcsa.schemas import (
     RiskOwnerIn,
     RiskUpdateIn,
     ScopeRow,
+    TriggerDecideIn,
+    TriggerIn,
+    TriggerLinkIn,
+    TriggerOut,
+    TriggerReviewIn,
+    TriggerUpdateIn,
     VerifyIn,
     VersionIn,
 )
@@ -395,3 +406,121 @@ async def cancel_action(
     action = await risks.cancel_action(session, action_id, payload.reason, payload.expected_version, actor)
     await session.commit()
     return action
+
+
+# ── 活动后半程 ──────────────────────────────────────────────
+
+
+@router.post("/campaigns/{campaign_id}/begin-review", response_model=CampaignOut)
+async def begin_review(campaign_id: RowId, payload: VersionIn, actor: Manager, session: Session) -> CampaignOut:
+    campaign = await closing.begin_review(session, campaign_id, payload.expected_version, actor)
+    await session.commit()
+    return await campaigns.campaign_out(session, campaign)
+
+
+@router.post("/campaigns/{campaign_id}/return", response_model=CampaignOut)
+async def return_campaign(campaign_id: RowId, payload: ReasonIn, actor: Manager, session: Session) -> CampaignOut:
+    campaign = await closing.return_to_active(session, campaign_id, payload.reason, payload.expected_version, actor)
+    await session.commit()
+    return await campaigns.campaign_out(session, campaign)
+
+
+@router.post("/campaigns/{campaign_id}/close", response_model=CampaignOut)
+async def close_campaign(
+    campaign_id: RowId, payload: CloseIn, actor: Manager, key: ClientKey, session: Session
+) -> CampaignOut:
+    campaign = await closing.close(session, campaign_id, payload, actor, key)
+    await session.commit()
+    return await campaigns.campaign_out(session, campaign)
+
+
+@router.post("/campaigns/{campaign_id}/cancel", response_model=CampaignOut)
+async def cancel_campaign(campaign_id: RowId, payload: ReasonIn, actor: Manager, session: Session) -> CampaignOut:
+    campaign = await closing.cancel(session, campaign_id, payload.reason, payload.expected_version, actor)
+    await session.commit()
+    return await campaigns.campaign_out(session, campaign)
+
+
+@router.get("/campaigns/{campaign_id}/closed-snapshot")
+async def closed_snapshot(campaign_id: RowId, actor: Reader, session: Session) -> dict:
+    campaign = await fetch(session, RcsaCampaign, campaign_id, code="rcsa.campaign_not_found")
+    if campaign.closed_snapshot is None:
+        raise NotFound("活动还没有关闭", code="rcsa.not_closed")
+    return campaign.closed_snapshot
+
+
+# ── 待办 ────────────────────────────────────────────────────
+
+
+@router.get("/my-work", response_model=MyWork)
+async def my_work(actor: Reader, session: Session) -> MyWork:
+    return MyWork(rows=await work.my_work(session, actor))
+
+
+# ── 触发 ────────────────────────────────────────────────────
+
+
+@router.get("/triggers", response_model=Page[TriggerOut])
+async def list_triggers(
+    actor: Reader,
+    session: Session,
+    trigger_status: Annotated[TriggerStatus | None, Query(alias="status")] = None,
+    limit: Limit = 50,
+    offset: Offset = 0,
+) -> Page[TriggerOut]:
+    rows, total = await triggers.list_triggers(session, trigger_status, limit, offset)
+    return Page(items=[await triggers.trigger_out(session, row) for row in rows], total=total)
+
+
+@router.post("/triggers", response_model=TriggerOut, status_code=status.HTTP_201_CREATED)
+async def register_trigger(payload: TriggerIn, actor: Responder, session: Session) -> TriggerOut:
+    trigger = await triggers.register(session, payload, actor)
+    await session.commit()
+    return await triggers.trigger_out(session, trigger)
+
+
+@router.get("/triggers/{trigger_id}", response_model=TriggerOut)
+async def get_trigger(trigger_id: RowId, actor: Reader, session: Session) -> TriggerOut:
+    trigger = await fetch(session, RcsaTrigger, trigger_id, code="rcsa.trigger_not_found")
+    return await triggers.trigger_out(session, trigger)
+
+
+@router.patch("/triggers/{trigger_id}", response_model=TriggerOut)
+async def update_trigger(
+    trigger_id: RowId, payload: TriggerUpdateIn, actor: Responder, session: Session
+) -> TriggerOut:
+    trigger = await triggers.update(session, trigger_id, payload, actor)
+    await session.commit()
+    return await triggers.trigger_out(session, trigger)
+
+
+@router.post("/triggers/{trigger_id}/triage", response_model=TriggerOut)
+async def triage_trigger(trigger_id: RowId, payload: VersionIn, actor: Responder, session: Session) -> TriggerOut:
+    trigger = await triggers.triage(session, trigger_id, payload.expected_version, actor)
+    await session.commit()
+    return await triggers.trigger_out(session, trigger)
+
+
+@router.post("/triggers/{trigger_id}/decide", response_model=TriggerOut)
+async def decide_trigger(
+    trigger_id: RowId, payload: TriggerDecideIn, actor: Responder, session: Session
+) -> TriggerOut:
+    trigger = await triggers.decide(session, trigger_id, payload, actor)
+    await session.commit()
+    return await triggers.trigger_out(session, trigger)
+
+
+@router.post("/triggers/{trigger_id}/review", response_model=TriggerOut)
+async def review_trigger(
+    trigger_id: RowId, payload: TriggerReviewIn, actor: ReviewerUser, session: Session
+) -> TriggerOut:
+    trigger = await triggers.review(session, trigger_id, payload, actor)
+    await session.commit()
+    return await triggers.trigger_out(session, trigger)
+
+
+@router.post("/triggers/{trigger_id}/link", response_model=TriggerOut)
+async def link_trigger(trigger_id: RowId, payload: TriggerLinkIn, actor: Responder, session: Session) -> TriggerOut:
+    trigger = await triggers.link(session, trigger_id, payload, actor)
+    await session.commit()
+    return await triggers.trigger_out(session, trigger)

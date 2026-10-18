@@ -1071,7 +1071,12 @@
         "reviewer_inactive": "The reviewer's account is deactivated",
         "reviewer_lacks_permission": "The reviewer's role cannot review RCSA assessments",
         "reviewer_missing": "No reviewer is assigned",
-        "scope_empty": "The campaign has no controls in scope"
+        "scope_empty": "The campaign has no controls in scope",
+        "acceptance_expired": "A risk acceptance has expired; renew it or choose another disposition",
+        "disposition_unapproved": "A risk scenario has no approved disposition",
+        "evidence_expired": "{{count}} approved assessments rely on evidence that has since expired; acknowledge this before closing",
+        "item_unfinished": "An item is neither approved nor excluded",
+        "overdue_unacknowledged": "{{count}} open actions are overdue; explain why the campaign closes anyway"
       },
       "campaign_not_draft": "The campaign is already active, so its scope can no longer change",
       "campaign_not_found": "Campaign not found",
@@ -1158,7 +1163,17 @@
       "risk_in_use": "This scenario has a disposition, actions or a register link and cannot be deleted",
       "risk_not_found": "Risk scenario not found",
       "scenario_exists": "A scenario with this key already exists on the item",
-      "verifier_is_owner": "The verifier cannot be the action owner"
+      "verifier_is_owner": "The verifier cannot be the action owner",
+      "close_blocked": "This campaign cannot be closed yet; resolve the listed blockers first",
+      "control_merged": "This control has been merged into another control",
+      "control_not_found": "Control not found",
+      "items_unfinished": "{{count}} items are not yet approved or excluded",
+      "not_closed": "This campaign has not been closed",
+      "not_trigger_owner": "Only the trigger owner can do this",
+      "trigger_controls_uncovered": "The campaign does not cover every affected control; give a reason for each one left out",
+      "trigger_not_found": "Trigger not found",
+      "trigger_scope_empty": "Confirm at least one affected control first",
+      "trigger_state": "This is not allowed while the trigger is {{status}}"
     },
     "evidence": {
       "constraint_violation": "The evidence record violates a database constraint",

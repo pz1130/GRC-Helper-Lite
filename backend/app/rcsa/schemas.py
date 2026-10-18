@@ -126,6 +126,8 @@ class CloseIn(_In):
     expected_version: Version
     # 有逾期未完成行动时，活动负责人必须说明为什么仍然关闭。
     overdue_acknowledgement: Annotated[str, Field(max_length=5000)] = ""
+    # 提交后才过期的证据：关闭时要明确承认这个限制。
+    evidence_acknowledgement: Annotated[str, Field(max_length=5000)] = ""
 
 
 class CampaignCounts(BaseModel):
@@ -469,3 +471,116 @@ class ActionOut(_Out):
     verification_result: str
     verified_at: datetime | None
     version: int
+
+
+# ── 触发 ────────────────────────────────────────────────────
+
+
+class TriggerIn(_In):
+    trigger_type: Literal["planned_change", "incident", "other"]
+    title: Annotated[str, Field(min_length=1, max_length=300)]
+    description: Text = ""
+    # 变更单号、事件编号之类的引用文字；服务端不会去请求它。
+    source_ref: Annotated[str, Field(min_length=1, max_length=500)]
+    occurred_at: datetime
+    planned_effective_at: datetime | None = None
+    owner_id: Id
+    decision_due_at: date
+    control_ids: Annotated[list[Id], Field(max_length=200)] = []
+
+    @model_validator(mode="after")
+    def planned_change_has_a_date(self) -> "TriggerIn":
+        if self.trigger_type == "planned_change" and self.planned_effective_at is None:
+            raise ValueError("a planned change needs its planned effective date")
+        return self
+
+
+class TriggerControlIn(_In):
+    control_id: Id
+    coverage_disposition: Literal["pending", "assess", "excluded"] = "pending"
+    coverage_reason: Annotated[str, Field(max_length=5000)] = ""
+
+
+class TriggerUpdateIn(_In):
+    title: Annotated[str, Field(min_length=1, max_length=300)] | None = None
+    description: Text | None = None
+    source_ref: Annotated[str, Field(min_length=1, max_length=500)] | None = None
+    planned_effective_at: datetime | None = None
+    owner_id: Id | None = None
+    decision_due_at: date | None = None
+    controls: Annotated[list[TriggerControlIn], Field(max_length=200)] | None = None
+    expected_version: Version
+
+
+class TriggerDecideIn(_In):
+    decision: Literal["reassess", "no_reassessment"]
+    rationale: Text = ""
+    expected_version: Version
+
+
+class TriggerExclusion(_In):
+    control_id: Id
+    reason: Annotated[str, Field(min_length=1, max_length=5000)]
+
+
+class TriggerLinkIn(_In):
+    campaign_id: Id
+    exclusions: Annotated[list[TriggerExclusion], Field(max_length=200)] = []
+    expected_version: Version
+
+
+class TriggerReviewIn(_In):
+    decision: Literal["approve", "reject"]
+    reason: Annotated[str, Field(max_length=5000)] = ""
+    expected_version: Version
+
+
+class TriggerControlOut(_Out):
+    id: int
+    control_id: int
+    control_snapshot: dict[str, Any]
+    coverage_disposition: str
+    coverage_reason: str
+
+
+class TriggerOut(_Out):
+    id: int
+    trigger_type: str
+    title: str
+    description: str
+    source_ref: str
+    occurred_at: datetime
+    planned_effective_at: datetime | None
+    owner_id: int
+    decision_due_at: date
+    status: str
+    disposition: str | None
+    proposed_by: int | None
+    proposed_at: datetime | None
+    rationale: str
+    campaign_id: int | None
+    version: int
+    controls: list[TriggerControlOut] = []
+
+
+# ── 待办 ────────────────────────────────────────────────────
+
+
+class WorkRow(BaseModel):
+    """一条待办。kind 决定 id 指向什么：评估项、风险情景、行动或触发。"""
+
+    kind: Literal[
+        "assessment", "review", "disposition", "approval", "acceptance", "action", "verification",
+        "trigger", "trigger_review",
+    ]
+    id: int
+    title: str
+    campaign_id: int | None = None
+    campaign_name: str | None = None
+    status: str
+    due_at: date | None
+    overdue: bool
+
+
+class MyWork(BaseModel):
+    rows: list[WorkRow]
