@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.rcsa.access import fetch
-from app.rcsa.closing import item_snapshot
+from app.rcsa.closing import item_snapshots
 from app.rcsa.models import (
     ActionStatus,
     CampaignStatus,
@@ -37,8 +37,10 @@ _OPEN = {ActionStatus.OPEN, ActionStatus.IN_PROGRESS, ActionStatus.PENDING_VERIF
 async def _items(session: AsyncSession, campaign: RcsaCampaign) -> list[dict[str, Any]]:
     if campaign.closed_snapshot is not None:
         return campaign.closed_snapshot["items"]
-    rows = await session.scalars(select(RcsaItem).where(RcsaItem.campaign_id == campaign.id).order_by(RcsaItem.id))
-    return [(await item_snapshot(session, row))[0] for row in rows]
+    rows = list(await session.scalars(
+        select(RcsaItem).where(RcsaItem.campaign_id == campaign.id).order_by(RcsaItem.id)
+    ))
+    return [entry for entry, _ in await item_snapshots(session, rows)]
 
 
 def _band(bands: list[dict[str, Any]], score: int | None) -> str:

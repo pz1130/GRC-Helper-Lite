@@ -137,11 +137,10 @@ async def close(
     snapshot_items = []
     blockers: list[dict[str, Any]] = []
     overdue = evidence_expired = open_actions = 0
-    for item in items:
+    for item, (entry, evidence) in zip(items, await item_snapshots(session, items, for_update=True), strict=True):
         code = (item.control_snapshot or {}).get("code")
         if item.status not in _DONE:
             blockers.append(_blocker(code="rcsa.blocked.item_unfinished", item_id=item.id, control_code=code))
-        entry, evidence = await item_snapshot(session, item, for_update=True)
         snapshot_items.append(entry)
         if item.status != ItemStatus.APPROVED:
             continue
@@ -194,58 +193,93 @@ async def close(
     return campaign
 
 
-async def item_snapshot(
-    session: AsyncSession, item: RcsaItem, *, for_update: bool = False
-) -> tuple[dict[str, Any], list[RcsaResponseEvidence]]:
-    """评估项的闭期快照，以及它当前已批准版本的证据行（关闭检查要用）。
+async def item_snapshots(
+    session: AsyncSession, items: list[RcsaItem], *, for_update: bool = False
+) -> list[tuple[dict[str, Any], list[RcsaResponseEvidence]]]:
+    """每个评估项的闭期快照，以及它当前已批准版本的证据行（关闭检查要用）。
 
-    关闭时 `for_update` 锁住风险与行动；报告现算未关闭活动时只读不锁。
+    一次把全部评估项的版本、复核、情景、行动和证据查出来再按项分组：逐项查库在几百项
+    的活动上就是几千条 SQL（test_rcsa_scaling 量的就是这个）。关闭时 `for_update` 锁住
+    情景与行动；报告现算未关闭活动时只读不锁。
     """
-    response = await session.get(RcsaResponse, item.current_response_id) if item.current_response_id else None
-    response_ids = select(RcsaResponse.id).where(RcsaResponse.item_id == item.id)
-    reviews = list(await session.scalars(
+    if not items:
+        return []
+    item_ids = [item.id for item in items]
+    response_item = dict((await session.execute(
+        select(RcsaResponse.id, RcsaResponse.item_id).where(RcsaResponse.item_id.in_(item_ids))
+    )).all())
+    current_ids = [item.current_response_id for item in items if item.current_response_id]
+    responses = {row.id: row for row in await session.scalars(
+        select(RcsaResponse).where(RcsaResponse.id.in_(current_ids))
+    )} if current_ids else {}
+    reviews: dict[int, list[RcsaReview]] = {item_id: [] for item_id in item_ids}
+    for review in await session.scalars(
         select(RcsaReview)
-        .where((RcsaReview.item_id == item.id) | RcsaReview.response_id.in_(response_ids))
+        .where(RcsaReview.item_id.in_(item_ids) | RcsaReview.response_id.in_(list(response_item) or [0]))
         .order_by(RcsaReview.id)
-    ))
-    exclusion = next((r for r in reviews if r.decision == ReviewDecision.EXCLUDE), None)
-    statement = select(RcsaItemRisk).where(RcsaItemRisk.item_id == item.id).order_by(RcsaItemRisk.id)
-    risks = list(await session.scalars(statement.with_for_update() if for_update else statement))
-    entry: dict[str, Any] = {
-        "id": item.id, "status": str(item.status), "control": item.control_snapshot,
-        "mappings": item.mapping_snapshot, "sources": item.source_snapshot,
-        "assignee_id": item.assignee_id, "reviewer_id": item.reviewer_id,
-        "response": None,
-        "exclusion": {"reason": exclusion.reason, "reviewer_id": exclusion.reviewer_id,
-                      "at": exclusion.at.isoformat()} if exclusion else None,
-        "reviews": [{"decision": str(r.decision), "target_version": r.target_version,
-                     "reviewer_id": r.reviewer_id, "reason": r.reason, "at": r.at.isoformat()} for r in reviews],
-        "risks": [await _risk_snapshot(session, risk, for_update) for risk in risks],
+    ):
+        reviews[review.item_id or response_item[review.response_id]].append(review)
+    risk_statement = select(RcsaItemRisk).where(RcsaItemRisk.item_id.in_(item_ids)).order_by(RcsaItemRisk.id)
+    risks = list(await session.scalars(risk_statement.with_for_update() if for_update else risk_statement))
+    actions: dict[int, list[RcsaAction]] = {risk.id: [] for risk in risks}
+    if risks:
+        action_statement = (
+            select(RcsaAction).where(RcsaAction.item_risk_id.in_(list(actions))).order_by(RcsaAction.id)
+        )
+        for action in await session.scalars(
+            action_statement.with_for_update() if for_update else action_statement
+        ):
+            actions[action.item_risk_id].append(action)
+    approved = {
+        item.current_response_id for item in items
+        if item.status == ItemStatus.APPROVED and item.current_response_id in responses
     }
-    evidence: list[RcsaResponseEvidence] = []
-    if response is not None and item.status == ItemStatus.APPROVED:
-        evidence = list(await session.scalars(
-            select(RcsaResponseEvidence).where(RcsaResponseEvidence.response_id == response.id)
+    evidence: dict[int, list[RcsaResponseEvidence]] = {response_id: [] for response_id in approved}
+    if approved:
+        for row in await session.scalars(
+            select(RcsaResponseEvidence)
+            .where(RcsaResponseEvidence.response_id.in_(approved))
             .order_by(RcsaResponseEvidence.id)
-        ))
-        entry["response"] = {
-            "id": response.id, "revision": response.revision, "answer_schema": response.answer_schema,
-            "answer": response.answer, "risk_snapshot": response.risk_snapshot,
-            "submitted_by": response.submitted_by, "submitted_at": _iso(response.submitted_at),
-            "evidence": [{
-                "purpose": str(row.purpose), "evidence_item_id": row.evidence_item_id,
-                "external_location": row.external_location, "snapshot": row.snapshot,
-                "tester_user_id": row.tester_user_id, "tester_name": row.tester_name,
-                "tested_at": _iso(row.tested_at), "test_scope": row.test_scope, "conclusion": row.conclusion,
-                "independence_basis": row.independence_basis,
-            } for row in evidence],
+        ):
+            evidence[row.response_id].append(row)
+
+    result = []
+    for item in items:
+        item_reviews = reviews[item.id]
+        exclusion = next((r for r in item_reviews if r.decision == ReviewDecision.EXCLUDE), None)
+        entry: dict[str, Any] = {
+            "id": item.id, "status": str(item.status), "control": item.control_snapshot,
+            "mappings": item.mapping_snapshot, "sources": item.source_snapshot,
+            "assignee_id": item.assignee_id, "reviewer_id": item.reviewer_id,
+            "response": None,
+            "exclusion": {"reason": exclusion.reason, "reviewer_id": exclusion.reviewer_id,
+                          "at": exclusion.at.isoformat()} if exclusion else None,
+            "reviews": [{"decision": str(r.decision), "target_version": r.target_version,
+                         "reviewer_id": r.reviewer_id, "reason": r.reason, "at": r.at.isoformat()}
+                        for r in item_reviews],
+            "risks": [_risk_snapshot(risk, actions[risk.id]) for risk in risks if risk.item_id == item.id],
         }
-    return entry, evidence
+        rows: list[RcsaResponseEvidence] = []
+        if item.current_response_id in approved:
+            response = responses[item.current_response_id]
+            rows = evidence[response.id]
+            entry["response"] = {
+                "id": response.id, "revision": response.revision, "answer_schema": response.answer_schema,
+                "answer": response.answer, "risk_snapshot": response.risk_snapshot,
+                "submitted_by": response.submitted_by, "submitted_at": _iso(response.submitted_at),
+                "evidence": [{
+                    "purpose": str(row.purpose), "evidence_item_id": row.evidence_item_id,
+                    "external_location": row.external_location, "snapshot": row.snapshot,
+                    "tester_user_id": row.tester_user_id, "tester_name": row.tester_name,
+                    "tested_at": _iso(row.tested_at), "test_scope": row.test_scope, "conclusion": row.conclusion,
+                    "independence_basis": row.independence_basis,
+                } for row in rows],
+            }
+        result.append((entry, rows))
+    return result
 
 
-async def _risk_snapshot(session: AsyncSession, risk: RcsaItemRisk, for_update: bool) -> dict[str, Any]:
-    statement = select(RcsaAction).where(RcsaAction.item_risk_id == risk.id).order_by(RcsaAction.id)
-    actions = list(await session.scalars(statement.with_for_update() if for_update else statement))
+def _risk_snapshot(risk: RcsaItemRisk, actions: list[RcsaAction]) -> dict[str, Any]:
     return risk_view(risk) | {
         "disposition": str(risk.disposition) if risk.disposition else None,
         "disposition_status": str(risk.disposition_status),
