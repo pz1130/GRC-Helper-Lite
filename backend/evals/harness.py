@@ -240,6 +240,17 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
             mapping_tasks.rank_candidates = jev_rank
             mapping_tasks.load_vectors = no_vectors
+        # 记下任务实际用的候选（不另算一遍——重算的口径一旦和任务不一致，「模型见过
+        # 没选」就会被误判成「预筛没给」）。Jev 实验替换过排序函数，包的是替换后的那个。
+        used: dict[int, list[int]] = {}
+        ranker = mapping_tasks.rank_candidates
+
+        def recording(*a: Any, **k: Any) -> dict[int, list[int]]:
+            out = ranker(*a, **k)
+            used.update(out)
+            return out
+
+        mapping_tasks.rank_candidates = recording
         started = time.time()
         summary = await run_mapping(session, framework.id, run_key=f"eval:{args.label}")
         await session.commit()
@@ -257,6 +268,20 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
         gold = {(csf, c) for csf, cs in expected.items() for c in cs}
         # 只在 OLIR 覆盖的子类上计分
         predicted_scored = {pair for pair in predicted if pair[0] in expected}
+        entries: dict[tuple[str, str], dict[str, str]] = {}
+        for p in proposals:
+            pair = (codes[p.payload["framework_item_id"]], metrics.base_control(ctl[p.payload["control_id"]]))
+            entries.setdefault(pair, {"strength": p.payload.get("strength", ""),
+                                      "rationale": p.payload.get("rationale", "")})
+        seen = {codes[item_id]: {metrics.base_control(ctl[cid]) for cid in cids}
+                for item_id, cids in used.items()}
+        if not used:
+            # 控制点不多于 TOP_K 时任务不预筛，模型看到的是全库
+            everything = {metrics.base_control(c) for c in ctl.values()}
+            seen = dict.fromkeys(codes.values(), everything)
+        RESULTS.mkdir(exist_ok=True)
+        (RESULTS / f"mapping-{args.label}-pairs.json").write_text(json.dumps(
+            metrics.pair_details(entries, gold, seen), ensure_ascii=False, indent=1) + "\n")
         attempted = summary["attempted_batches"]
         report = {
             "batches": summary["batches"], "attempted": attempted,

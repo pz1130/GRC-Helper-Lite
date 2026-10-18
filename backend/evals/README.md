@@ -18,7 +18,11 @@ GRC_EVAL_LLM_API_KEY=... python -m evals.harness extraction --label after [--ret
 
 - key 只从环境变量读，不写进库以外的任何地方；评估库里的 provider key 照常用 `APP_SECRET_KEY` 加密。
 - 每次运行新建独立库 `grc_eval_<suite>_<label>`（默认连 `localhost:55432`，用 `GRC_EVAL_DB_ADMIN_URL` 改）。
-- 结果写进 `evals/results/<suite>-<label>.json`。
+- 结果写进 `evals/results/<suite>-<label>.json`。映射套件另写一份逐对明细
+  `mapping-<label>-pairs.json`：`missed`（OLIR 有、模型没给，`in_candidates` 区分模型见过没选与预筛没给）
+  与 `extra`（模型给了、OLIR 没有，带强度与理由）。
+- **人工抽看（K16）**：`python -m evals.review_sheet evals/results/mapping-<label>-pairs.json out.xlsx`
+  按固定种子抽样，生成带下拉判断列的审阅表；汇总页按判断自动计数。
 - **改动前后对比**：在旧代码的工作树里跑同一个 harness，
   `cd <旧代码>/backend && PYTHONPATH=<本仓库>/backend python -m evals.harness mapping --label before`。
 
