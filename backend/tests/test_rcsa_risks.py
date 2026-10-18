@@ -362,3 +362,20 @@ async def test_unapproved_assessments_are_not_published(client, db_session, acme
     assert refused.status_code == 409
     assert refused.json()["code"] == "rcsa.item_not_approved"
     assert await db_session.scalar(select(func.count()).select_from(RiskEntry)) == 0
+
+
+async def test_an_acceptance_near_expiry_reminds_its_owner_and_its_approver(client, db_session, acme):
+    risk, _ = await _approved_with_risk(client, acme)
+    soon = (date.today() + timedelta(days=10)).isoformat()
+    proposed = (await _propose(client, acme["assignee"], risk, ACCEPT | {
+        "accept_until": soon, "reassess_at": soon})).json()
+    assert (await _decide(client, acme["approver"], proposed)).status_code == 200
+
+    def acceptances(work):
+        return [(row["kind"], row["id"], row["status"]) for row in work["rows"] if row["kind"] == "acceptance"]
+
+    for who in ("assignee", "approver"):
+        work = (await client.get("/api/rcsa/my-work", headers=acme[who].headers)).json()
+        assert acceptances(work) == [("acceptance", risk["id"], "expiring")], who
+    reviewer_work = (await client.get("/api/rcsa/my-work", headers=acme["reviewer"].headers)).json()
+    assert acceptances(reviewer_work) == []
