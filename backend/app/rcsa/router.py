@@ -7,10 +7,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
 from app.db import get_session
-from app.errors import NotFound
-from app.rcsa import campaigns, closing, report, responses, risks, triggers, work
+from app.errors import AppError, NotFound
+from app.rcsa import ai, campaigns, closing, report, responses, risks, triggers, work
 from app.rcsa.access import (
     ActionUpdater,
+    AiAdmin,
     ClientKey,
     Manager,
     Reader,
@@ -37,7 +38,11 @@ from app.rcsa.schemas import (
     ActionIn,
     ActionOut,
     ActionUpdateIn,
+    AiChannelIn,
+    AiChannelOut,
+    AiStatusOut,
     AnswerIn,
+    ApplyIn,
     AssignIn,
     CampaignCreateIn,
     CampaignOut,
@@ -56,6 +61,7 @@ from app.rcsa.schemas import (
     ProfileOut,
     ProfileUpdateIn,
     PublishIn,
+    RankingOut,
     ReasonIn,
     ResponseOut,
     ReviewIn,
@@ -65,6 +71,7 @@ from app.rcsa.schemas import (
     RiskOwnerIn,
     RiskUpdateIn,
     ScopeRow,
+    SuggestionOut,
     TriggerDecideIn,
     TriggerIn,
     TriggerLinkIn,
@@ -535,3 +542,65 @@ async def link_trigger(trigger_id: RowId, payload: TriggerLinkIn, actor: Respond
     trigger = await triggers.link(session, trigger_id, payload, actor)
     await session.commit()
     return await triggers.trigger_out(session, trigger)
+
+
+# ── 可选 AI（默认关闭）──────────────────────────────────────
+
+
+class AiUnavailable(AppError):
+    status_code = 502
+
+
+@router.get("/ai", response_model=AiStatusOut)
+async def ai_status(actor: Reader, session: Session) -> AiStatusOut:
+    # 作答人在发起之前要看得到：会发哪些输入、发给哪个服务。
+    return AiStatusOut(
+        prefill=await ai.channel_out(session, "prefill"),
+        evidence_relevance=await ai.channel_out(session, "evidence_relevance"),
+    )
+
+
+@router.put("/ai/{channel}", response_model=AiChannelOut)
+async def configure_ai(channel: str, payload: AiChannelIn, actor: AiAdmin, session: Session) -> AiChannelOut:
+    out = await ai.save_channel(session, channel, payload, actor)
+    await session.commit()
+    return out
+
+
+@router.post("/responses/{response_id}/prefill", response_model=SuggestionOut)
+async def request_prefill(response_id: RowId, actor: Responder, key: ClientKey, session: Session) -> SuggestionOut:
+    try:
+        proposal, response = await ai.request_prefill(session, response_id, actor, key)
+    except ai.PrefillUnavailable as exc:
+        # 调用记录要留下（合规留痕）；这之前没有别的业务写入。草稿不动。
+        await session.commit()
+        raise AiUnavailable("建议暂时不可用，请人工完成", code="rcsa.prefill_unavailable") from exc
+    except AppError:
+        await session.commit()
+        raise
+    await session.commit()
+    return ai.suggestion_out(proposal, response)
+
+
+@router.get("/responses/{response_id}/suggestions", response_model=list[SuggestionOut])
+async def list_suggestions(response_id: RowId, actor: Reader, session: Session) -> list[SuggestionOut]:
+    return await ai.suggestions(session, response_id)
+
+
+@router.post("/suggestions/{proposal_id}/apply", response_model=ResponseOut)
+async def apply_suggestion(proposal_id: RowId, payload: ApplyIn, actor: Responder, session: Session) -> ResponseOut:
+    from app.review.materialize import apply_rcsa_prefill
+
+    response = await apply_rcsa_prefill(
+        session, proposal_id, fields=list(dict.fromkeys(payload.fields)),
+        expected_version=payload.expected_version, actor=actor,
+    )
+    await session.commit()
+    return await responses.response_out(session, response)
+
+
+@router.post("/responses/{response_id}/rank-evidence", response_model=RankingOut)
+async def rank_evidence(response_id: RowId, actor: Reader, session: Session) -> RankingOut:
+    ranking = await ai.rank_evidence(session, response_id, actor)
+    await session.commit()
+    return ranking

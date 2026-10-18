@@ -731,3 +731,59 @@ async def merge_controls(
     )
     await session.flush()
     return plan
+
+
+async def apply_rcsa_prefill(
+    session: AsyncSession, proposal_id: int, *, fields: list[str], expected_version: int, actor: User
+):
+    """把作答人选定的 RCSA 预填建议写进仍可编辑的草稿。
+
+    只写草稿的回答字段：不提交、不批准、不碰控制库。建议基于的草稿版本与当前不同就拒绝
+    （stale），通道已关闭也拒绝。哪个字段来自哪条建议，记进审计。
+    """
+    from app.rcsa.access import audit, bump, check_version
+    from app.rcsa.ai import channel_settings
+    from app.rcsa.models import RcsaResponse, ResponseStatus
+    from app.rcsa.responses import locked_item, require_assignee
+    from app.rcsa.schemas import AnswerV1
+    from app.review.service import locked_proposal
+
+    proposal = await locked_proposal(session, proposal_id)
+    if proposal is None or proposal.kind != ProposalKind.RCSA_PREFILL:
+        raise NotFound("建议不存在", code="rcsa.suggestion_not_found")
+    if proposal.status != ProposalStatus.PENDING:
+        raise Conflict("这条建议已经用过了", code="rcsa.suggestion_used")
+    payload = proposal.payload
+    response = await session.get(RcsaResponse, payload["response_id"])
+    _, item = await locked_item(session, response.item_id)
+    response = await session.scalar(
+        select(RcsaResponse).where(RcsaResponse.id == response.id).with_for_update()
+        .execution_options(populate_existing=True)
+    )
+    require_assignee(item, actor)
+    if response.status != ResponseStatus.DRAFT:
+        raise Conflict("已提交的版本不能修改", code="rcsa.response_not_draft")
+    check_version(response, expected_version)
+    if response.version != payload["response_version"]:
+        raise Conflict("草稿在请求建议之后改过，这条建议已过期", code="rcsa.suggestion_stale")
+    if not (await channel_settings(session, "prefill"))["enabled"]:
+        raise Conflict("这个 AI 通道没有启用", code="rcsa.ai_disabled", params={"channel": "prefill"})
+
+    answer = dict(response.answer)
+    suggested = payload["suggestions"]
+    for field in fields:
+        if field == "limitations":
+            answer["limitations"] = suggested["limitations"]
+        else:
+            answer[field] = {"rating": suggested[field]["rating"], "rationale": suggested[field]["rationale"]}
+    response.answer = AnswerV1.model_validate(answer).model_dump(mode="json")
+    bump(response, actor)
+    every = {"design", "operating", "limitations"} <= set(fields)
+    proposal.status = ProposalStatus.ACCEPTED if every else ProposalStatus.MODIFIED
+    proposal.decided_by = actor.id
+    proposal.decided_at = datetime.now(UTC)
+    proposal.decided_payload = {"fields": fields}
+    await session.flush()
+    await audit(session, actor, "ai_apply", "RcsaResponse", response.id,
+                {"proposal_id": proposal.id, "fields": fields, "response_id": response.id})
+    return response

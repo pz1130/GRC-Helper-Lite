@@ -393,7 +393,7 @@ async def stats(
 ) -> dict[str, object]:
     rows = await session.execute(
         select(Proposal.kind, func.count())
-        .where(Proposal.status == ProposalStatus.PENDING)
+        .where(Proposal.status == ProposalStatus.PENDING, Proposal.kind.notin_(service.OUTSIDE_QUEUE))
         .group_by(Proposal.kind)
     )
     by_kind = {kind.value: count for kind, count in rows}

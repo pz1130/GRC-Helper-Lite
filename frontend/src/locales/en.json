@@ -887,7 +887,9 @@
     "evidence_suggestion": "Evidence suggestion",
     "embedding": "Embedding",
     "query_expansion": "Query expansion",
-    "matrix_mapping": "Matrix mapping"
+    "matrix_mapping": "Matrix mapping",
+    "rcsa_prefill": "RCSA answer prefill",
+    "rcsa_evidence_relevance": "RCSA evidence relevance"
   },
   "evidenceTypes": {
     "title": "Evidence types",
@@ -1174,7 +1176,18 @@
       "trigger_controls_uncovered": "The campaign does not cover every affected control; give a reason for each one left out",
       "trigger_not_found": "Trigger not found",
       "trigger_scope_empty": "Confirm at least one affected control first",
-      "trigger_state": "This is not allowed while the trigger is {{status}}"
+      "trigger_state": "This is not allowed while the trigger is {{status}}",
+      "ai_approval_required": "Record the approval reference before enabling this channel",
+      "ai_channel_unknown": "Unknown AI channel",
+      "ai_disabled": "This AI channel is not enabled",
+      "ai_inputs_required": "Choose which input types may be sent before enabling this channel",
+      "ai_inputs_unknown": "This channel cannot send those input types",
+      "ai_provider_kind": "This channel needs a different kind of service",
+      "ai_provider_required": "Bind an enabled service before enabling this channel",
+      "prefill_unavailable": "Prefill unavailable — complete manually",
+      "suggestion_not_found": "Suggestion not found",
+      "suggestion_stale": "The draft changed after this suggestion was made, so it can no longer be applied",
+      "suggestion_used": "This suggestion has already been applied"
     },
     "evidence": {
       "constraint_violation": "The evidence record violates a database constraint",
@@ -1317,6 +1330,7 @@
       "types_invalid": "types accepts only duplicates / depends_on / conflicts_with"
     },
     "review": {
+      "kind_not_in_queue": "This kind of suggestion is handled on its own page, not in the review queue",
       "bulk_ids_invalid": "Provide 1 to 200 distinct positive proposal ids",
       "bulk_limit_out_of_range": "limit must be between 1 and 200",
       "limit_out_of_range": "limit must be between 1 and 2000"

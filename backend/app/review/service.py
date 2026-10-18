@@ -349,6 +349,11 @@ def validate_decision(
         raise AppError("仅拒绝允许提供原因", code="decision.reason_forbidden")
 
 
+# 不进确认队列的提案：RCSA 预填建议由作答人在评估页上逐项应用，不需要也不允许由
+# 确认队列裁定（那里的裁定权是 grc_lead 的，作答人是 contributor）。
+OUTSIDE_QUEUE = (ProposalKind.RCSA_PREFILL,)
+
+
 async def pending(
     session: AsyncSession,
     *,
@@ -364,7 +369,7 @@ async def pending(
         raise AppError("limit 必须在 1 到 2000 之间", code="review.limit_out_of_range")
     stmt = (
         select(Proposal)
-        .where(Proposal.status == ProposalStatus.PENDING)
+        .where(Proposal.status == ProposalStatus.PENDING, Proposal.kind.notin_(OUTSIDE_QUEUE))
         .order_by(Proposal.confidence.asc().nullsfirst(), Proposal.id)
         .limit(limit)
     )
@@ -588,6 +593,8 @@ async def decide(
             proposal = await locked_proposal(session, proposal_id)
             if proposal is None:
                 raise NotFound("提案不存在", code="proposal.not_found")
+            if proposal.kind in OUTSIDE_QUEUE:
+                raise Conflict("这类建议只在它所属的页面上处理", code="review.kind_not_in_queue")
             if proposal.status != ProposalStatus.PENDING:
                 raise Conflict(
                     f"该提案已被裁定为 {proposal.status.value}，不能重复裁定",

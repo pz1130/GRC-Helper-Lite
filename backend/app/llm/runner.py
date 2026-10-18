@@ -59,11 +59,18 @@ async def _call_with_retry(
     session: AsyncSession,
     config: LLMProviderConfig,
     request: CompletionRequest,
+    *,
+    allow_fallback: bool = True,
 ) -> tuple[CompletionResponse, LLMProviderConfig]:
-    """指数退避重试；耗尽后降级到备用 provider（spec §9）。"""
-    last: ProviderError | None = None
+    """指数退避重试；耗尽后降级到备用 provider（spec §9）。
 
-    for candidate in (config, await routing.fallback_provider(session)):
+    `allow_fallback=False` 的任务只能用为它单独批准的服务（RCSA 的 AI 通道）：
+    全局备用没有经过那份数据外发批准，失败就是失败。
+    """
+    last: ProviderError | None = None
+    fallback = await routing.fallback_provider(session) if allow_fallback else None
+
+    for candidate in (config, fallback):
         if candidate is None or (last is not None and candidate.id == config.id):
             continue
         provider = build_provider(candidate)
@@ -106,6 +113,7 @@ async def run(
     ruleset: RulesetName = RulesetName.GENERATION,
     interactive: bool = False,
     citation_validator: CitationValidator | None = None,
+    allow_fallback: bool = True,
 ) -> ValidatedResult:
     config, route = await routing.resolve(session, task_key)
     await budget.check(session, interactive=interactive, provider=config)
@@ -136,6 +144,7 @@ async def run(
                     temperature=route.temperature,
                     max_tokens=route.max_tokens,
                 ),
+                allow_fallback=allow_fallback,
             )
             tokens_in += response.tokens_in
             tokens_out += response.tokens_out

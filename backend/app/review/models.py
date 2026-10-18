@@ -32,6 +32,8 @@ class ProposalKind(StrEnum):
     EVIDENCE_SUGGESTION = "evidence_suggestion"
     AUDIT_PREDICTION = "audit_prediction"
     MATRIX_MAPPING = "matrix_mapping"
+    # RCSA 作答预填的建议。只在评估页上由作答人逐项应用，不进确认队列（见 app/rcsa/ai.py）。
+    RCSA_PREFILL = "rcsa_prefill"
 
 
 class ProposalStatus(StrEnum):

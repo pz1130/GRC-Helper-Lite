@@ -599,3 +599,70 @@ class PersonOut(BaseModel):
     can_review: bool
     can_manage: bool
     can_accept_risk: bool
+
+
+# ── 可选 AI ─────────────────────────────────────────────────
+
+InputType = Literal["control", "policy_sources", "evidence_metadata"]
+
+
+class AiChannelIn(_In):
+    enabled: bool
+    # 机构批准外发的依据（批文编号、数据政策条目）。开关本身不是审批。
+    approval_ref: Annotated[str, Field(max_length=300)] = ""
+    allowed_input_types: Annotated[list[InputType], Field(max_length=3)] = []
+    provider_config_id: Id | None = None
+
+
+class ProviderRef(BaseModel):
+    id: int
+    name: str
+    model: str
+
+
+class AiChannelOut(BaseModel):
+    enabled: bool
+    approval_ref: str
+    allowed_input_types: list[str]
+    available_input_types: list[str]
+    provider: ProviderRef | None
+
+
+class AiStatusOut(BaseModel):
+    prefill: AiChannelOut
+    evidence_relevance: AiChannelOut
+
+
+class SuggestionOut(BaseModel):
+    id: int
+    response_id: int
+    response_version: int
+    # 草稿在请求之后改过、或已经提交：这条建议不能再应用。
+    stale: bool
+    status: str
+    suggestions: dict[str, Any]
+    input_types: list[str]
+    model: str | None
+    prompt_version: str
+    created_at: datetime
+
+
+class ApplyIn(_In):
+    fields: Annotated[list[Literal["design", "operating", "limitations"]], Field(min_length=1, max_length=3)]
+    expected_version: Version
+
+
+class RankCandidate(BaseModel):
+    evidence_item_id: int
+    title: str
+    evidence_type: str | None
+    probability: float | None
+
+
+class RankingOut(BaseModel):
+    # False 表示排序没做成（服务失败、未配置……）：候选照样全部列出，由人逐条看。
+    ranked: bool
+    reason: str | None
+    model: str | None
+    generated_at: datetime
+    candidates: list[RankCandidate]

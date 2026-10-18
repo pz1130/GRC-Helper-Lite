@@ -358,3 +358,23 @@ async def test_a_hung_provider_call_hits_the_total_deadline(monkeypatch):
         )
     assert "总时限" in str(excinfo.value)
     assert excinfo.value.retryable is True
+
+
+@pytest.mark.asyncio
+async def test_a_task_that_forbids_fallback_never_reaches_the_global_backup(db_session):
+    # RCSA 的 AI 通道只能用为它单独批准的服务：主服务失败就失败，不换全局备用。
+    await _setup(db_session, fallback=True)
+    primary = AsyncMock(complete=AsyncMock(side_effect=ProviderError("429", retryable=True)))
+    backup = AsyncMock(complete=AsyncMock(
+        return_value=CompletionResponse(text='{"answer": "备用"}', tokens_in=1, tokens_out=1)
+    ))
+    with (
+        patch("app.llm.runner.build_provider", side_effect=[primary, backup]),
+        patch("app.llm.runner._sleep", new=AsyncMock()),
+        pytest.raises(ProviderError),
+    ):
+        await run(
+            db_session, task_key="answer_generation", system="s", prompt="p", schema=SCHEMA,
+            allow_fallback=False,
+        )
+    backup.complete.assert_not_called()

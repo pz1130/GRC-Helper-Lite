@@ -47,6 +47,8 @@ Responder = Annotated[User, Depends(_actor(Permission.RCSA_RESPOND))]
 ReviewerUser = Annotated[User, Depends(_actor(Permission.RCSA_REVIEW))]
 RiskApprover = Annotated[User, Depends(_actor(Permission.RCSA_RISK_ACCEPT))]
 ActionUpdater = Annotated[User, Depends(_actor(Permission.RCSA_ACTION_UPDATE))]
+# 配置 AI 通道（绑定服务、登记批准依据、选外发输入）与配置 provider 同一把权限。
+AiAdmin = Annotated[User, Depends(_actor(Permission.LLM_CONFIG_WRITE))]
 
 
 async def idempotency_key(
