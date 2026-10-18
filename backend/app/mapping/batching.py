@@ -70,6 +70,8 @@ def build_batches(items: list[Any], *, max_chars: int = MAX_BATCH_CHARS) -> list
 # （MAPPING_SCHEMA maxItems），29 个框架项一批时平均每项分不到 1 条。OLIR 评估
 # （evals/，MiniMax M3）：全库上下文 0.71/0.14（精确率/召回）；只加预筛不拆批
 # 0.70/0.14——召回纹丝不动。所以预筛之后每批只放少量框架项。
+# 再减到每批 1 项（2026-10-18，k=40）：总召回 0.32→0.38，但多给的大多是「支撑」，
+# 能关缺口的 full/partial 召回只 0.23→0.26，批次与 token 翻倍、确认队列每项多近一倍（K16）。
 MAX_ITEMS_PER_BATCH = 4
 
 
