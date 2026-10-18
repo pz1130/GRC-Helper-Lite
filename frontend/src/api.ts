@@ -33,7 +33,8 @@ export class ApiError extends Error {
     public status: number,
     public code: string,
     message: string,
-    params?: Record<string, unknown>,
+    // 保留下来：有的错误带一张清单（RCSA 的阻断项、缺项），界面要逐条列出。
+    public params?: Record<string, unknown>,
   ) {
     const key = `errors.${code}`;
     super(hasText(key) ? i18n.t(key, renderParams(params)) : message);

@@ -156,7 +156,9 @@ async def test_cancelling_needs_a_reason_and_keeps_actions_alive(client, acme):
     assert cancelled.json()["status"] == "cancelled"
 
     work = (await client.get("/api/rcsa/my-work", headers=acme["assignee"].headers)).json()
-    assert ("action", found["action"]["id"]) in {(row["kind"], row["id"]) for row in work["rows"]}
+    assert ("action", found["action"]["id"], acme["items"][0]["id"]) in {
+        (row["kind"], row["id"], row["item_id"]) for row in work["rows"]
+    }
 
 
 async def test_draft_campaign_can_be_cancelled_too(client, acme):

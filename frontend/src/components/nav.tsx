@@ -45,6 +45,15 @@ export function useNavModel() {
 
   const pendingCount = proposalStats.data?.pending ?? 0;
 
+  // RCSA 入口只在部署打开了模块时出现。审计范围账号拿到 403，同样不显示。
+  const rcsaStatus = useQuery({
+    queryKey: ["rcsa", "status"],
+    queryFn: () => request<{ enabled: boolean }>("/api/rcsa/status"),
+    staleTime: 60_000,
+    retry: false,
+  });
+  const rcsaEnabled = rcsaStatus.data?.enabled === true;
+
   // 顶部心跳真的去问后端。原先这里是个写死的绿点：库连不上时它照样显示
   // "系统运行正常"，等于对着审计人员撒谎，而这正是最不该骗人的一个位置。
   //
@@ -144,6 +153,18 @@ export function useNavModel() {
               </svg>
             ),
           },
+          ...(rcsaEnabled
+            ? [{
+                to: "/rcsa",
+                label: t("nav.rcsa"),
+                icon: (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 11l3 3L22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                  </svg>
+                ),
+              }]
+            : []),
           {
             to: "/evidence",
             label: t("nav.evidence"),
@@ -231,7 +252,7 @@ export function useNavModel() {
         ],
       },
     ],
-    [t, pendingCount],
+    [t, pendingCount, rcsaEnabled],
   );
 
   // 面包屑按当前路由推导，不另存一份状态。

@@ -184,7 +184,7 @@ purge-staging:
 # 项目名不同 → 容器、网络、数据卷（pgdata/docstore/staging）全部另开一套，
 # 跑完 down -v 一次性扔掉，开发库一条痕迹都不留（OQ-3）。端口也要错开，
 # 否则和正在跑的开发栈抢 5432/6379/8000/5173。
-E2E_COMPOSE = COMPOSE_PROJECT_NAME=grc-e2e DB_PORT=5433 REDIS_PORT=6380 API_PORT=8001 WEB_PORT=5174 docker compose
+E2E_COMPOSE = COMPOSE_PROJECT_NAME=grc-e2e DB_PORT=5433 REDIS_PORT=6380 API_PORT=8001 WEB_PORT=5174 RCSA_ENABLED=true docker compose
 
 # 先 down -v 再起：上一次被打断、或有人在这套栈上手动跑过单个 spec，库里就留着
 # 那次建的数据。有几条用例依赖冷启动状态（比如「还没有证据类型」），会因此失败，
@@ -200,6 +200,7 @@ e2e:
 	$(E2E_COMPOSE) up -d --build; \
 	$(E2E_COMPOSE) run --rm api alembic upgrade head; \
 	$(E2E_COMPOSE) run --rm api python -m app.cli create-admin admin@example.com Admin pw123456; \
+	$(E2E_COMPOSE) run --rm api python -m tests.e2e_rcsa_seed; \
 	(cd frontend && E2E_BASE_URL=http://localhost:5174 E2E_API_BASE=http://localhost:8001 npm run test:e2e)
 
 # 单独留一个出口：e2e 中途被 Ctrl-C 打断时，那套栈还在后台占着端口。

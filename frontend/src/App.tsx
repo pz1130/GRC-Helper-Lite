@@ -37,6 +37,14 @@ const Evidence = lazy(() => import("./pages/Evidence").then((m) => ({ default: m
 const AuditAssistant = lazy(() => import("./pages/AuditAssistant").then((m) => ({ default: m.AuditAssistant })));
 const Maturity = lazy(() => import("./pages/Maturity").then((m) => ({ default: m.Maturity })));
 const RiskRegister = lazy(() => import("./pages/RiskRegister").then((m) => ({ default: m.RiskRegister })));
+const RcsaHome = lazy(() => import("./pages/rcsa/RcsaHome").then((m) => ({ default: m.RcsaHome })));
+const CampaignNew = lazy(() => import("./pages/rcsa/CampaignNew").then((m) => ({ default: m.CampaignNew })));
+const CampaignDetail = lazy(() => import("./pages/rcsa/CampaignDetail").then((m) => ({ default: m.CampaignDetail })));
+const RcsaAssessment = lazy(() => import("./pages/rcsa/Assessment").then((m) => ({ default: m.Assessment })));
+const RcsaReport = lazy(() => import("./pages/rcsa/Report").then((m) => ({ default: m.Report })));
+const RcsaTriggers = lazy(() => import("./pages/rcsa/Triggers").then((m) => ({ default: m.Triggers })));
+const RcsaTriggerDetail = lazy(() => import("./pages/rcsa/Triggers").then((m) => ({ default: m.TriggerDetail })));
+const RcsaProfiles = lazy(() => import("./pages/rcsa/Profiles").then((m) => ({ default: m.Profiles })));
 
 export function App() {
   const { user, loading } = useAuth();
@@ -77,6 +85,15 @@ export function App() {
         <Route path="/audit" element={<AuditAssistant />} />
         <Route path="/maturity" element={<Maturity />} />
         <Route path="/risks" element={<RiskRegister />} />
+        {/* RCSA 各页自己检查模块开关（RcsaGate）；关闭时后端接口一律 404。 */}
+        <Route path="/rcsa" element={<RcsaHome />} />
+        <Route path="/rcsa/campaigns/new" element={<CampaignNew />} />
+        <Route path="/rcsa/campaigns/:id" element={<CampaignDetail />} />
+        <Route path="/rcsa/campaigns/:id/report" element={<RcsaReport />} />
+        <Route path="/rcsa/items/:id" element={<RcsaAssessment />} />
+        <Route path="/rcsa/triggers" element={<RcsaTriggers />} />
+        <Route path="/rcsa/triggers/:id" element={<RcsaTriggerDetail />} />
+        <Route path="/rcsa/profiles" element={<RcsaProfiles />} />
         <Route path="/account" element={<Account />} />
         <Route path="/documents/:id" element={<DocumentDetail />} />
         <Route path="/documents/:id/change-impact" element={<ChangeImpact />} />

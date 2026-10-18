@@ -39,9 +39,9 @@ def _control(item: RcsaItem) -> str:
 
 
 def _row(kind: str, row_id: int, title: str, status: object, due: date | None, today: date,
-         campaign: RcsaCampaign | None = None) -> WorkRow:
+         campaign: RcsaCampaign | None = None, item_id: int | None = None) -> WorkRow:
     return WorkRow(
-        kind=kind, id=row_id, title=title, status=str(status), due_at=due,
+        kind=kind, id=row_id, title=title, status=str(status), due_at=due, item_id=item_id,
         overdue=due is not None and due < today,
         campaign_id=campaign.id if campaign else None, campaign_name=campaign.name if campaign else None,
     )
@@ -65,7 +65,7 @@ async def my_work(session: AsyncSession, actor: User) -> list[WorkRow]:
     )
     for item, campaign in items:
         kind = "review" if item.status == ItemStatus.SUBMITTED else "assessment"
-        rows.append(_row(kind, item.id, _control(item), item.status, campaign.due_at, today, campaign))
+        rows.append(_row(kind, item.id, _control(item), item.status, campaign.due_at, today, campaign, item.id))
 
     risk_rows = select(RcsaItemRisk, RcsaItem, RcsaCampaign).join(
         RcsaItem, RcsaItem.id == RcsaItemRisk.item_id
@@ -76,17 +76,18 @@ async def my_work(session: AsyncSession, actor: User) -> list[WorkRow]:
         RcsaItemRisk.disposition_status.in_([DispositionStatus.PENDING, DispositionStatus.RETURNED]),
         or_(RcsaItemRisk.owner_id == actor.id, RcsaItem.assignee_id == actor.id),
     ))
-    for risk, _item, campaign in to_propose:
-        rows.append(_row("disposition", risk.id, risk.event, risk.disposition_status, campaign.due_at, today, campaign))
+    for risk, item, campaign in to_propose:
+        rows.append(_row("disposition", risk.id, risk.event, risk.disposition_status, campaign.due_at, today,
+                         campaign, item.id))
     if has_permission(actor.role, Permission.RCSA_RISK_ACCEPT):
         to_approve = await session.execute(risk_rows.where(
             RcsaCampaign.status.in_(_LIVE),
             RcsaItemRisk.disposition_status == DispositionStatus.PROPOSED,
             RcsaItemRisk.disposition_proposed_by != actor.id,
         ))
-        for risk, _item, campaign in to_approve:
+        for risk, item, campaign in to_approve:
             rows.append(_row("approval", risk.id, risk.event, risk.disposition_status, campaign.due_at, today,
-                             campaign))
+                             campaign, item.id))
 
     # 接受到期提醒给风险责任人与最近一次批准它的人；到期不自动续期。
     approver = (
@@ -103,12 +104,12 @@ async def my_work(session: AsyncSession, actor: User) -> list[WorkRow]:
         RcsaItemRisk.accept_until <= today + ACCEPTANCE_NOTICE,
         or_(RcsaItemRisk.owner_id == actor.id, approver == actor.id),
     ))
-    for risk, _item, campaign in expiring:
+    for risk, item, campaign in expiring:
         status = "expired" if risk.accept_until < today else "expiring"
-        rows.append(_row("acceptance", risk.id, risk.event, status, risk.accept_until, today, campaign))
+        rows.append(_row("acceptance", risk.id, risk.event, status, risk.accept_until, today, campaign, item.id))
 
     actions = await session.execute(
-        select(RcsaAction, RcsaCampaign)
+        select(RcsaAction, RcsaItem, RcsaCampaign)
         .join(RcsaItemRisk, RcsaItemRisk.id == RcsaAction.item_risk_id)
         .join(RcsaItem, RcsaItem.id == RcsaItemRisk.item_id)
         .join(RcsaCampaign, RcsaCampaign.id == RcsaItem.campaign_id)
@@ -118,9 +119,9 @@ async def my_work(session: AsyncSession, actor: User) -> list[WorkRow]:
             (RcsaAction.verifier_id == actor.id) & (RcsaAction.status == ActionStatus.PENDING_VERIFICATION),
         ))
     )
-    for action, campaign in actions:
+    for action, item, campaign in actions:
         kind = "verification" if action.status == ActionStatus.PENDING_VERIFICATION else "action"
-        rows.append(_row(kind, action.id, action.title, action.status, action.due_at, today, campaign))
+        rows.append(_row(kind, action.id, action.title, action.status, action.due_at, today, campaign, item.id))
 
     conditions = [
         (RcsaTrigger.owner_id == actor.id) & RcsaTrigger.status.in_(

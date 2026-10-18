@@ -575,6 +575,8 @@ class WorkRow(BaseModel):
     ]
     id: int
     title: str
+    # 风险与行动都在评估项页面上处理；给出它们所属的评估项，界面直接链过去。
+    item_id: int | None = None
     campaign_id: int | None = None
     campaign_name: str | None = None
     status: str

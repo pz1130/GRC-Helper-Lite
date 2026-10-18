@@ -30,6 +30,9 @@ services:
       context: ./backend
       target: dev
     env_file: .env
+    environment:
+      # RCSA 模块开关。开发栈默认关；e2e 栈在 E2E_COMPOSE 里打开（见 Makefile）。
+      RCSA_ENABLED: ${RCSA_ENABLED:-false}
     depends_on:
       db:
         condition: service_healthy
