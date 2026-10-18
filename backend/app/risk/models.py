@@ -2,7 +2,7 @@ from datetime import date
 from enum import StrEnum
 from typing import Any
 
-from sqlalchemy import CheckConstraint, Date, ForeignKey, Integer, String, Text
+from sqlalchemy import CheckConstraint, Date, ForeignKey, Index, Integer, String, Text, text
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
@@ -15,6 +15,8 @@ class RiskSource(StrEnum):
     CONFLICT = "conflict"
     MANUAL = "manual"
     AUDIT_FINDING = "audit_finding"
+    # 只由 RCSA 的显式「发布到登记册」创建，source_ref 带 rcsa_item_risk_id。
+    RCSA = "rcsa"
 
 
 class RiskStatus(StrEnum):
@@ -47,6 +49,13 @@ class RiskEntry(Base, TimestampMixin):
         CheckConstraint(
             "residual_impact IS NULL OR residual_impact BETWEEN 1 AND 5",
             name="ck_risk_residual_impact",
+        ),
+        # 一个 RCSA 风险情景至多发布一条登记册风险：并发发布时由数据库兜底。
+        Index(
+            "uq_risk_entries_rcsa_item_risk",
+            text("(source_ref ->> 'rcsa_item_risk_id')"),
+            unique=True,
+            postgresql_where=text("source = 'rcsa'"),
         ),
     )
 

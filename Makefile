@@ -1,4 +1,4 @@
-.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
+.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-seed-rcsa-profile seed-rcsa-profile prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
 
 up:
 	docker compose up -d --build db redis api
@@ -97,6 +97,11 @@ prod-seed-frameworks:
 	$(PROD) run --rm api python -m app.cli import-framework \
 	  seeds/nist-800-53-r5.csv nist-800-53-r5 "NIST SP 800-53 Rev.5" "NIST SP 800-53 Rev.5" 5.1.1 nist.gov
 
+# RCSA 的默认评分档案（未批准）。可重复跑：已有就不动，不覆盖人工校准与批准。
+# 标签与阈值只是初始建议；激活活动前要由 GRC lead/admin 补全口径并批准。
+prod-seed-rcsa-profile:
+	$(PROD) run --rm api python -m app.cli seed-rcsa-profile
+
 # 换主密钥：先把新值写进 .env 并 make prod-up 重启，再拿**旧**值跑这条。
 prod-rotate-secret:
 	@test -n "$(old)" || (echo "用法: make prod-rotate-secret old='旧的 APP_SECRET_KEY'"; exit 1)
@@ -163,6 +168,9 @@ fmt:
 
 create-admin:
 	docker compose run --rm api python -m app.cli create-admin "$(email)" "$(name)" "$(password)"
+
+seed-rcsa-profile:
+	docker compose run --rm api python -m app.cli seed-rcsa-profile
 
 ping-worker:
 	docker compose run --rm api python -c "import asyncio; from app.worker import enqueue; print(asyncio.run(enqueue('ping')))"

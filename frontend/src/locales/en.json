@@ -1057,6 +1057,7 @@
     },
     "evidence": {
       "constraint_violation": "The evidence record violates a database constraint",
+      "in_use_by_rcsa": "{{count}} RCSA assessments cite this evidence, so it cannot be deleted; change its status instead",
       "not_found": "Evidence not found"
     },
     "evidence_type": {
