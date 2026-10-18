@@ -21,6 +21,7 @@ run_extraction / run_mapping 这几个稳定入口。
 
 import argparse
 import asyncio
+import functools
 import json
 import os
 import secrets
@@ -214,6 +215,7 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
     import app.models  # noqa: F401
     from app.controls.models import Control
+    from app.frameworks.coverage import CLOSING
     from app.frameworks.models import Framework, FrameworkItem
     from app.review.models import Proposal, ProposalKind
     from evals import corpus, metrics
@@ -237,6 +239,9 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
         # 放在这里而不是 main()：app 的配置要等 _configure_env 设好评估库之后再加载。
         if args.top_k:
             mapping_tasks.TOP_K = args.top_k
+        if args.items_per_batch:
+            # chunk_items 的默认值在定义时就绑定了，改模块常量不生效，只能包一层
+            mapping_tasks.chunk_items = functools.partial(mapping_tasks.chunk_items, max_items=args.items_per_batch)
         if args.candidates == "jev":
             # 实验：用 Jev 打分（evals/jev.py 的缓存）替换预筛排序，其余流程不变。
             from evals.jev import score
@@ -301,6 +306,13 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
         gold = {(csf, c) for csf, cs in expected.items() for c in cs}
         # 只在 OLIR 覆盖的子类上计分
         predicted_scored = {pair for pair in predicted if pair[0] in expected}
+        # 覆盖度只认 CLOSING（full/partial）：supporting 给得再多也不关缺口，
+        # 只看总分会把它们算成召回。OLIR 不分强弱，所以分母仍是全部正例。
+        closing = {
+            (codes[p.payload["framework_item_id"]], metrics.base_control(ctl[p.payload["control_id"]]))
+            for p in proposals if p.payload.get("strength") in {strength.value for strength in CLOSING}
+        }
+        closing_scored = {pair for pair in closing if pair[0] in expected}
         entries: dict[tuple[str, str], dict[str, str]] = {}
         for p in proposals:
             pair = (codes[p.payload["framework_item_id"]], metrics.base_control(ctl[p.payload["control_id"]]))
@@ -325,6 +337,7 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
             "candidate_source": summary.get("candidate_source"),
             "candidate_fallback_reason": summary.get("candidate_fallback_reason"),
             "mapping": metrics.prf(predicted_scored, gold),
+            "mapping_closing": metrics.prf(closing_scored, gold),
             "citation_repairs": await _repairs(session),
             "proposals": len(proposals),
             "usage": await _usage(session),
@@ -430,6 +443,7 @@ def main() -> None:
     parser.add_argument("--embed-controls", action="store_true", default=True)
     parser.add_argument("--candidates", choices=["hybrid", "jev", "jev-live"], default="hybrid")
     parser.add_argument("--top-k", type=int, help="映射候选数（默认用 TOP_K）；B1 比较 20 与 40")
+    parser.add_argument("--items-per-batch", type=int, help="每批框架项数（默认用 MAX_ITEMS_PER_BATCH）")
     args = parser.parse_args()
     if args.candidates == "jev-live":
         # 必须在 app 的配置第一次加载之前设：get_settings 有缓存
@@ -443,7 +457,8 @@ def main() -> None:
         report = asyncio.run(run_extraction_eval(args))
     report = {"suite": args.suite, "label": args.label, "chat_model": CHAT_MODEL,
               "embed_model": EMBED_MODEL, "max_tokens": MAX_TOKENS,
-              **({"top_k": args.top_k} if args.top_k else {}), **report}
+              **({"top_k": args.top_k} if args.top_k else {}),
+              **({"items_per_batch": args.items_per_batch} if args.items_per_batch else {}), **report}
     RESULTS.mkdir(exist_ok=True)
     out = RESULTS / f"{args.suite}-{args.label}.json"
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
