@@ -21,6 +21,7 @@ run_extraction / run_mapping 这几个稳定入口。
 
 import argparse
 import asyncio
+import functools
 import json
 import os
 import secrets
@@ -72,6 +73,25 @@ async def _fresh_db(db_name: str, url: str) -> None:
     cfg.set_main_option("script_location", str(HERE.parent / "alembic"))
     cfg.set_main_option("sqlalchemy.url", url)
     await asyncio.to_thread(command.upgrade, cfg, "head")
+
+
+async def _jev_provider(session: Any) -> None:
+    """评估库里按产品的方式配好 Jev：一条 provider，判断模型设置里选中它。"""
+    from app.crypto import encrypt
+    from app.decision.settings import DecisionSettings, save_settings
+    from app.llm.models import LLMProviderConfig, ProviderKind
+
+    key = os.environ.get("GRC_EVAL_JEV_API_KEY", "")
+    if not key:
+        sys.exit("--candidates jev-live 需要环境变量 GRC_EVAL_JEV_API_KEY。")
+    config = LLMProviderConfig(name="eval-jev", kind=ProviderKind.JEV,
+                               model=os.environ.get("GRC_EVAL_JEV_MODEL", "jev-1.13.0"),
+                               api_key_encrypted=encrypt(key))
+    session.add(config)
+    await session.flush()
+    # 「enabled」是文档要求扫描的开关，映射预筛不看它（见 OPERATIONS）
+    await save_settings(session, DecisionSettings(enabled=False, provider_config_id=config.id))
+    await session.commit()
 
 
 async def _providers(session: Any, key: str) -> None:
@@ -195,6 +215,7 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
     import app.models  # noqa: F401
     from app.controls.models import Control
+    from app.frameworks.coverage import CLOSING
     from app.frameworks.models import Framework, FrameworkItem
     from app.review.models import Proposal, ProposalKind
     from evals import corpus, metrics
@@ -215,6 +236,12 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
         from app.mapping import tasks as mapping_tasks
         from app.mapping.tasks import run_mapping
+        # 放在这里而不是 main()：app 的配置要等 _configure_env 设好评估库之后再加载。
+        if args.top_k:
+            mapping_tasks.TOP_K = args.top_k
+        if args.items_per_batch:
+            # chunk_items 的默认值在定义时就绑定了，改模块常量不生效，只能包一层
+            mapping_tasks.chunk_items = functools.partial(mapping_tasks.chunk_items, max_items=args.items_per_batch)
         if args.candidates == "jev":
             # 实验：用 Jev 打分（evals/jev.py 的缓存）替换预筛排序，其余流程不变。
             from evals.jev import score
@@ -228,7 +255,7 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
                 out = {}
                 for item_id, _text in items:
                     scores = jev.get(item_code[item_id], {})
-                    ranked = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))[:20]
+                    ranked = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))[:mapping_tasks.TOP_K]
                     out[item_id] = [ctl_id[c] for c, _ in ranked]
                 return out
 
@@ -237,6 +264,31 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
             mapping_tasks.rank_candidates = jev_rank
             mapping_tasks.load_vectors = no_vectors
+        elif args.candidates == "jev-live":
+            # 走产品路径（jev_prefilter.rank，真实调用 Jev 服务）：与部署时打开
+            # MAPPING_JEV_PREFILTER 完全同一段代码，回退也照常发生并写进汇总。
+            await _jev_provider(session)
+        # 记下任务实际用的候选（不另算一遍——重算的口径一旦和任务不一致，「模型见过
+        # 没选」就会被误判成「预筛没给」）。Jev 实验替换过排序函数，包的是替换后的那个。
+        used: dict[int, list[int]] = {}
+        ranker = mapping_tasks.rank_candidates
+
+        def recording(*a: Any, **k: Any) -> dict[int, list[int]]:
+            out = ranker(*a, **k)
+            used.update(out)
+            return out
+
+        jev_rank_live = mapping_tasks.jev_prefilter.rank
+
+        async def recording_jev(*a: Any, **k: Any) -> Any:
+            candidates, reason = await jev_rank_live(*a, **k)
+            if candidates is not None:
+                used.update(candidates)
+            return candidates, reason
+
+        mapping_tasks.jev_prefilter.rank = recording_jev
+
+        mapping_tasks.rank_candidates = recording
         started = time.time()
         summary = await run_mapping(session, framework.id, run_key=f"eval:{args.label}")
         await session.commit()
@@ -254,6 +306,27 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
         gold = {(csf, c) for csf, cs in expected.items() for c in cs}
         # 只在 OLIR 覆盖的子类上计分
         predicted_scored = {pair for pair in predicted if pair[0] in expected}
+        # 覆盖度只认 CLOSING（full/partial）：supporting 给得再多也不关缺口，
+        # 只看总分会把它们算成召回。OLIR 不分强弱，所以分母仍是全部正例。
+        closing = {
+            (codes[p.payload["framework_item_id"]], metrics.base_control(ctl[p.payload["control_id"]]))
+            for p in proposals if p.payload.get("strength") in {strength.value for strength in CLOSING}
+        }
+        closing_scored = {pair for pair in closing if pair[0] in expected}
+        entries: dict[tuple[str, str], dict[str, str]] = {}
+        for p in proposals:
+            pair = (codes[p.payload["framework_item_id"]], metrics.base_control(ctl[p.payload["control_id"]]))
+            entries.setdefault(pair, {"strength": p.payload.get("strength", ""),
+                                      "rationale": p.payload.get("rationale", "")})
+        seen = {codes[item_id]: {metrics.base_control(ctl[cid]) for cid in cids}
+                for item_id, cids in used.items()}
+        if not used:
+            # 控制点不多于 TOP_K 时任务不预筛，模型看到的是全库
+            everything = {metrics.base_control(c) for c in ctl.values()}
+            seen = dict.fromkeys(codes.values(), everything)
+        RESULTS.mkdir(exist_ok=True)
+        (RESULTS / f"mapping-{args.label}-pairs.json").write_text(json.dumps(
+            metrics.pair_details(entries, gold, seen), ensure_ascii=False, indent=1) + "\n")
         attempted = summary["attempted_batches"]
         report = {
             "batches": summary["batches"], "attempted": attempted,
@@ -261,7 +334,10 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
             "dropped_mappings": summary["dropped_mappings"],
             "batch_validation_pass_rate": metrics.rate(attempted - summary["rejected"] - summary["failed"], attempted),
             "candidate_vector_used": summary.get("candidate_vector_used"),
+            "candidate_source": summary.get("candidate_source"),
+            "candidate_fallback_reason": summary.get("candidate_fallback_reason"),
             "mapping": metrics.prf(predicted_scored, gold),
+            "mapping_closing": metrics.prf(closing_scored, gold),
             "citation_repairs": await _repairs(session),
             "proposals": len(proposals),
             "usage": await _usage(session),
@@ -365,8 +441,13 @@ def main() -> None:
     parser.add_argument("--vectors", action="store_true")
     parser.add_argument("--retries", type=int)
     parser.add_argument("--embed-controls", action="store_true", default=True)
-    parser.add_argument("--candidates", choices=["hybrid", "jev"], default="hybrid")
+    parser.add_argument("--candidates", choices=["hybrid", "jev", "jev-live"], default="hybrid")
+    parser.add_argument("--top-k", type=int, help="映射候选数（默认用 TOP_K）；B1 比较 20 与 40")
+    parser.add_argument("--items-per-batch", type=int, help="每批框架项数（默认用 MAX_ITEMS_PER_BATCH）")
     args = parser.parse_args()
+    if args.candidates == "jev-live":
+        # 必须在 app 的配置第一次加载之前设：get_settings 有缓存
+        os.environ["MAPPING_JEV_PREFILTER"] = "true"
 
     if args.suite == "prefilter":
         report = run_prefilter(args)
@@ -375,7 +456,9 @@ def main() -> None:
     else:
         report = asyncio.run(run_extraction_eval(args))
     report = {"suite": args.suite, "label": args.label, "chat_model": CHAT_MODEL,
-              "embed_model": EMBED_MODEL, "max_tokens": MAX_TOKENS, **report}
+              "embed_model": EMBED_MODEL, "max_tokens": MAX_TOKENS,
+              **({"top_k": args.top_k} if args.top_k else {}),
+              **({"items_per_batch": args.items_per_batch} if args.items_per_batch else {}), **report}
     RESULTS.mkdir(exist_ok=True)
     out = RESULTS / f"{args.suite}-{args.label}.json"
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")

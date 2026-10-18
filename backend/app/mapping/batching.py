@@ -70,6 +70,8 @@ def build_batches(items: list[Any], *, max_chars: int = MAX_BATCH_CHARS) -> list
 # （MAPPING_SCHEMA maxItems），29 个框架项一批时平均每项分不到 1 条。OLIR 评估
 # （evals/，MiniMax M3）：全库上下文 0.71/0.14（精确率/召回）；只加预筛不拆批
 # 0.70/0.14——召回纹丝不动。所以预筛之后每批只放少量框架项。
+# 再减到每批 1 项（2026-10-18，k=40）：总召回 0.32→0.38，但多给的大多是「支撑」，
+# 能关缺口的 full/partial 召回只 0.23→0.26，批次与 token 翻倍、确认队列每项多近一倍（K16）。
 MAX_ITEMS_PER_BATCH = 4
 
 
@@ -105,7 +107,7 @@ def split_to_fit(
     """批次 → [(子批次, 候选控制点 id)]。候选并集渲染超限时按框架项对半拆。
 
     `render_size(control_ids)` 返回这些控制点渲染后的字符数。单个框架项的候选
-    仍超限时原样返回，交给 render_controls 报错（TOP_K=20 时实际不会发生）。
+    仍超限时原样返回，交给 render_controls 报错（TOP_K=40 时，候选平均要超过 1500 字才会发生）。
     """
     union = sorted({cid for item_id in batch.mappable_ids for cid in candidates.get(item_id, [])})
     if render_size(union) <= max_chars or len(batch.mappable_ids) <= 1:
