@@ -56,6 +56,21 @@ def test_pair_details_split_misses_by_whether_the_model_saw_the_control():
     ]
 
 
+def test_pair_details_keep_the_strength_the_model_gave_each_hit():
+    # OLIR 不分强弱：命中里模型标成「支撑」的不关缺口，要能单独拿出来人工看口径。
+    gold = {("PR.AA-01", "AC-2"), ("PR.AA-01", "IA-2")}
+    predicted = {
+        ("PR.AA-01", "AC-2"): {"strength": "supporting", "rationale": "Accounts are managed."},
+        ("PR.AA-01", "SC-7"): {"strength": "partial", "rationale": "Boundary protection."},
+    }
+
+    details = metrics.pair_details(predicted, gold, {"PR.AA-01": {"AC-2", "IA-2", "SC-7"}})
+
+    assert details["hit"] == [
+        {"csf": "PR.AA-01", "control": "AC-2", "strength": "supporting", "rationale": "Accounts are managed."},
+    ]
+
+
 def test_review_sample_is_reproducible_and_capped_by_the_population():
     from evals.review_sheet import sample
 

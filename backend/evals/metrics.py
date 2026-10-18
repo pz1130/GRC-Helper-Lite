@@ -41,6 +41,7 @@ def pair_details(
 
     missed：OLIR 有、模型没给；`in_candidates` 区分「模型见过没选」与「预筛没给它看」。
     extra：模型给了、OLIR 没有——只算 OLIR 覆盖到的子类，与 prf 的计分口径一致。
+    hit：两边都有，带模型给的强度——OLIR 不分强弱，标成「支撑」的命中不关缺口。
     """
     scored = {csf for csf, _ in gold}
     missed = [
@@ -52,4 +53,5 @@ def pair_details(
         for csf, control in sorted(predicted.keys() - gold)
         if csf in scored
     ]
-    return {"missed": missed, "extra": extra}
+    hit = [{"csf": csf, "control": control, **predicted[(csf, control)]} for csf, control in sorted(predicted.keys() & gold)]
+    return {"missed": missed, "extra": extra, "hit": hit}

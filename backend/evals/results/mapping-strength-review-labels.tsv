@@ -1,0 +1,34 @@
+# K16 强度口径抽样（Claude 单人盲标，2026-10-18，未经人工复核）。label：F 满足 / P 部分 / S 支撑 / N 无关；
+# 「部分」= 直接做了要求的一部分（含较窄的特例），「支撑」= 只是前提或输入。按模型看到的截断陈述判。
+# 抽样：mapping-strength-review-pairs.json 的 hit 里模型标 supporting 20 条 + partial 10 条，种子 17，打乱后盲标。
+n	csf	control	model	label	reason
+1	ID.AM-03	CA-3	supporting	P	互联协议记录了获准的对外通信，是数据流表示的一部分
+2	RS.MA-03	IR-5	supporting	S	跟踪记录事件是分类分级的前提，本身不分类
+3	PR.IR-02	PE-9	supporting	P	保护电力设施免受损坏，直接保护了一类资产免受环境威胁
+4	GV.RR-04	PS-7	supporting	P	外部人员安全要求本身就是人力资源实践里的安全内容
+5	PR.PS-04	AU-11	supporting	S	保留期服务事后调查；记录生成与供持续监控取用不靠它
+6	GV.RM-07	PM-9	supporting	S	风险策略是讨论的载体，没写正面风险
+7	GV.OV-02	PM-9	partial	S	看到的陈述只有制定策略，没有复审与调整
+8	RC.RP-01	CP-10	supporting	P	系统恢复重建就是在执行恢复
+9	PR.DS-10	SI-16	partial	P	内存保护直接保护使用中数据的完整性
+10	GV.RM-07	RA-3	supporting	S	风险评估只看威胁与脆弱性，不涉及机会
+11	DE.AE-03	AU-6	supporting	S	审查分析审计记录，没写跨来源关联
+12	GV.SC-04	RA-9	partial	S	关键性分析针对组件而不是供应商，给供应商排序提供输入
+13	GV.RR-02	PM-23	supporting	P	设立带职责的数据治理机构，确立了一部分角色
+14	DE.CM-09	AU-12	supporting	S	生成审计记录是监控的前提，不是监控
+15	PR.AA-03	IA-10	supporting	P	特定情形下的补充认证，直接在做认证
+16	PR.AA-03	IA-11	supporting	P	重新认证，直接在做认证
+17	GV.RR-02	PM-29	partial	P	任命风险管理高级负责人与风险执行职能，确立了关键角色
+18	GV.SC-10	SR-2	partial	S	有供应链风险计划，但没写合作结束后的条款
+19	GV.SC-09	PM-31	supporting	S	通用持续监控策略，未及供应链实践的融入与绩效
+20	ID.RA-09	SR-6	supporting	S	评估供应商风险，不是采购前评估软硬件真实性与完整性
+21	ID.AM-03	AC-4	partial	S	执行流控需要流向策略，但不维护数据流表示
+22	GV.RM-07	PM-28	supporting	S	风险框定写取舍与优先级，未及正面风险
+23	GV.SC-10	SR-3	supporting	S	供应链控制与流程，未及合作结束后的安排
+24	RS.MA-05	IR-4	partial	P	事件处置含恢复阶段，启动恢复是其中一步
+25	DE.CM-01	SC-5	supporting	S	防护拒绝服务，不是监控网络
+26	RC.RP-02	IR-4	supporting	P	事件处置含恢复，选择并执行恢复动作在其内
+27	RC.RP-03	CP-9	supporting	S	看到的陈述只有做备份，没有恢复前校验
+28	ID.RA-05	RA-7	partial	P	按风险容忍度响应，是用风险信息指导响应的一部分
+29	GV.SC-01	SR-2	partial	P	供应链风险计划就是该计划与策略的一部分
+30	ID.RA-07	CM-4	partial	P	变更前做影响分析，直接是变更风险评估

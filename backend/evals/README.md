@@ -22,7 +22,7 @@ GRC_EVAL_LLM_API_KEY=... python -m evals.harness extraction --label after [--ret
 - 结果写进 `evals/results/<suite>-<label>.json`；映射报告里 `mapping` 计全部提案，`mapping_closing`
   只计 full/partial——覆盖度只认这两档，supporting 不关缺口。映射套件另写一份逐对明细
   `mapping-<label>-pairs.json`：`missed`（OLIR 有、模型没给，`in_candidates` 区分模型见过没选与预筛没给）
-  与 `extra`（模型给了、OLIR 没有，带强度与理由）。
+  、`extra`（模型给了、OLIR 没有）与 `hit`（两边都有），后两者带模型给的强度与理由。
 - **人工抽看（K16）**：`python -m evals.review_sheet evals/results/mapping-<label>-pairs.json out.xlsx`
   按固定种子抽样，生成带下拉判断列的审阅表；汇总页按判断自动计数。
 - **改动前后对比**：在旧代码的工作树里跑同一个 harness，
