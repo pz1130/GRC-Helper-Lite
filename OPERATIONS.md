@@ -106,6 +106,12 @@ private address instead — never on a public interface.
 
 Firewall: allow 80/443 only from the networks that should use the system.
 
+Client addresses: the audit log and the per-IP sign-in limit use the address Caddy saw. The
+API trusts `X-Forwarded-For` only from the Docker address pools (`FORWARDED_ALLOW_IPS` in
+`docker-compose.prod.yml`), and Caddy replaces any `X-Forwarded-For` a client sends, so it
+cannot be forged. If a load balancer sits in front of Caddy, every request will appear to come
+from the load balancer until you list it under `trusted_proxies` in the Caddyfile.
+
 ### Upgrading
 
 Back up first, then upgrade, then migrate, in that order:
@@ -117,7 +123,9 @@ make prod-migrate
 ```
 
 Between the new API starting and the migrations finishing, the API runs against the old
-schema, so run `prod-migrate` straight after `prod-up`.
+schema, so run `prod-migrate` straight after `prod-up`. Until then `/api/health` answers 503
+with `"schema": "mismatch"` and the api container reports unhealthy. The same happens when the
+database is newer than the code, for example after rolling the code back without restoring.
 
 ---
 
@@ -178,7 +186,8 @@ KEEP_DRILL=1 scripts/restore-drill.sh      # leave the stack up at https://local
 It restores into a separate project (`grc-drill`, ports 18080/18443 on 127.0.0.1) and never
 touches production. It checks, in order: the manifest sha256 of both files; that the current
 `APP_SECRET_KEY` matches the fingerprint recorded at backup time; the migration version; the
-row count of every table; the number of document files; and finally that the full stack
+row count of every table; the number of document files; and finally, after migrating to the
+current code (a backup taken before an upgrade is one schema behind), that the full stack
 answers `/api/health` over HTTPS with the HSTS header. It removes the temporary stack (and
 its volumes) when done.
 
@@ -216,8 +225,10 @@ make prod-up && make prod-migrate
 
 ## Mapping candidate prefilter with Jev (optional, off by default)
 
-Framework mapping first picks 20 candidate controls per framework item, by default with
-keyword (BM25) and vector ranking. Setting `MAPPING_JEV_PREFILTER=true` in `.env` switches
+Framework mapping first picks 40 candidate controls per framework item, by default with
+keyword (BM25) and vector ranking. The model then proposes every candidate that fully or
+partially satisfies the item or supports it, so expect about five proposals per framework item
+in the review queue. Supporting mappings are shown but never count as closing a gap. Setting `MAPPING_JEV_PREFILTER=true` in `.env` switches
 this ranking to the Jev judge model (TypeSafe) configured under Settings → Decision model.
 
 **This sends your institution's control titles and statements (after redaction rules) to
@@ -226,15 +237,22 @@ that provider (KNOWN_ISSUES K17).
 
 - Requires both the flag and a Jev provider selected in the decision-model settings (the
   separate "enabled" switch there is for the document requirement scan and is not needed).
-- Each Jev request is logged as an AI call (`task_key=mapping_jev_prefilter`) and counts
-  against the monthly and provider budgets like other batch work.
+- Each Jev request is logged as an AI call (`task_key=mapping_jev_prefilter`) and goes through
+  the budget check like other batch work. Jev is not in the price table, so its calls are
+  recorded as cost unknown with a cost of 0, and the monthly budget cannot cap Jev spending.
+  Track it on the TypeSafe side.
 - If the flag is on but Jev is not configured, the budget is exhausted, a call fails or
   times out (30 s), the whole run falls back to keyword + vector ranking; the audit log gets a
   `mapping.prefilter_fallback` entry with the reason, and the mapping summary reports
   `candidate_source` and `candidate_fallback_reason`.
-- Measured on public NIST data (`backend/evals/`): top-20 candidate recall 0.40 → 0.57;
-  end-to-end with MiniMax M3, precision 0.51 → 0.54, recall 0.23 → 0.27, F1 0.32 → 0.36
-  (single runs).
+- Measured on public NIST data (`backend/evals/`): candidate recall 0.40 → 0.57 in the top 20
+  and 0.53 → 0.73 in the top 40. End-to-end with MiniMax M3, measured with 20 candidates and the
+  earlier, more selective mapping prompt: precision 0.51 → 0.54, recall 0.23 → 0.27, F1
+  0.32 → 0.36 (single runs). Re-measured end to end on 2026-10-17 with the current settings
+  (40 candidates, current prompt): Jev put more correct controls in front of the model (514 vs
+  408 of 716), but precision, recall and F1 came out level (0.44 / 0.34 / 0.38 either way).
+  Until that changes, turning Jev on adds data transfer and about 1.8 million Jev tokens per
+  run without a measurable gain (KNOWN_ISSUES K17).
 
 ---
 

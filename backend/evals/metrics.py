@@ -30,3 +30,28 @@ def candidate_recall(candidates: dict[str, list[str]], expected: dict[str, set[s
 
 def rate(numerator: int, denominator: int) -> float | None:
     return round(numerator / denominator, 4) if denominator else None
+
+
+def pair_details(
+    predicted: dict[tuple[str, str], dict[str, str]],
+    gold: set[tuple[str, str]],
+    candidates: dict[str, set[str]],
+) -> dict[str, list[dict[str, object]]]:
+    """逐对明细，给人工抽看用（K16）。
+
+    missed：OLIR 有、模型没给；`in_candidates` 区分「模型见过没选」与「预筛没给它看」。
+    extra：模型给了、OLIR 没有——只算 OLIR 覆盖到的子类，与 prf 的计分口径一致。
+    hit：两边都有，带模型给的强度——OLIR 不分强弱，标成「支撑」的命中不关缺口。
+    """
+    scored = {csf for csf, _ in gold}
+    missed = [
+        {"csf": csf, "control": control, "in_candidates": control in candidates.get(csf, set())}
+        for csf, control in sorted(gold - predicted.keys())
+    ]
+    extra = [
+        {"csf": csf, "control": control, **predicted[(csf, control)]}
+        for csf, control in sorted(predicted.keys() - gold)
+        if csf in scored
+    ]
+    hit = [{"csf": csf, "control": control, **predicted[(csf, control)]} for csf, control in sorted(predicted.keys() & gold)]
+    return {"missed": missed, "extra": extra, "hit": hit}

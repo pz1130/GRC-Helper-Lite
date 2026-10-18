@@ -1,0 +1,47 @@
+{
+  "suite": "mapping",
+  "label": "strength-review",
+  "chat_model": "MiniMax-M3",
+  "embed_model": "embo-01",
+  "max_tokens": 16384,
+  "batches": 30,
+  "attempted": 30,
+  "rejected": 0,
+  "failed": 0,
+  "dropped_mappings": 0,
+  "batch_validation_pass_rate": 1.0,
+  "candidate_vector_used": true,
+  "candidate_source": "keyword_vector",
+  "candidate_fallback_reason": null,
+  "mapping": {
+    "tp": 218,
+    "predicted": 499,
+    "expected": 716,
+    "precision": 0.4369,
+    "recall": 0.3045,
+    "f1": 0.3588
+  },
+  "mapping_closing": {
+    "tp": 159,
+    "predicted": 271,
+    "expected": 716,
+    "precision": 0.5867,
+    "recall": 0.2221,
+    "f1": 0.3222
+  },
+  "citation_repairs": 0,
+  "proposals": 499,
+  "usage": {
+    "framework_mapping:ok": {
+      "calls": 30,
+      "tokens_in": 153813,
+      "tokens_out": 144578
+    },
+    "embedding:ok": {
+      "calls": 3,
+      "tokens_in": 22320,
+      "tokens_out": 0
+    }
+  },
+  "elapsed_s": 977.7
+}

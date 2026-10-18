@@ -23,7 +23,9 @@ from app.errors import AppError, Conflict, NotFound
 from app.frameworks.models import FrameworkItem
 from app.iam.audit import record
 from app.iam.models import User
+from app.llm.providers.base import ProviderError
 from app.llm.runner import run
+from app.llm.validation import ValidationFailure
 from app.maturity.context import build_inputs
 from app.maturity.models import (
     AssessmentStatus,
@@ -74,6 +76,9 @@ async def suggest_scores(
     summary: dict[str, Any] = {
         "batches": 0,
         "written": 0,
+        "rejected": 0,
+        "failed": 0,
+        "stopped_by": None,
         "skipped_human": 0,
         "unknown_items": 0,
         "stopped_finalized": False,
@@ -95,13 +100,35 @@ async def suggest_scores(
             + json.dumps(MATURITY_SCHEMA)
         )
         summary["batches"] += 1
-        result = await run(
-            session,
-            task_key=MATURITY_TASK_KEY,
-            system=MATURITY_SYSTEM,
-            prompt=prompt,
-            schema=MATURITY_SCHEMA,
-        )
+        # 与映射任务同一套分类（K7）。这一批失败，前面已提交的批次仍然有效；
+        # 失败那次调用的 llm_call 由 run() 记进本会话，提交了花费才不会少计。
+        try:
+            result = await run(
+                session,
+                task_key=MATURITY_TASK_KEY,
+                system=MATURITY_SYSTEM,
+                prompt=prompt,
+                schema=MATURITY_SCHEMA,
+            )
+        except ValidationFailure as failure:
+            logger.warning("Maturity assessment %s batch rejected: %s", assessment_id, failure.reason)
+            summary["rejected"] += 1
+            await session.commit()
+            continue
+        except ProviderError as failure:
+            # 供应商故障不是质量信号，不计入 rejected，也不该让一次超时作废整轮。
+            logger.warning("Maturity assessment %s batch failed: %s", assessment_id, failure)
+            summary["failed"] += 1
+            await session.commit()
+            continue
+        except AppError as stop:
+            # 预算耗尽之类：后面的批次也不会成功，停下。照「中途定稿」的做法正常返回，
+            # 让任务入口照样写汇总审计——前端不轮询任务状态，这条审计是这一轮停在
+            # 哪、为什么停的唯一记录。
+            logger.warning("Maturity assessment %s stopped: %s", assessment_id, stop.code)
+            await session.rollback()
+            summary["stopped_by"] = stop.code
+            break
         if result.llm_call_id is not None:
             summary["llm_call_ids"].append(result.llm_call_id)
 

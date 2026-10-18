@@ -1,8 +1,13 @@
 import logging
+from functools import cache
+from pathlib import Path
 
+from alembic.config import Config
+from alembic.script import ScriptDirectory
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.models
 from app.config import get_settings
@@ -23,6 +28,37 @@ async def database_reachable() -> bool:
         return False
 
 
+@cache
+def code_head() -> str | None:
+    """这份代码期望的迁移版本。读的是镜像里的迁移脚本，不连库。"""
+    config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+    return ScriptDirectory.from_config(config).get_current_head()
+
+
+async def schema_at_head(session: AsyncSession | None = None) -> bool:
+    """库的迁移版本是否正好是代码的 head（G3）。
+
+    升级顺序是「先备份，再升级，再迁移」：新代码起来到迁移跑完之间连的是旧 schema，
+    请求会以奇怪的方式失败。库比代码新（回滚了代码没回滚库）同样算不一致。
+    """
+    async def read(s: AsyncSession) -> str | None:
+        return await s.scalar(text("SELECT version_num FROM alembic_version"))
+
+    try:
+        if session is not None:
+            revision = await read(session)
+        else:
+            async with session_factory() as fresh:
+                revision = await read(fresh)
+    except Exception:  # noqa: BLE001 —— 读不到版本表也是不一致
+        logger.warning("健康检查：读不到迁移版本")
+        return False
+    if revision != code_head():
+        logger.warning("健康检查：库的迁移版本 %s ≠ 代码 %s，先跑迁移", revision, code_head())
+        return False
+    return True
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     application = FastAPI(title="GRC Helper", version=settings.app_version)
@@ -41,12 +77,16 @@ def create_app() -> FastAPI:
         Redis 不算：限流在它不可用时放行（iam/throttle.py），API 照样能服务，
         把它算进来会让一次缓存抖动变成整个服务被重启。
         """
-        healthy = await database_reachable()
+        reachable = await database_reachable()
+        # 连不上库时版本无从谈起，不再多查一次
+        current = reachable and await schema_at_head()
+        healthy = reachable and current
         if not healthy:
             response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         return {
             "status": "ok" if healthy else "degraded",
-            "database": "ok" if healthy else "down",
+            "database": "ok" if reachable else "down",
+            "schema": "ok" if current else ("mismatch" if reachable else "unknown"),
             "version": settings.app_version,
         }
 

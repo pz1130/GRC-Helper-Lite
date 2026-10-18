@@ -115,6 +115,7 @@ async def run_mapping(
                 mappable, control_docs,
                 item_vectors=item_vectors,
                 control_vectors=control_vectors,
+                top_k=TOP_K,
             )
             candidate_source = "keyword_vector"
         # 预筛的调用与回退记录与后续批次一起提交；批次各自 commit，先落地这一段。
