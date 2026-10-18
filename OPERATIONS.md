@@ -106,6 +106,12 @@ private address instead — never on a public interface.
 
 Firewall: allow 80/443 only from the networks that should use the system.
 
+Client addresses: the audit log and the per-IP sign-in limit use the address Caddy saw. The
+API trusts `X-Forwarded-For` only from the Docker address pools (`FORWARDED_ALLOW_IPS` in
+`docker-compose.prod.yml`), and Caddy replaces any `X-Forwarded-For` a client sends, so it
+cannot be forged. If a load balancer sits in front of Caddy, every request will appear to come
+from the load balancer until you list it under `trusted_proxies` in the Caddyfile.
+
 ### Upgrading
 
 Back up first, then upgrade, then migrate, in that order:
@@ -117,7 +123,9 @@ make prod-migrate
 ```
 
 Between the new API starting and the migrations finishing, the API runs against the old
-schema, so run `prod-migrate` straight after `prod-up`.
+schema, so run `prod-migrate` straight after `prod-up`. Until then `/api/health` answers 503
+with `"schema": "mismatch"` and the api container reports unhealthy. The same happens when the
+database is newer than the code, for example after rolling the code back without restoring.
 
 ---
 
@@ -178,7 +186,8 @@ KEEP_DRILL=1 scripts/restore-drill.sh      # leave the stack up at https://local
 It restores into a separate project (`grc-drill`, ports 18080/18443 on 127.0.0.1) and never
 touches production. It checks, in order: the manifest sha256 of both files; that the current
 `APP_SECRET_KEY` matches the fingerprint recorded at backup time; the migration version; the
-row count of every table; the number of document files; and finally that the full stack
+row count of every table; the number of document files; and finally, after migrating to the
+current code (a backup taken before an upgrade is one schema behind), that the full stack
 answers `/api/health` over HTTPS with the HSTS header. It removes the temporary stack (and
 its volumes) when done.
 

@@ -133,6 +133,34 @@ async def test_merge_moves_control_sources_off_the_loser(db_session):
 
 
 @pytest.mark.asyncio
+async def test_merge_audit_lists_the_controls_whose_source_moved(db_session):
+    # 审计员问「这个控制点原来引的是哪句」时，答案就是这一条记录（K8）。
+    # 胜者已经引用过的控制点不挪，出处仍留在被并掉的条款上，所以不算「挪走」。
+    actor = await _user(db_session)
+    document = await _doc(db_session)
+    winner = await _clause(db_session, document, number="1", text="A.", order_index=0)
+    loser = await _clause(
+        db_session, document, number="2", heading="B", heading_path="B",
+        citation_label="2", text="B.", order_index=1,
+    )
+    moved = Control(code="C-0001", title="T", statement="S", status="active")
+    shared = Control(code="C-0002", title="T", statement="S", status="active")
+    db_session.add_all([moved, shared])
+    await db_session.flush()
+    db_session.add_all([
+        ControlSource(control_id=moved.id, clause_id=loser.id, relation=SourceRelation.DEFINES),
+        ControlSource(control_id=shared.id, clause_id=loser.id, relation=SourceRelation.DEFINES),
+        ControlSource(control_id=shared.id, clause_id=winner.id, relation=SourceRelation.DEFINES),
+    ])
+    await db_session.flush()
+
+    await merge_clauses(db_session, winner_id=winner.id, loser_id=loser.id, actor=actor)
+
+    log = await db_session.scalar(select(AuditLog).where(AuditLog.action == "clause.merge"))
+    assert log.after["moved_source_control_ids"] == [moved.id]
+
+
+@pytest.mark.asyncio
 async def test_merge_rejects_clauses_from_different_documents(db_session):
     actor = await _user(db_session)
     left = await _doc(db_session, file_hash="b" * 64, original_filename="a.pdf")

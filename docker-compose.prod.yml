@@ -38,6 +38,13 @@ services:
       context: ./backend
       target: prod
     env_file: .env
+    environment:
+      # G1：uvicorn 默认只信任 127.0.0.1 发来的 X-Forwarded-For，nginx 转过来的被整个
+      # 忽略，审计日志与按 IP 登录限流看到的都是 nginx 容器地址。这里信任 Docker 的
+      # 默认地址池（compose 网络从中分配）。uvicorn 从链尾往前取第一个不受信任的地址；
+      # 客户端自带的 X-Forwarded-For 在 Caddy 那一层就被覆盖（未配 trusted_proxies），
+      # 所以伪造不了。不要写成 "*"：那样 uvicorn 直接取链首。
+      FORWARDED_ALLOW_IPS: "172.16.0.0/12,192.168.0.0/16"
     depends_on:
       db: {condition: service_healthy}
       redis: {condition: service_healthy}
