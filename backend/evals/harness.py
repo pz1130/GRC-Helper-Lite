@@ -74,6 +74,25 @@ async def _fresh_db(db_name: str, url: str) -> None:
     await asyncio.to_thread(command.upgrade, cfg, "head")
 
 
+async def _jev_provider(session: Any) -> None:
+    """评估库里按产品的方式配好 Jev：一条 provider，判断模型设置里选中它。"""
+    from app.crypto import encrypt
+    from app.decision.settings import DecisionSettings, save_settings
+    from app.llm.models import LLMProviderConfig, ProviderKind
+
+    key = os.environ.get("GRC_EVAL_JEV_API_KEY", "")
+    if not key:
+        sys.exit("--candidates jev-live 需要环境变量 GRC_EVAL_JEV_API_KEY。")
+    config = LLMProviderConfig(name="eval-jev", kind=ProviderKind.JEV,
+                               model=os.environ.get("GRC_EVAL_JEV_MODEL", "jev-1.13.0"),
+                               api_key_encrypted=encrypt(key))
+    session.add(config)
+    await session.flush()
+    # 「enabled」是文档要求扫描的开关，映射预筛不看它（见 OPERATIONS）
+    await save_settings(session, DecisionSettings(enabled=False, provider_config_id=config.id))
+    await session.commit()
+
+
 async def _providers(session: Any, key: str) -> None:
     from app.crypto import encrypt
     from app.llm.models import AppSetting, LLMProviderConfig, ProviderKind, TaskRouting
@@ -231,7 +250,7 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
                 out = {}
                 for item_id, _text in items:
                     scores = jev.get(item_code[item_id], {})
-                    ranked = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))[:20]
+                    ranked = sorted(scores.items(), key=lambda kv: (-kv[1], kv[0]))[:mapping_tasks.TOP_K]
                     out[item_id] = [ctl_id[c] for c, _ in ranked]
                 return out
 
@@ -240,6 +259,10 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
 
             mapping_tasks.rank_candidates = jev_rank
             mapping_tasks.load_vectors = no_vectors
+        elif args.candidates == "jev-live":
+            # 走产品路径（jev_prefilter.rank，真实调用 Jev 服务）：与部署时打开
+            # MAPPING_JEV_PREFILTER 完全同一段代码，回退也照常发生并写进汇总。
+            await _jev_provider(session)
         # 记下任务实际用的候选（不另算一遍——重算的口径一旦和任务不一致，「模型见过
         # 没选」就会被误判成「预筛没给」）。Jev 实验替换过排序函数，包的是替换后的那个。
         used: dict[int, list[int]] = {}
@@ -249,6 +272,16 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
             out = ranker(*a, **k)
             used.update(out)
             return out
+
+        jev_rank_live = mapping_tasks.jev_prefilter.rank
+
+        async def recording_jev(*a: Any, **k: Any) -> Any:
+            candidates, reason = await jev_rank_live(*a, **k)
+            if candidates is not None:
+                used.update(candidates)
+            return candidates, reason
+
+        mapping_tasks.jev_prefilter.rank = recording_jev
 
         mapping_tasks.rank_candidates = recording
         started = time.time()
@@ -289,6 +322,8 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
             "dropped_mappings": summary["dropped_mappings"],
             "batch_validation_pass_rate": metrics.rate(attempted - summary["rejected"] - summary["failed"], attempted),
             "candidate_vector_used": summary.get("candidate_vector_used"),
+            "candidate_source": summary.get("candidate_source"),
+            "candidate_fallback_reason": summary.get("candidate_fallback_reason"),
             "mapping": metrics.prf(predicted_scored, gold),
             "citation_repairs": await _repairs(session),
             "proposals": len(proposals),
@@ -393,9 +428,12 @@ def main() -> None:
     parser.add_argument("--vectors", action="store_true")
     parser.add_argument("--retries", type=int)
     parser.add_argument("--embed-controls", action="store_true", default=True)
-    parser.add_argument("--candidates", choices=["hybrid", "jev"], default="hybrid")
+    parser.add_argument("--candidates", choices=["hybrid", "jev", "jev-live"], default="hybrid")
     parser.add_argument("--top-k", type=int, help="映射候选数（默认用 TOP_K）；B1 比较 20 与 40")
     args = parser.parse_args()
+    if args.candidates == "jev-live":
+        # 必须在 app 的配置第一次加载之前设：get_settings 有缓存
+        os.environ["MAPPING_JEV_PREFILTER"] = "true"
 
     if args.suite == "prefilter":
         report = run_prefilter(args)
