@@ -8,7 +8,10 @@
 - 进度分母是冻结的评估项数，排除单列；不同指标不合并成「合规率」；
 - 情景按评分档位计数，叫「情景」不叫「风险」——同一风险在多个控制下会重复出现，
   不能当作机构风险总数；
-- 报告不带证据位置、测试人或回答正文，打印出去也不会带出服务器路径或内部链接。
+- 报告不带证据位置、测试人或回答正文，打印出去也不会带出服务器路径或内部链接；
+- 跨期只并列、不算改善百分比，也不平均序数分；同一控制、同一情景键、同一评分版本与时域
+  才算可比，否则照样并列但标「不可直接比较」。上一期必须已关闭才能当基线；
+- 汇总用档位计数和最高档位，不给「平均风险」。
 """
 
 from collections import Counter
@@ -142,6 +145,13 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
         "actions": dict(actions),
         "limitations": limitations,
         "acknowledgements": (campaign.closed_snapshot or {}).get("acknowledgements"),
+        "highest_residual_band": _band(bands, max(scores)) if (scores := [
+            risk["residual_score"] for item in items for risk in item.get("risks", [])
+            if risk["residual_score"] is not None
+        ]) else None,
+        # AI 辅助尚未启用（PR-4 只交付关闭路径）：报告里不会出现任何模型生成的内容。
+        "ai_assistance": "not_enabled",
+        "comparison": await _comparison(session, campaign, items),
         "items": rows,
         "current_follow_up": await _current_follow_up(session, campaign.id, today),
     }
@@ -173,3 +183,49 @@ async def _current_follow_up(session: AsyncSession, campaign_id: int, today: dat
         "accept_until": risk.accept_until.isoformat(), "expired": risk.accept_until < today,
     } for risk, item in risks]
     return {"actions": actions, "acceptances": acceptances}
+
+
+def _scenarios(items: list[dict[str, Any]]) -> dict[tuple[int, str], tuple[str, dict[str, Any]]]:
+    """(控制 id, 情景键) → (控制编号, 情景)。比较按控制身份，不按编号，合并不会悄悄换控制。"""
+    found = {}
+    for item in items:
+        control = item.get("control") or {}
+        for risk in item.get("risks", []):
+            found[(control.get("id"), risk["scenario_key"])] = (control.get("code"), risk)
+    return found
+
+
+async def _comparison(session: AsyncSession, campaign: RcsaCampaign, items: list[dict[str, Any]]) -> dict[str, Any] | None:
+    if campaign.predecessor_campaign_id is None:
+        return None
+    previous = await fetch(session, RcsaCampaign, campaign.predecessor_campaign_id, code="rcsa.campaign_not_found")
+    result: dict[str, Any] = {
+        "previous": {"id": previous.id, "name": previous.name, "status": str(previous.status)},
+        "comparable": False, "reason": None, "scenarios": [],
+    }
+    if previous.closed_snapshot is None:
+        return result | {"reason": "previous_not_closed"}
+    before, now = previous.profile_snapshot or {}, campaign.profile_snapshot or {}
+    same = all(before.get(key) == now.get(key) for key in ("key", "revision", "horizon"))
+    previous_scenarios = _scenarios(previous.closed_snapshot["items"])
+    current_scenarios = _scenarios(items)
+    rows = []
+    for key in sorted(previous_scenarios.keys() | current_scenarios.keys(), key=lambda k: (str(k[0]), k[1])):
+        old = previous_scenarios.get(key)
+        new = current_scenarios.get(key)
+        if old is None:
+            status = "new"
+        elif new is None:
+            status = "removed"
+        else:
+            status = "comparable" if same else "not_directly_comparable"
+        old_score = old[1]["residual_score"] if old else None
+        new_score = new[1]["residual_score"] if new else None
+        rows.append({
+            "control_code": (new or old)[0], "scenario_key": key[1], "status": status,
+            "previous_residual_score": old_score,
+            "previous_residual_band": _band(before.get("bands") or [], old_score) if old else None,
+            "current_residual_score": new_score,
+            "current_residual_band": _band(now.get("bands") or [], new_score) if new else None,
+        })
+    return result | {"comparable": same, "reason": None if same else "profile_changed", "scenarios": rows}

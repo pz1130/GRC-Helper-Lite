@@ -108,3 +108,106 @@ async def test_report_carries_no_evidence_locations(client, db_session, acme):
     report = json.dumps(await _report(client, acme))
 
     assert "fileserver01" not in report
+
+
+# ── 跨期比较 ────────────────────────────────────────────────
+
+
+async def _successor(client, acme, *, profile_id: int | None = None) -> dict:
+    """接续上一期、只含第一个控制点的新活动，已激活。"""
+    from tests.rcsa_support import CAMPAIGN_BODY
+
+    body = CAMPAIGN_BODY | {
+        "name": "Acme Q2", "framework_id": acme["lib"].framework.id,
+        "profile_id": profile_id or acme["profile"].id, "predecessor_campaign_id": acme["campaign"]["id"],
+    }
+    campaign = (await client.post("/api/rcsa/campaigns", json=body, headers=acme["lead"].headers)).json()
+    await client.post(f"/api/rcsa/campaigns/{campaign['id']}/items",
+                      json={"control_ids": [acme["lib"].controls[0].id], "reviewer_id": acme["reviewer"].id},
+                      headers=acme["lead"].headers)
+    active = await client.post(f"/api/rcsa/campaigns/{campaign['id']}/activate",
+                               json={"expected_version": campaign["version"]}, headers=with_key(acme["lead"], "q2"))
+    assert active.status_code == 200, active.text
+    return active.json()
+
+
+async def _rate(client, acme, campaign, residual: tuple[int, int], key: str = "stale-access") -> None:
+    item = (await client.get(f"/api/rcsa/campaigns/{campaign['id']}/items", headers=acme["lead"].headers)).json()[0]
+    from tests.rcsa_support import draft
+
+    await draft(client, acme["assignee"], item)
+    created = await client.post(f"/api/rcsa/items/{item['id']}/risks", json={
+        "scenario_key": key, "cause": "Manual leaver process", "event": "Leaver keeps access",
+        "impact": "Unauthorised change", "inherent_likelihood": 4, "inherent_impact": 4, "inherent_rationale": "r",
+        "residual_likelihood": residual[0], "residual_impact": residual[1], "residual_rationale": "r",
+        "owner_id": acme["assignee"].id,
+    }, headers=acme["assignee"].headers)
+    assert created.status_code == 201, created.text
+
+
+async def _closed_first(client, acme) -> None:
+    found = await finish_items(client, acme)
+    await transition(client, acme, "begin-review")
+    await approve_disposition(client, acme, found["risk"])
+    assert (await transition(client, acme, "close")).status_code == 200
+
+
+async def test_same_profile_scenarios_are_shown_side_by_side_without_percentages(client, acme):
+    await _closed_first(client, acme)
+    successor = await _successor(client, acme)
+    await _rate(client, acme, successor, residual=(2, 2))
+
+    report = await get_json(client, acme, f"/api/rcsa/campaigns/{successor['id']}/report")
+
+    comparison = report["comparison"]
+    assert (comparison["comparable"], comparison["reason"]) == (True, None)
+    assert comparison["scenarios"] == [{
+        "control_code": "C-9001", "scenario_key": "stale-access", "status": "comparable",
+        "previous_residual_score": 9, "previous_residual_band": "Moderate",
+        "current_residual_score": 4, "current_residual_band": "Low",
+    }]
+    assert "%" not in json.dumps(report) and "improvement" not in json.dumps(report)
+    assert report["highest_residual_band"] == "Low"
+    assert report["ai_assistance"] == "not_enabled"
+
+
+async def test_a_new_scenario_key_is_not_compared_with_an_old_one(client, acme):
+    await _closed_first(client, acme)
+    successor = await _successor(client, acme)
+    await _rate(client, acme, successor, residual=(2, 2), key="shared-admin")
+
+    statuses = {(s["scenario_key"], s["status"]) for s in
+                (await get_json(client, acme, f"/api/rcsa/campaigns/{successor['id']}/report"))["comparison"]["scenarios"]}
+
+    assert statuses == {("shared-admin", "new"), ("stale-access", "removed")}
+
+
+async def test_another_scoring_revision_is_not_directly_comparable(client, db_session, acme):
+    from app.rcsa.models import RcsaScoringProfile
+    from tests.rcsa_support import CALIBRATED_DEFINITIONS
+
+    await _closed_first(client, acme)
+    revised = RcsaScoringProfile(
+        key=acme["profile"].key, revision=2, algorithm="product", definitions=CALIBRATED_DEFINITIONS,
+        bands=acme["profile"].bands, horizon="6 months", status="approved", approved_by=acme["lead"].id,
+        approved_at=acme["profile"].approved_at, created_by=acme["lead"].id, updated_by=acme["lead"].id,
+    )
+    db_session.add(revised)
+    await db_session.flush()
+    successor = await _successor(client, acme, profile_id=revised.id)
+    await _rate(client, acme, successor, residual=(2, 2))
+
+    comparison = (await get_json(client, acme, f"/api/rcsa/campaigns/{successor['id']}/report"))["comparison"]
+
+    assert (comparison["comparable"], comparison["reason"]) == (False, "profile_changed")
+    assert [s["status"] for s in comparison["scenarios"]] == ["not_directly_comparable"]
+
+
+async def test_an_unclosed_predecessor_is_not_a_baseline(client, acme):
+    successor = await _successor(client, acme)
+    comparison = (await get_json(client, acme, f"/api/rcsa/campaigns/{successor['id']}/report"))["comparison"]
+    assert (comparison["comparable"], comparison["reason"]) == (False, "previous_not_closed")
+
+
+async def test_a_campaign_without_predecessor_has_no_comparison(client, acme):
+    assert (await _report(client, acme))["comparison"] is None

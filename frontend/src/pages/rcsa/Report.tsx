@@ -46,7 +46,7 @@ export function Report() {
         />
         <p className="kn-secondary kn-text-xs">
           {r.source === "closed_snapshot" ? t("rcsa.report.fromSnapshot", { date: r.campaign.closed_at?.slice(0, 10) }) : t("rcsa.report.live")}
-          {" "}{t("rcsa.report.disclaimer")}
+          {" "}{t("rcsa.report.disclaimer")}{" "}{t(`rcsa.report.ai.${r.ai_assistance}`)}
         </p>
         <div className="rcsa-figures">
           <StatCard label={t("rcsa.report.inScope")} value={r.scope.total} />
@@ -54,6 +54,7 @@ export function Report() {
           <StatCard label={t("rcsa.report.excluded")} value={r.scope.excluded} />
           <StatCard label={t("rcsa.report.unfinished")} value={r.scope.submitted + r.scope.in_progress} tone={r.scope.submitted + r.scope.in_progress ? "warning" : undefined} />
           <StatCard label={t("rcsa.report.openActions")} value={r.actions.open} hint={t("rcsa.report.overdueHint", { count: r.actions.overdue })} tone={r.actions.overdue ? "danger" : undefined} />
+          <StatCard label={t("rcsa.report.highestResidual")} value={r.highest_residual_band ?? "—"} />
         </div>
         <div className="kn-grid-2">
           <Card title={t("rcsa.report.exclusions")}>
@@ -111,6 +112,26 @@ export function Report() {
             </DataTable>
           )}
         </Card>
+        {r.comparison && (
+          <Card title={t("rcsa.report.comparison", { name: r.comparison.previous.name })}>
+            <p className="kn-secondary kn-text-xs">
+              {r.comparison.reason ? t(`rcsa.report.comparisonReason.${r.comparison.reason}`) : t("rcsa.report.comparisonRule")}
+            </p>
+            {r.comparison.scenarios.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
+              <DataTable className="kn-m-0" head={<tr><th>{t("rcsa.scope.control")}</th><th>{t("rcsa.risks.key")}</th><th>{t("rcsa.report.previous")}</th><th>{t("rcsa.report.current")}</th><th>{t("rcsa.campaigns.status")}</th></tr>}>
+                {r.comparison.scenarios.map((row) => (
+                  <tr key={`${row.control_code}-${row.scenario_key}`}>
+                    <td>{row.control_code}</td>
+                    <td>{row.scenario_key}</td>
+                    <td>{row.previous_residual_band ? `${row.previous_residual_band} (${row.previous_residual_score})` : "—"}</td>
+                    <td>{row.current_residual_band ? `${row.current_residual_band} (${row.current_residual_score})` : "—"}</td>
+                    <td>{t(`rcsa.report.comparisonStatus.${row.status}`)}</td>
+                  </tr>
+                ))}
+              </DataTable>
+            )}
+          </Card>
+        )}
         <Card title={t("rcsa.report.currentFollowUp")}>
           <p className="kn-secondary kn-text-xs">{t("rcsa.report.currentHint")}</p>
           {r.current_follow_up.actions.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (

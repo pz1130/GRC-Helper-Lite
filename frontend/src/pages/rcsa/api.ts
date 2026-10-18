@@ -314,6 +314,22 @@ export interface Report {
   actions: { open: number; overdue: number; verified: number; cancelled: number };
   limitations: { control_code: string; text: string }[];
   acknowledgements: { overdue: string; evidence: string } | null;
+  highest_residual_band: string | null;
+  ai_assistance: "not_enabled";
+  comparison: {
+    previous: { id: number; name: string; status: CampaignStatus };
+    comparable: boolean;
+    reason: "previous_not_closed" | "profile_changed" | null;
+    scenarios: {
+      control_code: string;
+      scenario_key: string;
+      status: "comparable" | "not_directly_comparable" | "new" | "removed";
+      previous_residual_score: number | null;
+      previous_residual_band: string | null;
+      current_residual_score: number | null;
+      current_residual_band: string | null;
+    }[];
+  } | null;
   items: {
     item_id: number;
     control_code: string;
