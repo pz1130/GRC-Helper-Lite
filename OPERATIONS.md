@@ -216,8 +216,10 @@ make prod-up && make prod-migrate
 
 ## Mapping candidate prefilter with Jev (optional, off by default)
 
-Framework mapping first picks 20 candidate controls per framework item, by default with
-keyword (BM25) and vector ranking. Setting `MAPPING_JEV_PREFILTER=true` in `.env` switches
+Framework mapping first picks 40 candidate controls per framework item, by default with
+keyword (BM25) and vector ranking. The model then proposes every candidate that fully or
+partially satisfies the item or supports it, so expect about five proposals per framework item
+in the review queue. Supporting mappings are shown but never count as closing a gap. Setting `MAPPING_JEV_PREFILTER=true` in `.env` switches
 this ranking to the Jev judge model (TypeSafe) configured under Settings → Decision model.
 
 **This sends your institution's control titles and statements (after redaction rules) to
@@ -232,9 +234,10 @@ that provider (KNOWN_ISSUES K17).
   times out (30 s), the whole run falls back to keyword + vector ranking; the audit log gets a
   `mapping.prefilter_fallback` entry with the reason, and the mapping summary reports
   `candidate_source` and `candidate_fallback_reason`.
-- Measured on public NIST data (`backend/evals/`): top-20 candidate recall 0.40 → 0.57;
-  end-to-end with MiniMax M3, precision 0.51 → 0.54, recall 0.23 → 0.27, F1 0.32 → 0.36
-  (single runs).
+- Measured on public NIST data (`backend/evals/`): candidate recall 0.40 → 0.57 in the top 20
+  and 0.53 → 0.73 in the top 40. End-to-end with MiniMax M3, measured with 20 candidates and the
+  earlier, more selective mapping prompt: precision 0.51 → 0.54, recall 0.23 → 0.27, F1
+  0.32 → 0.36 (single runs). Not yet re-measured with the current settings.
 
 ---
 

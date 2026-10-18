@@ -136,8 +136,9 @@ async def test_a_framework_with_no_controls_refuses_to_run(harness):
 async def test_a_large_control_library_is_prefiltered_instead_of_failing(harness, monkeypatch):
     """K16：库超过原先的 60000 字符上限也照常映射，提示词只带 TOP_K 个候选。"""
     huge = [
-        SimpleNamespace(id=n, code=f"C-{n:04d}", title="Identity management" if n % 7 == 0 else "Backup",
-                        statement=("Identities are managed. " if n % 7 == 0 else "Backups run. ") + "x" * 1000)
+        # 与框架项相关的要多于 TOP_K 个：纯关键词排序只返回得分大于 0 的控制点
+        SimpleNamespace(id=n, code=f"C-{n:04d}", title="Identity management" if n % 3 == 0 else "Backup",
+                        statement=("Identities are managed. " if n % 3 == 0 else "Backups run. ") + "x" * 1000)
         for n in range(1, 200)
     ]
     monkeypatch.setattr(tasks, "load_vectors", AsyncMock(return_value=({}, {})))
@@ -146,7 +147,7 @@ async def test_a_large_control_library_is_prefiltered_instead_of_failing(harness
     assert summary["batches"] == 1
     prompt = harness.run.await_args.kwargs["prompt"]
     assert prompt.count("[control_id=") == tasks.TOP_K
-    assert "[control_id=7]" in prompt and "[control_id=1]" not in prompt
+    assert "[control_id=3]" in prompt and "[control_id=1]" not in prompt
 
 
 async def test_a_cached_checkpoint_skips_the_batch(harness):
