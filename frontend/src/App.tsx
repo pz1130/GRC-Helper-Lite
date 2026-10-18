@@ -44,6 +44,7 @@ const RcsaAssessment = lazy(() => import("./pages/rcsa/Assessment").then((m) => 
 const RcsaReport = lazy(() => import("./pages/rcsa/Report").then((m) => ({ default: m.Report })));
 const RcsaTriggers = lazy(() => import("./pages/rcsa/Triggers").then((m) => ({ default: m.Triggers })));
 const RcsaTriggerDetail = lazy(() => import("./pages/rcsa/Triggers").then((m) => ({ default: m.TriggerDetail })));
+const RcsaAiSettings = lazy(() => import("./pages/rcsa/AiSettings").then((m) => ({ default: m.AiSettings })));
 const RcsaProfiles = lazy(() => import("./pages/rcsa/Profiles").then((m) => ({ default: m.Profiles })));
 
 export function App() {
@@ -94,6 +95,7 @@ export function App() {
         <Route path="/rcsa/triggers" element={<RcsaTriggers />} />
         <Route path="/rcsa/triggers/:id" element={<RcsaTriggerDetail />} />
         <Route path="/rcsa/profiles" element={<RcsaProfiles />} />
+        <Route path="/rcsa/ai" element={<RcsaAiSettings />} />
         <Route path="/account" element={<Account />} />
         <Route path="/documents/:id" element={<DocumentDetail />} />
         <Route path="/documents/:id/change-impact" element={<ChangeImpact />} />

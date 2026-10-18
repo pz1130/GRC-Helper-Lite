@@ -314,7 +314,18 @@ No throughput or latency target has been measured at your size; agree the expect
 (controls per campaign, concurrent assessors) and measure on a copy before relying on it
 (KNOWN_ISSUES K22).
 
-**Not in this release.** AI prefill and evidence ranking (K20), loss events and KRIs, third-party
+**Optional AI assistance (off by default).** Under RCSA → AI settings an admin can enable two
+channels separately: answer prefill (a chat model drafts suggestions with citations to the inputs
+it was sent) and evidence relevance (the decision model orders a control's registered evidence).
+Each needs its own bound service, an approval reference and the input types that may be sent
+(control text, policy clause text, evidence titles and dates; never evidence locations or tester
+names). Neither uses the global backup provider or the document-scan switch, and neither is
+touched by bulk provider binding. The assessor sees what will be sent before asking; suggestions
+are labelled Suggested and become part of an answer only when the assessor applies chosen
+fields, which is audited. Enable a channel only after your data policy approves it, and evaluate
+it on public material with thresholds fixed in advance (KNOWN_ISSUES K20).
+
+**Not in this release.** Loss events and KRIs, third-party
 assessments (only internally performed controls can be activated), e-mail notifications (the
 work list is computed when you open it), and automatic detection of changes or incidents
 (triggers are registered by hand). A self-assessment record is not proof that a control works or

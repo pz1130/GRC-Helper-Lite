@@ -22,6 +22,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.rcsa.access import fetch
+from app.rcsa.ai import CHANNELS, channel_settings
 from app.rcsa.closing import item_snapshots
 from app.rcsa.models import (
     ActionStatus,
@@ -113,6 +114,9 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
             "scenarios": scenario_rows,
         })
 
+    ai_on = False
+    for channel in CHANNELS:
+        ai_on = ai_on or (await channel_settings(session, channel))["enabled"]
     return {
         "watermark": {CampaignStatus.CLOSED: None, CampaignStatus.CANCELLED: "cancelled"}.get(
             campaign.status, "draft"
@@ -149,8 +153,8 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
             risk["residual_score"] for item in items for risk in item.get("risks", [])
             if risk["residual_score"] is not None
         ]) else None,
-        # AI 辅助尚未启用（PR-4 只交付关闭路径）：报告里不会出现任何模型生成的内容。
-        "ai_assistance": "not_enabled",
+        # 报告本身从不带模型生成的内容；启用时回答里可能有作答人采纳过的建议（逐条有审计）。
+        "ai_assistance": "enabled" if ai_on else "not_enabled",
         "comparison": await _comparison(session, campaign, items),
         "items": rows,
         "current_follow_up": await _current_follow_up(session, campaign.id, today),

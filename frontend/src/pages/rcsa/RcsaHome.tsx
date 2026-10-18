@@ -126,6 +126,7 @@ export function RcsaHome() {
           <div className="kn-row kn-row-gap">
             <Link className="kn-btn kn-btn-secondary" to="/rcsa/triggers">{t("rcsa.triggers.title")}</Link>
             <Link className="kn-btn kn-btn-secondary" to="/rcsa/profiles">{t("rcsa.profiles.title")}</Link>
+            {user?.role === "admin" && <Link className="kn-btn kn-btn-secondary" to="/rcsa/ai">{t("rcsa.ai.settingsTitle")}</Link>}
             {canManage && <Link className="kn-btn kn-btn-primary" to="/rcsa/campaigns/new">{t("rcsa.campaigns.new")}</Link>}
           </div>
         }

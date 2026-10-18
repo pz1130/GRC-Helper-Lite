@@ -317,7 +317,8 @@ export function Providers() {
                 <th>{t("settings.providersConfig.taskPipeline")}</th>
                 <th>{t("settings.providersConfig.assignedProvider")}</th>
               </tr></>}>
-              {tasks.data?.filter((task) => task.key !== "requirement_decision").map((task) => {
+              {/* 判断模型与 RCSA 的两个 AI 通道各有单独的设置页（需要单独批准），这里不列。 */}
+              {tasks.data?.filter((task) => task.key !== "requirement_decision" && !task.key.startsWith("rcsa_")).map((task) => {
                 const current = routing.data?.find((r) => r.task_key === task.key);
                 return (
                   <tr key={task.key}>

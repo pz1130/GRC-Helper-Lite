@@ -7,6 +7,7 @@ import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../../auth";
 import { Card, EmptyState, LoadingState, PageHeader } from "../../components/ui";
 import { api, newKey, send, type Answer, type Effectiveness, type Item, type Response } from "./api";
+import { AiPanel } from "./AiPanel";
 import { EvidencePanel } from "./EvidencePanel";
 import { RiskPanel } from "./RiskPanel";
 import { ErrorNotice, PersonSelect, RcsaGate, StatusBadge, useUnsavedGuard, usePeople } from "./shared";
@@ -260,6 +261,7 @@ export function Assessment() {
                 <AnswerForm key={`${current.id}-${current.version}`} response={current} editable={editable} onChanged={refresh}
                   savedVersion={savedVersion} onSaved={setSavedVersion} />
                 <EvidencePanel response={current} controlId={item.data.control_id} editable={editable} onChanged={refresh} />
+                <AiPanel response={current} editable={editable} canRank={active && (isAssignee || isReviewer)} onChanged={refresh} />
               </>
             ) : <EmptyState compact title={t("rcsa.assessment.notStarted")} />}
             <RiskPanel item={item.data} canEdit={riskEditable} />

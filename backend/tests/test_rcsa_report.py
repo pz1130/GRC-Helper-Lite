@@ -211,3 +211,14 @@ async def test_an_unclosed_predecessor_is_not_a_baseline(client, acme):
 
 async def test_a_campaign_without_predecessor_has_no_comparison(client, acme):
     assert (await _report(client, acme))["comparison"] is None
+
+
+async def test_the_report_says_when_ai_assistance_is_on(client, db_session, acme):
+    from app.llm.models import AppSetting
+
+    db_session.add(AppSetting(key="rcsa_ai.prefill", value={
+        "enabled": True, "approval_ref": "DPA-1", "allowed_input_types": ["control"],
+    }))
+    await db_session.flush()
+
+    assert (await _report(client, acme))["ai_assistance"] == "enabled"

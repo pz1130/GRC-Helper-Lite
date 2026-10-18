@@ -265,7 +265,51 @@ export function isConflict(error: unknown): boolean {
   return error instanceof ApiError && error.code === "rcsa.version_conflict";
 }
 
+export type InputType = "control" | "policy_sources" | "evidence_metadata";
+
+export interface AiChannel {
+  enabled: boolean;
+  approval_ref: string;
+  allowed_input_types: InputType[];
+  available_input_types: InputType[];
+  provider: { id: number; name: string; model: string } | null;
+}
+
+export interface AiStatus {
+  prefill: AiChannel;
+  evidence_relevance: AiChannel;
+}
+
+export interface SuggestedPart {
+  rating: Effectiveness | null;
+  rationale: string;
+  citations: string[];
+}
+
+export interface Suggestion {
+  id: number;
+  response_id: number;
+  response_version: number;
+  stale: boolean;
+  status: string;
+  suggestions: { design: SuggestedPart; operating: SuggestedPart; limitations: string; unknowns: string[] };
+  input_types: InputType[];
+  model: string | null;
+  prompt_version: string;
+  created_at: string;
+}
+
+export interface Ranking {
+  ranked: boolean;
+  reason: string | null;
+  model: string | null;
+  generated_at: string;
+  candidates: { evidence_item_id: number; title: string; evidence_type: string | null; probability: number | null }[];
+}
+
 export const api = {
+  ai: () => request<AiStatus>("/api/rcsa/ai"),
+  suggestions: (responseId: number) => request<Suggestion[]>(`/api/rcsa/responses/${responseId}/suggestions`),
   status: () => request<{ enabled: boolean }>("/api/rcsa/status"),
   people: () => request<Person[]>("/api/rcsa/people"),
   profiles: () => request<Profile[]>("/api/rcsa/profiles"),
@@ -315,7 +359,7 @@ export interface Report {
   limitations: { control_code: string; text: string }[];
   acknowledgements: { overdue: string; evidence: string } | null;
   highest_residual_band: string | null;
-  ai_assistance: "not_enabled";
+  ai_assistance: "not_enabled" | "enabled";
   comparison: {
     previous: { id: number; name: string; status: CampaignStatus };
     comparable: boolean;

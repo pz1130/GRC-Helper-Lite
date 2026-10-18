@@ -36,3 +36,4 @@
   .rcsa-report .kn-card { break-inside: avoid; box-shadow: none; }
   .rcsa-watermark { border-color: #000; color: #000; }
 }
+.rcsa-warning { color: var(--accent-amber); font-weight: 600; }
