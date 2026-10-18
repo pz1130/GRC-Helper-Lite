@@ -1,4 +1,4 @@
-.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-seed-rcsa-profile seed-rcsa-profile prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
+.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-seed-rcsa-profile seed-rcsa-profile rcsa-restore-check prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
 
 up:
 	docker compose up -d --build db redis api
@@ -132,6 +132,11 @@ backup:
 # 定时备份入口：make backup + 完整性校验 + 清单 + 异地复制（scripts/backup.sh）
 backup-scheduled:
 	PROD_PROJECT=$(PROD_PROJECT) scripts/backup.sh
+
+# RCSA 备份恢复核对：合成数据走完一期，pg_dump/psql 恢复进另一个临时库，逐项比对后删除。
+# 只用开发栈的 db 容器，不碰开发库与生产栈（见脚本开头）。
+rcsa-restore-check:
+	scripts/rcsa-restore-check.sh
 
 # 在隔离的临时栈里恢复最新（或指定）备份并逐项核对，跑完自动拆除
 restore-drill:
