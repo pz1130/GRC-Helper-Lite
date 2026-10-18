@@ -138,6 +138,33 @@ async def _repairs(session: Any) -> int:
     ) or 0)
 
 
+async def _failures(session: Any, *, per_kind: int = 5) -> dict[str, Any]:
+    """失败调用按「哪道检查没过」分组（K15）。
+
+    runner 把最终失败写进 llm_call.error：schema 校验是「schema: …」，引文校验是
+    「citation: …」，供应商故障是异常原文。原来报告只有被拒批次数，0.83 是 schema
+    还是引文造成的，得回去翻库；评估库跑完就没了。每类留几条原因样本，截短——
+    公开语料的引文也不必整段进结果文件。
+    """
+    from sqlalchemy import select
+
+    from app.llm.models import LLMCall
+
+    counts = {"schema": 0, "citation": 0, "other": 0}
+    samples: dict[str, list[str]] = {kind: [] for kind in counts}
+    errors = await session.scalars(
+        select(LLMCall.error).where(LLMCall.status == "error").order_by(LLMCall.id)
+    )
+    for error in errors:
+        kind, _, reason = (error or "").partition(": ")
+        if kind not in ("schema", "citation"):
+            kind, reason = "other", error or ""
+        counts[kind] += 1
+        if len(samples[kind]) < per_kind:
+            samples[kind].append(reason[:200])
+    return {"counts": counts, "samples": samples}
+
+
 # ── 预筛（离线） ──────────────────────────────────────────────
 
 def _embed_direct(texts: list[str], purpose: str) -> list[list[float]]:
@@ -339,6 +366,7 @@ async def run_mapping_eval(args: argparse.Namespace) -> dict[str, Any]:
             "mapping": metrics.prf(predicted_scored, gold),
             "mapping_closing": metrics.prf(closing_scored, gold),
             "citation_repairs": await _repairs(session),
+            "failures": await _failures(session),
             "proposals": len(proposals),
             "usage": await _usage(session),
             "elapsed_s": round(elapsed, 1),
@@ -426,6 +454,7 @@ async def run_extraction_eval(args: argparse.Namespace) -> dict[str, Any]:
             "citations": len(citations),
             "citations_verbatim_after_gate": metrics.rate(verbatim, len(citations)),
             "citation_repairs": await _repairs(session),
+            "failures": await _failures(session),
             "max_correction_retries": runner.MAX_CORRECTION_RETRIES,
             "usage": await _usage(session),
             "elapsed_s": round(elapsed, 1),
