@@ -141,7 +141,7 @@ async def close(
         code = (item.control_snapshot or {}).get("code")
         if item.status not in _DONE:
             blockers.append(_blocker(code="rcsa.blocked.item_unfinished", item_id=item.id, control_code=code))
-        entry, evidence = await _item_snapshot(session, item)
+        entry, evidence = await item_snapshot(session, item, for_update=True)
         snapshot_items.append(entry)
         if item.status != ItemStatus.APPROVED:
             continue
@@ -194,10 +194,13 @@ async def close(
     return campaign
 
 
-async def _item_snapshot(
-    session: AsyncSession, item: RcsaItem
+async def item_snapshot(
+    session: AsyncSession, item: RcsaItem, *, for_update: bool = False
 ) -> tuple[dict[str, Any], list[RcsaResponseEvidence]]:
-    """评估项的闭期快照，以及它当前已批准版本的证据行（关闭检查要用）。"""
+    """评估项的闭期快照，以及它当前已批准版本的证据行（关闭检查要用）。
+
+    关闭时 `for_update` 锁住风险与行动；报告现算未关闭活动时只读不锁。
+    """
     response = await session.get(RcsaResponse, item.current_response_id) if item.current_response_id else None
     response_ids = select(RcsaResponse.id).where(RcsaResponse.item_id == item.id)
     reviews = list(await session.scalars(
@@ -206,9 +209,8 @@ async def _item_snapshot(
         .order_by(RcsaReview.id)
     ))
     exclusion = next((r for r in reviews if r.decision == ReviewDecision.EXCLUDE), None)
-    risks = list(await session.scalars(
-        select(RcsaItemRisk).where(RcsaItemRisk.item_id == item.id).order_by(RcsaItemRisk.id).with_for_update()
-    ))
+    statement = select(RcsaItemRisk).where(RcsaItemRisk.item_id == item.id).order_by(RcsaItemRisk.id)
+    risks = list(await session.scalars(statement.with_for_update() if for_update else statement))
     entry: dict[str, Any] = {
         "id": item.id, "status": str(item.status), "control": item.control_snapshot,
         "mappings": item.mapping_snapshot, "sources": item.source_snapshot,
@@ -218,7 +220,7 @@ async def _item_snapshot(
                       "at": exclusion.at.isoformat()} if exclusion else None,
         "reviews": [{"decision": str(r.decision), "target_version": r.target_version,
                      "reviewer_id": r.reviewer_id, "reason": r.reason, "at": r.at.isoformat()} for r in reviews],
-        "risks": [await _risk_snapshot(session, risk) for risk in risks],
+        "risks": [await _risk_snapshot(session, risk, for_update) for risk in risks],
     }
     evidence: list[RcsaResponseEvidence] = []
     if response is not None and item.status == ItemStatus.APPROVED:
@@ -241,10 +243,9 @@ async def _item_snapshot(
     return entry, evidence
 
 
-async def _risk_snapshot(session: AsyncSession, risk: RcsaItemRisk) -> dict[str, Any]:
-    actions = list(await session.scalars(
-        select(RcsaAction).where(RcsaAction.item_risk_id == risk.id).order_by(RcsaAction.id).with_for_update()
-    ))
+async def _risk_snapshot(session: AsyncSession, risk: RcsaItemRisk, for_update: bool) -> dict[str, Any]:
+    statement = select(RcsaAction).where(RcsaAction.item_risk_id == risk.id).order_by(RcsaAction.id)
+    actions = list(await session.scalars(statement.with_for_update() if for_update else statement))
     return risk_view(risk) | {
         "disposition": str(risk.disposition) if risk.disposition else None,
         "disposition_status": str(risk.disposition_status),

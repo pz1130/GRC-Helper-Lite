@@ -584,3 +584,16 @@ class WorkRow(BaseModel):
 
 class MyWork(BaseModel):
     rows: list[WorkRow]
+
+
+class PersonOut(BaseModel):
+    """可指派的人。权限标记只用于界面预选，服务端在每次指派时重新检查。"""
+
+    id: int
+    name: str
+    email: str
+    role: str
+    can_respond: bool
+    can_review: bool
+    can_manage: bool
+    can_accept_risk: bool

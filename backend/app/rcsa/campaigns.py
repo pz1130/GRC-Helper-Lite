@@ -35,6 +35,7 @@ from app.rcsa.schemas import (
     CampaignOut,
     CampaignUpdateIn,
     ItemsAddIn,
+    PersonOut,
     ProfileCreateIn,
     ProfileUpdateIn,
     ScopeRow,
@@ -519,3 +520,20 @@ async def activate(
     await command.done(session, campaign.id, {"status": "active", "version": campaign.version,
                                               "items": len(items), "profile_id": profile.id})
     return campaign
+
+
+async def people(session: AsyncSession) -> list[PersonOut]:
+    """在职、非审计范围的内部账号。"""
+    users = await session.scalars(
+        select(User)
+        .where(User.is_active.is_(True), User.engagement_scope_id.is_(None))
+        .order_by(User.name, User.id)
+    )
+    return [
+        PersonOut(
+            id=user.id, name=user.name, email=user.email, role=str(user.role),
+            can_respond=_can(user, Permission.RCSA_RESPOND), can_review=_can(user, Permission.RCSA_REVIEW),
+            can_manage=_can(user, Permission.RCSA_MANAGE), can_accept_risk=_can(user, Permission.RCSA_RISK_ACCEPT),
+        )
+        for user in users
+    ]

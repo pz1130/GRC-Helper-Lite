@@ -4,7 +4,7 @@
 """
 
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 
 import pytest
 from httpx import AsyncClient
@@ -212,3 +212,80 @@ async def review(client: AsyncClient, who: Person, response: dict, decision: str
         json={"decision": decision, "reason": reason, "expected_version": response["version"]},
         headers=with_key(who, key or f"review-{response['id']}-{decision}"),
     )
+
+
+# ── 活动走完全程用的构造（生命周期与报告测试共用）──────────
+
+SOON = (date.today() + timedelta(days=60)).isoformat()
+
+
+async def get_json(client, acme, path):
+    return (await client.get(path, headers=acme["lead"].headers)).json()
+
+
+async def campaign_now(client, acme):
+    return await get_json(client, acme, f"/api/rcsa/campaigns/{acme['campaign']['id']}")
+
+
+async def transition(client, acme, name, body=None, who=None, key=None):
+    campaign = await campaign_now(client, acme)
+    headers = with_key(who or acme["lead"], key or f"{name}-{campaign['version']}")
+    return await client.post(f"/api/rcsa/campaigns/{campaign['id']}/{name}",
+                             json={"expected_version": campaign["version"]} | (body or {}), headers=headers)
+
+
+async def approve_disposition(client, acme, risk):
+    approved = await client.post(f"/api/rcsa/item-risks/{risk['id']}/review-disposition",
+                                 json={"decision": "approve", "expected_version": risk["version"]},
+                                 headers=with_key(acme["approver"], f"d-{risk['id']}"))
+    assert approved.status_code == 200, approved.text
+    return approved.json()
+
+
+async def finish_items(client, acme) -> dict:
+    """第一项：退回一次后带风险通过；第二项：not_assessed 有补证计划后通过；第三项：有理由排除。"""
+    first, second, third = acme["items"]
+    returned = await submitted(client, acme, first)
+    await review(client, acme["reviewer"], returned, "return", reason="Add the leaver scenario")
+    item = await get_json(client, acme, f"/api/rcsa/items/{first['id']}")
+    response = await draft(client, acme["assignee"], item)
+    risk, action = await with_reduced_risk(client, acme, item, response)
+
+    not_assessed = COMPLETE_ANSWER | {
+        "operating": {"rating": "not_assessed", "rationale": "Logs not retained"},
+        "not_assessed_reason": "Retention shorter than the period",
+        "evidence_followup": {"owner_id": acme["assignee"].id, "due_at": SOON, "description": "Re-collect"},
+    }
+    approved = await review(client, acme["reviewer"], await submitted(client, acme, second, not_assessed), "approve")
+    assert approved.status_code == 200
+
+    third = await get_json(client, acme, f"/api/rcsa/items/{third['id']}")
+    excluded = await client.post(f"/api/rcsa/items/{third['id']}/exclude",
+                                 json={"reason": "Decommissioned in January", "expected_version": third["version"]},
+                                 headers=with_key(acme["reviewer"], "x-3"))
+    assert excluded.status_code == 200
+    return {"risk": risk, "action": action}
+
+
+async def with_reduced_risk(client, acme, item, response):
+    """在给定草稿上加一条风险、提交并通过，再提出 reduce 并配一条行动（尚未批准）。"""
+    response = await save(client, acme["assignee"], response, COMPLETE_ANSWER | {"no_risk_rationale": ""})
+    risk = (await client.post(f"/api/rcsa/items/{item['id']}/risks", json={
+        "scenario_key": "stale-access", "cause": "Manual leaver process", "event": "Leaver keeps access",
+        "impact": "Unauthorised change", "inherent_likelihood": 4, "inherent_impact": 4,
+        "inherent_rationale": "Manual", "residual_likelihood": 3, "residual_impact": 3,
+        "residual_rationale": "Quarterly review", "owner_id": acme["assignee"].id,
+    }, headers=acme["assignee"].headers)).json()
+    response = await get_json(client, acme, f"/api/rcsa/responses/{response['id']}")
+    done = await submit(client, acme["assignee"], response, key="s-first-2")
+    assert done.status_code == 200, done.text
+    assert (await review(client, acme["reviewer"], done.json(), "approve")).status_code == 200
+    risk = next(r for r in await get_json(client, acme, f"/api/rcsa/items/{item['id']}/risks") if r["id"] == risk["id"])
+    action = (await client.post(f"/api/rcsa/item-risks/{risk['id']}/actions", json={
+        "title": "Automate leavers", "owner_id": acme["assignee"].id, "verifier_id": acme["reviewer"].id,
+        "due_at": SOON, "success_criteria": "Zero leavers active after day one",
+    }, headers=acme["assignee"].headers)).json()
+    proposed = (await client.post(f"/api/rcsa/item-risks/{risk['id']}/disposition",
+                                  json={"disposition": "reduce", "details": {}, "expected_version": risk["version"]},
+                                  headers=acme["assignee"].headers)).json()
+    return proposed, action

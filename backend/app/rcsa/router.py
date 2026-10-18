@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.db import get_session
 from app.errors import NotFound
-from app.rcsa import campaigns, closing, responses, risks, triggers, work
+from app.rcsa import campaigns, closing, report, responses, risks, triggers, work
 from app.rcsa.access import (
     ActionUpdater,
     ClientKey,
@@ -51,6 +51,7 @@ from app.rcsa.schemas import (
     ItemsAddIn,
     MyWork,
     Page,
+    PersonOut,
     ProfileCreateIn,
     ProfileOut,
     ProfileUpdateIn,
@@ -87,6 +88,11 @@ router = APIRouter(prefix="/api/rcsa", tags=["rcsa"], dependencies=[Depends(modu
 @status_router.get("/status")
 async def rcsa_status(actor: Reader) -> dict[str, bool]:
     return {"enabled": get_settings().rcsa_enabled}
+
+
+@router.get("/people", response_model=list[PersonOut])
+async def list_people(actor: Reader, session: Session) -> list[PersonOut]:
+    return await campaigns.people(session)
 
 
 # ── 评分档案 ────────────────────────────────────────────────
@@ -447,6 +453,11 @@ async def closed_snapshot(campaign_id: RowId, actor: Reader, session: Session) -
     if campaign.closed_snapshot is None:
         raise NotFound("活动还没有关闭", code="rcsa.not_closed")
     return campaign.closed_snapshot
+
+
+@router.get("/campaigns/{campaign_id}/report")
+async def campaign_report(campaign_id: RowId, actor: Reader, session: Session) -> dict:
+    return await report.build(session, campaign_id)
 
 
 # ── 待办 ────────────────────────────────────────────────────
