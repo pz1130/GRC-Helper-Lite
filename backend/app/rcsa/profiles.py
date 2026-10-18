@@ -25,7 +25,7 @@ _BANDS = (
 )
 
 
-def _default_definitions() -> dict[str, Any]:
+def default_definitions() -> dict[str, Any]:
     return {
         "likelihood": [
             {"level": level, "label": label, "criteria": ""}
@@ -54,8 +54,8 @@ async def seed_default_profile(session: AsyncSession, *, actor: User) -> RcsaSco
         key=DEFAULT_PROFILE_KEY,
         revision=1,
         algorithm=ScoringAlgorithm.PRODUCT,
-        definitions=_default_definitions(),
-        bands=[dict(band) for band in _BANDS],
+        definitions=default_definitions(),
+        bands=default_bands(),
         horizon="",
         status=ProfileStatus.DRAFT,
         created_by=actor.id,
@@ -72,3 +72,49 @@ def band_for(bands: list[dict[str, Any]], score: int) -> str:
         if band["min"] <= score <= band["max"]:
             return band["label"]
     raise ValueError(f"score {score} is outside every band")
+
+
+def profile_problems(profile: RcsaScoringProfile) -> list[str]:
+    """批准前必须补全的口径；空列表才能批准。返回的是哪一块不完整，不是句子。"""
+    problems: list[str] = []
+    definitions = profile.definitions or {}
+    if not profile.horizon.strip():
+        problems.append("horizon")
+    likelihood = definitions.get("likelihood") or []
+    if [level.get("level") for level in likelihood] != [1, 2, 3, 4, 5] or not all(
+        str(level.get("label", "")).strip() and str(level.get("criteria", "")).strip()
+        for level in likelihood
+    ):
+        problems.append("likelihood")
+    dimensions = definitions.get("impact_dimensions") or []
+    if not dimensions or not all(isinstance(d, str) and d.strip() for d in dimensions):
+        problems.append("impact_dimensions")
+    impact = definitions.get("impact") or []
+    if [level.get("level") for level in impact] != [1, 2, 3, 4, 5] or not all(
+        str(level.get("label", "")).strip()
+        and isinstance(level.get("criteria"), dict)
+        and all(str(level["criteria"].get(d, "")).strip() for d in dimensions)
+        for level in impact
+    ):
+        problems.append("impact")
+    if not _bands_cover_every_score(profile.bands or []):
+        problems.append("bands")
+    return problems
+
+
+def _bands_cover_every_score(bands: list[dict[str, Any]]) -> bool:
+    ordered = sorted(bands, key=lambda band: band.get("min", 0))
+    if not ordered or ordered[0].get("min") != 1 or ordered[-1].get("max") != 25:
+        return False
+    previous_max = 0
+    for band in ordered:
+        if not str(band.get("label", "")).strip() or band["min"] > band["max"]:
+            return False
+        if band["min"] != previous_max + 1:
+            return False
+        previous_max = band["max"]
+    return True
+
+
+def default_bands() -> list[dict[str, Any]]:
+    return [dict(band) for band in _BANDS]
