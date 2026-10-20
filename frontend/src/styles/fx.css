@@ -178,3 +178,188 @@ html[data-motion="off"] .fx-words > span, html[data-motion="off"] .fx-letters > 
 :root .fx-btn.kn-btn-primary, :root[data-theme] .fx-btn.kn-btn-primary, :root[data-theme] button[type="submit"].fx-btn {
   background: linear-gradient(180deg, color-mix(in srgb, var(--fx-a) 92%, #fff), var(--fx-a)); border: 0; color: #fff;
 }
+
+/* ======================= Batch 2 ======================= */
+.ml-batch { display: flex; align-items: center; gap: 10px; margin: 36px 0 18px; font-size: 1.05rem; font-weight: 700; }
+.ml-new { font-size: .6875rem; font-weight: 700; letter-spacing: .08em; padding: 3px 8px; border-radius: 999px; color: #fff; background: var(--fx-b); }
+.ml-sample.is-new figcaption b::after { content: "NEW"; margin-left: 6px; font-size: .625rem; padding: 1px 5px; border-radius: 4px; background: color-mix(in srgb, var(--fx-b) 22%, transparent); color: var(--fx-b); }
+.ml-k { position: relative; width: 100%; height: 170px; display: grid; place-items: center; overflow: hidden; border-radius: 12px; }
+
+/* A5 Gradient fill on hover（Uiverse 「fill」）：底色从左侧被深色填满 + 箭头外移 */
+.fx-fill { background: color-mix(in srgb, var(--fx-a) 16%, var(--stage-card)); color: var(--text-primary); box-shadow: none; }
+.fx-fill::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--fx-a), color-mix(in srgb, var(--fx-a) 70%, var(--fx-b))); transform: scaleX(0); transform-origin: left; transition: transform 420ms cubic-bezier(.2,.8,.2,1); }
+.fx-fill:hover { color: #fff; box-shadow: 0 8px 22px -8px var(--fx-glow); }
+.fx-fill:hover::before { transform: scaleX(1); }
+.fx-fill .arr { display: inline-block; margin-left: 8px; transition: transform 300ms cubic-bezier(.2,.8,.2,1); }
+.fx-fill:hover .arr { transform: translateX(5px); }
+/* A6 Loading → success morph */
+.fx-morph { min-width: 168px; min-height: 42px; display: inline-grid; place-items: center; transition: min-width 360ms cubic-bezier(.2,.8,.2,1), border-radius 360ms, background 300ms; }
+.fx-morph.is-busy, .fx-morph.is-ok { min-width: 42px; border-radius: 21px; padding: 10px; }
+.fx-morph.is-ok { background: linear-gradient(180deg, color-mix(in srgb, #3f7d62 90%, #fff), #3f7d62); }
+.fx-morph-spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; animation: fx-spin 700ms linear infinite; }
+.fx-morph svg path { fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 20; stroke-dashoffset: 20; animation: fx-draw 420ms 80ms ease-out forwards; }
+@keyframes fx-draw { to { stroke-dashoffset: 0; } }
+/* A7 Press & hold */
+.fx-hold::before { content: ""; position: absolute; inset: 0; z-index: -1; background: color-mix(in srgb, #3f7d62 85%, #fff 0%); transform: scaleX(0); transform-origin: left; }
+.fx-hold.is-hold::before { transform: scaleX(1); transition: transform 1200ms linear; }
+.fx-hold.is-done::before { transform: scaleX(1); }
+.fx-hold.is-done { animation: fx-pop 360ms cubic-bezier(.3,1.6,.5,1); }
+@keyframes fx-pop { 50% { transform: scale(1.06); } }
+
+/* B4 Segmented control with sliding pill */
+.fx-seg { position: relative; display: inline-flex; padding: 4px; border-radius: 12px; background: color-mix(in srgb, var(--text-tertiary) 14%, transparent); }
+.fx-seg button { position: relative; z-index: 1; border: 0; background: none; padding: 8px 16px; font-weight: 600; color: var(--text-secondary); cursor: pointer; transition: color 240ms; }
+.fx-seg button[aria-pressed="true"] { color: #fff; }
+.fx-seg > i { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc((100% - 8px) / 3); border-radius: 9px; background: var(--fx-a); box-shadow: 0 6px 16px -6px var(--fx-glow); transform: translateX(calc(var(--seg) * 100%)); transition: transform 420ms cubic-bezier(.3,1.35,.5,1); }
+/* B5 Search expand + focus glow */
+.fx-search { display: flex; align-items: center; gap: 8px; width: 46px; height: 42px; padding: 0 13px; border-radius: 21px; background: var(--stage-card); box-shadow: 0 2px 8px rgba(0,0,0,.08); transition: width 480ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms; overflow: hidden; }
+.fx-search:focus-within, .fx-search:hover { width: 260px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--fx-a) 22%, transparent), 0 8px 24px -10px var(--fx-glow); }
+.fx-search svg { flex: none; width: 18px; height: 18px; stroke: var(--fx-a); fill: none; stroke-width: 2; }
+.fx-search input { border: 0; outline: 0; background: none; color: var(--text-primary); width: 100%; font: inherit; }
+
+/* C4 Lift + soft shadow bloom */
+.fx-lift { transition: transform 360ms cubic-bezier(.2,.8,.2,1), box-shadow 360ms; }
+.fx-lift:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -18px color-mix(in srgb, var(--fx-a) 55%, transparent); }
+.fx-lift .fx-lift-icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: color-mix(in srgb, var(--fx-a) 16%, transparent); color: var(--fx-a); margin-bottom: 8px; transition: transform 420ms cubic-bezier(.3,1.5,.5,1); }
+.fx-lift:hover .fx-lift-icon { transform: rotate(-8deg) scale(1.12); }
+/* C5 Glass glare sweep */
+.fx-glare { overflow: hidden; }
+.fx-glare::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,.35) 48%, transparent 66%); transform: translateX(-120%); transition: transform 800ms cubic-bezier(.2,.8,.2,1); pointer-events: none; }
+.fx-glare:hover::after { transform: translateX(120%); }
+/* C6 Border trace following pointer（柔光，非细线） */
+.fx-trace { isolation: isolate; }
+.fx-trace::before { content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; opacity: 0; transition: opacity 300ms;
+  background: conic-gradient(from calc(var(--ang, 0deg) - 40deg), transparent, color-mix(in srgb, var(--fx-a) 70%, transparent), transparent 80deg); filter: blur(8px); }
+.fx-trace::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: var(--stage-card); }
+.fx-trace:hover::before { opacity: 1; }
+
+/* D4 Scramble / D5 rotating word / D6 gradient underline draw */
+.fx-scramble { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; font-weight: 700; font-size: 1.25rem; }
+.fx-rotword { display: inline-block; overflow: hidden; vertical-align: bottom; height: 1.3em; color: var(--fx-a); }
+.fx-rotword > span { display: inline-block; animation: fx-rot 520ms cubic-bezier(.2,.8,.2,1); }
+@keyframes fx-rot { from { transform: translateY(100%); opacity: 0; filter: blur(4px); } }
+.fx-underline { position: relative; display: inline-block; }
+.fx-underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--fx-a), var(--fx-b)); opacity: .55; transform: scaleX(0); transform-origin: left; animation: fx-ul 900ms 300ms cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes fx-ul { to { transform: scaleX(1); } }
+
+/* E3 flip stat / E4 radial gauge */
+.fx-flipstat { display: inline-flex; align-items: baseline; gap: 10px; overflow: hidden; height: 1.2em; }
+.fx-flip-in { display: inline-block; animation: fx-flip 500ms cubic-bezier(.2,.8,.2,1); }
+@keyframes fx-flip { from { transform: translateY(-80%) rotateX(70deg); opacity: 0; } }
+.fx-delta { font-size: .9rem; font-style: normal; font-weight: 700; padding: 2px 8px; border-radius: 999px; animation: fx-rot 500ms 80ms both; }
+.fx-delta.up { color: #3f7d62; background: color-mix(in srgb, #3f7d62 15%, transparent); }
+.fx-delta.down { color: #b0644a; background: color-mix(in srgb, #b0644a 15%, transparent); }
+.fx-gauge { position: relative; width: 120px; height: 120px; display: grid; place-items: center; }
+.fx-gauge svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.fx-gauge circle { fill: none; stroke-width: 9; stroke-linecap: round; }
+.fx-gauge .t { stroke: color-mix(in srgb, var(--text-tertiary) 20%, transparent); }
+.fx-gauge .v { stroke: var(--fx-a); stroke-dasharray: var(--dash); stroke-dashoffset: var(--dash); animation: fx-gauge 1600ms cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes fx-gauge { to { stroke-dashoffset: var(--off); } }
+.fx-gauge b { font-size: 1.5rem; }
+
+/* F5 Skeleton shimmer / F6 progress stripe / F7 dots typing */
+.fx-skel { width: 100%; display: grid; gap: 10px; }
+.fx-skel i { display: block; height: 12px; border-radius: 6px; background: linear-gradient(90deg, color-mix(in srgb, var(--text-tertiary) 14%, transparent) 30%, color-mix(in srgb, var(--text-tertiary) 30%, transparent) 50%, color-mix(in srgb, var(--text-tertiary) 14%, transparent) 70%); background-size: 300% 100%; animation: fx-skel 1.4s ease-in-out infinite; }
+.fx-skel i:nth-child(1) { width: 40%; height: 16px; } .fx-skel i:nth-child(3) { width: 80%; }
+@keyframes fx-skel { from { background-position: 100% 0; } to { background-position: 0 0; } }
+.fx-indet { width: 100%; height: 6px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--text-tertiary) 16%, transparent); position: relative; }
+.fx-indet::before { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; border-radius: 3px; background: linear-gradient(90deg, var(--fx-a), var(--fx-b)); animation: fx-indet 1.5s cubic-bezier(.6,.1,.4,.9) infinite; }
+@keyframes fx-indet { from { left: -40%; } to { left: 100%; } }
+.fx-typing { display: inline-flex; gap: 6px; }
+.fx-typing i { width: 9px; height: 9px; border-radius: 50%; background: var(--fx-a); animation: fx-typing 1.1s ease-in-out infinite; animation-delay: calc(var(--i) * 150ms); }
+@keyframes fx-typing { 0%, 60%, 100% { transform: none; opacity: .4; } 30% { transform: translateY(-8px); opacity: 1; } }
+
+/* G4 Topographic contour drift / G5 mesh gradient / G6 particle drift */
+.fx-topo { background:
+  repeating-radial-gradient(circle at 30% 60%, transparent 0 14px, color-mix(in srgb, var(--fx-a) 22%, transparent) 14px 15px),
+  repeating-radial-gradient(circle at 75% 30%, transparent 0 18px, color-mix(in srgb, var(--fx-b) 20%, transparent) 18px 19px), var(--stage-card);
+  background-size: 140% 140%; animation: fx-topo 18s ease-in-out infinite alternate; }
+@keyframes fx-topo { to { background-position: 30% 20%, 70% 80%, 0 0; } }
+.fx-mesh { background: var(--stage-card); }
+.fx-mesh::before { content: ""; position: absolute; inset: -30%; background:
+  radial-gradient(at 20% 30%, color-mix(in srgb, var(--fx-a) 55%, transparent) 0, transparent 45%),
+  radial-gradient(at 80% 20%, color-mix(in srgb, var(--fx-b) 50%, transparent) 0, transparent 45%),
+  radial-gradient(at 60% 80%, color-mix(in srgb, #22272c 35%, transparent) 0, transparent 50%);
+  animation: fx-mesh 12s ease-in-out infinite alternate; }
+@keyframes fx-mesh { 50% { transform: translate(5%, 4%) rotate(8deg); } to { transform: translate(-4%, -3%) rotate(-6deg) scale(1.1); } }
+.fx-parts i { position: absolute; bottom: -10px; left: calc(var(--x) * 1%); width: var(--s); height: var(--s); border-radius: 50%; background: color-mix(in srgb, var(--fx-a) 55%, transparent); animation: fx-rise calc(var(--d) * 1s) linear infinite; animation-delay: calc(var(--d) * -0.37s * var(--x) / 10); }
+@keyframes fx-rise { to { transform: translateY(-200px) translateX(18px); opacity: 0; } }
+
+/* H3 Logo orbit：节点绕盾牌旋转 */
+.fx-logo-orbit { position: relative; width: 120px; height: 120px; display: grid; place-items: center; }
+.fx-logo-orbit > svg { width: 72px; height: 72px; animation: fx-breathe 3.2s ease-in-out infinite; }
+.fx-logo-orbit > i { position: absolute; inset: 0; border-radius: 50%; animation: fx-spin calc(6s + var(--i) * 3s) linear infinite; animation-direction: var(--dir, normal); }
+.fx-logo-orbit > i::after { content: ""; position: absolute; top: calc(var(--i) * 10px); left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+@keyframes fx-breathe { 50% { transform: scale(1.06); } }
+
+/* I. Page transitions（在样本框里模拟两页切换） */
+.fx-pt { position: relative; width: 100%; height: 150px; }
+.fx-pt > div { position: absolute; inset: 0; border-radius: 10px; padding: 14px; background: var(--stage-card); box-shadow: 0 4px 14px -8px rgba(0,0,0,.25); display: grid; gap: 8px; align-content: start; }
+.fx-pt > div b { font-size: .9rem; } .fx-pt > div i { display: block; height: 9px; border-radius: 5px; background: color-mix(in srgb, var(--text-tertiary) 22%, transparent); }
+.fx-pt > div i:nth-of-type(2) { width: 70%; } .fx-pt > div i:nth-of-type(3) { width: 85%; }
+.fx-pt > div:nth-child(2) b { color: var(--fx-a); }
+.fx-pt-fade > div { animation: fx-pt-fade 4s ease-in-out infinite; } .fx-pt-fade > div:nth-child(2) { animation-delay: -2s; }
+@keyframes fx-pt-fade { 0%, 40% { opacity: 1; transform: none; filter: none; } 50%, 90% { opacity: 0; transform: translateY(10px) scale(.98); filter: blur(4px); } 100% { opacity: 1; transform: none; filter: none; } }
+.fx-pt-slide { overflow: hidden; border-radius: 10px; } .fx-pt-slide > div { animation: fx-pt-slide 4s cubic-bezier(.7,0,.3,1) infinite; } .fx-pt-slide > div:nth-child(2) { animation-delay: -2s; }
+@keyframes fx-pt-slide { 0%, 40% { transform: none; } 50%, 90% { transform: translateX(-105%); } 90.01% { transform: translateX(105%); } 100% { transform: none; } }
+.fx-pt-zoom > div { animation: fx-pt-zoom 4s cubic-bezier(.2,.8,.2,1) infinite; } .fx-pt-zoom > div:nth-child(2) { animation-delay: -2s; }
+@keyframes fx-pt-zoom { 0%, 40% { opacity: 1; transform: none; } 50%, 90% { opacity: 0; transform: scale(1.08); } 92% { opacity: 0; transform: scale(.94); } 100% { opacity: 1; transform: none; } }
+.fx-pt-wipe { overflow: hidden; border-radius: 10px; } .fx-pt-wipe > div:nth-child(2) { animation: fx-pt-wipe 4s cubic-bezier(.7,0,.3,1) infinite; }
+@keyframes fx-pt-wipe { 0%, 40% { clip-path: circle(0% at 90% 10%); } 55%, 90% { clip-path: circle(150% at 90% 10%); } 100% { clip-path: circle(0% at 90% 10%); } }
+
+/* J. List / table entrance */
+.fx-list { width: 100%; display: grid; gap: 6px; }
+.fx-list > div { display: flex; justify-content: space-between; gap: 10px; padding: 8px 12px; border-radius: 8px; background: var(--stage-card); font-size: .8125rem; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+.fx-list > div span:last-child { color: var(--text-tertiary); }
+.fx-j1 > div { opacity: 0; animation: fx-j1 520ms cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--i) * 70ms); }
+@keyframes fx-j1 { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.fx-j2 > div { opacity: 0; animation: fx-j2 600ms cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--i) * 80ms); }
+@keyframes fx-j2 { from { opacity: 0; transform: translateX(-24px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.fx-j3 > div { transform-origin: top; opacity: 0; animation: fx-j3 560ms cubic-bezier(.3,1.3,.5,1) forwards; animation-delay: calc(var(--i) * 90ms); }
+@keyframes fx-j3 { from { opacity: 0; transform: perspective(500px) rotateX(-70deg); } to { opacity: 1; transform: none; } }
+.fx-j4 > div { position: relative; overflow: hidden; }
+.fx-j4 > div.is-hl { animation: fx-j4 1.6s ease-out; }
+@keyframes fx-j4 { 0% { background: color-mix(in srgb, var(--fx-b) 35%, var(--stage-card)); transform: scale(1.02); } 100% { background: var(--stage-card); } }
+
+/* K. Toast / modal / drawer */
+.fx-toasts { position: absolute; right: 10px; bottom: 10px; display: grid; gap: 6px; justify-items: end; }
+.fx-toast { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px; font-size: .8125rem; background: #22272c; color: #fff; box-shadow: 0 10px 24px -10px rgba(0,0,0,.5); animation: fx-toast 460ms cubic-bezier(.3,1.4,.5,1); }
+.fx-toast i { width: 8px; height: 8px; border-radius: 50%; background: #7e9a7a; }
+@keyframes fx-toast { from { opacity: 0; transform: translateY(16px) scale(.95); } }
+.fx-ov-backdrop { position: absolute; inset: 0; background: color-mix(in srgb, #22272c 35%, transparent); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 320ms; }
+.fx-ov { position: absolute; padding: 14px 16px; border-radius: 12px; background: var(--stage-card); box-shadow: 0 20px 40px -16px rgba(0,0,0,.4); display: grid; gap: 4px; justify-items: start; font-size: .8125rem; pointer-events: none; opacity: 0; }
+.fx-ov p { margin: 0 0 6px; }
+.fx-ov-modal { left: 50%; top: 50%; width: 220px; transform: translate(-50%, -50%) scale(.9); transition: opacity 260ms, transform 420ms cubic-bezier(.3,1.4,.5,1); }
+.fx-ov-drawer { top: 0; bottom: 0; right: 0; width: 55%; border-radius: 12px 0 0 12px; transform: translateX(110%); transition: transform 460ms cubic-bezier(.2,.8,.2,1), opacity 0ms 460ms; }
+.is-open .fx-ov-drawer { transition: transform 460ms cubic-bezier(.2,.8,.2,1); }
+.fx-ov-popover { left: 50%; top: 50%; width: 190px; margin-left: -95px; margin-top: 26px; transform-origin: top center; transform: scale(.85) translateY(-6px); transition: opacity 200ms, transform 300ms cubic-bezier(.3,1.4,.5,1); }
+.is-open .fx-ov-backdrop { opacity: 1; pointer-events: auto; }
+.is-open .fx-ov { opacity: 1; pointer-events: auto; }
+.is-open .fx-ov-modal { transform: translate(-50%, -50%); }
+.is-open .fx-ov-drawer { transform: none; }
+.is-open .fx-ov-popover { transform: none; }
+.fx-ov-host.is-open .fx-ov-popover ~ * { }
+
+/* L. Chart / progress reveal */
+.fx-bars2 { width: 100%; height: 120px; display: flex; align-items: end; gap: 10px; }
+.fx-bars2 i { flex: 1; height: var(--h); border-radius: 6px 6px 2px 2px; background: linear-gradient(var(--fx-a), color-mix(in srgb, var(--fx-a) 60%, var(--fx-b))); transform-origin: bottom; transform: scaleY(0); animation: fx-grow 900ms cubic-bezier(.3,1.25,.5,1) forwards; animation-delay: calc(var(--i) * 80ms); }
+@keyframes fx-grow { to { transform: scaleY(1); } }
+.fx-line { width: 100%; height: 120px; }
+.fx-line path.l { fill: none; stroke: var(--fx-a); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 600; stroke-dashoffset: 600; animation: fx-line 1800ms cubic-bezier(.4,0,.2,1) forwards; }
+.fx-line path.a { fill: color-mix(in srgb, var(--fx-a) 18%, transparent); opacity: 0; animation: fx-fade 800ms 1100ms forwards; }
+.fx-line circle { fill: var(--fx-a); opacity: 0; animation: fx-fade 300ms 1700ms forwards; }
+@keyframes fx-line { to { stroke-dashoffset: 0; } }
+@keyframes fx-fade { to { opacity: 1; } }
+.fx-prog { width: 100%; display: grid; gap: 12px; font-size: .8125rem; }
+.fx-prog > div > span { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.fx-prog u { display: block; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--text-tertiary) 16%, transparent); text-decoration: none; overflow: hidden; }
+.fx-prog u::before { content: ""; display: block; height: 100%; width: var(--w); border-radius: 4px; background: linear-gradient(90deg, var(--fx-a), var(--fx-b)); transform-origin: left; transform: scaleX(0); animation: fx-grow-x 1200ms cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--i) * 150ms); }
+@keyframes fx-grow-x { to { transform: scaleX(1); } }
+.fx-donut { width: 120px; height: 120px; }
+.fx-donut circle { fill: none; stroke-width: 14; transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dasharray: 0 264; animation: fx-donut 1100ms cubic-bezier(.2,.8,.2,1) forwards; animation-delay: calc(var(--i) * 200ms); }
+@keyframes fx-donut { to { stroke-dasharray: var(--len) 264; } }
+
+html[data-motion="off"] .fx-j1 > div, html[data-motion="off"] .fx-j2 > div, html[data-motion="off"] .fx-j3 > div { opacity: 1; }
+html[data-motion="off"] .fx-bars2 i, html[data-motion="off"] .fx-prog u::before { transform: none; }
+html[data-motion="off"] .fx-line path.l { stroke-dashoffset: 0; }
+html[data-motion="off"] .fx-line path.a, html[data-motion="off"] .fx-line circle { opacity: 1; }
