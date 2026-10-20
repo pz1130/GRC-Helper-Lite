@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { ApiError } from "../api";
 import { useAuth } from "../auth";
-import { BrandLogo, BrandWordmark } from "../components/BrandLogo";
+import { AnimeLogoDraw, TextReveal } from "../components/fx";
+import { BrandWordmark } from "../components/BrandLogo";
 import { useTheme } from "../theme";
 import { wantsHero3d } from "../three/support";
 
@@ -41,8 +42,10 @@ export function Login() {
     <div className="login">
       <aside className="login-brand" aria-hidden="true">
         <div className="login-brand-glow" />
+        <div className="login-brand-dots fx-dots" />
         <div className="login-brand-mark">
-          <BrandLogo size={72} />
+          {/* 预览：H1 anime.js 标识描线 */}
+          <AnimeLogoDraw size={84} />
           <span className="login-brand-title">
             <b>GRC</b> Helper
           </span>
@@ -114,7 +117,7 @@ export function Login() {
 
           <form onSubmit={submit} className="login-form">
             <div className="login-heading">
-              <h1>{t("login.title")}</h1>
+              <TextReveal as="h1" text={t("login.title")} />
               <p className="login-notice">{t("preview.notice")}</p>
             </div>
 
@@ -150,7 +153,7 @@ export function Login() {
               </p>
             )}
 
-            <button type="submit" className="kn-btn-primary login-submit">
+            <button type="submit" className="kn-btn-primary login-submit fx-btn fx-shine fx-glow">
               {t("login.submit")}
             </button>
 

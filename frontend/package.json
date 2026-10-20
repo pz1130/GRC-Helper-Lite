@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.1",
+    "animejs": "^4.5.0",
     "i18next": "^26.4.3",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

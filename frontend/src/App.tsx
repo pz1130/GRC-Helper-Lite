@@ -4,6 +4,7 @@ import { canManageLlmConfig, canReadAuditLog, canWriteEvidence, useAuth } from "
 import { BrandLogo } from "./components/BrandLogo";
 import { Layout } from "./components/Layout";
 import { RequireRole } from "./components/RequireRole";
+import { MotionLab } from "./pages/MotionLab";
 import { Login } from "./pages/Login";
 import { Overview } from "./pages/Overview";
 import { Documents } from "./pages/Documents";
@@ -56,6 +57,8 @@ export function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Overview />} />
+        {/* 动效样本页：仅 ui-motion-samples 分支，不进导航 */}
+        <Route path="/motion-lab" element={<MotionLab />} />
         <Route path="/documents" element={<Documents />} />
         <Route path="/search" element={<Search />} />
         <Route path="/review" element={<ReviewQueue />} />

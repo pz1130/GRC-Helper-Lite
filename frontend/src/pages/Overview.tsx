@@ -7,6 +7,7 @@ import { lazy, Suspense, useState } from "react";
 import { wantsHero3d } from "../three/support";
 
 import { request } from "../api";
+import { TextReveal } from "../components/fx";
 import { reviewState } from "../reviewDue";
 
 // three.js 很大，hero 的 3D 版按需加载；首屏先出 CSS 版，加载完再替换。
@@ -103,7 +104,7 @@ export function Overview() {
   return (
     <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
-      <div className={`kn-cockpit-hero${hero3d ? " kn-cockpit-hero--v2" : ""}`}>
+      <div className={`kn-cockpit-hero fx-hero-dots${hero3d ? " kn-cockpit-hero--v2" : ""}`}>
         {/* 装饰用的「治理分层」立体示意：有 WebGL 时是真 3D 玻璃板，否则退回纯 CSS 3D；读屏忽略。 */}
         {hero3d ? (
           <Suspense fallback={cssHero}>
@@ -120,12 +121,13 @@ export function Overview() {
                 {t("overview.compliancePosture")}
               </span>
             </div>
-            <h2 className="kn-hero-title">{t("overview.heroTitle")}</h2>
+            {/* 预览：D1 逐词模糊入场（Motion Primitives） */}
+            <TextReveal as="h2" className="kn-hero-title" text={t("overview.heroTitle")} />
             <p className="kn-hero-subtitle">{t("overview.heroSubtitle")}</p>
             {/* 待审入口放在文案列里：放右上角会压在 hero 画布上。 */}
             {pendingCount > 0 && (
               <div className="kn-hero-cta">
-              <Link to="/review" className="kn-btn-primary kn-btn-sm" style={{ textDecoration: "none" }}>
+              <Link to="/review" className="kn-btn-primary kn-btn-sm fx-btn fx-shine" style={{ textDecoration: "none" }}>
                 <span>{t("overview.pendingReviewQuick")} ({pendingCount})</span>
                 <span>→</span>
               </Link>
