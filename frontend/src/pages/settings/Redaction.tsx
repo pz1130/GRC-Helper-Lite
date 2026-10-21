@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
 import { Card, DataTable } from "../../components/ui";
+import { StatusButton } from "../../components/fx";
 
 type Ruleset = "generation" | "embedding";
 
@@ -156,9 +157,9 @@ export function Redaction() {
           />
           {create.error && <p role="alert">⚠️ {create.error.message}</p>}
           <div>
-            <button type="submit" className="kn-btn-wide kn-btn-primary" disabled={create.isPending}>
+            <StatusButton type="submit" className="kn-btn-wide kn-btn-primary" pending={create.isPending} failed={create.isError} disabled={create.isPending}>
               {t("common.save")}
-            </button>
+            </StatusButton>
           </div>
         </form>
       </Card>

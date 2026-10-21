@@ -9,6 +9,7 @@ import { PrerequisiteNotice } from "../components/PrerequisiteNotice";
 import { CONTROL_SEARCH_LIMIT, useControlSearch, withSelected } from "../controlSearch";
 import type { ControlOption } from "../controlSearch";
 import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { StatusButton } from "../components/fx";
 
 interface EvidenceType {
   id: number;
@@ -360,7 +361,7 @@ export function Evidence() {
           />
           {error && <p role="alert">⚠️ {error}</p>}
           <div className="kn-row kn-mt-4">
-            <button className="kn-btn-primary" type="submit" disabled={save.isPending || !form.title.trim() || !form.evidence_type_id || !form.control_id}>{t("common.save")}</button>
+            <StatusButton className="kn-btn-primary" type="submit" pending={save.isPending} failed={save.isError} disabled={save.isPending || !form.title.trim() || !form.evidence_type_id || !form.control_id}>{t("common.save")}</StatusButton>
             <button type="button" className="kn-btn-secondary" disabled={save.isPending} onClick={() => { setForm(null); setEditing(null); }}>{t("common.cancel")}</button>
           </div>
         </form>

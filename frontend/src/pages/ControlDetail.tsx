@@ -7,6 +7,7 @@ import { hasText, renderParams } from "../i18n";
 import { useAuth } from "../auth";
 import type { Control } from "./Controls";
 import { Badge, Card, EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { StatusButton } from "../components/fx";
 
 interface Detail extends Control {
   sources: { clause_id: number; document_id: number; document_title: string; citation_label: string; heading_path: string; relation: string }[];
@@ -249,13 +250,15 @@ function ControlContent({ id }: { id: string }) {
                 {save.error && <p role="alert"><span>⚠️</span> {save.error.message}</p>}
 
                 <div className="kn-row-gap-sm">
-                  <button
+                  <StatusButton
                     className="kn-btn-primary"
+                    pending={save.isPending}
+                    failed={save.isError}
                     disabled={save.isPending || !form.title.trim() || !form.statement.trim()}
                     type="submit"
                   >
                     {t("common.save")}
-                  </button>
+                  </StatusButton>
                   <button
                     type="button"
                     className="kn-btn-secondary"

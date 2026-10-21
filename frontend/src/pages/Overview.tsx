@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Card, DataTable, StatCard } from "../components/ui";
+import { FlipValue, RadialGauge } from "../components/fx";
 import { Link } from "react-router-dom";
 import { lazy, Suspense, useState } from "react";
 
@@ -101,7 +102,7 @@ export function Overview() {
   );
 
   return (
-    <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+    <div className="kn-page kn-page-overview fx-mesh-bg" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
       <div className={`kn-cockpit-hero${hero3d ? " kn-cockpit-hero--v2" : ""}`}>
         {/* 装饰用的「治理分层」立体示意：有 WebGL 时是真 3D 玻璃板，否则退回纯 CSS 3D；读屏忽略。 */}
@@ -139,27 +140,27 @@ export function Overview() {
             <span className="kn-eyebrow">
               {t("overview.activeDocuments")}
             </span>
-            <div className="kn-cockpit-metric-num">{governed ?? "—"}</div>
+            <div className="kn-cockpit-metric-num"><FlipValue value={governed ?? "—"} /></div>
           </div>
           <div className="kn-cockpit-metric">
             <span className="kn-eyebrow">
               {t("overview.monthCost")}
             </span>
             {/* 没拿到数据时是「—」而不是 $0.00：后者读起来是「本月没花钱」 */}
-            <div className="kn-cockpit-metric-num">{data ? `$${data.month_to_date_cost.toFixed(2)}` : "—"}</div>
+            <div className="kn-cockpit-metric-num"><FlipValue value={data ? `$${data.month_to_date_cost.toFixed(2)}` : "—"} /></div>
           </div>
           <div className="kn-cockpit-metric">
             <span className="kn-eyebrow">
               {t("overview.totalCalls")}
             </span>
-            <div className="kn-cockpit-metric-num">{data ? totalCalls.toLocaleString() : "—"}</div>
+            <div className="kn-cockpit-metric-num"><FlipValue value={data ? totalCalls.toLocaleString() : "—"} /></div>
           </div>
           <div className="kn-cockpit-metric">
             <span className="kn-eyebrow">
               {t("overview.reviewAlerts")}
             </span>
             <div className="kn-cockpit-metric-num" style={{ color: overdue > 0 ? "var(--accent-ruby)" : soon > 0 ? "var(--accent-amber)" : undefined }}>
-              {documents.data ? overdue + soon : "—"}
+              <FlipValue value={documents.data ? overdue + soon : "—"} />
             </div>
           </div>
         </div>
@@ -171,9 +172,7 @@ export function Overview() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
               <span className="kn-stat-label">{t("overview.monthCost")}</span>
               {budgetRatio !== null && (
-                <span className={`kn-badge ${budgetRatio > 90 ? "kn-badge-ruby" : budgetRatio > 70 ? "kn-badge-amber" : "kn-badge-emerald"}`}>
-                  {budgetRatio}%
-                </span>
+                <RadialGauge value={budgetRatio} size={52} tone={budgetRatio > 90 ? "danger" : budgetRatio > 70 ? "warning" : "success"} />
               )}
             </div>
             <div className="kn-stat-number kn-primary-text">

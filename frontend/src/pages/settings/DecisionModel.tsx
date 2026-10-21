@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { request } from "../../api";
 import { LoadingState } from "../../components/ui";
+import { StatusButton } from "../../components/fx";
 
 interface Settings {
   enabled: boolean;
@@ -58,7 +59,7 @@ export function DecisionModel({ providers }: { providers: Provider[] }) {
         <input type="checkbox" checked={enabled} disabled={save.isPending} onChange={(event) => { setEnabled(event.target.checked); setSaved(false); }} />
         {t("decision.enable")}
       </label>
-      <button className="kn-btn-primary" disabled={save.isPending || (enabled && !providerId)}>{t("decision.save")}</button>
+      <StatusButton className="kn-btn-primary" pending={save.isPending} failed={save.isError} disabled={save.isPending || (enabled && !providerId)}>{t("decision.save")}</StatusButton>
       {save.error && <p role="alert">{save.error.message}</p>}
       {saved && <p role="status">{t("decision.saved")}</p>}
     </form>}

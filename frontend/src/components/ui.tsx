@@ -1,10 +1,11 @@
 // 共享的界面原语。页面里原来大量重复的内联样式（标题区、卡片、空态、加载态）
 // 收敛到这里和 styles/ledger.css 的类上：改一处观感全站一致，
 // 也让页面文件只剩业务结构，审阅时不必在 style 对象里找逻辑。
+import { useRef } from "react";
 import type { HTMLAttributes, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-import { CountUp } from "./CountUp";
+import { FlipValue, ScrambleText, TypingDots, useNewRowHighlight } from "./fx";
 
 function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
@@ -25,7 +26,7 @@ export function PageHeader({
     <header className="kn-page-header">
       <div className="kn-page-header-main">
         <h2 className="kn-page-title">
-          {title}
+          {typeof title === "string" ? <ScrambleText text={title} /> : title}
           {badge}
         </h2>
         {subtitle ? <p className="kn-page-subtitle">{subtitle}</p> : null}
@@ -73,7 +74,7 @@ export function StatCard({
       <div>
         <span className="kn-stat-label">{label}</span>
         <div className="kn-stat-number kn-primary-text">
-          <CountUp value={value} />
+          <FlipValue value={value} />
         </div>
         {hint ? <div className="kn-stat-sub">{hint}</div> : null}
       </div>
@@ -103,12 +104,14 @@ export function DataTable({
   /** 额外加在外壳上的类（例如 kn-mb-6、kn-table-flush）。 */
   className?: string;
 }) {
+  const body = useRef<HTMLTableSectionElement>(null);
+  useNewRowHighlight(body);
   return (
     <div className={cx("kn-table-container", className)}>
       <table>
         {caption ? <caption className="kn-sr-only">{caption}</caption> : null}
         <thead>{head}</thead>
-        <tbody>{children}</tbody>
+        <tbody ref={body}>{children}</tbody>
       </table>
       {empty ? <EmptyState compact /> : null}
     </div>
@@ -161,7 +164,7 @@ export function LoadingState({ lines = 3, inline }: { lines?: number; inline?: b
   if (inline) {
     return (
       <p role="status" className="kn-loading-inline">
-        <span className="kn-spinner" aria-hidden="true" />
+        <TypingDots />
         {t("common.loading")}
       </p>
     );
@@ -171,7 +174,7 @@ export function LoadingState({ lines = 3, inline }: { lines?: number; inline?: b
       {Array.from({ length: lines }, (_, i) => (
         <Skeleton key={i} width={`${92 - i * 18}%`} />
       ))}
-      <span className="kn-loading-text">{t("common.loading")}</span>
+      <span className="kn-loading-text"><TypingDots />{t("common.loading")}</span>
     </div>
   );
 }

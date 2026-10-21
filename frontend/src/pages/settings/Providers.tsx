@@ -7,6 +7,7 @@ import { request } from "../../api";
 import { DecisionModel } from "./DecisionModel";
 import { hasText } from "../../i18n";
 import { Card, DataTable } from "../../components/ui";
+import { HoldButton } from "../../components/fx";
 
 interface Provider {
   id: number;
@@ -228,13 +229,13 @@ export function Providers() {
                       </button>
                       {confirming === p.id ? (
                         <>
-                          <button
+                          <HoldButton
                             className="kn-btn-danger kn-btn-sm"
                             disabled={remove.isPending}
-                            onClick={() => remove.mutate(p.id)}
+                            onConfirm={() => remove.mutate(p.id)}
                           >
                             {t("settings.providerConfirmDelete")}
-                          </button>
+                          </HoldButton>
                           <button className="kn-btn-secondary kn-btn-sm" onClick={() => { setConfirming(null); remove.reset(); }}>
                             {t("common.cancel")}
                           </button>

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { request } from "../../api";
 import { Card, DataTable } from "../../components/ui";
+import { HoldButton, StatusButton } from "../../components/fx";
 
 const CADENCES = ["monthly", "quarterly", "semiannual", "annual", "ad_hoc"] as const;
 type Cadence = (typeof CADENCES)[number];
@@ -122,16 +123,16 @@ export function EvidenceTypes() {
                     >
                       {t("common.edit")}
                     </button>{" "}
-                    <button
+                    <HoldButton
                       className="kn-btn-danger kn-btn-sm"
                       disabled={remove.isPending}
-                      onClick={() => {
+                      onConfirm={() => {
                         // 删除是真删，不能撤回（在用的类型后端会拒绝）。
                         if (window.confirm(t("evidenceTypes.confirmDelete", { name: item.name_en || item.name_zh }))) remove.mutate(item.id);
                       }}
                     >
                       {t("common.delete")}
-                    </button>
+                    </HoldButton>
                   </td>
                 </tr>
               ))}
@@ -172,9 +173,9 @@ export function EvidenceTypes() {
         </div>
         {error && <p role="alert" className="kn-danger-text">⚠️ {error}</p>}
         <div className="kn-row kn-mt-4">
-          <button className="kn-btn-primary" type="submit" disabled={save.isPending || !form.name_en.trim()}>
+          <StatusButton className="kn-btn-primary" type="submit" pending={save.isPending} failed={save.isError} disabled={save.isPending || !form.name_en.trim()}>
             {t("common.save")}
-          </button>
+          </StatusButton>
           {editingId !== null && (
             <button type="button" className="kn-btn-secondary" onClick={done}>
               {t("common.cancel")}

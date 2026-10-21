@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { request } from "../api";
 import { useAuth } from "../auth";
 import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { StatusButton } from "../components/fx";
 
 interface TechAsset {
   id: number;
@@ -182,7 +183,7 @@ export function TechAssets() {
           </div>
           {error && <p role="alert">⚠️ {error}</p>}
           <div className="kn-row kn-mt-4">
-            <button className="kn-btn-primary" type="submit" disabled={save.isPending || !form.name.trim()}>{t("common.save")}</button>
+            <StatusButton className="kn-btn-primary" type="submit" pending={save.isPending} failed={save.isError} disabled={save.isPending || !form.name.trim()}>{t("common.save")}</StatusButton>
             <button type="button" className="kn-btn-secondary" disabled={save.isPending} onClick={() => { setForm(null); setEditingId(null); }}>{t("common.cancel")}</button>
           </div>
         </form>

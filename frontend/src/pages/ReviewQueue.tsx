@@ -5,6 +5,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { request } from "../api";
 import { useAuth } from "../auth";
 import { Badge, Card, EmptyState, LoadingState, PageHeader } from "../components/ui";
+import { HoldButton } from "../components/fx";
 
 export interface ControlSource {
   clause_id: number;
@@ -1178,13 +1179,13 @@ export function ReviewQueue() {
                         onChange={(e) => setReason(e.target.value)}
                         className="kn-reason-input"
                       />
-                      <button
+                      <HoldButton
                         className="kn-btn-danger"
                         disabled={busy || !reason.trim()}
-                        onClick={() => decide.mutate({ id: p.id, decision: "reject", reason: reason.trim() })}
+                        onConfirm={() => decide.mutate({ id: p.id, decision: "reject", reason: reason.trim() })}
                       >
                         {t("review.reject")}
-                      </button>
+                      </HoldButton>
                       <button
                         className="kn-btn-secondary"
                         disabled={busy}

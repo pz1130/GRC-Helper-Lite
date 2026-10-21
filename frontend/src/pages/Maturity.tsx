@@ -133,8 +133,8 @@ function RadarChart({ groups }: { groups: Group[] }) {
           </g>
         );
       })}
-      <polygon points={rated.map((group, index) => point(index, group.doc_average ?? 0)).join(" ")} fill="var(--accent-blue-glow)" stroke="var(--accent-blue)" strokeWidth="2" />
-      <polygon points={rated.map((group, index) => point(index, group.impl_average ?? 0)).join(" ")} fill="var(--accent-emerald-bg)" stroke="var(--accent-emerald)" strokeWidth="2" />
+      <polygon points={rated.map((group, index) => point(index, group.doc_average ?? 0)).join(" ")} fill="var(--accent-blue-glow)" stroke="var(--accent-blue)" strokeWidth="2" className="fx-chart-line" pathLength={1} />
+      <polygon points={rated.map((group, index) => point(index, group.impl_average ?? 0)).join(" ")} fill="var(--accent-emerald-bg)" stroke="var(--accent-emerald)" strokeWidth="2" className="fx-chart-line" pathLength={1} />
     </svg>
   );
 }

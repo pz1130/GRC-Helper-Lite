@@ -13,14 +13,17 @@ interface BrandLogoProps {
   animated?: boolean;
   className?: string;
   style?: CSSProperties;
+  /** H3 环绕节点；默认 tile + animated 时开启。 */
+  orbit?: boolean;
 }
 
-export function BrandLogo({ size = 32, variant = "tile", animated = true, className, style }: BrandLogoProps) {
+export function BrandLogo({ size = 32, variant = "tile", animated = true, className, style, orbit: orbitProp }: BrandLogoProps) {
+  const orbit = orbitProp ?? (variant === "tile" && animated);
   // 同一页面会出现多个标识（图标轨 + 登录页），渐变 id 必须唯一，否则后一个会引用前一个的定义。
   const uid = useId().replace(/:/g, "");
   const cls = ["brand-mark", `brand-mark--${variant}`, animated ? "is-animated" : "", className ?? ""].filter(Boolean).join(" ");
-  return (
-    <span className={cls} style={{ width: size, height: size, ...style }} aria-hidden="true">
+  const mark = (
+    <span className={cls} style={{ width: size, height: size, ...(orbit ? {} : style) }} aria-hidden="true">
       <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id={`${uid}-tile`} x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
@@ -57,6 +60,16 @@ export function BrandLogo({ size = 32, variant = "tile", animated = true, classN
           {variant === "tile" && <rect className="brand-sheen" x="-40" y="-10" width="28" height="90" fill={`url(#${uid}-sheen)`} transform="rotate(20)" />}
         </g>
       </svg>
+    </span>
+  );
+  if (!orbit) return mark;
+  // H3 Orbiting nodes：三颗节点绕标识缓慢旋转（雾蓝 / 鼠尾草 / 暖金），Animations=Off 时隐藏。
+  return (
+    <span className="brand-orbit" style={{ width: size, height: size, ...style }} aria-hidden="true">
+      <i style={{ "--o": 0, "--c": "var(--fx-a)" } as CSSProperties} />
+      <i style={{ "--o": 1, "--c": "var(--fx-b)" } as CSSProperties} />
+      <i style={{ "--o": 2, "--c": "var(--fx-c)" } as CSSProperties} />
+      {mark}
     </span>
   );
 }

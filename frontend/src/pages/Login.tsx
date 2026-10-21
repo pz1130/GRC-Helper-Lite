@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ApiError } from "../api";
 import { useAuth } from "../auth";
 import { BrandLogo, BrandWordmark } from "../components/BrandLogo";
+import { StatusButton } from "../components/fx";
 import { useTheme } from "../theme";
 import { wantsHero3d } from "../three/support";
 
@@ -19,12 +20,14 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
   // 与总览 hero 同一套规则：有 WebGL 且动效档位为 full 才用 3D；自动化浏览器默认 CSS 版。
   const hero3d = wantsHero3d();
 
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError("");
+    setBusy(true);
     try {
       await login(email, password);
     } catch (caught) {
@@ -34,6 +37,8 @@ export function Login() {
       if (caught instanceof ApiError && caught.status === 401) setError(t("login.failed"));
       else if (caught instanceof ApiError) setError(caught.message);
       else setError(t("common.requestFailed"));
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -42,7 +47,7 @@ export function Login() {
       <aside className="login-brand" aria-hidden="true">
         <div className="login-brand-glow" />
         <div className="login-brand-mark">
-          <BrandLogo size={72} />
+          <BrandLogo size={72} orbit={false} />
           <span className="login-brand-title">
             <b>GRC</b> Helper
           </span>
@@ -73,7 +78,7 @@ export function Login() {
         </ul>
       </aside>
 
-      <main className="login-main">
+      <main className="login-main fx-mesh-bg">
         <div className="login-float">
           <button
             type="button"
@@ -150,9 +155,9 @@ export function Login() {
               </p>
             )}
 
-            <button type="submit" className="kn-btn-primary login-submit">
+            <StatusButton type="submit" className="kn-btn-primary login-submit" pending={busy} failed={!!error}>
               {t("login.submit")}
-            </button>
+            </StatusButton>
 
             <div className="login-demo">
               <div>
