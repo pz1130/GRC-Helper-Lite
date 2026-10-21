@@ -6,7 +6,7 @@ import { PageErrorBoundary } from "./ErrorBoundary";
 import { BrandLogo, BrandWordmark } from "./BrandLogo";
 import { CommandPalette } from "./CommandPalette";
 import { useNavModel } from "./nav";
-import { HealthPill, MotionToggle, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
+import { HealthPill, LanguageToggle, MotionToggle, PendingPill, RailControls, ThemeToggle, UserChip } from "./ShellParts";
 import { LoadingState } from "./ui";
 
 const PANEL_KEY = "grc.ws.panel";
@@ -93,7 +93,7 @@ export function Layout() {
           ))}
         </div>
         <div className="ws-rail-foot">
-          <UserChip showName={false} />
+          <RailControls />
         </div>
       </nav>
 
@@ -106,7 +106,7 @@ export function Layout() {
       <aside className="ws-panel" aria-label={activeGroup.title}>
         {/* 图标轨里已经有标识，这里只放字标，避免两个标识并排 */}
         <div className="ws-panel-brand">
-          <BrandWordmark sub="Governance · Risk · Compliance" />
+          <BrandWordmark sub={t("app.wordmarkSub")} />
         </div>
         <div className="ws-panel-head">
           <span className="ws-panel-title">{activeGroup.title}</span>
@@ -140,15 +140,11 @@ export function Layout() {
         {/* 底部区域：状态、偏好、账户分成三行，各占整行，避免挤在一起互相遮挡。 */}
         <div className="ws-panel-foot">
           <HealthPill state={healthState} label={healthLabel} hint={t("topbar.systemDegradedHint")} />
-          <div className="ws-prefs">
-            <div className="ws-pref-row">
-              <span className="ws-pref-label">Theme</span>
-              <ThemeToggle />
-            </div>
-            <div className="ws-pref-row">
-              <span className="ws-pref-label">Animations</span>
-              <MotionToggle />
-            </div>
+          {/* 窄屏没有图标轨，偏好浮层也就不在；语言与主题放到账户行上方 */}
+          <div className="ws-account-prefs">
+            <LanguageToggle />
+            <ThemeToggle compact />
+            <MotionToggle />
           </div>
           <div className="ws-account">
             <UserChip />

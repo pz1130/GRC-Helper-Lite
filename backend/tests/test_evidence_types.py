@@ -129,7 +129,7 @@ async def test_an_unused_type_can_still_be_deleted(client, db_session):
 
 
 async def test_an_evidence_type_needs_no_chinese_name(client, db_session):
-    # 产品只有英文界面（2026-09-23 起），表单上已经没有中文名这一栏；建出来的类型
+    # 表单上已经没有中文名这一栏；建出来的类型
     # name_zh 为空，编辑时原样送回空串也必须能存。
     from app.evidence.models import EvidenceCadence
     from app.iam.models import User

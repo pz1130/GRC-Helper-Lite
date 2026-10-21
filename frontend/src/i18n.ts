@@ -2,6 +2,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
 import en from "./locales/en.json";
+import zh from "./locales/zh.json";
 
 /**
  * 查不到的键**绝不原样吐给用户**。
@@ -23,15 +24,35 @@ function parseMissingKeyHandler(key: string): string {
   return !last || last === "undefined" || last === "null" ? "—" : last;
 }
 
-// 产品只有英文界面（2026-09-23 决定，中文版停止维护）。仍然走 i18next：后端只给
-// code，句子在 en.json 里按 code 查——这套机制与语言数量无关。
+// 界面支持英文与简体中文，默认英文；用户的选择存在 localStorage，并同步到 <html lang>。
+// 后端只给 code，句子按 code 在语言包里查——这套机制与语言数量无关。
+export type Lang = "en" | "zh";
+const LANG_KEY = "grc.lang";
+
+function initialLang(): Lang {
+  const saved = typeof localStorage !== "undefined" ? localStorage.getItem(LANG_KEY) : null;
+  return saved === "zh" ? "zh" : "en";
+}
+
+function syncHtmlLang(lng: string): void {
+  if (typeof document !== "undefined") document.documentElement.lang = lng === "zh" ? "zh-CN" : "en";
+}
+
 void i18n.use(initReactI18next).init({
-  resources: { en: { translation: en } },
-  lng: "en",
+  resources: { en: { translation: en }, zh: { translation: zh } },
+  lng: initialLang(),
   fallbackLng: "en",
+  supportedLngs: ["en", "zh"],
   interpolation: { escapeValue: false },
   parseMissingKeyHandler,
 });
+syncHtmlLang(i18n.language);
+i18n.on("languageChanged", syncHtmlLang);
+
+export function setLanguage(lng: Lang): void {
+  localStorage.setItem(LANG_KEY, lng);
+  void i18n.changeLanguage(lng);
+}
 
 export default i18n;
 

@@ -145,7 +145,7 @@ async def test_import_rejections_carry_a_code(client, db_session):
 
 @pytest.mark.asyncio
 async def test_a_framework_imports_without_a_chinese_name(client, db_session):
-    # 产品只有英文界面（2026-09-23 起），导入表单上已经没有中文名这一栏。
+    # 导入表单上已经没有中文名这一栏。
     await _seed(db_session, Role.GRC_LEAD, "lead@example.com")
     headers = await _auth(client, "lead@example.com")
     resp = await client.post(
