@@ -6,7 +6,7 @@ import { PageErrorBoundary } from "./ErrorBoundary";
 import { BrandLogo, BrandWordmark } from "./BrandLogo";
 import { CommandPalette } from "./CommandPalette";
 import { useNavModel } from "./nav";
-import { HealthPill, MotionToggle, PendingPill, ThemeToggle, UserChip } from "./ShellParts";
+import { HealthPill, PendingPill, RailControls, UserChip } from "./ShellParts";
 import { LoadingState } from "./ui";
 
 const PANEL_KEY = "grc.ws.panel";
@@ -93,7 +93,7 @@ export function Layout() {
           ))}
         </div>
         <div className="ws-rail-foot">
-          <UserChip showName={false} />
+          <RailControls />
         </div>
       </nav>
 
@@ -140,16 +140,6 @@ export function Layout() {
         {/* 底部区域：状态、偏好、账户分成三行，各占整行，避免挤在一起互相遮挡。 */}
         <div className="ws-panel-foot">
           <HealthPill state={healthState} label={healthLabel} hint={t("topbar.systemDegradedHint")} />
-          <div className="ws-prefs">
-            <div className="ws-pref-row">
-              <span className="ws-pref-label">Theme</span>
-              <ThemeToggle />
-            </div>
-            <div className="ws-pref-row">
-              <span className="ws-pref-label">Animations</span>
-              <MotionToggle />
-            </div>
-          </div>
           <div className="ws-account">
             <UserChip />
           </div>

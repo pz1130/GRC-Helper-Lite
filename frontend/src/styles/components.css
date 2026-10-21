@@ -171,3 +171,45 @@ html[data-motion="off"] .kn-dialog, html[data-motion="off"] .ws-palette { animat
 /* 表格里的操作按钮收紧，保证不横向溢出 */
 .ws-main td button, .ws-main td .kn-btn { padding-inline: 10px; min-height: 32px; }
 .ws-main td .kn-row, .ws-main td .kn-inline-actions, .ws-main td > div { flex-wrap: wrap; row-gap: 6px; }
+
+/* ==========================================================================
+   左下角：图标轨底部两个 44px 圆钮（主题 / 头像=偏好浮层），面板底部只留一行账户
+   ========================================================================== */
+.ws-rail-foot { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 0 6px; position: relative; }
+.ws-rail-foot::before { content: ""; width: 24px; height: 3px; border-radius: 3px; background: var(--c-soft2); margin-bottom: 2px; }
+.ws-rc { display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
+.ws-shell .ws-rc-btn {
+  width: 44px; height: 44px; min-height: 44px; padding: 0 !important; border: 0 !important; border-radius: 50% !important;
+  display: inline-grid; place-items: center; background: var(--c-soft) !important; color: var(--text-secondary) !important; box-shadow: none !important;
+  transition: transform .3s var(--c-spring), background .2s, color .2s, box-shadow .3s !important;
+}
+.ws-shell .ws-rc-btn:hover { background: var(--c-soft2) !important; color: var(--text-primary) !important; transform: translateY(-2px); }
+.ws-rc-btn svg { width: 21px; height: 21px; display: block; }
+.ws-rc-swap { display: grid; animation: c-swap .5s var(--c-spring); }
+@keyframes c-swap { from { opacity: 0; transform: rotate(-90deg) scale(.5); } }
+.ws-shell .ws-rc-avatar { background: linear-gradient(160deg, color-mix(in srgb, var(--c-pri) 85%, white), var(--c-pri)) !important; color: #fff !important; font-weight: 700; font-size: 1rem; }
+.ws-shell .ws-rc-avatar:hover, .ws-shell .ws-rc-avatar.is-open, .ws-shell .ws-rc-avatar:focus { background: linear-gradient(160deg, color-mix(in srgb, var(--c-pri) 85%, white), var(--c-pri)) !important; color: #fff !important; box-shadow: 0 8px 20px -8px var(--c-glow), 0 0 0 4px color-mix(in srgb, var(--c-pri) 18%, transparent) !important; }
+.ws-rc-pop {
+  position: absolute; left: 56px; bottom: 0; z-index: 60; width: 280px; padding: 14px; border-radius: 16px;
+  background: var(--stage-card); box-shadow: 0 24px 60px -18px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.08);
+  display: flex; flex-direction: column; gap: 12px; animation: c-pop .32s var(--c-spring); transform-origin: left bottom;
+}
+.ws-rc-who { display: flex; align-items: center; gap: 10px; padding-bottom: 4px; }
+.ws-rc-who-av { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--c-pri); color: #fff; font-weight: 700; }
+.ws-rc-who-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.ws-rc-who-text b { font-size: .875rem; color: var(--text-primary); }
+.ws-rc-who-text small { font-size: .75rem; color: var(--text-tertiary); }
+.ws-rc-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: .8125rem; font-weight: 600; color: var(--text-secondary); }
+.ws-rc-row .kn-segmented-pill-btn { font-size: .75rem; padding: 4px 9px; min-height: 28px; }
+.ws-rc-actions { display: flex; gap: 8px; padding-top: 4px; }
+.ws-shell .ws-rc-link { flex: 1; min-height: 36px; display: inline-grid; place-items: center; border-radius: 10px !important; border: 0 !important; background: var(--c-soft) !important; color: var(--text-primary) !important; font-size: .8125rem; font-weight: 600; text-decoration: none; box-shadow: none !important; }
+.ws-shell .ws-rc-link:hover { background: var(--c-soft2) !important; }
+.ws-shell .ws-rc-out { color: var(--accent-ruby) !important; }
+/* 面板底部：健康胶囊 + 一行账户（头像、名字、退出图标），去掉分隔细线 */
+.ws-panel-foot { border-top: 0 !important; gap: 10px; padding: 10px 4px 4px; }
+.ws-account { border: 0 !important; background: var(--c-soft) !important; border-radius: 14px; padding: 8px 8px 8px 10px !important; box-shadow: none !important; }
+.ws-account .kn-avatar { width: 34px !important; height: 34px !important; border: 0 !important; }
+.ws-shell .ws-account .kn-btn-logout-compact { width: 36px; min-height: 36px; height: 36px; padding: 0 !important; border-radius: 10px !important; display: inline-grid; place-items: center; background: transparent !important; color: var(--text-tertiary) !important; box-shadow: none !important; }
+.ws-shell .ws-account .kn-btn-logout-compact:hover { background: var(--c-soft2) !important; color: var(--accent-ruby) !important; }
+.ws-account .kn-btn-logout-compact svg { width: 18px; height: 18px; }
+.ws-account .kn-btn-logout-compact span { display: none; }
