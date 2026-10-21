@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.controls.models import Control
 from app.frameworks.models import Framework
 from app.iam.models import AuditLog, User
-from app.rcsa import campaigns, closing, report, responses, risks, triggers
+from app.rcsa import campaigns, closing, kri, report, responses, risks, triggers
 from app.rcsa.models import (
     RcsaCampaign,
     RcsaItem,
@@ -38,6 +38,9 @@ from app.rcsa.schemas import (
     DispositionReviewIn,
     EvidenceIn,
     ItemsAddIn,
+    KriIn,
+    KriObservationIn,
+    KriStateIn,
     PublishIn,
     ReviewIn,
     RiskIn,
@@ -50,6 +53,7 @@ from tests.e2e_rcsa_seed import seed
 RCSA_TABLES = (
     "rcsa_scoring_profiles", "rcsa_campaigns", "rcsa_items", "rcsa_responses", "rcsa_response_evidence",
     "rcsa_item_risks", "rcsa_actions", "rcsa_triggers", "rcsa_trigger_controls", "rcsa_reviews",
+    "rcsa_kris", "rcsa_kri_observations",
 )
 ANSWER = {
     "design": {"rating": "effective", "rationale": "Every privileged account is on the list"},
@@ -126,6 +130,12 @@ async def build(session: AsyncSession) -> int:
     await session.refresh(campaign)
     campaign = await closing.begin_review(session, campaign.id, campaign.version, lead)
     await closing.close(session, campaign.id, CloseIn(expected_version=campaign.version), lead, "drill-close")
+    indicator = await kri.create(session, KriIn(name="Acme review delay", source="Acme drill", unit="count",
+        control_id=controls[0].id, direction="high", amber_threshold=5, red_threshold=10, owner_id=lead.id), lead)
+    await kri.configure(session, indicator.id, KriStateIn(enabled=True, owner_id=lead.id,
+                                                        expected_version=indicator.version), lead)
+    await kri.ingest(session, indicator.id, KriObservationIn(external_id="drill-1", value=0,
+        source_ref="ACME-DRILL-1", observed_at=datetime(2026, 2, 20, tzinfo=UTC)), lead)
     await session.flush()
     return campaign.id
 
@@ -167,6 +177,9 @@ async def fingerprint(session: AsyncSession) -> dict[str, Any]:
     )))
     return {
         "rows": rows,
+        "kris": {table: _digest(await session.scalar(text(
+            f"SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM {table} t")))
+            for table in ("rcsa_kris", "rcsa_kri_observations")},
         "profiles": profiles,
         "responses": response_rows,
         "audit": audit_rows,

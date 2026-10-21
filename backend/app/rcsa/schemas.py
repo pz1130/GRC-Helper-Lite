@@ -1,10 +1,11 @@
 """RCSA 接口的请求与响应结构。请求一律拒绝多余字段。"""
 
 from datetime import date, datetime
+from decimal import Decimal
 from typing import Annotated, Any, Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 Id = Annotated[int, Field(strict=True, gt=0)]
 Version = Annotated[int, Field(strict=True, ge=1)]
@@ -536,6 +537,7 @@ class TriggerIn(_In):
 
 
 class TriggerControlIn(_In):
+    implementation_id: Id | None = None
     control_id: Id
     coverage_disposition: Literal["pending", "assess", "excluded"] = "pending"
     coverage_reason: Annotated[str, Field(max_length=5000)] = ""
@@ -576,6 +578,8 @@ class TriggerReviewIn(_In):
 
 
 class TriggerControlOut(_Out):
+    implementation_id: int | None = None
+    implementation_snapshot: dict[str, Any] | None = None
     id: int
     control_id: int
     control_snapshot: dict[str, Any]
@@ -584,6 +588,7 @@ class TriggerControlOut(_Out):
 
 
 class TriggerOut(_Out):
+    origin_kri_id: int | None = None
     id: int
     trigger_type: str
     title: str
@@ -706,3 +711,73 @@ class RankingOut(BaseModel):
     model: str | None
     generated_at: datetime
     candidates: list[RankCandidate]
+
+
+# ── 指标接入 ────────────────────────────────────────────────
+
+KriValue = Annotated[Decimal, Field(max_digits=20, decimal_places=6, allow_inf_nan=False)]
+
+
+class KriIn(_In):
+    name: Annotated[str, Field(min_length=1, max_length=200)]
+    source: Annotated[str, Field(min_length=1, max_length=200)]
+    unit: Annotated[str, Field(min_length=1, max_length=50)]
+    control_id: Id
+    implementation_id: Id | None = None
+    direction: Literal["high", "low"]
+    amber_threshold: KriValue
+    red_threshold: KriValue
+    owner_id: Id
+    decision_days: Annotated[int, Field(strict=True, ge=1, le=90)] = 7
+
+    @model_validator(mode="after")
+    def ordered_thresholds(self) -> "KriIn":
+        if (self.direction == "high" and self.amber_threshold >= self.red_threshold) or (
+            self.direction == "low" and self.amber_threshold <= self.red_threshold
+        ):
+            raise ValueError("Thresholds must be ordered from amber to red in the selected direction")
+        return self
+
+
+class KriStateIn(VersionIn):
+    enabled: bool
+    owner_id: Id
+
+
+class KriObservationIn(_In):
+    external_id: Annotated[str, Field(min_length=1, max_length=200)]
+    observed_at: AwareDatetime
+    value: KriValue
+    source_ref: Annotated[str, Field(min_length=1, max_length=500)]
+
+
+class KriObservationOut(_Out):
+    id: int
+    kri_id: int
+    external_id: str
+    observed_at: datetime
+    value: Decimal
+    source_ref: str
+    band: str
+    rule_snapshot: dict[str, Any]
+    trigger_id: int | None
+    received_by: int
+    received_at: datetime
+
+
+class KriOut(_Out):
+    id: int
+    name: str
+    source: str
+    unit: str
+    control_id: int
+    implementation_id: int | None
+    target_snapshot: dict[str, Any]
+    direction: str
+    amber_threshold: Decimal
+    red_threshold: Decimal
+    owner_id: int
+    decision_days: int
+    enabled: bool
+    version: int
+    latest: KriObservationOut | None = None

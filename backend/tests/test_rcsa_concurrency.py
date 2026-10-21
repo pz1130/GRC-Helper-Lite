@@ -190,3 +190,29 @@ async def test_two_simultaneous_publishes_create_one_register_risk(sessions):
     assert all(not isinstance(r, Exception) or isinstance(r, AppError) for r in results), results
     assert await _count(sessions, select(func.count()).select_from(RiskEntry)) == 1
     assert await _count(sessions, _audits("rcsa.publish_risk")) == 1
+
+
+async def test_duplicate_kri_deliveries_commit_one_observation_and_one_trigger(sessions):
+    from app.controls.models import Control
+    from app.rcsa import kri
+    from app.rcsa.models import RcsaKriObservation, RcsaTrigger
+    from app.rcsa.schemas import KriIn, KriObservationIn, KriStateIn
+
+    seeded = await _seed(sessions)
+    lead = seeded["people"]["lead"]
+    async with sessions() as session:
+        control_id = await session.scalar(select(Control.id).limit(1))
+        indicator = await kri.create(session, KriIn(name="Acme feed", source="Acme source", unit="count",
+            control_id=control_id, direction="high", amber_threshold=5, red_threshold=10, owner_id=lead.id), lead)
+        await kri.configure(session, indicator.id, KriStateIn(enabled=True, owner_id=lead.id,
+                                                            expected_version=indicator.version), lead)
+        kri_id = indicator.id
+        await session.commit()
+    payload = KriObservationIn(external_id="source-1", value=10, source_ref="ACME-1",
+                              observed_at="2026-01-01T00:00:00Z")
+    async def deliver(session):
+        return (await kri.ingest(session, kri_id, payload, lead)).id
+    results = await _race(sessions, deliver, deliver)
+    assert isinstance(results[0], int) and results[0] == results[1], results
+    assert await _count(sessions, select(func.count()).select_from(RcsaKriObservation)) == 1
+    assert await _count(sessions, select(func.count()).select_from(RcsaTrigger).where(RcsaTrigger.origin_kri_id == kri_id)) == 1

@@ -506,3 +506,62 @@ limitation but no additional asset names, descriptions, or owners through existi
 Apply migration 0036 before running the updated backend. It preserves existing items as whole-control
 assessments. Downgrade is refused when implementation-scoped items exist; retain the data and fix
 forward instead.
+
+### KRI ingestion and automatic review events (migration 0037)
+
+The RCSA **Key risk indicators** page supports indicator definitions, explicit enablement,
+owner reassignment, observation entry, and observation history. Definitions are created disabled.
+Choose an existing control and optionally one of its implementations. Configure a unit, source name,
+adverse direction, amber/red thresholds, and the number of days allowed for deciding how to respond.
+Thresholds are inclusive. For “higher is worse”, amber must be below red; for “lower is worse”, amber
+must be above red. Values support up to 14 integer digits and 6 fractional digits; NaN and infinity
+are rejected. Definitions and historical observations cannot be rewritten or deleted. To change
+thresholds, units, sources, or scope, disable the old indicator and create a replacement.
+
+Push integrations use the existing authenticated RCSA API:
+
+- `POST /api/rcsa/kris` creates a definition; `PATCH /api/rcsa/kris/{id}` updates only enablement and
+  responsibility with `expected_version`, `enabled`, and `owner_id`.
+- `POST /api/rcsa/kris/{id}/observations` accepts `external_id`, `observed_at`, `value`, and `source_ref`.
+  `observed_at` must include a timezone. `value` can be a decimal string to retain precision.
+- `GET /api/rcsa/kris` and `GET /api/rcsa/kris/{id}/observations` accept `limit` and `offset`.
+  The list includes the latest recorded observation; no observations is not green.
+
+For example, an authenticated sender can post this synthetic payload:
+
+```json
+{
+  "external_id": "acme-access-2026-01-15",
+  "observed_at": "2026-01-15T09:00:00Z",
+  "value": "12",
+  "source_ref": "ACME-ACCESS-15"
+}
+```
+
+Only internal GRC lead/admin accounts can configure indicators or ingest observations; read-only users
+can inspect history. Existing authentication, RCSA enablement, and audit-scoped-account restrictions
+apply. No anonymous webhook, outbound collector, third-party credentials, or scheduled polling is
+installed by this change. Connect a specific source using its approved authentication and delivery
+mechanism; do not embed credentials in source references. The service never fetches `source_ref`.
+
+Use a stable source record ID per indicator when retrying. Identical retries return the original
+observation, including after the indicator is disabled. Reusing an ID with different contents returns
+409. New observations must be later than the latest accepted observation and cannot be future-dated;
+rejected or out-of-order data must be investigated by the sender, not silently skipped. If a new red
+interval has an unavailable owner, ingestion is rejected atomically; a manager can reassign the
+indicator and retry the same source record. Existing event ownership is managed on the event itself.
+
+Entering the red range creates one registered KRI event with the frozen target and threshold context.
+Additional red observations refer to that same event, even if it has already been dispositioned. An
+amber or green observation ends the red interval; a subsequent red observation creates a new event.
+Recovery never closes a review event, approves a response, changes an assessment score, or accepts a
+risk. Decision deadlines run from receipt, so delayed but valid observations remain actionable.
+Events enter the existing owner triage, reassessment, independent review, and campaign-close workflow.
+System-scoped events require the same implementation in the linked campaign or an explicit exclusion;
+a whole-control item does not silently stand in for a system-specific assessment. Coverage is checked
+again at campaign close. The source indicator's target cannot be edited on an automatic event.
+
+The latest band describes a historical observation, not a current-health guarantee. Review its timestamp
+and monitor delivery failures in the source integration. This stage does not configure source-specific
+collection or detect missing heartbeats. Apply migration 0037 before the new backend. Downgrade refuses
+existing KRI definitions or implementation-scoped trigger records; preserve the data and fix forward.

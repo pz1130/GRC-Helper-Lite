@@ -92,11 +92,12 @@ async def _load_and_blockers(
         winner is not None and winner.status == "merged"
     ):
         blockers.append(_ALREADY_MERGED)
-    from app.rcsa.models import RcsaItem
+    from app.rcsa.models import RcsaItem, RcsaKri, RcsaTriggerControl
 
-    if await session.scalar(select(RcsaItem.id).join(Implementation,
-            Implementation.id == RcsaItem.implementation_id)
-            .where(Implementation.control_id == loser_id).limit(1)):
+    if (await session.scalar(select(RcsaKri.id).where(RcsaKri.control_id == loser_id).limit(1)) or
+        any([await session.scalar(select(model.id).join(Implementation,
+            Implementation.id == model.implementation_id)
+            .where(Implementation.control_id == loser_id).limit(1)) for model in (RcsaItem, RcsaTriggerControl)])):
         blockers.append(Blocker(code="merge.blocked.rcsa_implementation", detail="实施记录已被 RCSA 引用"))
     return loser, winner, blockers
 

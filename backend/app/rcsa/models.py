@@ -1,4 +1,4 @@
-"""RCSA（风险与控制自评估）的十张表。
+"""RCSA（风险与控制自评估）的业务记录与指标观测。
 
 实现合同里落在数据库这一层的部分写在这里，服务层的状态转换与身份规则在 PR-2。
 
@@ -29,10 +29,12 @@ RCSA 记录。人员停用不删行，历史责任仍可解析。
 """
 
 from datetime import date, datetime
+from decimal import Decimal
 from enum import StrEnum
 from typing import Any
 
 from sqlalchemy import (
+    Boolean,
     CheckConstraint,
     Date,
     DateTime,
@@ -40,6 +42,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     Integer,
+    Numeric,
     String,
     Text,
     UniqueConstraint,
@@ -136,6 +139,7 @@ class TriggerType(StrEnum):
     PLANNED_CHANGE = "planned_change"
     INCIDENT = "incident"
     OTHER = "other"
+    KRI = "kri"
 
 
 class TriggerStatus(StrEnum):
@@ -542,6 +546,7 @@ class RcsaTrigger(Base, _Audited):
     trigger_type: Mapped[TriggerType] = mapped_column(
         _enum(TriggerType, "rcsa_trigger_type"), nullable=False
     )
+    origin_kri_id: Mapped[int | None] = mapped_column(ForeignKey("rcsa_kris.id", ondelete="RESTRICT"))
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False, default="", server_default="")
     # 变更单号、事件编号之类的引用文字；不是服务端会去请求的 URL。
@@ -567,6 +572,9 @@ class RcsaTrigger(Base, _Audited):
 class RcsaTriggerControl(Base):
     __tablename__ = "rcsa_trigger_controls"
     __table_args__ = (
+        ForeignKeyConstraint(["implementation_id", "control_id"],
+                             ["implementations.id", "implementations.control_id"],
+                             name="fk_rcsa_trigger_implementation", ondelete="RESTRICT"),
         UniqueConstraint("trigger_id", "control_id", name="uq_rcsa_trigger_control"),
         CheckConstraint(
             "coverage_disposition <> 'excluded' OR length(trim(coverage_reason)) > 0",
@@ -581,6 +589,8 @@ class RcsaTriggerControl(Base):
     control_id: Mapped[int] = mapped_column(
         ForeignKey("controls.id", ondelete="RESTRICT"), nullable=False, index=True
     )
+    implementation_id: Mapped[int | None] = mapped_column(Integer)
+    implementation_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     control_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
     coverage_disposition: Mapped[CoverageDisposition] = mapped_column(
         _enum(CoverageDisposition, "rcsa_coverage_disposition"),
@@ -645,3 +655,53 @@ class RcsaReview(Base):
     at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
+
+
+class RcsaKri(Base, _Audited):
+    """口径创建后不覆盖；调整口径须停用旧指标并新建，历史观测保留原口径。"""
+
+    __tablename__ = "rcsa_kris"
+    __table_args__ = (
+        ForeignKeyConstraint(["implementation_id", "control_id"],
+                             ["implementations.id", "implementations.control_id"],
+                             name="fk_rcsa_kri_implementation", ondelete="RESTRICT"),
+        CheckConstraint("direction IN ('high', 'low')", name="ck_rcsa_kri_direction"),
+        CheckConstraint("(direction = 'high' AND amber_threshold < red_threshold) OR "
+                        "(direction = 'low' AND amber_threshold > red_threshold)", name="ck_rcsa_kri_thresholds"),
+        CheckConstraint("decision_days BETWEEN 1 AND 90", name="ck_rcsa_kri_decision_days"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    source: Mapped[str] = mapped_column(String(200), nullable=False)
+    unit: Mapped[str] = mapped_column(String(50), nullable=False)
+    control_id: Mapped[int] = mapped_column(ForeignKey("controls.id", ondelete="RESTRICT"), nullable=False)
+    implementation_id: Mapped[int | None] = mapped_column(Integer)
+    target_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    direction: Mapped[str] = mapped_column(String(4), nullable=False)
+    amber_threshold: Mapped[Decimal] = mapped_column(Numeric(20, 6), nullable=False)
+    red_threshold: Mapped[Decimal] = mapped_column(Numeric(20, 6), nullable=False)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
+    decision_days: Mapped[int] = mapped_column(Integer, nullable=False)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default="false")
+
+
+class RcsaKriObservation(Base):
+    __tablename__ = "rcsa_kri_observations"
+    __table_args__ = (
+        UniqueConstraint("kri_id", "external_id", name="uq_rcsa_kri_observation_external"),
+        CheckConstraint("band IN ('green', 'amber', 'red')", name="ck_rcsa_kri_observation_band"),
+        Index("ix_rcsa_kri_observation_time", "kri_id", "observed_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    kri_id: Mapped[int] = mapped_column(ForeignKey("rcsa_kris.id", ondelete="RESTRICT"), nullable=False)
+    external_id: Mapped[str] = mapped_column(String(200), nullable=False)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    value: Mapped[Decimal] = mapped_column(Numeric(20, 6), nullable=False)
+    source_ref: Mapped[str] = mapped_column(String(500), nullable=False)
+    band: Mapped[str] = mapped_column(String(5), nullable=False)
+    rule_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    trigger_id: Mapped[int | None] = mapped_column(ForeignKey("rcsa_triggers.id", ondelete="RESTRICT"))
+    received_by: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="RESTRICT"), nullable=False)
+    received_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)

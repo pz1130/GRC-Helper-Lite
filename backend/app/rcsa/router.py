@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import get_settings
 from app.db import get_session
 from app.errors import AppError, NotFound
-from app.rcsa import ai, campaigns, closing, report, responses, risks, triggers, work
+from app.rcsa import ai, campaigns, closing, kri, report, responses, risks, triggers, work
 from app.rcsa.access import (
     ActionUpdater,
     AiAdmin,
@@ -54,6 +54,11 @@ from app.rcsa.schemas import (
     EvidenceOut,
     ItemOut,
     ItemsAddIn,
+    KriIn,
+    KriObservationIn,
+    KriObservationOut,
+    KriOut,
+    KriStateIn,
     MyWork,
     Page,
     PersonOut,
@@ -612,3 +617,58 @@ async def rank_evidence(response_id: RowId, actor: Reader, session: Session) -> 
     ranking = await ai.rank_evidence(session, response_id, actor)
     await session.commit()
     return ranking
+
+
+# ── 指标 ────────────────────────────────────────────────────
+
+
+@router.get("/kris", response_model=Page[KriOut])
+async def kri_list(actor: Reader, session: Session, limit: Limit = 25, offset: Offset = 0):
+    rows, total = await kri.listing(session, limit, offset)
+    return {"items": rows, "total": total}
+
+
+@router.post("/kris", response_model=KriOut, status_code=201)
+async def kri_create(payload: KriIn, actor: Manager, session: Session):
+    rule = await kri.create(session, payload, actor)
+    await session.commit()
+    return await kri.view(session, rule)
+
+
+@router.get("/kris/{kri_id}", response_model=KriOut)
+async def kri_get(kri_id: RowId, actor: Reader, session: Session):
+    from app.rcsa.models import RcsaKri
+
+    return await kri.view(session, await fetch(session, RcsaKri, kri_id, code="rcsa.kri_not_found"))
+
+
+@router.patch("/kris/{kri_id}", response_model=KriOut)
+async def kri_configure(kri_id: RowId, payload: KriStateIn, actor: Manager, session: Session):
+    rule = await kri.configure(session, kri_id, payload, actor)
+    await session.commit()
+    return await kri.view(session, rule)
+
+
+@router.post("/kris/{kri_id}/observations", response_model=KriObservationOut)
+async def kri_ingest(kri_id: RowId, payload: KriObservationIn, actor: Manager, session: Session):
+    row = await kri.ingest(session, kri_id, payload, actor)
+    await session.commit()
+    return row
+
+
+@router.get("/kris/{kri_id}/observations", response_model=Page[KriObservationOut])
+async def kri_history(kri_id: RowId, actor: Reader, session: Session, limit: Limit = 25, offset: Offset = 0):
+    rows, total = await kri.history(session, kri_id, limit, offset)
+    return {"items": rows, "total": total}
+
+
+@router.get("/kri-targets")
+async def kri_targets(control_id: Annotated[int, Query(gt=0)], actor: Reader, session: Session):
+    from sqlalchemy import select
+
+    from app.environment.models import Implementation, TechAsset
+
+    rows = await session.execute(select(Implementation, TechAsset)
+        .outerjoin(TechAsset, TechAsset.id == Implementation.tech_asset_id)
+        .where(Implementation.control_id == control_id).order_by(Implementation.id))
+    return [campaigns.implementation_snapshot(implementation, asset) for implementation, asset in rows]

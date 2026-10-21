@@ -1205,7 +1205,15 @@
       "suggestion_stale": "The draft changed after this suggestion was made, so it can no longer be applied",
       "suggestion_used": "This suggestion has already been applied",
       "implementation_not_found": "The control implementation no longer exists.",
-      "implementation_in_use": "This implementation is used by RCSA. Its system and control cannot be changed, and it cannot be deleted."
+      "implementation_in_use": "This implementation is used by RCSA. Its system and control cannot be changed, and it cannot be deleted.",
+      "kri_not_found": "KRI not found.",
+      "kri_replay_conflict": "This source record ID was already used with different content.",
+      "kri_disabled": "Enable this KRI before recording new observations.",
+      "kri_future_observation": "Observation time cannot be in the future.",
+      "kri_out_of_order": "Use an observation time later than the latest record. Existing records cannot be overwritten.",
+      "implementation_control_mismatch": "The implementation does not belong to this control.",
+      "kri_trigger_scope_frozen": "The target of an automatic KRI event is fixed by its source indicator.",
+      "kri_control_in_use": "This control is referenced by a KRI and cannot be merged."
     },
     "evidence": {
       "constraint_violation": "The evidence record violates a database constraint",
@@ -1430,7 +1438,7 @@
         "already_merged": "A control that has already been merged cannot be merged again",
         "not_found": "Control not found",
         "self": "A control cannot be merged into itself",
-        "rcsa_implementation": "An implementation of this control is referenced by RCSA."
+        "rcsa_implementation": "This control or one of its implementations is referenced by RCSA assessments, events, or KRIs."
       },
       "discard": {
         "embedding": "The losing control's embedding is dropped; the winner's is kept",
@@ -1848,7 +1856,8 @@
       "types": {
         "planned_change": "Planned change (before)",
         "incident": "Incident (after)",
-        "other": "Other"
+        "other": "Other",
+        "kri": "KRI threshold breach"
       },
       "titleField": "Title",
       "source": "Reference",
@@ -1996,6 +2005,47 @@
       "max": "To",
       "approve": "Approve",
       "incompleteHint": "Fill in the horizon, every level's criteria, the impact dimensions and gap-free bands from 1 to 25."
+    },
+    "kri": {
+      "title": "Key risk indicators",
+      "subtitle": "Receive observations and register a review event when an indicator enters the red range.",
+      "new": "Create indicator",
+      "name": "Indicator name",
+      "source": "Data source",
+      "unit": "Unit",
+      "search": "Search controls",
+      "target": "Control implementation",
+      "direction": "Adverse direction",
+      "high": "Higher is worse",
+      "low": "Lower is worse",
+      "amber": "Amber threshold (inclusive)",
+      "red": "Red threshold (inclusive)",
+      "days": "Days to decide after receipt",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "noData": "No observations",
+      "none": "No indicators yet",
+      "latest": "Latest recorded band",
+      "history": "Observation history",
+      "observed": "Observed at",
+      "received": "Received at",
+      "value": "Observed value",
+      "record": "Record observation",
+      "externalId": "Source record ID",
+      "sourceRef": "Source reference",
+      "settings": "Enablement and responsibility",
+      "enable": "Enable indicator",
+      "save": "Save settings",
+      "definitionHint": "Definitions are fixed after creation. To change thresholds or scope, disable this indicator and create a replacement.",
+      "ingestHint": "Use a stable source record ID for retries. Observations must arrive in time order. Recovery records do not close existing review events.",
+      "statusHint": "The band describes the latest recorded observation, not a live health check. Check its observation time.",
+      "event": "Review event",
+      "sourceIndicator": "Source indicator",
+      "greenBand": "Green",
+      "amberBand": "Amber",
+      "redBand": "Red",
+      "back": "All indicators",
+      "searchHint": "Showing up to 50 matches. Refine the search to find another control."
     }
   }
 }

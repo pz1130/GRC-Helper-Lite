@@ -45,6 +45,8 @@ const RcsaReport = lazy(() => import("./pages/rcsa/Report").then((m) => ({ defau
 const RcsaTriggers = lazy(() => import("./pages/rcsa/Triggers").then((m) => ({ default: m.Triggers })));
 const RcsaTriggerDetail = lazy(() => import("./pages/rcsa/Triggers").then((m) => ({ default: m.TriggerDetail })));
 const RcsaAiSettings = lazy(() => import("./pages/rcsa/AiSettings").then((m) => ({ default: m.AiSettings })));
+const RcsaKris = lazy(() => import("./pages/rcsa/Kris").then((m) => ({ default: m.Kris })));
+const RcsaKriDetail = lazy(() => import("./pages/rcsa/Kris").then((m) => ({ default: m.KriDetail })));
 const RcsaProfiles = lazy(() => import("./pages/rcsa/Profiles").then((m) => ({ default: m.Profiles })));
 
 export function App() {
@@ -94,6 +96,8 @@ export function App() {
         <Route path="/rcsa/items/:id" element={<RcsaAssessment />} />
         <Route path="/rcsa/triggers" element={<RcsaTriggers />} />
         <Route path="/rcsa/triggers/:id" element={<RcsaTriggerDetail />} />
+        <Route path="/rcsa/kris" element={<RcsaKris />} />
+        <Route path="/rcsa/kris/:id" element={<RcsaKriDetail />} />
         <Route path="/rcsa/profiles" element={<RcsaProfiles />} />
         <Route path="/rcsa/ai" element={<RcsaAiSettings />} />
         <Route path="/account" element={<Account />} />

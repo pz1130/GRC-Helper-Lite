@@ -165,10 +165,11 @@ async def create_implementation(
 
 
 async def _protect_rcsa_reference(session: AsyncSession, implementation: Implementation) -> None:
-    from app.rcsa.models import RcsaItem
+    from app.rcsa.models import RcsaItem, RcsaKri, RcsaTriggerControl
 
     await session.refresh(implementation, with_for_update=True)
-    if await session.scalar(select(RcsaItem.id).where(RcsaItem.implementation_id == implementation.id).limit(1)):
+    if any([await session.scalar(select(model.id).where(model.implementation_id == implementation.id).limit(1))
+            for model in (RcsaItem, RcsaKri, RcsaTriggerControl)]):
         raise Conflict("实施记录已被 RCSA 引用，不能删除或更换系统", code="rcsa.implementation_in_use")
 
 

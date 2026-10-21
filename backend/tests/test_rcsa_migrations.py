@@ -147,3 +147,15 @@ async def test_implementation_scope_blocks_downgrade_without_losing_items(alembi
         await _run(command.downgrade, alembic_cfg, "0035")
     [rows] = await _execute("SELECT implementation_id FROM rcsa_items")
     assert rows == [(1,)]
+
+
+async def test_kri_definition_refuses_lossy_downgrade(alembic_cfg):
+    await _run(command.upgrade, alembic_cfg, "head")
+    await _execute(*_SYNTHETIC_BUSINESS_ROWS[:3],
+        "INSERT INTO rcsa_kris (name, source, unit, control_id, target_snapshot, direction, amber_threshold, "
+        "red_threshold, owner_id, decision_days, created_by, updated_by) "
+        "VALUES ('Acme metric', 'Acme source', 'count', 1, '{}', 'high', 5, 10, 1, 7, 1, 1)")
+    with pytest.raises(RuntimeError, match="KRI"):
+        await _run(command.downgrade, alembic_cfg, "0036")
+    [rows] = await _execute("SELECT name FROM rcsa_kris")
+    assert rows == [("Acme metric",)]

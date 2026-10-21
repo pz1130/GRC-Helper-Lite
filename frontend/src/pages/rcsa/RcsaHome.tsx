@@ -124,6 +124,7 @@ export function RcsaHome() {
         subtitle={t("rcsa.subtitle")}
         actions={
           <div className="kn-row kn-row-gap">
+            <Link className="kn-btn kn-btn-secondary" to="/rcsa/kris">{t("rcsa.kri.title")}</Link>
             <Link className="kn-btn kn-btn-secondary" to="/rcsa/triggers">{t("rcsa.triggers.title")}</Link>
             <Link className="kn-btn kn-btn-secondary" to="/rcsa/profiles">{t("rcsa.profiles.title")}</Link>
             {user?.role === "admin" && <Link className="kn-btn kn-btn-secondary" to="/rcsa/ai">{t("rcsa.ai.settingsTitle")}</Link>}

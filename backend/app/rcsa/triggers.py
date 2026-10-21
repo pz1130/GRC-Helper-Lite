@@ -15,6 +15,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.controls.models import Control
+from app.environment.models import Implementation, TechAsset
 from app.errors import Conflict, Forbidden, NotFound
 from app.iam.models import User
 from app.iam.permissions import Permission, has_permission
@@ -82,7 +83,17 @@ async def _control_row(session: AsyncSession, trigger_id: int, spec: TriggerCont
         raise Conflict("控制点已被合并", code="rcsa.control_merged", params={"control_id": control.id})
     if spec.coverage_disposition == CoverageDisposition.EXCLUDED and not spec.coverage_reason:
         raise Conflict("排除受影响控制需要写明理由", code="rcsa.reason_required")
+    implementation = None
+    if spec.implementation_id is not None:
+        from app.rcsa.campaigns import implementation_snapshot
+
+        impl = await lock(session, Implementation, spec.implementation_id, code="rcsa.implementation_not_found")
+        if impl.control_id != control.id:
+            raise Conflict("实施记录不属于该控制", code="rcsa.implementation_control_mismatch")
+        asset = await session.get(TechAsset, impl.tech_asset_id) if impl.tech_asset_id else None
+        implementation = implementation_snapshot(impl, asset)
     return RcsaTriggerControl(
+        implementation_id=spec.implementation_id, implementation_snapshot=implementation,
         trigger_id=trigger_id, control_id=control.id,
         control_snapshot={"id": control.id, "code": control.code, "title": control.title,
                           "owner_user_id": control.owner_user_id},
@@ -130,6 +141,8 @@ async def update(session: AsyncSession, trigger_id: int, payload: TriggerUpdateI
     for field, value in changes.items():
         setattr(trigger, field, value)
     if payload.controls is not None:
+        if trigger.origin_kri_id is not None:
+            raise Conflict("自动事件的指标范围不能改写", code="rcsa.kri_trigger_scope_frozen")
         for row in await session.scalars(select(RcsaTriggerControl).where(RcsaTriggerControl.trigger_id == trigger.id)):
             await session.delete(row)
         await session.flush()
@@ -225,19 +238,19 @@ async def link(session: AsyncSession, trigger_id: int, payload: TriggerLinkIn, a
     campaign = await fetch(session, RcsaCampaign, payload.campaign_id, code="rcsa.campaign_not_found")
     if campaign.status in (CampaignStatus.CLOSED, CampaignStatus.CANCELLED):
         raise Conflict("只能关联尚未关闭的活动", code="rcsa.campaign_state", params={"status": str(campaign.status)})
-    in_campaign = set(await session.scalars(select(RcsaItem.control_id).where(RcsaItem.campaign_id == campaign.id,
-        RcsaItem.implementation_id.is_(None))))
+    in_campaign = set((await session.execute(select(RcsaItem.control_id, RcsaItem.implementation_id)
+        .where(RcsaItem.campaign_id == campaign.id, RcsaItem.status != "excluded"))).all())
     excluded = {row.control_id: row.reason for row in payload.exclusions}
     rows = await _controls(session, trigger.id)
     uncovered = [
         row.control_snapshot.get("code") for row in rows
-        if row.control_id not in in_campaign and row.control_id not in excluded
+        if (row.control_id, row.implementation_id) not in in_campaign and row.control_id not in excluded
     ]
     if uncovered:
         raise Conflict("活动没有覆盖全部受影响控制，未覆盖的要逐项写排除理由",
                        code="rcsa.trigger_controls_uncovered", params={"control_codes": uncovered})
     for row in rows:
-        if row.control_id in in_campaign:
+        if (row.control_id, row.implementation_id) in in_campaign:
             row.coverage_disposition, row.coverage_reason = CoverageDisposition.ASSESS, ""
         else:
             row.coverage_disposition, row.coverage_reason = CoverageDisposition.EXCLUDED, excluded[row.control_id]
@@ -256,6 +269,16 @@ async def complete_for_campaign(session: AsyncSession, campaign_id: int, actor: 
             RcsaTrigger.campaign_id == campaign_id, RcsaTrigger.status == TriggerStatus.AWAITING_ASSESSMENT
         ).with_for_update()
     ))
+    target_pairs = set((await session.execute(select(RcsaItem.control_id, RcsaItem.implementation_id)
+        .where(RcsaItem.campaign_id == campaign_id, RcsaItem.status == "approved"))).all())
+    affected = list(await session.scalars(select(RcsaTriggerControl)
+        .where(RcsaTriggerControl.trigger_id.in_([t.id for t in triggers])))) if triggers else []
+    uncovered = [row.control_snapshot.get("code") for row in affected
+                 if row.coverage_disposition != CoverageDisposition.EXCLUDED
+                 and (row.control_id, row.implementation_id) not in target_pairs]
+    if uncovered:
+        raise Conflict("关联之后活动范围变化，必须重新确认事件覆盖", code="rcsa.trigger_controls_uncovered",
+                       params={"control_codes": uncovered})
     for trigger in triggers:
         trigger.status = TriggerStatus.COMPLETED
         bump(trigger, actor)

@@ -233,7 +233,8 @@ export interface Action {
 
 export interface Trigger {
   id: number;
-  trigger_type: "planned_change" | "incident" | "other";
+  trigger_type: "planned_change" | "incident" | "other" | "kri";
+  origin_kri_id?: number | null;
   title: string;
   description: string;
   source_ref: string;
@@ -248,6 +249,8 @@ export interface Trigger {
   campaign_id: number | null;
   version: number;
   controls: {
+    implementation_id?: number | null;
+    implementation_snapshot?: ImplementationSnapshot | null;
     id: number;
     control_id: number;
     control_snapshot: { code: string; title: string };
@@ -442,4 +445,33 @@ export interface Report {
     actions: { id: number; title: string; control_code: string; target_label?: string | null; status: string; due_at: string; overdue: boolean }[];
     acceptances: { risk_id: number; control_code: string; target_label?: string | null; accept_until: string; expired: boolean }[];
   };
+}
+
+
+export interface KriObservation {
+  id: number;
+  external_id: string;
+  observed_at: string;
+  received_at: string;
+  value: string;
+  source_ref: string;
+  band: "green" | "amber" | "red";
+  trigger_id: number | null;
+}
+export interface Kri {
+  id: number;
+  name: string;
+  source: string;
+  unit: string;
+  control_id: number;
+  implementation_id: number | null;
+  target_snapshot: { control: { code: string; title: string }; implementation: ImplementationSnapshot | null };
+  direction: "high" | "low";
+  amber_threshold: string;
+  red_threshold: string;
+  owner_id: number;
+  decision_days: number;
+  enabled: boolean;
+  version: number;
+  latest: KriObservation | null;
 }

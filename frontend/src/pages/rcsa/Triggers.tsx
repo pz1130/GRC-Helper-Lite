@@ -1,3 +1,4 @@
+import { ScopeTarget } from "./ScopeTarget";
 // 手动触发：登记、分诊、决定重评或不重评、关联活动、由另一人确认。
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
@@ -136,6 +137,8 @@ export function TriggerDetail() {
       <RcsaGate>
         <PageHeader title={data.title} badge={<StatusBadge status={data.status} />}
           subtitle={`${t(`rcsa.triggers.types.${data.trigger_type}`)} · ${data.source_ref}`} />
+        {data.origin_kri_id && <p><Link to={`/rcsa/kris/${data.origin_kri_id}`}>{t("rcsa.kri.sourceIndicator")}</Link></p>}
+        <p>{data.description}</p>
         <dl className="rcsa-meta">
           <div><dt>{t("rcsa.triggers.owner")}</dt><dd>{nameOf(data.owner_id)}</dd></div>
           <div><dt>{t("rcsa.triggers.occurred")}</dt><dd>{data.occurred_at.slice(0, 16).replace("T", " ")}</dd></div>
@@ -150,6 +153,7 @@ export function TriggerDetail() {
               {data.controls.map((c) => (
                 <li key={c.id}>
                   <strong>{c.control_snapshot.code}</strong> {c.control_snapshot.title}{" "}
+                  <ScopeTarget snapshot={c.implementation_snapshot} />
                   <StatusBadge status={c.coverage_disposition === "assess" ? "active" : c.coverage_disposition === "excluded" ? "excluded" : "pending"} />
                   {c.coverage_reason ? <span className="kn-secondary"> — {c.coverage_reason}</span> : null}
                   {isOwner && data.status === "awaiting_assessment" && (
