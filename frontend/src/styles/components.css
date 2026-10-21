@@ -1,0 +1,173 @@
+/* ==========================================================================
+   登录后的组件层：只换按钮与组件的质感和动效，不动布局与配色变量。
+   效果来源见 grc-lite-shots/components/SOURCES.md；每段标了来源编号。
+   动效默认常开，只在应用内「Animations: Off」(data-motion=off) 时停。
+   ========================================================================== */
+.ws-shell, .ws-palette, .kn-dialog, .kn-modal-backdrop {
+  --c-pri: var(--primary-bg, #5e6ad2);
+  --c-pri-hi: var(--primary-bg-hover, #6f7be0);
+  --c-glow: color-mix(in srgb, var(--c-pri) 45%, transparent);
+  --c-soft: color-mix(in srgb, var(--text-primary) 6%, transparent);
+  --c-soft2: color-mix(in srgb, var(--text-primary) 10%, transparent);
+  --c-ease: cubic-bezier(.16,1,.3,1);
+  --c-spring: cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ---- [MP] 按钮：底色 + 柔光，无描边；[UV] 扫光；[MK] 按下 97% ---- */
+.ws-main button, .ws-main .kn-btn, .ws-main a.kn-btn-primary, .ws-main a.kn-btn-secondary, .kn-dialog button, .ws-panel button {
+  border: 0 !important; border-radius: 10px; min-height: 38px; padding-inline: 16px;
+  position: relative; overflow: hidden; isolation: isolate;
+  transition: transform .25s var(--c-spring), box-shadow .3s var(--c-ease), background-color .2s, color .2s !important;
+}
+.ws-main .kn-btn-sm, .ws-panel .kn-btn-sm, .kn-dialog .kn-btn-sm { min-height: 34px; padding-inline: 13px; }
+.ws-main button[type="submit"], .ws-main .kn-btn-primary, .kn-dialog .kn-btn-primary, .kn-dialog button[type="submit"] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c-pri) 88%, white), var(--c-pri)) !important;
+  color: #fff !important; font-weight: 600;
+  box-shadow: 0 6px 18px -8px var(--c-glow), inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+.ws-main button[type="submit"]::after, .ws-main .kn-btn-primary::after, .kn-dialog .kn-btn-primary::after, .ws-main .kn-btn-danger::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(115deg, transparent 32%, rgba(255,255,255,.38) 50%, transparent 68%);
+  transform: translateX(-130%);
+}
+.ws-main button[type="submit"]:hover:not(:disabled), .ws-main .kn-btn-primary:hover, .kn-dialog .kn-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px -8px var(--c-glow), 0 0 0 4px color-mix(in srgb, var(--c-pri) 16%, transparent), inset 0 1px 0 rgba(255,255,255,.28) !important;
+}
+.ws-main button[type="submit"]:hover::after, .ws-main .kn-btn-primary:hover::after, .kn-dialog .kn-btn-primary:hover::after, .ws-main .kn-btn-danger:hover::after { animation: c-shine .85s var(--c-ease); }
+@keyframes c-shine { to { transform: translateX(130%); } }
+/* 次要 / 幽灵 */
+.ws-main .kn-btn-secondary, .ws-panel .kn-btn-secondary, .kn-dialog .kn-btn-secondary { background: var(--c-soft) !important; color: var(--text-primary) !important; box-shadow: none !important; }
+.ws-main .kn-btn-secondary:hover, .ws-panel .kn-btn-secondary:hover, .kn-dialog .kn-btn-secondary:hover { background: var(--c-soft2) !important; transform: translateY(-1px); }
+.ws-main .kn-link-btn, .ws-main .kn-button-ghost, .ws-main .kn-tree-btn { background: transparent !important; box-shadow: none !important; }
+.ws-main .kn-link-btn:hover, .ws-main .kn-button-ghost:hover { background: var(--c-soft) !important; }
+/* 危险：长按感的红色填充（[MK] hold-fill 的静态版本） */
+.ws-main .kn-btn-danger, .kn-dialog .kn-btn-danger {
+  background: color-mix(in srgb, var(--accent-ruby) 14%, transparent) !important; color: var(--accent-ruby) !important; box-shadow: none !important;
+}
+.ws-main .kn-btn-danger:hover, .kn-dialog .kn-btn-danger:hover { background: var(--accent-ruby) !important; color: #fff !important; box-shadow: 0 8px 22px -10px var(--accent-ruby) !important; }
+/* 图标按钮：大一号 */
+.ws-icon-btn, .ws-main .kn-icon-btn, .ws-main .kn-hud-btn { min-width: 40px; min-height: 40px; border-radius: 10px !important; }
+.ws-icon-btn svg, .ws-main .kn-icon-btn svg { width: 20px; height: 20px; }
+.ws-icon-btn:hover svg, .ws-rail-item:hover svg { animation: c-icon-pop .45s var(--c-spring); }
+/* [AJ 思路] 图标描边重绘（纯 CSS 版）：轨道图标悬停时线条重新画出 */
+.ws-rail-item:hover svg * { stroke-dasharray: 80; animation: c-draw .7s var(--c-ease); }
+@keyframes c-draw { from { stroke-dashoffset: 80; } to { stroke-dashoffset: 0; } }
+@keyframes c-icon-pop { 40% { transform: scale(1.18) rotate(-6deg); } }
+/* 按下与焦点：全部按钮统一 */
+.ws-shell button:active:not(:disabled), .ws-shell .kn-btn:active, .ws-shell a.kn-btn-primary:active, .kn-dialog button:active { transform: scale(.97) !important; }
+.ws-shell button:focus, .kn-dialog button:focus { outline: 0; }
+.ws-shell button:focus-visible, .ws-shell a:focus-visible, .kn-dialog button:focus-visible {
+  outline: 0; box-shadow: 0 0 0 2px var(--stage-bg), 0 0 0 4px var(--c-pri) !important;
+}
+.ws-shell button:disabled { opacity: .45; transform: none !important; }
+
+/* ---- [MK] 输入框/下拉/搜索：无描边，底色 + 聚焦光环 ---- */
+.ws-shell input:not([type=checkbox]):not([type=radio]):not([type=range]), .ws-shell select, .ws-shell textarea, .kn-dialog input, .kn-dialog select, .kn-dialog textarea, .ws-palette-input {
+  border: 0 !important; border-radius: 10px !important; min-height: 40px;
+  background: var(--c-soft) !important; box-shadow: inset 0 0 0 0 transparent;
+  transition: box-shadow .25s var(--c-ease), background-color .2s !important;
+}
+.ws-shell input:hover:not(:focus), .ws-shell select:hover, .ws-shell textarea:hover:not(:focus) { background: var(--c-soft2) !important; }
+.ws-shell input:focus, .ws-shell select:focus, .ws-shell textarea:focus, .kn-dialog input:focus, .kn-dialog textarea:focus {
+  outline: 0 !important; background: var(--stage-card) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-pri) 28%, transparent), 0 6px 20px -10px var(--c-glow) !important;
+}
+.ws-cmd { border: 0 !important; background: var(--c-soft) !important; min-height: 38px; border-radius: 10px !important; transition: background .2s, transform .25s var(--c-spring) !important; }
+.ws-cmd:hover { background: var(--c-soft2) !important; transform: translateY(-1px); }
+
+/* ---- [MP] 分段控件/标签：滑块感的激活态 ---- */
+.ws-shell .kn-segmented, .ws-shell .kn-segmented-pill { border: 0 !important; background: var(--c-soft) !important; border-radius: 12px; padding: 4px; }
+.ws-shell .kn-segmented-item, .ws-shell .kn-segmented-pill-btn { border: 0 !important; border-radius: 9px !important; min-height: 32px; transition: background .25s var(--c-ease), color .2s, box-shadow .3s var(--c-ease) !important; }
+.ws-shell .kn-segmented-item.active, .ws-shell .kn-segmented-item[aria-pressed="true"], .ws-shell .kn-segmented-item[aria-selected="true"], .ws-shell .kn-segmented-pill-btn.active {
+  background: var(--stage-card) !important; box-shadow: 0 4px 14px -6px rgba(0,0,0,.35) !important; animation: c-seg .35s var(--c-spring);
+}
+@keyframes c-seg { from { transform: scale(.92); } }
+.ws-panel-item { transition: background .2s, transform .3s var(--c-ease), color .2s !important; }
+.ws-panel-item:hover { transform: translateX(3px); }
+.ws-panel-item.active { box-shadow: none; }
+
+/* ---- 徽章 / 筛选 chip ：[UV] 胶囊 + 悬停微浮 ---- */
+.ws-shell .kn-badge { border: 0 !important; border-radius: 999px !important; padding: 3px 10px; font-weight: 600; }
+.ws-shell .kn-filter-chip { border: 0 !important; border-radius: 999px !important; background: var(--c-soft) !important; transition: transform .25s var(--c-spring), background .2s !important; }
+.ws-shell .kn-filter-chip:hover { transform: translateY(-1px); background: var(--c-soft2) !important; }
+.ws-shell .kn-filter-chip[aria-pressed="true"], .ws-shell .kn-filter-chip.active { background: color-mix(in srgb, var(--c-pri) 16%, transparent) !important; color: var(--c-pri) !important; }
+
+/* ---- 卡片：[AC] 跟随鼠标的柔光（--mx/--my 由 components/fx.ts 写入），无描边无左色条 ---- */
+.ws-main .kn-card, .ws-main .kn-table-container, .ws-main .kn-stat-card, .ws-main .kn-proposal, .ws-main .kn-form-card, .ws-main .kn-filters-card, .ws-main .kn-toolbar-card {
+  border: 0 !important; border-left: 0 !important; border-radius: 14px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05), 0 8px 24px -14px rgba(0,0,0,.22) !important;
+}
+.ws-main .kn-card { position: relative; isolation: isolate; transition: transform .35s var(--c-ease), box-shadow .35s var(--c-ease) !important; }
+.ws-main .kn-card::before { display: none !important; }
+.ws-main .kn-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), color-mix(in srgb, var(--c-pri) 9%, transparent), transparent 60%);
+}
+.ws-main .kn-card:hover::after { opacity: 1; }
+.ws-main .kn-stat-card:hover, .ws-main .kn-card-interactive:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 18px 36px -16px rgba(0,0,0,.32) !important; }
+.ws-main .kn-card--warn, .ws-main .kn-card--warn-strong, .ws-main .kn-card--accent { border-left: 0 !important; }
+.ws-main .kn-card--warn, .ws-main .kn-card--warn-strong { background: color-mix(in srgb, var(--accent-amber) 9%, var(--stage-card)) !important; }
+
+/* ---- 表格：[MP] 行错落入场 + 悬停高亮 ---- */
+.ws-main table th { border: 0 !important; }
+.ws-main tbody tr { transition: background-color .2s, transform .25s var(--c-ease); animation: c-row .5s var(--c-ease) both; }
+.ws-main tbody tr:hover { background: color-mix(in srgb, var(--c-pri) 6%, transparent) !important; }
+.ws-main tbody tr:nth-child(2){animation-delay:.03s} .ws-main tbody tr:nth-child(3){animation-delay:.06s} .ws-main tbody tr:nth-child(4){animation-delay:.09s}
+.ws-main tbody tr:nth-child(5){animation-delay:.12s} .ws-main tbody tr:nth-child(6){animation-delay:.15s} .ws-main tbody tr:nth-child(7){animation-delay:.18s}
+.ws-main tbody tr:nth-child(n+8){animation-delay:.21s}
+@keyframes c-row { from { opacity: 0; transform: translateY(6px); filter: blur(2px); } }
+
+/* ---- 开关与复选框：[UV] 弹性旋钮 / 打勾弹出 ---- */
+.ws-shell .kn-toggle-switch { border: 0 !important; transition: background .25s !important; }
+.ws-shell .kn-toggle-knob { transition: transform .35s var(--c-spring) !important; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.ws-shell input[type=checkbox], .kn-dialog input[type=checkbox] {
+  appearance: none; -webkit-appearance: none; width: 20px; height: 20px; min-height: 0 !important; border-radius: 6px; margin: 0; flex: none; cursor: pointer;
+  background: var(--c-soft2); display: inline-grid; place-content: center; transition: background .2s, transform .25s var(--c-spring);
+}
+.ws-shell input[type=checkbox]::after { content: ""; width: 10px; height: 6px; border: 2.2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg) scale(0) translate(1px,-1px); transition: transform .3s var(--c-spring); }
+.ws-shell input[type=checkbox]:checked { background: var(--c-pri); box-shadow: 0 4px 12px -4px var(--c-glow); }
+.ws-shell input[type=checkbox]:checked::after { transform: rotate(-45deg) scale(1) translate(1px,-1px); }
+.ws-shell input[type=checkbox]:active { transform: scale(.88); }
+.ws-shell input[type=checkbox]:focus-visible { box-shadow: 0 0 0 2px var(--stage-bg), 0 0 0 4px var(--c-pri); outline: 0; }
+
+/* ---- 下拉/浮层/命令面板：[MG] 模糊 + 缩放弹入 ---- */
+.ws-palette, .kn-node-tooltip, .three-tip, .kn-floating-dialog { border: 0 !important; border-radius: 16px !important; box-shadow: 0 24px 60px -20px rgba(0,0,0,.5) !important; animation: c-pop .32s var(--c-spring); }
+.ws-palette-backdrop, .kn-modal-backdrop, .kn-drawer-backdrop { backdrop-filter: blur(6px); animation: c-fade .25s ease; }
+.ws-palette-item { border-radius: 10px; transition: background .15s, transform .2s var(--c-ease); }
+.ws-palette-item:hover, .ws-palette-item[aria-selected="true"] { transform: translateX(3px); }
+@keyframes c-pop { from { opacity: 0; transform: translateY(6px) scale(.96); filter: blur(4px); } }
+@keyframes c-fade { from { opacity: 0; } }
+/* 模态 / 抽屉 */
+.kn-dialog { border: 0 !important; border-radius: 18px !important; box-shadow: 0 30px 80px -24px rgba(0,0,0,.55) !important; animation: c-modal .42s var(--c-spring); }
+.kn-graph-drawer { border: 0 !important; box-shadow: -24px 0 60px -30px rgba(0,0,0,.5) !important; }
+@keyframes c-modal { from { opacity: 0; transform: translateY(14px) scale(.95); } }
+/* 提示条（role=status/alert 的小块）：[MK] 滑入 */
+.ws-main p[role="alert"], .ws-main [role="status"]:not(.kn-loading):not(.kn-loading-inline) { animation: c-toast .45s var(--c-spring); }
+@keyframes c-toast { from { opacity: 0; transform: translateY(-6px) scale(.98); } }
+
+/* ---- 分页：胶囊按钮（用 nav 内的按钮组） ---- */
+.ws-main nav[aria-label*="agination" i] button, .ws-main .kn-pagination button { min-width: 38px; border-radius: 999px !important; }
+
+/* ---- 加载与空态：[CL] 双环 spinner，[MP] 骨架扫光，空态图标轻浮 ---- */
+.ws-shell .kn-spinner {
+  width: 18px !important; height: 18px !important; border: 0 !important; border-radius: 50%; display: inline-block; vertical-align: -3px;
+  background: conic-gradient(from 0deg, transparent 0 25%, var(--c-pri)); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2.5px));
+  animation: c-spin .8s linear infinite !important;
+}
+@keyframes c-spin { to { transform: rotate(360deg); } }
+.ws-shell .kn-skeleton { background: linear-gradient(90deg, var(--c-soft) 25%, var(--c-soft2) 50%, var(--c-soft) 75%) !important; background-size: 200% 100% !important; animation: c-sk 1.3s ease-in-out infinite !important; border-radius: 8px; }
+@keyframes c-sk { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.ws-shell .kn-empty { border: 0 !important; background: var(--c-soft) !important; border-radius: 14px; }
+.ws-shell .kn-empty-icon { width: 40px !important; height: 40px !important; color: var(--c-pri); animation: c-float 3.2s ease-in-out infinite; }
+@keyframes c-float { 50% { transform: translateY(-5px); } }
+
+/* ---- 标题：[CT] 只给页标题一个一次性的字距收拢入场 ---- */
+.ws-main .kn-page-title { animation: c-title .8s var(--c-ease) both; }
+@keyframes c-title { from { opacity: 0; letter-spacing: .08em; filter: blur(4px); } }
+
+html[data-motion="off"] .ws-shell *, html[data-motion="off"] .ws-shell *::before, html[data-motion="off"] .ws-shell *::after,
+html[data-motion="off"] .kn-dialog, html[data-motion="off"] .ws-palette { animation: none !important; transition: none !important; }
+/* 表格里的操作按钮收紧，保证不横向溢出 */
+.ws-main td button, .ws-main td .kn-btn { padding-inline: 10px; min-height: 32px; }
+.ws-main td .kn-row, .ws-main td .kn-inline-actions, .ws-main td > div { flex-wrap: wrap; row-gap: 6px; }

@@ -11,11 +11,14 @@ import "./styles/ledger.css";
 import "./styles/shell.css";
 import "./styles/brand.css";
 import "./styles/motion.css";
+import "./styles/components.css";
+import { initCardSpotlight } from "./components/fx";
 import { initMotion } from "./motion";
 import { ThemeProvider, applyTheme, getInitialTheme } from "./theme";
 
 applyTheme(getInitialTheme());
 initMotion();
+initCardSpotlight();
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
