@@ -11,6 +11,7 @@ import "./styles/ledger.css";
 import "./styles/shell.css";
 import "./styles/brand.css";
 import "./styles/motion.css";
+import "./styles/skin.css";
 import { initMotion } from "./motion";
 import { ThemeProvider, applyTheme, getInitialTheme } from "./theme";
 

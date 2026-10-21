@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -6,11 +6,8 @@ import { ApiError } from "../api";
 import { useAuth } from "../auth";
 import { BrandLogo, BrandWordmark } from "../components/BrandLogo";
 import { useTheme } from "../theme";
-import { wantsHero3d } from "../three/support";
+import { BrandVisual } from "../components/BrandVisual";
 
-// three.js 很大：登录页的品牌视觉按需加载，失败或无 WebGL 时退回纯 SVG 示意。
-// 登录页用 hero 概念 A（控制网络地球）：节点 = 控制项，弧线流光 = 框架间的映射。
-const HeroV2 = lazy(() => import("../three/HeroV2"));
 
 export function Login() {
   const { t } = useTranslation();
@@ -19,8 +16,6 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  // 与总览 hero 同一套规则：有 WebGL 且动效档位为 full 才用 3D；自动化浏览器默认 CSS 版。
-  const hero3d = wantsHero3d();
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -49,13 +44,7 @@ export function Login() {
           <span className="login-brand-tag">{t("login.subtitle")}</span>
         </div>
         <div className="login-brand-stage">
-          {hero3d ? (
-            <Suspense fallback={<LoginLayers />}>
-              <HeroV2 concept="a" className="login-globe" />
-            </Suspense>
-          ) : (
-            <LoginLayers />
-          )}
+          <BrandVisual mode="login" />
         </div>
         <ul className="login-brand-points">
           <li>
@@ -170,16 +159,3 @@ export function Login() {
   );
 }
 
-function LoginLayers() {
-  // 无 WebGL / 自动化浏览器时的纯 CSS 地球：渐变球体 + 两道倾斜轨道环 + 几颗节点。
-  return (
-    <div className="login-globe-css">
-      <span className="lg-sphere" />
-      <span className="lg-ring lg-ring--1" />
-      <span className="lg-ring lg-ring--2" />
-      <span className="lg-dot lg-dot--1" />
-      <span className="lg-dot lg-dot--2" />
-      <span className="lg-dot lg-dot--3" />
-    </div>
-  );
-}
