@@ -58,7 +58,7 @@ test("a valid framework imports and appears in the list", async ({ page }) => {
   await page.getByRole("button", { name: "Validate", exact: true }).click();
   await page.getByRole("button", { name: "Confirm import", exact: true }).click();
   await expect(page.getByRole("link", { name: "CSF", exact: true })).toBeVisible();
-  // 产品只有英文界面：表单上没有中文名，请求里也不带
+  // 导入表单上没有中文名一栏（制度与框架按英文设计），请求里也不带
   expect(sent).not.toContain('name="name_zh"');
 });
 

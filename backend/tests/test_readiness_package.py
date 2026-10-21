@@ -162,7 +162,7 @@ async def test_an_anonymous_request_is_a_401(client, db_session):
 
 
 async def test_the_package_is_in_english_by_default(client, db_session):
-    # 产品只有英文界面。原来接口默认 language="zh"、前端又不传，导出给审计的准备包
+    # 准备包默认英文（界面可切中文，但导出物按英文）。原来接口默认 language="zh"、前端又不传，导出给审计的准备包
     # 是中文的；两张 Excel 的表头更是写死中文，不管 language 传什么。
     from docx import Document as WordDocument
     from openpyxl import load_workbook

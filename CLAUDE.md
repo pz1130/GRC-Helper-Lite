@@ -60,10 +60,11 @@ make corpus CORPUS_DIR=/abs/path CORPUS_ANCHORS=none             # 还不知道�
 | GitHub 上的人 | **英文** | 提交信息、PR 描述 |
 | 产品的用户 | **英文** | 界面文案、错误、解析告警、导出物（准备包、答复 Word）——见下 |
 
-**产品只有英文界面**（2026-09-23 决定，`zh.json` 与语言切换已删除）。制度文档
-也按只有英文来设计——覆盖扫描判断「规范性条款」只认 shall/must/should，这是
+**界面默认英文，可切换到中文**（EN/中 切换，选择存在 localStorage `grc.lang`；
+`en.json` 为准，`zh.json` 必须词条齐全、变量一致，`make i18n-check` 会查）。制度文档
+仍按只有英文来设计——覆盖扫描判断「规范性条款」只认 shall/must/should，这是
 这个决定的前提，不是缺陷。代码里残留的 `name_zh`、答复与导出接口的 `language=zh`
-分支是旧数据与旧接口的兼容，界面不再用到。
+分支是旧数据与旧接口的兼容；界面语言切换不影响导出物与制度文档。
 
 第三类仍然是硬性的：**后端不产出给人读的句子**。业务错误带一个具体的 code
 （`AppError(..., code="control.not_found")`，句子里有变量就再带 `params`），

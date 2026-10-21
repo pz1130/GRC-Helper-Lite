@@ -27,17 +27,29 @@ test("管理员能登录并看到总览", async ({ page }) => {
   await expect(page.getByText("Active DLP Redaction")).toHaveCount(0);
 });
 
-// 产品只有英文界面（2026-09-23 起）：没有语言切换，各页直接是英文。
-test("界面是英文的，也没有语言切换", async ({ page }) => {
+// 界面默认英文；左下角 EN/中 可切到中文再切回，选择存在 localStorage，刷新后保持。
+test("默认英文，可切换到中文再切回", async ({ page }) => {
   await signIn(page);
-  await expect(page.getByRole("combobox", { name: "Language" })).toHaveCount(0);
-  await expect(page.getByText("中文", { exact: true })).toHaveCount(0);
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page.goto("/documents");
   await expect(page.getByText("Regulatory and internal policy repository")).toBeVisible();
   await expect(page.getByRole("columnheader", { name: "Actions" })).toBeVisible();
   await page.goto("/settings/providers");
   await expect(page.getByRole("columnheader", { name: "API key" })).toBeVisible();
   await expect(page.getByText("Assign each inference task to a dedicated AI provider")).toBeVisible();
+
+  await page.goto("/documents");
+  await page.getByRole("button", { name: "切换到中文" }).click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "zh-CN");
+  await expect(page.getByText("监管与内部制度库")).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "操作" })).toBeVisible();
+
+  await page.getByRole("button", { name: "Switch to English" }).click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByText("Regulatory and internal policy repository")).toBeVisible();
+  await expect(page.getByText("监管与内部制度库")).toHaveCount(0);
 });
 
 test("新建的 provider 只显示掩码后的 key", async ({ page }) => {
