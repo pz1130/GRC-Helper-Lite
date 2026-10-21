@@ -249,6 +249,7 @@ async def item_snapshots(
         exclusion = next((r for r in item_reviews if r.decision == ReviewDecision.EXCLUDE), None)
         entry: dict[str, Any] = {
             "id": item.id, "status": str(item.status), "control": item.control_snapshot,
+            "implementation_id": item.implementation_id, "implementation": item.implementation_snapshot,
             "mappings": item.mapping_snapshot, "sources": item.source_snapshot,
             "assignee_id": item.assignee_id, "reviewer_id": item.reviewer_id,
             "response": None,

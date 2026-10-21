@@ -35,7 +35,13 @@ _LIVE = (CampaignStatus.ACTIVE, CampaignStatus.IN_REVIEW)
 
 def _control(item: RcsaItem) -> str:
     snapshot = item.control_snapshot or {}
-    return f"{snapshot.get('code', '')} {snapshot.get('title', '')}".strip()
+    label = f"{snapshot.get('code', '')} {snapshot.get('title', '')}".strip()
+    implementation = item.implementation_snapshot
+    if implementation:
+        asset = implementation.get("asset")
+        target = f"{asset['name']} · {asset['environment']}" if asset else "Process implementation"
+        label += f" · {target}"
+    return label
 
 
 def _row(kind: str, row_id: int, title: str, status: object, due: date | None, today: date,

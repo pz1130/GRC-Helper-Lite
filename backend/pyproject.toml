@@ -54,3 +54,6 @@ extend-immutable-calls = [
 
 [tool.setuptools.packages.find]
 include = ["app*"]
+
+[tool.setuptools.package-data]
+"app.rcsa" = ["it_catalog_v1.json"]

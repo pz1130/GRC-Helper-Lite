@@ -270,7 +270,12 @@ class RcsaCampaign(Base, _Audited):
 class RcsaItem(Base, _Audited):
     __tablename__ = "rcsa_items"
     __table_args__ = (
-        UniqueConstraint("campaign_id", "control_id", name="uq_rcsa_item_control"),
+        Index("uq_rcsa_item_control", "campaign_id", "control_id", unique=True,
+              postgresql_where=text("implementation_id IS NULL")),
+        UniqueConstraint("campaign_id", "implementation_id", name="uq_rcsa_item_implementation"),
+        ForeignKeyConstraint(["implementation_id", "control_id"],
+                             ["implementations.id", "implementations.control_id"],
+                             name="fk_rcsa_item_implementation", ondelete="RESTRICT"),
         CheckConstraint(
             "assignee_id IS NULL OR reviewer_id IS NULL OR assignee_id <> reviewer_id",
             name="ck_rcsa_item_reviewer_not_assignee",
@@ -296,6 +301,8 @@ class RcsaItem(Base, _Audited):
     control_id: Mapped[int] = mapped_column(
         ForeignKey("controls.id", ondelete="RESTRICT"), nullable=False, index=True
     )
+    implementation_id: Mapped[int | None] = mapped_column(Integer)
+    implementation_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     control_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     mapping_snapshot: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)
     source_snapshot: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)

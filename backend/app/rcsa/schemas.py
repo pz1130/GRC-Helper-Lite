@@ -160,6 +160,8 @@ class CampaignOut(_Out):
 
 
 class ScopeRow(BaseModel):
+    implementation_id: int | None = None
+    implementation_snapshot: dict[str, Any] | None = None
     control_id: int
     code: str
     title: str
@@ -172,7 +174,15 @@ class ScopeRow(BaseModel):
 
 
 class ItemsAddIn(_In):
-    control_ids: Annotated[list[Id], Field(min_length=1, max_length=200)]
+    control_ids: Annotated[list[Id], Field(max_length=200)] = []
+    implementation_ids: Annotated[list[Id], Field(max_length=200)] = []
+
+    @model_validator(mode="after")
+    def one_scope_basis(self) -> "ItemsAddIn":
+        if bool(self.control_ids) == bool(self.implementation_ids):
+            raise ValueError("Choose either control_ids or implementation_ids")
+        return self
+
     assignee_id: Id | None = None
     reviewer_id: Id | None = None
 
@@ -185,6 +195,8 @@ class AssignIn(_In):
 
 
 class ItemOut(_Out):
+    implementation_id: int | None = None
+    implementation_snapshot: dict[str, Any] | None = None
     id: int
     campaign_id: int
     control_id: int
@@ -218,6 +230,21 @@ class Followup(_In):
     description: Annotated[str, Field(min_length=1, max_length=2000)]
 
 
+class AdverseSignal(_In):
+    kind: Literal["overdue_vulnerability", "major_incident", "failed_change", "red_kri", "open_finding"]
+    source_ref: Annotated[str, Field(min_length=1, max_length=500)]
+    description: Annotated[str, Field(min_length=1, max_length=2000)]
+    started_on: date
+    ended_on: date | None = None
+    explanation: Annotated[str, Field(max_length=5000)] = ""
+
+    @model_validator(mode="after")
+    def ordered_dates(self) -> "AdverseSignal":
+        if self.ended_on is not None and self.ended_on < self.started_on:
+            raise ValueError("ended_on must not be before started_on")
+        return self
+
+
 class AnswerV1(_In):
     """`rcsa_responses.answer` 的第 1 版结构（answer_schema = 1）。
 
@@ -235,6 +262,18 @@ class AnswerV1(_In):
     evidence_followup: Followup | None = None
     no_risk_rationale: Text = ""
     evidence_limitations_acknowledged: bool = False
+    # 可选字段兼容旧回答；引用的内容库版本固定，提交后随回答冻结。
+    guide_ids: Annotated[list[str], Field(max_length=40)] = []
+    signals: Annotated[list[AdverseSignal], Field(max_length=50)] = []
+
+    @field_validator("guide_ids")
+    @classmethod
+    def known_guides(cls, value: list[str]) -> list[str]:
+        from app.rcsa.catalog import GUIDE_IDS
+
+        if len(value) != len(set(value)) or not set(value) <= GUIDE_IDS:
+            raise ValueError("select unique guide identifiers from the IT v1 catalog")
+        return value
 
 
 class AnswerIn(_In):
@@ -299,6 +338,7 @@ class ResponseOut(_Out):
     submitted_at: datetime | None
     version: int
     evidence: list[EvidenceOut] = []
+    contradiction_indices: list[int] = []
 
 
 class ReviewIn(_In):

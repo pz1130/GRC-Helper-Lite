@@ -68,7 +68,18 @@ export interface Campaign {
   counts: { total: number; submitted: number; approved: number; excluded: number };
 }
 
+export interface ImplementationSnapshot {
+  id: number;
+  description: string;
+  status: string;
+  how_enforced: string;
+  owner_user_id: number | null;
+  asset: { id: number; name: string; environment: string; owner_user_id: number | null } | null;
+}
+
 export interface ScopeRow {
+  implementation_id?: number | null;
+  implementation_snapshot?: ImplementationSnapshot | null;
   control_id: number;
   code: string;
   title: string;
@@ -78,6 +89,8 @@ export interface ScopeRow {
 }
 
 export interface Item {
+  implementation_id?: number | null;
+  implementation_snapshot?: ImplementationSnapshot | null;
   id: number;
   campaign_id: number;
   control_id: number;
@@ -96,6 +109,32 @@ export interface Rating {
   rationale: string;
 }
 
+export interface ItGuide {
+  id: string;
+  title: string;
+  expected_evidence: string;
+  test_procedure: string;
+}
+
+export interface RiskTemplate {
+  id: string;
+  domain: string;
+  title: string;
+  cause: string;
+  event: string;
+  impact: string;
+  guide_ids: string[];
+}
+
+export interface AdverseSignal {
+  kind: "overdue_vulnerability" | "major_incident" | "failed_change" | "red_kri" | "open_finding";
+  source_ref: string;
+  description: string;
+  started_on: string;
+  ended_on: string | null;
+  explanation: string;
+}
+
 export interface Answer {
   design: Rating;
   operating: Rating;
@@ -108,6 +147,8 @@ export interface Answer {
   evidence_followup: { owner_id: number; due_at: string; description: string } | null;
   no_risk_rationale: string;
   evidence_limitations_acknowledged: boolean;
+  guide_ids?: string[];
+  signals?: AdverseSignal[];
 }
 
 export interface EvidenceRef {
@@ -134,6 +175,7 @@ export interface Response {
   submitted_at: string | null;
   version: number;
   evidence: EvidenceRef[];
+  contradiction_indices?: number[];
 }
 
 export interface Review {
@@ -308,6 +350,7 @@ export interface Ranking {
 }
 
 export const api = {
+  itCatalog: () => request<{ version: string; risks: RiskTemplate[]; guides: ItGuide[] }>("/api/rcsa/it-catalog"),
   ai: () => request<AiStatus>("/api/rcsa/ai"),
   suggestions: (responseId: number) => request<Suggestion[]>(`/api/rcsa/responses/${responseId}/suggestions`),
   status: () => request<{ enabled: boolean }>("/api/rcsa/status"),
@@ -318,7 +361,7 @@ export const api = {
       `/api/rcsa/campaigns?limit=${limit}&offset=${offset}${status ? `&status=${status}` : ""}`,
     ),
   campaign: (id: number) => request<Campaign>(`/api/rcsa/campaigns/${id}`),
-  scope: (id: number) => request<ScopeRow[]>(`/api/rcsa/campaigns/${id}/scope`),
+  scope: (id: number, basis = "control") => request<ScopeRow[]>(`/api/rcsa/campaigns/${id}/scope?basis=${basis}`),
   items: (id: number) => request<Item[]>(`/api/rcsa/campaigns/${id}/items`),
   item: (id: number) => request<Item>(`/api/rcsa/items/${id}`),
   responses: (itemId: number) => request<Response[]>(`/api/rcsa/items/${itemId}/responses`),
@@ -349,14 +392,15 @@ export interface Report {
     profile: { key: string | null; revision: number | null; horizon: string | null; bands: Band[] | null };
   };
   scope: { total: number; approved: number; excluded: number; submitted: number; in_progress: number };
-  exclusions: { control_code: string; reason: string }[];
-  not_assessed: { control_code: string; ratings: string[]; reason: string; follow_up_due: string | null }[];
+  exclusions: { control_code: string; target_label?: string | null; reason: string }[];
+  not_assessed: { control_code: string; target_label?: string | null; ratings: string[]; reason: string; follow_up_due: string | null }[];
   independent_tests: Record<string, number>;
   scenario_bands: { inherent: Record<string, number>; residual: Record<string, number> };
   dispositions: Record<string, number>;
-  acceptances: { control_code: string; scenario_key: string; accept_until: string; expired: boolean }[];
+  acceptances: { control_code: string; target_label?: string | null; scenario_key: string; accept_until: string; expired: boolean }[];
   actions: { open: number; overdue: number; verified: number; cancelled: number };
-  limitations: { control_code: string; text: string }[];
+  limitations: { control_code: string; target_label?: string | null; text: string }[];
+  signal_reviews?: { item_id: number; control_code: string; target_label?: string | null; signals: number; contradictions: number; approval_rationale_recorded: boolean }[];
   acknowledgements: { overdue: string; evidence: string } | null;
   highest_residual_band: string | null;
   ai_assistance: "not_enabled" | "enabled";
@@ -365,7 +409,8 @@ export interface Report {
     comparable: boolean;
     reason: "previous_not_closed" | "profile_changed" | null;
     scenarios: {
-      control_code: string;
+      control_code: string; target_label?: string | null;
+      implementation_id?: number | null;
       scenario_key: string;
       status: "comparable" | "not_directly_comparable" | "new" | "removed";
       previous_residual_score: number | null;
@@ -376,7 +421,7 @@ export interface Report {
   } | null;
   items: {
     item_id: number;
-    control_code: string;
+    control_code: string; target_label?: string | null;
     control_title: string;
     status: ItemStatus;
     design: Effectiveness | null;
@@ -394,7 +439,7 @@ export interface Report {
     }[];
   }[];
   current_follow_up: {
-    actions: { id: number; title: string; control_code: string; status: string; due_at: string; overdue: boolean }[];
-    acceptances: { risk_id: number; control_code: string; accept_until: string; expired: boolean }[];
+    actions: { id: number; title: string; control_code: string; target_label?: string | null; status: string; due_at: string; overdue: boolean }[];
+    acceptances: { risk_id: number; control_code: string; target_label?: string | null; accept_until: string; expired: boolean }[];
   };
 }

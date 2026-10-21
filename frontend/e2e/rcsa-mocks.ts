@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
 import type { Page, Route } from "@playwright/test";
+
+const catalog = JSON.parse(readFileSync(new URL("../../backend/app/rcsa/it_catalog_v1.json", import.meta.url), "utf8"));
 
 // RCSA 浏览器测试共用的 mock：账号、活动、评估项、草稿，以及把 /api/** 全部接管的路由。
 export type Handler = (route: Route, url: URL) => Promise<void> | void;
@@ -50,6 +53,7 @@ export async function mockApi(page: Page, user: typeof LEAD, routes: Record<stri
     if (url.pathname === "/api/rcsa/people") return route.fulfill({ json: PEOPLE });
     const handler = routes[url.pathname];
     if (handler) return handler(route, url);
+    if (url.pathname === "/api/rcsa/it-catalog") return route.fulfill({ json: catalog });
     if (url.pathname === "/api/rcsa/status") return route.fulfill({ json: { enabled: true } });
     return route.fulfill({ status: 500, json: { message: `Unexpected API: ${url.pathname}` } });
   });

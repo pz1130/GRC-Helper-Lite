@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../../auth";
 import { Card, EmptyState } from "../../components/ui";
 import { api, newKey, send, type Action, type Disposition, type Item, type Risk } from "./api";
+import { RiskTemplatePicker } from "./ItGuidance";
 import { ErrorNotice, PersonSelect, StatusBadge, usePeople } from "./shared";
 
 const SCORES = [1, 2, 3, 4, 5];
@@ -61,6 +62,12 @@ function ScenarioForm({ item, risk, onDone }: { item: Item; risk?: Risk; onDone:
   const submit = (e: FormEvent) => { e.preventDefault(); save.mutate(); };
   return (
     <form className="rcsa-form" onSubmit={submit} aria-label={risk ? t("rcsa.risks.edit") : t("rcsa.risks.add")}>
+      {!risk && <RiskTemplatePicker onApply={(template) => {
+        if (!key.trim()) setKey(template.id);
+        if (!cause.trim()) setCause(template.cause);
+        if (!event.trim()) setEvent(template.event);
+        if (!impact.trim()) setImpact(template.impact);
+      }} />}
       {!risk && <label>{t("rcsa.risks.key")}<input required pattern="[a-z0-9][a-z0-9._\-]*" value={key} onChange={(e) => setKey(e.target.value)} /></label>}
       {!risk && <PersonSelect label={t("rcsa.risks.owner")} value={owner} onChange={setOwner} people={people} allowEmpty={false} />}
       <label className="rcsa-wide">{t("rcsa.risks.cause")}<input required value={cause} onChange={(e) => setCause(e.target.value)} /></label>

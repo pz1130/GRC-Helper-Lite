@@ -205,6 +205,8 @@ async def _prefill_input(
         control = item.control_snapshot or {}
         data["control"] = {"id": "control", "code": control.get("code"), "title": control.get("title"),
                            "statement": control.get("statement")}
+        if item.implementation_id is not None:
+            data["control"]["assessment_scope"] = "One implementation only; do not infer whole-control effectiveness."
         ids.add("control")
     if "policy_sources" in allowed:
         clause_ids = [source["clause_id"] for source in item.source_snapshot or []]
@@ -350,6 +352,8 @@ async def rank_evidence(session: AsyncSession, response_id: int, actor: User) ->
     state = RANKING_STATE + (
         f" Control: {control.get('title')}. {control.get('statement')}" if "control" in allowed else ""
     )
+    if item.implementation_id is not None:
+        state += " This assessment covers one implementation only; control-wide evidence may not cover its scope."
     questions = {
         f"e{record.id}": (_metadata(record, kind) if "evidence_metadata" in allowed else f"Evidence #{record.id}")
         for record, kind in records

@@ -97,7 +97,11 @@
     "cell": "Row {{row}}, column {{column}}",
     "previous": "Previous blocks",
     "next": "Next blocks",
-    "origin": { "pdf_text": "PDF text", "docx_xml": "Word text", "pasted_text": "Manually pasted text" }
+    "origin": {
+      "pdf_text": "PDF text",
+      "docx_xml": "Word text",
+      "pasted_text": "Manually pasted text"
+    }
   },
   "documents": {
     "referenceIssuesTitle": "Internal references need review",
@@ -937,9 +941,15 @@
       "needs_review": "The model could not fully assess this clause. Human review is needed."
     },
     "components": {
-      "subject": "Responsible party", "action": "Action", "object": "Object",
-      "scope": "Scope", "trigger": "Trigger", "frequency": "Frequency",
-      "deadline": "Deadline", "exceptions": "Exceptions", "normative_strength": "Normative wording"
+      "subject": "Responsible party",
+      "action": "Action",
+      "object": "Object",
+      "scope": "Scope",
+      "trigger": "Trigger",
+      "frequency": "Frequency",
+      "deadline": "Deadline",
+      "exceptions": "Exceptions",
+      "normative_strength": "Normative wording"
     }
   },
   "account": {
@@ -953,7 +963,9 @@
     "passwordChanged": "Password changed. Your other sessions have been signed out."
   },
   "errors": {
-    "extraction": { "inventory_not_found": "Requirement inventory not found." },
+    "extraction": {
+      "inventory_not_found": "Requirement inventory not found."
+    },
     "answer": {
       "clause_missing": "The answer cites a clause that does not exist",
       "control_missing": "The answer cites a control that does not exist",
@@ -1038,7 +1050,9 @@
       "changed_since_loaded": "Someone changed this control after you started editing ({{fields}}). Cancel and edit again to work on the latest version."
     },
     "decision": {
-      "provider_required": "Select an available decision provider before enabling scans.", "capability_mismatch": "Decision providers must be configured separately from chat and embedding tasks.", "scan_in_progress": "A decision scan is already running for this document.",
+      "provider_required": "Select an available decision provider before enabling scans.",
+      "capability_mismatch": "Decision providers must be configured separately from chat and embedding tasks.",
+      "scan_in_progress": "A decision scan is already running for this document.",
       "invalid": "Invalid review decision",
       "payload_forbidden": "Only accept-with-changes may carry content",
       "payload_required": "Accepting with changes requires the edited content",
@@ -1059,6 +1073,7 @@
       "previous_version_not_active": "This version is not in effect yet; upload the new version against the current one"
     },
     "rcsa": {
+      "signal_review_required": "Record why approval is justified despite the related adverse signals, or return the response",
       "activation_blocked": "This campaign cannot be activated yet; resolve the listed blockers first",
       "assignee_inactive": "The assessor's account is deactivated",
       "assignee_lacks_permission": "The assessor's role cannot answer RCSA assessments",
@@ -1090,7 +1105,7 @@
       "framework_not_found": "Framework not found",
       "idempotency_key_required": "This action needs an Idempotency-Key header",
       "idempotency_key_reused": "This request key was already used for a different request",
-      "item_exists": "This control is already in the campaign's scope",
+      "item_exists": "This scope already exists or overlaps a whole-control assessment.",
       "item_not_found": "Assessment item not found",
       "not_campaign_owner": "Only the campaign owner can do this",
       "owner_lacks_permission": "The campaign owner must be an active account that can manage RCSA",
@@ -1135,7 +1150,8 @@
         "reassess_at": "Give a reassessment date no later than the acceptance expiry",
         "reduce_action": "Reducing the risk needs at least one live action",
         "terminate_details": "Give the scope, completion criteria, responsible person and basis for stopping the activity",
-        "transfer_details": "Give the counterparty, the basis and the risk you keep"
+        "transfer_details": "Give the counterparty, the basis and the risk you keep",
+        "signal_explanation": "Explain each adverse signal that conflicts with the assessment conclusion"
       },
       "response_not_draft": "A submitted revision cannot be changed",
       "response_not_found": "Response not found",
@@ -1187,7 +1203,9 @@
       "prefill_unavailable": "Prefill unavailable — complete manually",
       "suggestion_not_found": "Suggestion not found",
       "suggestion_stale": "The draft changed after this suggestion was made, so it can no longer be applied",
-      "suggestion_used": "This suggestion has already been applied"
+      "suggestion_used": "This suggestion has already been applied",
+      "implementation_not_found": "The control implementation no longer exists.",
+      "implementation_in_use": "This implementation is used by RCSA. Its system and control cannot be changed, and it cannot be deleted."
     },
     "evidence": {
       "constraint_violation": "The evidence record violates a database constraint",
@@ -1411,7 +1429,8 @@
       "blocked": {
         "already_merged": "A control that has already been merged cannot be merged again",
         "not_found": "Control not found",
-        "self": "A control cannot be merged into itself"
+        "self": "A control cannot be merged into itself",
+        "rcsa_implementation": "An implementation of this control is referenced by RCSA."
       },
       "discard": {
         "embedding": "The losing control's embedding is dropped; the winner's is kept",
@@ -1484,6 +1503,46 @@
     }
   },
   "rcsa": {
+    "guidance": {
+      "templates": "Optional IT risk templates",
+      "title": "Evidence and test guides ({{count}} selected)",
+      "hint": "Optional examples for this control. Adapt them to the approved scope, frequency and requirements. Selecting a guide does not supply evidence, perform a test or confirm compliance. Supplier examples cover internal oversight only.",
+      "chooseRisk": "Risk template",
+      "choose": "Select a template",
+      "apply": "Fill empty scenario fields",
+      "evidence": "Suggested evidence",
+      "test": "Suggested test procedure",
+      "search": "Search guides"
+    },
+    "signals": {
+      "title": "Related adverse signals",
+      "hint": "Manually record signals relevant to this control. Dates describe when the adverse condition existed, including time before closure. For an overdue vulnerability, use the first overdue date; for a red KRI, use the affected period. No external systems are queried.",
+      "warning": "The last saved response contains signals that overlap this campaign and conflict with effective operation or a no-risk conclusion. Explain each signal before submission; the reviewer must record why approval is justified.",
+      "review": "Related signals require review. Address the explanations in your approval rationale, or return the response for changes.",
+      "number": "Signal {{number}}",
+      "kind": "Signal type",
+      "source": "Source reference",
+      "description": "Relevance to this control",
+      "start": "Adverse condition started",
+      "end": "Adverse condition ended (optional)",
+      "explanation": "Why the assessment remains justified, or what changed",
+      "remove": "Remove signal from draft",
+      "add": "Add related signal",
+      "empty": "No signals recorded. This does not establish that no adverse events occurred.",
+      "saved": "Saved guides and signals",
+      "kinds": {
+        "overdue_vulnerability": "Overdue high-severity vulnerability",
+        "major_incident": "Major incident",
+        "failed_change": "Failed or rolled-back change",
+        "red_kri": "Red KRI reading",
+        "open_finding": "Open audit or inspection finding"
+      },
+      "report": "Adverse signal review",
+      "reportHint": "Approved responses only. Counts refer to manually recorded signals, not an automated scan. Details and review reasons remain in each assessment revision.",
+      "summary": "{{signals}} recorded; {{contradictions}} require explanation; approval rationale {{review}}",
+      "recorded": "recorded",
+      "missing": "not recorded"
+    },
     "title": "Risk & Control Self-Assessment",
     "subtitle": "Assess controls with evidence, independent review and tracked remediation",
     "disabledTitle": "RCSA is not enabled",
@@ -1617,7 +1676,13 @@
       "assignee": "Assessor",
       "reviewer": "Reviewer",
       "change": "Change",
-      "remove": "Remove"
+      "remove": "Remove",
+      "basis": "Assessment scope",
+      "wholeControl": "Whole control",
+      "implementation": "System / control implementation",
+      "process": "Process implementation",
+      "target": "Assessment target",
+      "scopeHint": "Assess each system separately. A whole control and its implementations cannot overlap in the same campaign."
     },
     "transitions": {
       "title": "Campaign owner actions",

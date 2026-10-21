@@ -1,6 +1,6 @@
 """/api/rcsa 路由。状态转换一律是显式的 POST，没有能改任意 status 的 PATCH。"""
 
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Path, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -105,6 +105,13 @@ async def list_people(actor: Reader, session: Session) -> list[PersonOut]:
 # ── 评分档案 ────────────────────────────────────────────────
 
 
+@router.get("/it-catalog")
+async def it_catalog(actor: Reader) -> dict:
+    from app.rcsa.catalog import CATALOG
+
+    return CATALOG
+
+
 @router.get("/profiles", response_model=list[ProfileOut])
 async def list_profiles(actor: Reader, session: Session) -> list[RcsaScoringProfile]:
     from sqlalchemy import select
@@ -184,8 +191,9 @@ async def update_campaign(
 
 
 @router.get("/campaigns/{campaign_id}/scope", response_model=list[ScopeRow])
-async def campaign_scope(campaign_id: RowId, actor: Reader, session: Session) -> list[ScopeRow]:
-    return await campaigns.scope(session, campaign_id)
+async def campaign_scope(campaign_id: RowId, actor: Reader, session: Session,
+                         basis: Literal["control", "implementation"] = "control") -> list[ScopeRow]:
+    return await campaigns.scope(session, campaign_id, basis)
 
 
 @router.get("/campaigns/{campaign_id}/items", response_model=list[ItemOut])

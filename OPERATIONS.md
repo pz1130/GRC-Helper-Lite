@@ -457,3 +457,52 @@ For contributors: business code depends on `DecisionProvider` and `DecisionReque
 `app/decision/base.py`. Register another adapter in `app/decision/factory.py` with its provider
 kind/migration; do not put vendor-specific HTTP details in the requirement scanning service.
 No institutional corpus or real provider call was used to validate this integration.
+
+**Optional IT guidance and manual signal checks.** The assessment page offers 31 English risk
+scenario examples and 40 evidence/test guides. Under **Add scenario → Optional IT risk templates**,
+select a template and choose **Fill empty scenario fields**. This fills only empty scenario text;
+ratings, owners, control records and framework mappings are not set by the template. Select relevant
+**Evidence and test guides** in the answer and save. These are examples to adapt to approved local
+requirements, not evidence or completed independent tests. Supplier examples concern internal oversight;
+the assessment scope remains internal controls.
+
+Under **Related adverse signals**, the assignee can record an overdue high-severity vulnerability,
+major incident, failed change, red KRI reading, or open audit/inspection finding. Each record needs a
+source reference, relevance to this control, and the dates of the adverse condition. Use the first overdue
+date for a vulnerability and the affected period for a red KRI. References are text, never fetched.
+Checks use the campaign period, including conditions resolved during that period. If operating effectiveness
+is rated effective, or the response states there is no risk and has no risk scenarios, each overlapping
+signal needs an assessor explanation before submission. Approval then requires an independent review
+rationale. An effective design alone does not imply effective operation. No signal is automatically
+imported, no score is adjusted, and no reassessment campaign is created.
+
+Selected guides and signals remain with each response revision, including returned revisions, and
+are included in the closing snapshot. History exposes the saved details. The report shows counts for
+approved responses and whether an approval rationale was recorded, without exposing source references.
+The new answer fields are optional; existing responses need no database migration. The `it-v1` catalog
+ships in the application package and must remain immutable so historical guide references retain their
+meaning. Any later content revision needs a new version and compatible historical lookup.
+
+### RCSA system and implementation scope (migration 0036)
+
+Draft campaigns can select either whole controls or individual control implementations from the
+existing environment inventory. Multiple implementations of one control can be assessed separately;
+a whole control and its implementations cannot overlap in the same campaign. An implementation
+without a linked asset represents a process implementation. The implementation owner is the default
+assessor, falling back to the control owner; normal role and reviewer-separation checks still apply.
+
+Activation freezes the asset name/environment and implementation details. Later inventory edits do
+not rewrite assessment history or closed reports. Referenced implementations cannot be deleted,
+reassigned to another asset, or moved through control merging. Descriptive inventory updates remain
+available. Responses, evidence, risks, and actions remain independent per assessment item. Cross-period
+comparison matches the control, implementation identity, and scenario key; legacy whole-control
+snapshots remain readable and are not matched to individual implementations.
+
+Control-level triggers still require whole-control coverage or explicit exclusions. A system-only
+assessment must not silently satisfy a trigger affecting the entire control. Automatic KRI ingestion
+and implementation-specific triggers are not part of this migration. AI assistance receives the scope
+limitation but no additional asset names, descriptions, or owners through existing input permissions.
+
+Apply migration 0036 before running the updated backend. It preserves existing items as whole-control
+assessments. Downgrade is refused when implementation-scoped items exist; retain the data and fix
+forward instead.

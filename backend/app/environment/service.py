@@ -164,6 +164,14 @@ async def create_implementation(
     return implementation
 
 
+async def _protect_rcsa_reference(session: AsyncSession, implementation: Implementation) -> None:
+    from app.rcsa.models import RcsaItem
+
+    await session.refresh(implementation, with_for_update=True)
+    if await session.scalar(select(RcsaItem.id).where(RcsaItem.implementation_id == implementation.id).limit(1)):
+        raise Conflict("实施记录已被 RCSA 引用，不能删除或更换系统", code="rcsa.implementation_in_use")
+
+
 async def update_implementation(
     session: AsyncSession,
     implementation: Implementation,
@@ -173,6 +181,8 @@ async def update_implementation(
     ip: str | None = None,
 ) -> Implementation:
     if "tech_asset_id" in data:
+        if data["tech_asset_id"] != implementation.tech_asset_id:
+            await _protect_rcsa_reference(session, implementation)
         await _check_references(
             session,
             control_id=implementation.control_id,
@@ -206,6 +216,7 @@ async def delete_implementation(
     actor: User,
     ip: str | None = None,
 ) -> None:
+    await _protect_rcsa_reference(session, implementation)
     before = _implementation_snapshot(implementation)
     await session.delete(implementation)
     await session.flush()

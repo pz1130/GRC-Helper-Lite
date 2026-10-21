@@ -7,6 +7,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../auth";
 import { Card, DataTable, EmptyState, LoadingState, PageHeader } from "../../components/ui";
 import { api, newKey, send, type Campaign, type Item } from "./api";
+import { ScopeTarget } from "./ScopeTarget";
 import { StepIndicator } from "./CampaignNew";
 import { ErrorNotice, PersonSelect, RcsaGate, StatusBadge, Tabs, usePeople } from "./shared";
 
@@ -104,12 +105,13 @@ function ScopePicker({ campaign }: { campaign: Campaign }) {
   const { t } = useTranslation();
   const refresh = useRefresh(campaign.id);
   const { people } = usePeople();
-  const scope = useQuery({ queryKey: ["rcsa", "campaign", campaign.id, "scope"], queryFn: () => api.scope(campaign.id) });
+  const [basis, setBasis] = useState("control");
+  const scope = useQuery({ queryKey: ["rcsa", "campaign", campaign.id, "scope", basis], queryFn: () => api.scope(campaign.id, basis) });
   const [picked, setPicked] = useState<number[]>([]);
   const [reviewer, setReviewer] = useState<number | null>(null);
   const add = useMutation({
     mutationFn: () => send(`/api/rcsa/campaigns/${campaign.id}/items`, "POST",
-      { control_ids: picked, ...(reviewer ? { reviewer_id: reviewer } : {}) }),
+      { [basis === "control" ? "control_ids" : "implementation_ids"]: picked, ...(reviewer ? { reviewer_id: reviewer } : {}) }),
     onSuccess: () => { setPicked([]); return refresh(); },
   });
   if (scope.isPending) return <LoadingState />;
@@ -117,16 +119,24 @@ function ScopePicker({ campaign }: { campaign: Campaign }) {
   return (
     <Card title={t("rcsa.scope.candidates")}>
       <p className="kn-secondary">{t("rcsa.scope.hint")}</p>
+      <label>{t("rcsa.scope.basis")}
+        <select value={basis} disabled={add.isPending} onChange={(e) => { setBasis(e.target.value); setPicked([]); }}>
+          <option value="control">{t("rcsa.scope.wholeControl")}</option>
+          <option value="implementation">{t("rcsa.scope.implementation")}</option>
+        </select>
+      </label>
+      <p className="kn-secondary">{t("rcsa.scope.scopeHint")}</p>
       {candidates.length === 0 ? <EmptyState compact title={t("rcsa.scope.noCandidates")} /> : (
         <DataTable className="kn-m-0" head={<tr><th /><th>{t("rcsa.scope.control")}</th><th>{t("rcsa.scope.items")}</th></tr>}>
           {candidates.map((row) => (
-            <tr key={row.control_id}>
+            <tr key={row.implementation_id ?? row.control_id}>
               <td>
-                <input type="checkbox" aria-label={t("rcsa.scope.pick", { code: row.code })}
-                  checked={picked.includes(row.control_id)}
-                  onChange={(e) => setPicked(e.target.checked ? [...picked, row.control_id] : picked.filter((id) => id !== row.control_id))} />
+                <input type="checkbox" aria-label={t("rcsa.scope.pick", { code: row.implementation_snapshot
+                  ? `${row.code} · ${row.implementation_snapshot.asset?.name ?? t("rcsa.scope.process")}` : row.code })}
+                  checked={picked.includes(row.implementation_id ?? row.control_id)}
+                  onChange={(e) => setPicked(e.target.checked ? [...picked, row.implementation_id ?? row.control_id] : picked.filter((id) => id !== (row.implementation_id ?? row.control_id)))} />
               </td>
-              <td><strong>{row.code}</strong> {row.title}</td>
+              <td><strong>{row.code}</strong> {row.title}<ScopeTarget snapshot={row.implementation_snapshot} /></td>
               <td>{row.framework_items.join(", ")}</td>
             </tr>
           ))}
@@ -141,6 +151,7 @@ function ScopePicker({ campaign }: { campaign: Campaign }) {
           </button>
         </div>
       </div>
+      <ErrorNotice error={scope.error} />
       <ErrorNotice error={add.error} />
     </Card>
   );
@@ -172,6 +183,7 @@ function ItemRow({ item, campaign, editable }: { item: Item; campaign: Campaign;
       <td>
         {campaign.status === "draft" ? <strong>{code}</strong> : <Link to={`/rcsa/items/${item.id}`}>{code}</Link>}{" "}
         {item.control_snapshot?.title}
+        <ScopeTarget snapshot={item.implementation_snapshot} />
       </td>
       <td>{editable ? <PersonSelect label={t("rcsa.scope.assignee")} value={assignee} onChange={setAssignee} people={people} filter={(p) => p.can_respond} /> : nameOf(item.assignee_id)}</td>
       <td>{editable ? <PersonSelect label={t("rcsa.scope.reviewer")} value={reviewer} onChange={setReviewer} people={people} filter={(p) => p.can_review} /> : nameOf(item.reviewer_id)}</td>

@@ -366,6 +366,10 @@ async def publish(
         entry = await fetch(session, RiskEntry, payload.register_risk_id, code="rcsa.register_risk_not_found")
     else:
         code = (item.control_snapshot or {}).get("code", "")
+        implementation = item.implementation_snapshot
+        if implementation:
+            asset = implementation.get("asset")
+            code += f" · {asset['name']}" if asset else " · Process implementation"
         entry = RiskEntry(
             title=f"{code}: {risk.event}"[:300],
             description=f"Cause: {risk.cause}\nEvent: {risk.event}\nImpact: {risk.impact}",
@@ -374,6 +378,7 @@ async def publish(
                 "rcsa_item_risk_id": risk.id, "campaign_id": campaign.id, "item_id": item.id,
                 "response_id": response.id, "response_revision": response.revision,
                 "scenario_key": risk.scenario_key,
+                **({"implementation_id": item.implementation_id} if item.implementation_id is not None else {}),
             },
             control_id=item.control_id,
             likelihood=risk.inherent_likelihood,

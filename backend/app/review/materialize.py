@@ -664,6 +664,15 @@ async def merge_controls(
     if loser is None or winner is None:
         raise AppError("控制点不存在", code="control.not_found")
 
+    from app.rcsa.models import RcsaItem
+
+    # 先锁实施记录，避免范围添加与控制合并并发后改变评估对象。
+    implementation_ids = list(await session.scalars(select(Implementation.id)
+        .where(Implementation.control_id == loser_id).order_by(Implementation.id).with_for_update()))
+    if implementation_ids and await session.scalar(select(RcsaItem.id)
+            .where(RcsaItem.implementation_id.in_(implementation_ids)).limit(1)):
+        raise Conflict("实施记录已被 RCSA 引用，不能合并控制", code="rcsa.implementation_in_use")
+
     before = {
         "code": loser.code,
         "title": loser.title,

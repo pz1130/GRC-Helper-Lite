@@ -127,3 +127,23 @@ async def test_downgrade_refuses_while_the_register_holds_rcsa_risks(alembic_cfg
     # 回退旧约束会让这一行违反 risk_source；必须在动表之前就拒绝。
     with pytest.raises(RuntimeError, match="risk_entries"):
         await _run(command.downgrade, alembic_cfg, PREVIOUS_HEAD)
+
+
+async def test_implementation_scope_blocks_downgrade_without_losing_items(alembic_cfg):
+    await _run(command.upgrade, alembic_cfg, "head")
+    await _execute(
+        *_SYNTHETIC_BUSINESS_ROWS[:3],
+        "INSERT INTO implementations (id, control_id, description, how_enforced, status) "
+        "VALUES (1, 1, 'Acme review process', 'manual', 'implemented')",
+        "INSERT INTO rcsa_scoring_profiles (id, key, revision, algorithm, definitions, bands, horizon, "
+        "status, created_by, updated_by) VALUES (1, 'acme-5x5', 1, 'product', '{}', '[]', '', 'draft', 1, 1)",
+        "INSERT INTO rcsa_campaigns (id, name, framework_id, profile_id, period_start, period_end, due_at, "
+        "timezone, owner_id, status, status_reason, created_by, updated_by) "
+        "VALUES (1, 'Acme scope', 1, 1, '2026-01-01', '2026-03-31', '2026-04-30', 'UTC', 1, 'draft', '', 1, 1)",
+        "INSERT INTO rcsa_items (campaign_id, control_id, implementation_id, status, created_by, updated_by) "
+        "VALUES (1, 1, 1, 'pending', 1, 1)",
+    )
+    with pytest.raises(RuntimeError, match="Implementation-scoped"):
+        await _run(command.downgrade, alembic_cfg, "0035")
+    [rows] = await _execute("SELECT implementation_id FROM rcsa_items")
+    assert rows == [(1,)]

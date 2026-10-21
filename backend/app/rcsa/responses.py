@@ -20,6 +20,7 @@ from app.errors import AppError, Conflict, Forbidden, NotFound
 from app.evidence.models import EvidenceItem, EvidenceType
 from app.iam.models import User
 from app.rcsa.access import Command, audit, bump, check_version, fetch, lock
+from app.rcsa.consistency import contradictions
 from app.rcsa.models import (
     CampaignStatus,
     ItemStatus,
@@ -54,6 +55,16 @@ async def response_out(session: AsyncSession, response: RcsaResponse) -> Respons
     )
     out = ResponseOut.model_validate(response)
     out.evidence = [EvidenceOut.model_validate(row) for row in rows]
+    if not response.answer.get("signals"):
+        return out
+    item = await session.get(RcsaItem, response.item_id)
+    campaign = await session.get(RcsaCampaign, item.campaign_id)
+    has_risks = bool(response.risk_snapshot) if response.status != ResponseStatus.DRAFT else bool(
+        await session.scalar(select(RcsaItemRisk.id).where(RcsaItemRisk.item_id == item.id).limit(1))
+    )
+    out.contradiction_indices = contradictions(
+        AnswerV1.model_validate(response.answer), campaign.period_start, campaign.period_end, has_risks=has_risks,
+    )
     return out
 
 
@@ -226,7 +237,8 @@ async def attach_evidence(
         if tester is None:
             raise NotFound("测试人不存在", code="rcsa.user_not_found", params={"user_id": payload.tester_user_id})
         control_owner = (item.control_snapshot or {}).get("owner_user_id")
-        if tester.id in (item.assignee_id, control_owner):
+        if tester.id in (item.assignee_id, control_owner,
+                         (item.implementation_snapshot or {}).get("owner_user_id")):
             raise Conflict(
                 "测试人不能是本项作答人或控制执行负责人；请作为自评证据登记",
                 code="rcsa.tester_not_independent",
@@ -325,6 +337,9 @@ async def _problems(
     def problem(code: str) -> None:
         problems.append(code)
 
+    flagged = contradictions(answer, campaign.period_start, campaign.period_end, has_risks=bool(risks))
+    if any(not answer.signals[index].explanation for index in flagged):
+        problem(code="rcsa.problem.signal_explanation")
     if answer.design.rating is None:
         problem(code="rcsa.problem.design_rating")
     if not answer.design.rationale:
@@ -415,7 +430,7 @@ async def submit(
 async def review(
     session: AsyncSession, response_id: int, payload: ReviewIn, actor: User, client_key: str
 ) -> RcsaResponse:
-    _, item, response = await _locked_response(session, response_id)
+    campaign, item, response = await _locked_response(session, response_id)
     command = Command(actor, "review", "RcsaResponse", response.id, client_key, payload.model_dump())
     if await command.replay(session) is not None:
         return response
@@ -430,6 +445,11 @@ async def review(
     if payload.decision == "return" and not payload.reason:
         raise Conflict("退回需要写明理由", code="rcsa.reason_required")
     approve = payload.decision == "approve"
+    if approve and not payload.reason and contradictions(
+        AnswerV1.model_validate(response.answer), campaign.period_start, campaign.period_end,
+        has_risks=bool(response.risk_snapshot),
+    ):
+        raise Conflict("矛盾信号需要复核人说明批准依据", code="rcsa.signal_review_required")
     response.status = ResponseStatus.APPROVED if approve else ResponseStatus.RETURNED
     bump(response, actor)
     item.status = ItemStatus.APPROVED if approve else ItemStatus.RETURNED

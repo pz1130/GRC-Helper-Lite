@@ -59,13 +59,13 @@ export function Report() {
         <div className="kn-grid-2">
           <Card title={t("rcsa.report.exclusions")}>
             {r.exclusions.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
-              <ul className="kn-stack-1">{r.exclusions.map((e) => <li key={e.control_code}><strong>{e.control_code}</strong> — {e.reason}</li>)}</ul>
+              <ul className="kn-stack-1">{r.exclusions.map((e) => <li key={`${e.control_code}-${e.target_label}`}><strong>{e.control_code}{e.target_label ? ` · ${e.target_label}` : ""}</strong> — {e.reason}</li>)}</ul>
             )}
           </Card>
           <Card title={t("rcsa.report.notAssessed")}>
             {r.not_assessed.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
               <ul className="kn-stack-1">{r.not_assessed.map((n) => (
-                <li key={n.control_code}><strong>{n.control_code}</strong> ({n.ratings.map((x) => t(`rcsa.assessment.${x}`)).join(", ")}) — {n.reason}
+                <li key={`${n.control_code}-${n.target_label}`}><strong>{n.control_code}{n.target_label ? ` · ${n.target_label}` : ""}</strong> ({n.ratings.map((x) => t(`rcsa.assessment.${x}`)).join(", ")}) — {n.reason}
                   {n.follow_up_due ? <span className="kn-secondary"> · {t("rcsa.dueOn", { date: n.follow_up_due })}</span> : null}</li>
               ))}</ul>
             )}
@@ -77,7 +77,7 @@ export function Report() {
           <Card title={t("rcsa.report.acceptances")}>
             {r.acceptances.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
               <ul className="kn-stack-1">{r.acceptances.map((a) => (
-                <li key={`${a.control_code}-${a.scenario_key}`}>{a.control_code} / {a.scenario_key} — {t("rcsa.risks.until", { date: a.accept_until })}
+                <li key={`${a.control_code}-${a.target_label}-${a.scenario_key}`}>{a.control_code}{a.target_label ? ` · ${a.target_label}` : ""} / {a.scenario_key} — {t("rcsa.risks.until", { date: a.accept_until })}
                   {a.expired ? <span className="rcsa-overdue"> {t("rcsa.status.expired")}</span> : null}</li>
               ))}</ul>
             )}
@@ -86,19 +86,28 @@ export function Report() {
             {r.limitations.length === 0 && !r.acknowledgements?.overdue && !r.acknowledgements?.evidence
               ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
                 <ul className="kn-stack-1">
-                  {r.limitations.map((l) => <li key={l.control_code}><strong>{l.control_code}</strong> — {l.text}</li>)}
+                  {r.limitations.map((l) => <li key={`${l.control_code}-${l.target_label}`}><strong>{l.control_code}{l.target_label ? ` · ${l.target_label}` : ""}</strong> — {l.text}</li>)}
                   {r.acknowledgements?.overdue ? <li>{t("rcsa.transitions.overdueAck")}: {r.acknowledgements.overdue}</li> : null}
                   {r.acknowledgements?.evidence ? <li>{t("rcsa.transitions.evidenceAck")}: {r.acknowledgements.evidence}</li> : null}
                 </ul>
               )}
           </Card>
         </div>
+        <Card title={t("rcsa.signals.report")}>
+          <p className="kn-secondary">{t("rcsa.signals.reportHint")}</p>
+          {r.signal_reviews?.length ? <ul>{r.signal_reviews.map((entry) => <li key={entry.item_id}>
+            <Link to={`/rcsa/items/${entry.item_id}`}>{entry.control_code}{entry.target_label ? ` · ${entry.target_label}` : ""}</Link> — {t("rcsa.signals.summary", {
+              signals: entry.signals, contradictions: entry.contradictions,
+              review: t(entry.approval_rationale_recorded ? "rcsa.signals.recorded" : "rcsa.signals.missing"),
+            })}
+          </li>)}</ul> : <p className="kn-secondary">{t("rcsa.report.none")}</p>}
+        </Card>
         <Card title={t("rcsa.report.items")}>
           {r.items.length === 0 ? <EmptyState compact /> : (
             <DataTable className="kn-m-0" head={<tr><th>{t("rcsa.scope.control")}</th><th>{t("rcsa.campaigns.status")}</th><th>{t("rcsa.assessment.design")}</th><th>{t("rcsa.assessment.operating")}</th><th>{t("rcsa.assessment.independentTest")}</th><th>{t("rcsa.report.scenarios")}</th></tr>}>
               {r.items.map((item) => (
                 <tr key={item.item_id}>
-                  <td><strong>{item.control_code}</strong> {item.control_title}</td>
+                  <td><strong>{item.control_code}{item.target_label ? ` · ${item.target_label}` : ""}</strong> {item.control_title}</td>
                   <td><StatusBadge status={item.status} /></td>
                   <td>{item.design ? t(`rcsa.effectiveness.${item.design}`) : "—"}</td>
                   <td>{item.operating ? t(`rcsa.effectiveness.${item.operating}`) : "—"}</td>
@@ -120,8 +129,8 @@ export function Report() {
             {r.comparison.scenarios.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
               <DataTable className="kn-m-0" head={<tr><th>{t("rcsa.scope.control")}</th><th>{t("rcsa.risks.key")}</th><th>{t("rcsa.report.previous")}</th><th>{t("rcsa.report.current")}</th><th>{t("rcsa.campaigns.status")}</th></tr>}>
                 {r.comparison.scenarios.map((row) => (
-                  <tr key={`${row.control_code}-${row.scenario_key}`}>
-                    <td>{row.control_code}</td>
+                  <tr key={`${row.control_code}-${row.implementation_id}-${row.scenario_key}`}>
+                    <td>{row.control_code}{row.target_label ? ` · ${row.target_label}` : ""}</td>
                     <td>{row.scenario_key}</td>
                     <td>{row.previous_residual_band ? `${row.previous_residual_band} (${row.previous_residual_score})` : "—"}</td>
                     <td>{row.current_residual_band ? `${row.current_residual_band} (${row.current_residual_score})` : "—"}</td>
@@ -136,7 +145,7 @@ export function Report() {
           <p className="kn-secondary kn-text-xs">{t("rcsa.report.currentHint")}</p>
           {r.current_follow_up.actions.length === 0 ? <p className="kn-secondary kn-m-0">{t("rcsa.report.none")}</p> : (
             <ul className="kn-stack-1">{r.current_follow_up.actions.map((a) => (
-              <li key={a.id}>{a.control_code} — {a.title} <StatusBadge status={a.status} />{" "}
+              <li key={a.id}>{a.control_code}{a.target_label ? ` · ${a.target_label}` : ""} — {a.title} <StatusBadge status={a.status} />{" "}
                 <span className={a.overdue ? "rcsa-overdue" : "kn-secondary"}>{a.overdue ? t("rcsa.overdueSince", { date: a.due_at }) : t("rcsa.dueOn", { date: a.due_at })}</span></li>
             ))}</ul>
           )}

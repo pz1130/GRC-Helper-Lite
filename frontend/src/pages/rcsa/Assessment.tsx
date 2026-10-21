@@ -1,3 +1,4 @@
+import { ScopeTarget } from "./ScopeTarget";
 // 评估页：左边冻结的控制与来源，中间作答、证据和风险情景，右边复核与版本历史。
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -9,6 +10,8 @@ import { Card, EmptyState, LoadingState, PageHeader } from "../../components/ui"
 import { api, newKey, send, type Answer, type Effectiveness, type Item, type Response } from "./api";
 import { AiPanel } from "./AiPanel";
 import { EvidencePanel } from "./EvidencePanel";
+import { GuidePicker } from "./ItGuidance";
+import { Signals } from "./Signals";
 import { RiskPanel } from "./RiskPanel";
 import { ErrorNotice, PersonSelect, RcsaGate, StatusBadge, useUnsavedGuard, usePeople } from "./shared";
 
@@ -35,6 +38,7 @@ function Frozen({ item }: { item: Item }) {
     <Card title={t("rcsa.assessment.frozenControl")} className="rcsa-frozen">
       <p className="kn-m-0"><strong>{control?.code}</strong> {control?.title}</p>
       <p>{control?.statement}</p>
+      <ScopeTarget snapshot={item.implementation_snapshot} details />
       <h4>{t("rcsa.assessment.mappings")}</h4>
       <ul>{item.mapping_snapshot?.map((m) => <li key={m.code}>{m.code} — {m.title} <span className="kn-secondary">({m.strength})</span></li>)}</ul>
       <h4>{t("rcsa.assessment.sources")}</h4>
@@ -89,6 +93,7 @@ function AnswerForm({ response, editable, onChanged, savedVersion, onSaved }: {
   return (
     <Card title={t("rcsa.assessment.answer", { revision: response.revision })} actions={<StatusBadge status={response.status} />}>
       <form className="rcsa-form" onSubmit={(e) => { e.preventDefault(); save.mutate(); }}>
+        <GuidePicker selected={answer.guide_ids ?? []} onChange={(guide_ids) => set({ guide_ids })} editable={editable} />
         <RatingField label={t("rcsa.assessment.design")} value={answer.design} onChange={(design) => set({ design })} disabled={!editable} />
         <RatingField label={t("rcsa.assessment.operating")} value={answer.operating} onChange={(operating) => set({ operating })} disabled={!editable} />
         <fieldset className="rcsa-form rcsa-wide" disabled={!editable}>
@@ -130,6 +135,8 @@ function AnswerForm({ response, editable, onChanged, savedVersion, onSaved }: {
         <label className="rcsa-wide">{t("rcsa.assessment.noRisk")}
           <input disabled={!editable} value={answer.no_risk_rationale} onChange={(e) => set({ no_risk_rationale: e.target.value })} />
         </label>
+        <Signals signals={answer.signals ?? []} onChange={(signals) => set({ signals })} editable={editable}
+          flagged={response.contradiction_indices} />
         {editable && (
           <div className="rcsa-actions rcsa-wide">
             <button type="submit" className="kn-btn kn-btn-secondary" disabled={!dirty || save.isPending}>{t("common.save")}</button>
@@ -160,13 +167,14 @@ function ReviewPanel({ item, response, onChanged }: { item: Item; response: Resp
   });
   return (
     <Card title={t("rcsa.review.title")}>
+      {!!response?.contradiction_indices?.length && <p className="rcsa-overdue">{t("rcsa.signals.review")}</p>}
       <label className="kn-block">{t("rcsa.review.reason")}
         <textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} />
       </label>
       <div className="rcsa-actions">
         {item.status === "submitted" && response && (
           <>
-            <button type="button" className="kn-btn kn-btn-primary" disabled={review.isPending} onClick={() => review.mutate("approve")}>{t("rcsa.review.approve", { revision: response.revision })}</button>
+            <button type="button" className="kn-btn kn-btn-primary" disabled={review.isPending || (!!response.contradiction_indices?.length && !reason.trim())} onClick={() => review.mutate("approve")}>{t("rcsa.review.approve", { revision: response.revision })}</button>
             <button type="button" className="kn-btn kn-btn-secondary" disabled={review.isPending || !reason.trim()} onClick={() => review.mutate("return")}>{t("rcsa.review.return")}</button>
           </>
         )}
@@ -190,7 +198,13 @@ function History({ itemId }: { itemId: number }) {
       <ul className="kn-stack-1">
         {responses.data?.map((r) => (
           <li key={r.id}>{t("rcsa.history.revision", { revision: r.revision })} <StatusBadge status={r.status} />
-            {r.submitted_at ? <span className="kn-secondary"> · {r.submitted_at.slice(0, 10)}</span> : null}</li>
+            {r.submitted_at ? <span className="kn-secondary"> · {r.submitted_at.slice(0, 10)}</span> : null}
+            {(!!r.answer.signals?.length || !!r.answer.guide_ids?.length) && <details>
+              <summary>{t("rcsa.signals.saved")}</summary>
+              <GuidePicker selected={r.answer.guide_ids ?? []} onChange={() => {}} editable={false} />
+              <Signals signals={r.answer.signals ?? []} onChange={() => {}} editable={false} flagged={r.contradiction_indices} />
+            </details>}
+          </li>
         ))}
       </ul>
       <h5>{t("rcsa.history.reviews")}</h5>

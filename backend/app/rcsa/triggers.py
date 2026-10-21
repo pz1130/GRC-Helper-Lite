@@ -225,7 +225,8 @@ async def link(session: AsyncSession, trigger_id: int, payload: TriggerLinkIn, a
     campaign = await fetch(session, RcsaCampaign, payload.campaign_id, code="rcsa.campaign_not_found")
     if campaign.status in (CampaignStatus.CLOSED, CampaignStatus.CANCELLED):
         raise Conflict("只能关联尚未关闭的活动", code="rcsa.campaign_state", params={"status": str(campaign.status)})
-    in_campaign = set(await session.scalars(select(RcsaItem.control_id).where(RcsaItem.campaign_id == campaign.id)))
+    in_campaign = set(await session.scalars(select(RcsaItem.control_id).where(RcsaItem.campaign_id == campaign.id,
+        RcsaItem.implementation_id.is_(None))))
     excluded = {row.control_id: row.reason for row in payload.exclusions}
     rows = await _controls(session, trigger.id)
     uncovered = [

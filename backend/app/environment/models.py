@@ -103,6 +103,7 @@ class TechAsset(Base):
 class Implementation(Base):
     __tablename__ = "implementations"
     __table_args__ = (
+        UniqueConstraint("id", "control_id", name="uq_implementation_id_control"),
         UniqueConstraint("control_id", "tech_asset_id", name="uq_implementation_control_asset"),
         CheckConstraint(
             "status <> 'not_applicable' OR "

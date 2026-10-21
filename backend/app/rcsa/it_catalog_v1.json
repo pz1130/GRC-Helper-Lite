@@ -1,0 +1,609 @@
+{
+  "version": "it-v1",
+  "risks": [
+    {
+      "id": "r-gov-01",
+      "domain": "IT Governance",
+      "title": "Outdated or incomplete IT policies",
+      "cause": "Unclear policy ownership and missing reviews",
+      "event": "IT activities follow inconsistent or outdated instructions",
+      "impact": "Control gaps, inconsistent operations and remediation costs",
+      "guide_ids": [
+        "c-gov-01"
+      ]
+    },
+    {
+      "id": "r-gov-02",
+      "domain": "IT Governance",
+      "title": "Requirements are not identified or implemented",
+      "cause": "Incomplete requirements tracking and coordination",
+      "event": "Applicable requirements are missed or not translated into controls",
+      "impact": "Compliance gaps, remediation costs and reputational damage",
+      "guide_ids": [
+        "c-gov-02"
+      ]
+    },
+    {
+      "id": "r-gov-03",
+      "domain": "IT Governance",
+      "title": "Incompatible duties are combined",
+      "cause": "Insufficient staffing or poorly designed roles",
+      "event": "A person can initiate and approve incompatible activities",
+      "impact": "Undetected errors, fraud or unauthorized changes",
+      "guide_ids": [
+        "c-gov-03"
+      ]
+    },
+    {
+      "id": "r-iam-01",
+      "domain": "Access Management",
+      "title": "Excessive or inappropriate access",
+      "cause": "Weak role design, approvals or access reviews",
+      "event": "Users receive or retain access beyond business need",
+      "impact": "Unauthorized disclosure, changes or fraud",
+      "guide_ids": [
+        "c-gov-03",
+        "c-iam-01",
+        "c-iam-02"
+      ]
+    },
+    {
+      "id": "r-iam-02",
+      "domain": "Access Management",
+      "title": "Leaver or mover access remains active",
+      "cause": "Delayed notifications or incomplete identity lifecycle integration",
+      "event": "Access is not removed after departure or role changes",
+      "impact": "Unauthorized access and data exposure",
+      "guide_ids": [
+        "c-iam-02",
+        "c-iam-03"
+      ]
+    },
+    {
+      "id": "r-iam-03",
+      "domain": "Access Management",
+      "title": "Privileged access is misused",
+      "cause": "Incomplete privileged account coverage and monitoring",
+      "event": "Privileged users perform unauthorized activities",
+      "impact": "Data loss, service disruption and weak accountability",
+      "guide_ids": [
+        "c-iam-04"
+      ]
+    },
+    {
+      "id": "r-iam-04",
+      "domain": "Access Management",
+      "title": "Weak authentication permits account compromise",
+      "cause": "Unenforced authentication settings or unsupported legacy systems",
+      "event": "An attacker gains access using compromised credentials",
+      "impact": "Unauthorized access and lateral movement",
+      "guide_ids": [
+        "c-iam-05"
+      ]
+    },
+    {
+      "id": "r-chg-01",
+      "domain": "Change Management",
+      "title": "Unauthorized or inadequately tested production changes",
+      "cause": "Incomplete change coverage, testing or approvals",
+      "event": "A change reaches production without appropriate authorization or validation",
+      "impact": "Service disruption, data errors and customer impact",
+      "guide_ids": [
+        "c-chg-01",
+        "c-chg-02",
+        "c-chg-03"
+      ]
+    },
+    {
+      "id": "r-chg-02",
+      "domain": "Change Management",
+      "title": "Emergency changes bypass controls",
+      "cause": "Broad emergency criteria and missing retrospective reviews",
+      "event": "Emergency changes introduce defects or conceal unauthorized work",
+      "impact": "Service disruption and uncontrolled production changes",
+      "guide_ids": [
+        "c-chg-03",
+        "c-chg-04"
+      ]
+    },
+    {
+      "id": "r-chg-03",
+      "domain": "Change Management",
+      "title": "Development and production are insufficiently separated",
+      "cause": "Legacy architecture and weak deployment permissions",
+      "event": "Unapproved code or activity reaches production",
+      "impact": "Data alteration and ineffective segregation of duties",
+      "guide_ids": [
+        "c-chg-05"
+      ]
+    },
+    {
+      "id": "r-ops-01",
+      "domain": "IT Operations",
+      "title": "Major incidents are not resolved promptly",
+      "cause": "Unclear escalation rules, response responsibilities or rehearsals",
+      "event": "A major incident is escalated or recovered late",
+      "impact": "Prolonged service disruption and customer loss",
+      "guide_ids": [
+        "c-ops-01",
+        "c-ops-02",
+        "c-ops-05"
+      ]
+    },
+    {
+      "id": "r-ops-02",
+      "domain": "IT Operations",
+      "title": "Insufficient capacity or performance",
+      "cause": "Inadequate forecasting, load testing or alert thresholds",
+      "event": "Resources cannot support required demand",
+      "impact": "Failed transactions and unavailable services",
+      "guide_ids": [
+        "c-ops-02",
+        "c-ops-03"
+      ]
+    },
+    {
+      "id": "r-ops-03",
+      "domain": "IT Operations",
+      "title": "Batch failures go undetected",
+      "cause": "Incomplete job monitoring and reconciliation",
+      "event": "Failed or incorrect batch processing is not detected promptly",
+      "impact": "Incorrect records, reporting delays and inconsistent balances",
+      "guide_ids": [
+        "c-ops-02",
+        "c-ops-04"
+      ]
+    },
+    {
+      "id": "r-bcm-01",
+      "domain": "Backup and Resilience",
+      "title": "Backups fail or cannot be restored",
+      "cause": "Weak monitoring, recovery testing or backup protection",
+      "event": "Required data cannot be recovered from backup",
+      "impact": "Permanent data loss or missed recovery objectives",
+      "guide_ids": [
+        "c-bcm-01",
+        "c-bcm-02"
+      ]
+    },
+    {
+      "id": "r-bcm-02",
+      "domain": "Backup and Resilience",
+      "title": "Disaster recovery misses business requirements",
+      "cause": "Outdated impact analysis, limited exercises or insufficient resilience",
+      "event": "Failover fails or exceeds recovery objectives",
+      "impact": "Extended interruption of critical services",
+      "guide_ids": [
+        "c-bcm-03",
+        "c-bcm-04"
+      ]
+    },
+    {
+      "id": "r-sec-01",
+      "domain": "Cybersecurity",
+      "title": "Unremediated vulnerabilities are exploited",
+      "cause": "Incomplete asset coverage, patch windows or remediation tracking",
+      "event": "An attacker exploits an outstanding vulnerability",
+      "impact": "System compromise, data loss or ransomware disruption",
+      "guide_ids": [
+        "c-sec-01"
+      ]
+    },
+    {
+      "id": "r-sec-02",
+      "domain": "Cybersecurity",
+      "title": "Malware or ransomware disrupts services",
+      "cause": "Incomplete endpoint protection or weak segmentation",
+      "event": "Malicious software spreads or encrypts systems",
+      "impact": "Service outage, data theft and recovery costs",
+      "guide_ids": [
+        "c-sec-02",
+        "c-sec-03"
+      ]
+    },
+    {
+      "id": "r-sec-03",
+      "domain": "Cybersecurity",
+      "title": "Security incidents are detected or handled late",
+      "cause": "Missing log sources, insufficient coverage or alert fatigue",
+      "event": "Malicious activity remains undetected or uncontained",
+      "impact": "Greater losses and incomplete investigation evidence",
+      "guide_ids": [
+        "c-sec-03"
+      ]
+    },
+    {
+      "id": "r-sec-04",
+      "domain": "Cybersecurity",
+      "title": "Social engineering compromises staff accounts",
+      "cause": "Insufficient awareness training and practical exercises",
+      "event": "Staff disclose credentials or execute malicious content",
+      "impact": "Account compromise, malware infection or fraud",
+      "guide_ids": [
+        "c-sec-04"
+      ]
+    },
+    {
+      "id": "r-dat-01",
+      "domain": "Data Management and Privacy",
+      "title": "Sensitive information is disclosed",
+      "cause": "Weak classification, data handling or protective controls",
+      "event": "Sensitive information is exposed to unauthorized parties",
+      "impact": "Privacy harm, remediation costs and reputational damage",
+      "guide_ids": [
+        "c-dat-01",
+        "c-dat-02"
+      ]
+    },
+    {
+      "id": "r-dat-02",
+      "domain": "Data Management and Privacy",
+      "title": "Poor data quality affects reports or decisions",
+      "cause": "Inconsistent definitions, weak validation and manual processing",
+      "event": "Incorrect data enters reporting or decision processes",
+      "impact": "Incorrect submissions and business decisions",
+      "guide_ids": [
+        "c-dat-03"
+      ]
+    },
+    {
+      "id": "r-dat-03",
+      "domain": "Data Management and Privacy",
+      "title": "Unmasked production data is used in testing",
+      "cause": "Weak data extraction approvals and masking",
+      "event": "Sensitive production data enters less protected environments",
+      "impact": "Unauthorized disclosure of sensitive information",
+      "guide_ids": [
+        "c-dat-04"
+      ]
+    },
+    {
+      "id": "r-tpr-01",
+      "domain": "Third-party and Cloud",
+      "title": "Supplier services are disrupted or inadequate",
+      "cause": "Weak due diligence, service monitoring or exit planning",
+      "event": "A supplier fails to deliver required services",
+      "impact": "Business interruption and dependency on an unsuitable supplier",
+      "guide_ids": [
+        "c-tpr-01",
+        "c-tpr-02",
+        "c-tpr-03"
+      ]
+    },
+    {
+      "id": "r-tpr-02",
+      "domain": "Third-party and Cloud",
+      "title": "Supplier security controls are insufficient",
+      "cause": "Incomplete security assessment or contractual requirements",
+      "event": "A supplier weakness enables compromise or disclosure",
+      "impact": "Supply-chain compromise and data loss",
+      "guide_ids": [
+        "c-tpr-01",
+        "c-tpr-02"
+      ]
+    },
+    {
+      "id": "r-tpr-03",
+      "domain": "Third-party and Cloud",
+      "title": "Cloud misconfiguration or concentration affects services",
+      "cause": "Missing configuration baselines and incomplete dependency planning",
+      "event": "Cloud resources expose data or a shared dependency fails",
+      "impact": "Data exposure or widespread service interruption",
+      "guide_ids": [
+        "c-tpr-04"
+      ]
+    },
+    {
+      "id": "r-sdl-01",
+      "domain": "Development and Projects",
+      "title": "Insufficient requirements or testing introduce defects",
+      "cause": "Schedule pressure and incomplete functional or security testing",
+      "event": "A release contains material functional or security defects",
+      "impact": "Business loss, vulnerabilities and rework",
+      "guide_ids": [
+        "c-chg-02",
+        "c-sdl-01",
+        "c-sdl-02"
+      ]
+    },
+    {
+      "id": "r-sdl-02",
+      "domain": "Development and Projects",
+      "title": "IT projects miss objectives",
+      "cause": "Weak governance, changing scope or insufficient resources",
+      "event": "Projects exceed time or cost limits or fail to deliver benefits",
+      "impact": "Investment loss and delayed business objectives",
+      "guide_ids": [
+        "c-sdl-01"
+      ]
+    },
+    {
+      "id": "r-ast-01",
+      "domain": "Asset and Configuration",
+      "title": "Assets are missing from the inventory",
+      "cause": "Incomplete discovery and unrecorded technology adoption",
+      "event": "Assets remain outside management and security processes",
+      "impact": "Unpatched systems and monitoring blind spots",
+      "guide_ids": [
+        "c-ast-01"
+      ]
+    },
+    {
+      "id": "r-ast-02",
+      "domain": "Asset and Configuration",
+      "title": "Unsupported technology remains in use",
+      "cause": "Incomplete lifecycle tracking and replacement planning",
+      "event": "Components continue operating beyond supported life",
+      "impact": "Unremediated vulnerabilities and unavailable vendor support",
+      "guide_ids": [
+        "c-sec-01",
+        "c-ast-02"
+      ]
+    },
+    {
+      "id": "r-euc-01",
+      "domain": "End-user Computing",
+      "title": "Critical end-user tools lack controls",
+      "cause": "Missing inventories, ownership and independent reviews",
+      "event": "An uncontrolled spreadsheet or local tool produces incorrect results",
+      "impact": "Reporting errors, key-person dependency or data exposure",
+      "guide_ids": [
+        "c-euc-01"
+      ]
+    },
+    {
+      "id": "r-euc-02",
+      "domain": "End-user Computing",
+      "title": "Lost or unprotected endpoints expose data",
+      "cause": "Incomplete device management, encryption or peripheral controls",
+      "event": "A lost or misused device exposes sensitive information",
+      "impact": "Data disclosure and response costs",
+      "guide_ids": [
+        "c-dat-02",
+        "c-euc-02"
+      ]
+    }
+  ],
+  "guides": [
+    {
+      "id": "c-gov-01",
+      "title": "IT policy review",
+      "expected_evidence": "Policy inventory, review records, approvals and publication notices",
+      "test_procedure": "Sample policies against the approved review schedule; reconcile approved versions with published versions."
+    },
+    {
+      "id": "c-gov-02",
+      "title": "Requirements tracking and gap assessment",
+      "expected_evidence": "Requirements register, applicability decisions, gap assessments and action tracking",
+      "test_procedure": "Sample newly identified requirements; trace applicability decisions, control gaps and follow-up actions."
+    },
+    {
+      "id": "c-gov-03",
+      "title": "Segregation of duties",
+      "expected_evidence": "Conflict matrix, role configuration and approved exceptions",
+      "test_procedure": "Inspect incompatible role rules; observe conflict prevention and sample exception approvals and reviews."
+    },
+    {
+      "id": "c-iam-01",
+      "title": "Access request and approval",
+      "expected_evidence": "Access requests, approvals, role definitions and provisioned access",
+      "test_procedure": "Sample grants from system exports; verify suitable approval preceded provisioning and granted access matches the request."
+    },
+    {
+      "id": "c-iam-02",
+      "title": "Periodic access review",
+      "expected_evidence": "Complete user listings, review sign-offs and removal tickets",
+      "test_procedure": "Reconcile review populations to system exports; sample review decisions and verify requested removals were implemented."
+    },
+    {
+      "id": "c-iam-03",
+      "title": "Leaver and mover access removal",
+      "expected_evidence": "Personnel notifications, integration logs and account status records",
+      "test_procedure": "Reconcile departures and transfers with account states against approved removal deadlines; inspect failed synchronization follow-up."
+    },
+    {
+      "id": "c-iam-04",
+      "title": "Privileged access management",
+      "expected_evidence": "Privileged account inventory, access approvals, session records and reviews",
+      "test_procedure": "Reconcile privileged accounts with managed coverage; sample access approvals, session monitoring and anomaly follow-up."
+    },
+    {
+      "id": "c-iam-05",
+      "title": "Authentication controls",
+      "expected_evidence": "Authentication configuration, password settings and approved exceptions",
+      "test_procedure": "Inspect authentication settings; sample enrollment and enforcement, then review exceptions and compensating controls."
+    },
+    {
+      "id": "c-chg-01",
+      "title": "Change approval and risk assessment",
+      "expected_evidence": "Production change inventory, risk assessments and approvals",
+      "test_procedure": "Sample production changes; verify risk assessment and authorization preceded implementation within approved windows."
+    },
+    {
+      "id": "c-chg-02",
+      "title": "Change testing and rollback",
+      "expected_evidence": "Test results, acceptance records and rollback plans",
+      "test_procedure": "Sample changes; verify suitable tests and acceptance preceded release and rollback plans address the change."
+    },
+    {
+      "id": "c-chg-03",
+      "title": "Production change reconciliation",
+      "expected_evidence": "Change reconciliation reports and unmatched change investigations",
+      "test_procedure": "Inspect coverage of production activity; sample unmatched changes and verify investigation and resolution."
+    },
+    {
+      "id": "c-chg-04",
+      "title": "Emergency change review",
+      "expected_evidence": "Emergency change register, retrospective approvals and review minutes",
+      "test_procedure": "Sample emergency changes against approved retrospective review deadlines; examine recurring exceptions and trends."
+    },
+    {
+      "id": "c-chg-05",
+      "title": "Environment separation and deployment",
+      "expected_evidence": "Network rules, production entitlements and pipeline approvals",
+      "test_procedure": "Inspect developer production access and deployment approval enforcement; trace sampled releases to approvals."
+    },
+    {
+      "id": "c-ops-01",
+      "title": "Incident classification and escalation",
+      "expected_evidence": "Incident records, escalation timelines and reporting records",
+      "test_procedure": "Sample major incidents; compare classification, escalation and reporting with applicable approved requirements."
+    },
+    {
+      "id": "c-ops-02",
+      "title": "Monitoring and alert response",
+      "expected_evidence": "Monitoring coverage, alert rules and response tickets",
+      "test_procedure": "Reconcile critical services to monitoring coverage; sample alerts and verify timely response and closure."
+    },
+    {
+      "id": "c-ops-03",
+      "title": "Capacity planning",
+      "expected_evidence": "Capacity reports, scaling plans and load test results",
+      "test_procedure": "Inspect report continuity and follow-up on threshold breaches; review load testing for material demand changes."
+    },
+    {
+      "id": "c-ops-04",
+      "title": "Batch monitoring and reconciliation",
+      "expected_evidence": "Job logs, exception records and reconciliation results",
+      "test_procedure": "Sample processing dates; trace failed jobs to alerts and resolution, and inspect reconciliation differences."
+    },
+    {
+      "id": "c-ops-05",
+      "title": "Incident root cause analysis",
+      "expected_evidence": "Root cause reports, problem records and improvement actions",
+      "test_procedure": "Sample major incidents; assess analysis quality and timeliness and verify completion of corrective actions."
+    },
+    {
+      "id": "c-bcm-01",
+      "title": "Backup execution and protection",
+      "expected_evidence": "Backup policies, job logs, failure alerts and protected copy settings",
+      "test_procedure": "Verify coverage of critical data; sample failures and reruns and inspect protection of recovery copies."
+    },
+    {
+      "id": "c-bcm-02",
+      "title": "Restore testing",
+      "expected_evidence": "Restore test plans, results and issue tracking",
+      "test_procedure": "Check testing against the approved schedule and critical system scope; trace failed restores to remediation and retesting."
+    },
+    {
+      "id": "c-bcm-03",
+      "title": "Disaster recovery exercises",
+      "expected_evidence": "Exercise plans, measured recovery results and corrective actions",
+      "test_procedure": "Distinguish actual failover from tabletop exercises; compare measured recovery with approved objectives and inspect issue follow-up."
+    },
+    {
+      "id": "c-bcm-04",
+      "title": "Business impact and recovery objectives",
+      "expected_evidence": "Impact analysis, critical service inventory and approved recovery objectives",
+      "test_procedure": "Inspect currency and approval of impact analysis; compare recovery designs with approved time and data loss objectives."
+    },
+    {
+      "id": "c-sec-01",
+      "title": "Vulnerability and patch management",
+      "expected_evidence": "Scan results, asset reconciliation, patch records and exceptions",
+      "test_procedure": "Reconcile scan coverage to assets; sample high severity findings against approved remediation deadlines and inspect overdue exceptions."
+    },
+    {
+      "id": "c-sec-02",
+      "title": "Endpoint and server protection",
+      "expected_evidence": "Protection coverage, asset reconciliation and remediation records",
+      "test_procedure": "Reconcile protected devices with inventory; inspect gaps, protection health and follow-up."
+    },
+    {
+      "id": "c-sec-03",
+      "title": "Security monitoring and response",
+      "expected_evidence": "Log source inventory, detection rules and security alert records",
+      "test_procedure": "Verify coverage of critical log sources; sample high severity alerts and assess response timing and conclusions."
+    },
+    {
+      "id": "c-sec-04",
+      "title": "Security awareness and exercises",
+      "expected_evidence": "Training completion, exercise results and follow-up training",
+      "test_procedure": "Reconcile attendance to required populations; inspect exercise trends and targeted follow-up."
+    },
+    {
+      "id": "c-dat-01",
+      "title": "Data loss prevention",
+      "expected_evidence": "Data handling rules, prevention configurations and alert investigations",
+      "test_procedure": "Inspect coverage of relevant channels and sensitive data categories; sample alerts and review handling decisions."
+    },
+    {
+      "id": "c-dat-02",
+      "title": "Sensitive data encryption",
+      "expected_evidence": "Encryption settings, key inventory and key management records",
+      "test_procedure": "Sample systems and devices; inspect encryption enforcement and key access, rotation and recovery controls."
+    },
+    {
+      "id": "c-dat-03",
+      "title": "Data quality and reporting checks",
+      "expected_evidence": "Validation rules, results, reconciliations and approvals",
+      "test_procedure": "Sample reporting periods; inspect validation failures, reconciliations and approvals for rule changes."
+    },
+    {
+      "id": "c-dat-04",
+      "title": "Test data masking",
+      "expected_evidence": "Data extraction approvals, masking records and environment scans",
+      "test_procedure": "Sample data transfers to non-production; verify authorization, masking and checks for residual sensitive information."
+    },
+    {
+      "id": "c-tpr-01",
+      "title": "Supplier due diligence",
+      "expected_evidence": "Due diligence reports, risk assessments and approvals",
+      "test_procedure": "Sample significant suppliers; verify assessments preceded engagement and identified risks have owners and actions."
+    },
+    {
+      "id": "c-tpr-02",
+      "title": "Supplier contract review",
+      "expected_evidence": "Contracts, review checklists and legal or security review records",
+      "test_procedure": "Sample agreements against approved service, security, audit, incident and exit requirements; inspect documented exceptions."
+    },
+    {
+      "id": "c-tpr-03",
+      "title": "Supplier performance monitoring",
+      "expected_evidence": "Service reports, breach follow-up and periodic assessments",
+      "test_procedure": "Inspect reporting completeness; sample service breaches and assess corrective actions and dependency reviews."
+    },
+    {
+      "id": "c-tpr-04",
+      "title": "Cloud configuration monitoring",
+      "expected_evidence": "Configuration baselines, coverage reports and remediation tickets",
+      "test_procedure": "Reconcile accounts to monitoring coverage; sample high risk findings and assess remediation and dependency planning."
+    },
+    {
+      "id": "c-sdl-01",
+      "title": "Project stage reviews",
+      "expected_evidence": "Stage approvals, project reports and escalation records",
+      "test_procedure": "Sample projects; verify required reviews, ownership and escalation of material schedule, cost or scope deviations."
+    },
+    {
+      "id": "c-sdl-02",
+      "title": "Secure development checks",
+      "expected_evidence": "Pipeline settings, scan results, security tests and remediation records",
+      "test_procedure": "Inspect release gates; sample releases and trace significant findings to fixes, retests or approved exceptions."
+    },
+    {
+      "id": "c-ast-01",
+      "title": "Asset discovery and reconciliation",
+      "expected_evidence": "Discovery results, inventory reconciliation and discrepancy records",
+      "test_procedure": "Compare discovered assets with the managed inventory; sample discrepancies and verify ownership and resolution."
+    },
+    {
+      "id": "c-ast-02",
+      "title": "Technology lifecycle management",
+      "expected_evidence": "Support lifecycle inventory, replacement plans and exceptions",
+      "test_procedure": "Reconcile components to lifecycle records; inspect replacement plans and approved treatment for unsupported technology."
+    },
+    {
+      "id": "c-euc-01",
+      "title": "Critical end-user tool controls",
+      "expected_evidence": "Tool inventory, criticality assessments, version records and reviews",
+      "test_procedure": "Check inventory completeness; sample critical tools for access, change, calculation and independent review controls."
+    },
+    {
+      "id": "c-euc-02",
+      "title": "Endpoint configuration management",
+      "expected_evidence": "Device compliance reports, encryption status and peripheral policies",
+      "test_procedure": "Sample endpoints; inspect required settings and encryption, and verify follow-up for noncompliant devices."
+    }
+  ]
+}

@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.audit.models import AuditEngagement
 from app.clauses.models import Clause
 from app.controls.models import Control, ControlSource
+from app.environment.models import Implementation, TechAsset
 from app.errors import Conflict, Forbidden, NotFound
 from app.frameworks.models import Framework, FrameworkItem, Mapping
 from app.iam.models import User
@@ -292,19 +293,37 @@ async def _mapped_controls(session: AsyncSession, framework_id: int) -> dict[int
     return found
 
 
-async def scope(session: AsyncSession, campaign_id: int) -> list[ScopeRow]:
+def implementation_snapshot(implementation: Implementation, asset: TechAsset | None) -> dict[str, Any]:
+    return {
+        "id": implementation.id, "description": implementation.description,
+        "status": str(implementation.status), "how_enforced": str(implementation.how_enforced),
+        "owner_user_id": implementation.owner_user_id, "na_justification": implementation.na_justification,
+        "last_verified_at": implementation.last_verified_at.isoformat() if implementation.last_verified_at else None,
+        "asset": {"id": asset.id, "name": asset.name, "environment": str(asset.environment),
+                  "owner_user_id": asset.owner_user_id} if asset else None,
+    }
+
+
+async def scope(session: AsyncSession, campaign_id: int, basis: str = "control") -> list[ScopeRow]:
     campaign = await fetch(session, RcsaCampaign, campaign_id, code="rcsa.campaign_not_found")
-    included = set(
-        await session.scalars(select(RcsaItem.control_id).where(RcsaItem.campaign_id == campaign.id))
-    )
-    return [
-        ScopeRow(
-            control_id=control.id, code=control.code, title=control.title,
-            owner_user_id=control.owner_user_id, framework_items=codes,
-            included=control.id in included,
-        )
-        for control, codes in (await _mapped_controls(session, campaign.framework_id)).values()
-    ]
+    items = list(await session.scalars(select(RcsaItem).where(RcsaItem.campaign_id == campaign.id)))
+    mapped = await _mapped_controls(session, campaign.framework_id)
+    if basis == "control":
+        return [ScopeRow(control_id=c.id, code=c.code, title=c.title,
+                         owner_user_id=c.owner_user_id, framework_items=codes,
+                         included=any(i.control_id == c.id for i in items))
+                for c, codes in mapped.values()]
+    rows = await session.execute(select(Implementation, TechAsset)
+        .outerjoin(TechAsset, TechAsset.id == Implementation.tech_asset_id)
+        .where(Implementation.control_id.in_(mapped)).order_by(Implementation.id))
+    return [ScopeRow(control_id=impl.control_id, implementation_id=impl.id,
+                    implementation_snapshot=implementation_snapshot(impl, asset),
+                    code=mapped[impl.control_id][0].code, title=mapped[impl.control_id][0].title,
+                    owner_user_id=impl.owner_user_id or mapped[impl.control_id][0].owner_user_id,
+                    framework_items=mapped[impl.control_id][1],
+                    included=any(i.control_id == impl.control_id and
+                                 (i.implementation_id is None or i.implementation_id == impl.id) for i in items))
+            for impl, asset in rows]
 
 
 async def list_items(session: AsyncSession, campaign_id: int) -> list[RcsaItem]:
@@ -326,27 +345,30 @@ async def add_items(
     if payload.reviewer_id is not None:
         await _check_reviewer(session, payload.reviewer_id)
     in_scope = await _mapped_controls(session, campaign.framework_id)
-    existing = set(
-        await session.scalars(select(RcsaItem.control_id).where(RcsaItem.campaign_id == campaign.id))
-    )
+    existing = list(await session.scalars(select(RcsaItem).where(RcsaItem.campaign_id == campaign.id)))
+    targets: list[tuple[int, Implementation | None]] = [(cid, None) for cid in dict.fromkeys(payload.control_ids)]
+    if payload.implementation_ids:
+        implementations = list(await session.scalars(select(Implementation)
+            .where(Implementation.id.in_(payload.implementation_ids)).order_by(Implementation.id).with_for_update()))
+        if len(implementations) != len(set(payload.implementation_ids)):
+            raise NotFound("实施记录不存在", code="rcsa.implementation_not_found")
+        targets = [(impl.control_id, impl) for impl in implementations]
     created = []
-    for control_id in dict.fromkeys(payload.control_ids):
+    for control_id, impl in targets:
         if control_id not in in_scope:
-            raise Conflict(
-                "控制点不在这个框架的已映射范围内",
-                code="rcsa.control_not_in_scope",
-                params={"control_id": control_id},
-            )
-        if control_id in existing:
-            raise Conflict(
-                "这个控制点已经在活动范围里", code="rcsa.item_exists", params={"control_id": control_id}
-            )
+            raise Conflict("控制点不在框架范围内", code="rcsa.control_not_in_scope",
+                           params={"control_id": control_id})
+        if any(i.control_id == control_id and (impl is None or i.implementation_id is None
+                                               or i.implementation_id == impl.id) for i in existing):
+            raise Conflict("范围重复或与整项控制重叠", code="rcsa.item_exists", params={"control_id": control_id})
         control = in_scope[control_id][0]
-        # 控制 owner 只是推荐的作答人，不自动获得任何审批权。
-        assignee_id = payload.assignee_id or control.owner_user_id
+        assignee_id = payload.assignee_id or (impl.owner_user_id if impl else None) or control.owner_user_id
         _distinct(assignee_id, payload.reviewer_id)
+        asset = await session.get(TechAsset, impl.tech_asset_id) if impl and impl.tech_asset_id else None
         item = RcsaItem(
             campaign_id=campaign.id, control_id=control_id, assignee_id=assignee_id,
+            implementation_id=impl.id if impl else None,
+            implementation_snapshot=implementation_snapshot(impl, asset) if impl else None,
             reviewer_id=payload.reviewer_id, status=ItemStatus.PENDING,
             created_by=actor.id, updated_by=actor.id,
         )
@@ -354,7 +376,8 @@ async def add_items(
         created.append(item)
     await session.flush()
     await audit(session, actor, "scope_add", "RcsaCampaign", campaign.id,
-                {"item_ids": [item.id for item in created], "control_ids": [i.control_id for i in created]})
+                {"item_ids": [item.id for item in created], "control_ids": [i.control_id for i in created],
+                 "implementation_ids": [i.implementation_id for i in created]})
     return created
 
 
@@ -448,6 +471,12 @@ async def _activation_blockers(
 
 
 async def _freeze_item(session: AsyncSession, item: RcsaItem, framework_id: int) -> None:
+    if item.implementation_id is not None:
+        impl = await session.scalar(select(Implementation).where(Implementation.id == item.implementation_id)
+                                    .with_for_update(read=True))
+        asset = await session.scalar(select(TechAsset).where(TechAsset.id == impl.tech_asset_id)
+                                     .with_for_update(read=True)) if impl.tech_asset_id else None
+        item.implementation_snapshot = implementation_snapshot(impl, asset)
     control = await session.get(Control, item.control_id)
     item.control_snapshot = {
         "id": control.id, "code": control.code, "title": control.title,

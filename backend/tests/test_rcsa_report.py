@@ -60,7 +60,7 @@ async def test_open_campaign_report_is_marked_draft_and_lists_gaps(client, acme)
 
     assert (report["watermark"], report["source"]) == ("draft", "live")
     assert report["scope"] == {"total": 3, "approved": 2, "excluded": 1, "submitted": 0, "in_progress": 0}
-    assert report["exclusions"] == [{"control_code": "C-9003", "reason": "Decommissioned in January"}]
+    assert report["exclusions"] == [{"control_code": "C-9003", "target_label": None, "reason": "Decommissioned in January"}]
     assert [(row["control_code"], row["ratings"]) for row in report["not_assessed"]] == [("C-9002", ["operating"])]
     assert report["independent_tests"] == {"provided": 0, "not_provided": 2, "not_applicable": 0}
     assert report["scenario_bands"]["inherent"] == {"High": 1}
@@ -162,7 +162,8 @@ async def test_same_profile_scenarios_are_shown_side_by_side_without_percentages
     comparison = report["comparison"]
     assert (comparison["comparable"], comparison["reason"]) == (True, None)
     assert comparison["scenarios"] == [{
-        "control_code": "C-9001", "scenario_key": "stale-access", "status": "comparable",
+        "control_code": "C-9001", "target_label": None, "implementation_id": None,
+        "scenario_key": "stale-access", "status": "comparable",
         "previous_residual_score": 9, "previous_residual_band": "Moderate",
         "current_residual_score": 4, "current_residual_band": "Low",
     }]

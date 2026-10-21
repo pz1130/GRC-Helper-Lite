@@ -24,6 +24,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.rcsa.access import fetch
 from app.rcsa.ai import CHANNELS, channel_settings
 from app.rcsa.closing import item_snapshots
+from app.rcsa.consistency import contradictions
 from app.rcsa.models import (
     ActionStatus,
     CampaignStatus,
@@ -34,6 +35,7 @@ from app.rcsa.models import (
     RcsaItemRisk,
 )
 from app.rcsa.profiles import band_for
+from app.rcsa.schemas import AnswerV1
 
 _OPEN = {ActionStatus.OPEN, ActionStatus.IN_PROGRESS, ActionStatus.PENDING_VERIFICATION}
 
@@ -56,6 +58,13 @@ def _band(bands: list[dict[str, Any]], score: int | None) -> str:
         return "Unbanded"
 
 
+def _target(snapshot: dict[str, Any] | None) -> str | None:
+    if not snapshot:
+        return None
+    asset = snapshot.get("asset")
+    return f"{asset['name']} · {asset['environment']}" if asset else "Process implementation"
+
+
 async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
     campaign = await fetch(session, RcsaCampaign, campaign_id, code="rcsa.campaign_not_found")
     today = datetime.now(UTC).date()
@@ -70,19 +79,35 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
     dispositions: Counter[str] = Counter()
     actions: Counter[str] = Counter({"open": 0, "overdue": 0, "verified": 0, "cancelled": 0})
     not_assessed, limitations, acceptances, rows = [], [], [], []
+    signal_reviews = []
     for item in items:
         code = (item.get("control") or {}).get("code")
+        target = _target(item.get("implementation"))
         answer = (item.get("response") or {}).get("answer") or {}
         if item.get("response"):
             tests[answer.get("independent_test_status") or "unanswered"] += 1
             gaps = [name for name in ("design", "operating") if (answer.get(name) or {}).get("rating") == "not_assessed"]
             if gaps:
                 not_assessed.append({
-                    "control_code": code, "ratings": gaps, "reason": answer.get("not_assessed_reason", ""),
+                    "control_code": code, "target_label": target, "ratings": gaps, "reason": answer.get("not_assessed_reason", ""),
                     "follow_up_due": (answer.get("evidence_followup") or {}).get("due_at"),
                 })
             if answer.get("limitations"):
-                limitations.append({"control_code": code, "text": answer["limitations"]})
+                limitations.append({"control_code": code, "target_label": target, "text": answer["limitations"]})
+        if answer.get("signals"):
+            response = item["response"]
+            flagged = contradictions(
+                AnswerV1.model_validate(answer), campaign.period_start, campaign.period_end,
+                has_risks=bool(response.get("risk_snapshot")),
+            )
+            signal_reviews.append({
+                "item_id": item["id"], "control_code": code, "target_label": target, "signals": len(answer["signals"]),
+                "contradictions": len(flagged),
+                "approval_rationale_recorded": any(
+                    review["decision"] == "approve" and review["target_version"] == response["revision"]
+                    and bool(review["reason"].strip()) for review in item.get("reviews", [])
+                ),
+            })
         scenario_rows = []
         for risk in item.get("risks", []):
             inherent[_band(bands, risk["inherent_score"])] += 1
@@ -90,7 +115,7 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
             dispositions[risk["disposition"] or "none"] += 1
             if risk["disposition"] == "accept" and risk["disposition_status"] == DispositionStatus.APPROVED:
                 acceptances.append({
-                    "control_code": code, "scenario_key": risk["scenario_key"], "accept_until": risk["accept_until"],
+                    "control_code": code, "target_label": target, "scenario_key": risk["scenario_key"], "accept_until": risk["accept_until"],
                     "expired": date.fromisoformat(risk["accept_until"]) < today,
                 })
             for action in risk.get("actions", []):
@@ -106,7 +131,7 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
                 "disposition": risk["disposition"], "disposition_status": risk["disposition_status"],
             })
         rows.append({
-            "item_id": item["id"], "control_code": code, "control_title": (item.get("control") or {}).get("title"),
+            "item_id": item["id"], "control_code": code, "target_label": target, "control_title": (item.get("control") or {}).get("title"),
             "status": item["status"],
             "design": (answer.get("design") or {}).get("rating"),
             "operating": (answer.get("operating") or {}).get("rating"),
@@ -137,7 +162,8 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
             "in_progress": statuses["pending"] + statuses["draft"] + statuses["returned"],
         },
         "exclusions": [
-            {"control_code": (item.get("control") or {}).get("code"), "reason": item["exclusion"]["reason"]}
+            {"control_code": (item.get("control") or {}).get("code"),
+             "target_label": _target(item.get("implementation")), "reason": item["exclusion"]["reason"]}
             for item in items if item.get("exclusion")
         ],
         "not_assessed": not_assessed,
@@ -148,6 +174,7 @@ async def build(session: AsyncSession, campaign_id: int) -> dict[str, Any]:
         "acceptances": acceptances,
         "actions": dict(actions),
         "limitations": limitations,
+        "signal_reviews": signal_reviews,
         "acknowledgements": (campaign.closed_snapshot or {}).get("acknowledgements"),
         "highest_residual_band": _band(bands, max(scores)) if (scores := [
             risk["residual_score"] for item in items for risk in item.get("risks", [])
@@ -172,6 +199,7 @@ async def _current_follow_up(session: AsyncSession, campaign_id: int, today: dat
     )
     actions = [{
         "id": action.id, "title": action.title, "control_code": (item.control_snapshot or {}).get("code"),
+        "target_label": _target(item.implementation_snapshot),
         "status": str(action.status), "due_at": action.due_at.isoformat(),
         "overdue": action.status in _OPEN and action.due_at < today,
     } for action, _risk, item in rows]
@@ -184,18 +212,19 @@ async def _current_follow_up(session: AsyncSession, campaign_id: int, today: dat
     )
     acceptances = [{
         "risk_id": risk.id, "control_code": (item.control_snapshot or {}).get("code"),
+        "target_label": _target(item.implementation_snapshot),
         "accept_until": risk.accept_until.isoformat(), "expired": risk.accept_until < today,
     } for risk, item in risks]
     return {"actions": actions, "acceptances": acceptances}
 
 
-def _scenarios(items: list[dict[str, Any]]) -> dict[tuple[int, str], tuple[str, dict[str, Any]]]:
-    """(控制 id, 情景键) → (控制编号, 情景)。比较按控制身份，不按编号，合并不会悄悄换控制。"""
+def _scenarios(items: list[dict[str, Any]]) -> dict[tuple[int, int | None, str], tuple[str, dict[str, Any], str | None]]:
+    """以控制、实施记录、情景键匹配；旧快照缺实施记录时仍按整项控制比较。"""
     found = {}
     for item in items:
         control = item.get("control") or {}
         for risk in item.get("risks", []):
-            found[(control.get("id"), risk["scenario_key"])] = (control.get("code"), risk)
+            found[(control.get("id"), item.get("implementation_id"), risk["scenario_key"])] = (control.get("code"), risk, _target(item.get("implementation")))
     return found
 
 
@@ -214,7 +243,7 @@ async def _comparison(session: AsyncSession, campaign: RcsaCampaign, items: list
     previous_scenarios = _scenarios(previous.closed_snapshot["items"])
     current_scenarios = _scenarios(items)
     rows = []
-    for key in sorted(previous_scenarios.keys() | current_scenarios.keys(), key=lambda k: (str(k[0]), k[1])):
+    for key in sorted(previous_scenarios.keys() | current_scenarios.keys(), key=lambda k: (str(k[0]), str(k[1]), k[2])):
         old = previous_scenarios.get(key)
         new = current_scenarios.get(key)
         if old is None:
@@ -226,7 +255,7 @@ async def _comparison(session: AsyncSession, campaign: RcsaCampaign, items: list
         old_score = old[1]["residual_score"] if old else None
         new_score = new[1]["residual_score"] if new else None
         rows.append({
-            "control_code": (new or old)[0], "scenario_key": key[1], "status": status,
+            "control_code": (new or old)[0], "target_label": (new or old)[2], "implementation_id": key[1], "scenario_key": key[2], "status": status,
             "previous_residual_score": old_score,
             "previous_residual_band": _band(before.get("bands") or [], old_score) if old else None,
             "current_residual_score": new_score,

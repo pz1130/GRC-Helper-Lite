@@ -25,4 +25,5 @@ async def test_fingerprint_is_stable_and_covers_what_a_restore_must_keep(db_sess
 
     assert first == second
     assert {"profiles", "responses", "audit", "triggers", "closed_reports", "db_triggers"} <= first.keys()
-    assert len(first["db_triggers"]) == 4
+    assert len(first["db_triggers"]) == 5
+    assert "rcsa_protect_implementation_target" in first["db_triggers"]
