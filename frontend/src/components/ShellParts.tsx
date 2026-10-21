@@ -102,7 +102,7 @@ export function UserChip({ showName = true }: { showName?: boolean }) {
       {showName ? (
         <div className="kn-user-chip-text">
           <span className="kn-user-chip-name">{user?.name}</span>
-          <span className="kn-user-chip-role">{user?.role}</span>
+          <span className="kn-user-chip-role">{user?.role ? t(`settings.usersConfig.roles.${user.role}`, { defaultValue: user.role }) : null}</span>
         </div>
       ) : null}
       <button type="button" onClick={logout} className="kn-btn-logout-compact" title={t("app.logout")} aria-label={t("app.logout")}>
@@ -174,7 +174,7 @@ export function RailControls() {
             <span className="ws-rc-who-av" aria-hidden="true">{user?.name?.[0]?.toUpperCase() ?? "U"}</span>
             <span className="ws-rc-who-text">
               <b>{user?.name}</b>
-              <small>{user?.role}</small>
+              <small>{user?.role ? t(`settings.usersConfig.roles.${user.role}`, { defaultValue: user.role }) : null}</small>
             </span>
           </div>
           <div className="ws-rc-row">
