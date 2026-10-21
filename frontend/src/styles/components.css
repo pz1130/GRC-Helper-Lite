@@ -225,3 +225,14 @@ html[data-motion="off"] .kn-dialog, html[data-motion="off"] .ws-palette { animat
 /* 中文：气泡、导航、按钮不折行 */
 html:lang(zh-CN) .ws-rail-tip, html:lang(zh-CN) .ws-panel-label, html:lang(zh-CN) .ws-main button, html:lang(zh-CN) .kn-badge, html:lang(zh-CN) th { white-space: nowrap; word-break: keep-all; }
 html:lang(zh-CN) .ws-rc-pop { width: 300px; }
+/* 窄屏偏好行：语言 + 主题一行，动画独占一行；按钮 44px 触控高度 */
+@media (max-width: 900px) {
+  .ws-account-prefs { flex-wrap: wrap; row-gap: 8px; }
+  .ws-account-prefs > .kn-segmented-pill:last-child { flex: 1 0 100%; display: flex; }
+  .ws-account-prefs > .kn-segmented-pill:last-child .kn-segmented-pill-btn { flex: 1; }
+  .ws-account-prefs .kn-segmented-pill-btn { min-height: 44px !important; min-width: 44px; white-space: nowrap; }
+}
+/* 窄屏抽屉：限高可滚动，底部让出底栏，偏好行和账户行在矮屏上也够得着 */
+@media (max-width: 900px) {
+  .ws-panel { height: 100dvh !important; max-height: 100dvh; overflow-y: auto !important; padding-bottom: 76px !important; box-sizing: border-box; }
+}

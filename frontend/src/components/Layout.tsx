@@ -6,7 +6,7 @@ import { PageErrorBoundary } from "./ErrorBoundary";
 import { BrandLogo, BrandWordmark } from "./BrandLogo";
 import { CommandPalette } from "./CommandPalette";
 import { useNavModel } from "./nav";
-import { HealthPill, LanguageToggle, PendingPill, RailControls, ThemeToggle, UserChip } from "./ShellParts";
+import { HealthPill, LanguageToggle, MotionToggle, PendingPill, RailControls, ThemeToggle, UserChip } from "./ShellParts";
 import { LoadingState } from "./ui";
 
 const PANEL_KEY = "grc.ws.panel";
@@ -144,6 +144,7 @@ export function Layout() {
           <div className="ws-account-prefs">
             <LanguageToggle />
             <ThemeToggle compact />
+            <MotionToggle />
           </div>
           <div className="ws-account">
             <UserChip />
