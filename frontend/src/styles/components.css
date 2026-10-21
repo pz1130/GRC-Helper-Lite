@@ -213,3 +213,15 @@ html[data-motion="off"] .kn-dialog, html[data-motion="off"] .ws-palette { animat
 .ws-shell .ws-account .kn-btn-logout-compact:hover { background: var(--c-soft2) !important; color: var(--accent-ruby) !important; }
 .ws-account .kn-btn-logout-compact svg { width: 18px; height: 18px; }
 .ws-account .kn-btn-logout-compact span { display: none; }
+
+/* 语言圆钮 */
+.ws-rc-lang-label { font-size: .875rem; font-weight: 750; letter-spacing: .02em; line-height: 1; }
+:lang(zh-CN) .ws-rc-lang-label { font-size: 1.0625rem; }
+/* 窄屏账户行上方的语言/主题；宽屏由图标轨浮层负责，隐藏 */
+.ws-account-prefs { display: none; }
+@media (max-width: 900px) {
+  .ws-account-prefs { display: flex; gap: 8px; align-items: center; justify-content: space-between; padding: 0 2px; }
+}
+/* 中文：气泡、导航、按钮不折行 */
+html:lang(zh-CN) .ws-rail-tip, html:lang(zh-CN) .ws-panel-label, html:lang(zh-CN) .ws-main button, html:lang(zh-CN) .kn-badge, html:lang(zh-CN) th { white-space: nowrap; word-break: keep-all; }
+html:lang(zh-CN) .ws-rc-pop { width: 300px; }

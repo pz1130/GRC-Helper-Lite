@@ -7,6 +7,7 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../auth";
+import { setLanguage, type Lang } from "../i18n";
 import { useTheme } from "../theme";
 
 export function HealthPill({ state, label, hint }: { state: "checking" | "ok" | "down"; label: string; hint?: string }) {
@@ -57,7 +58,7 @@ export function ThemeToggle({ compact }: { compact?: boolean }) {
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>
           )}
-          {compact ? null : <span>{value === "light" ? "Light" : "Dark"}</span>}
+          {compact ? null : <span>{value === "light" ? t("app.themeLight") : t("app.themeDark")}</span>}
         </button>
       ))}
     </div>
@@ -66,14 +67,15 @@ export function ThemeToggle({ compact }: { compact?: boolean }) {
 
 /** 动画档位：System / On / Off。默认 On——见 src/motion.ts 的说明。 */
 export function MotionToggle() {
+  const { t } = useTranslation();
   const pref = useMotionPref();
   const opts: { value: MotionPref; label: string }[] = [
-    { value: "system", label: "System" },
-    { value: "on", label: "On" },
-    { value: "off", label: "Off" },
+    { value: "system", label: t("app.motionSystem") },
+    { value: "on", label: t("app.motionOn") },
+    { value: "off", label: t("app.motionOff") },
   ];
   return (
-    <div className="kn-segmented-pill ws-pref-seg" role="group" aria-label="Animations">
+    <div className="kn-segmented-pill ws-pref-seg" role="group" aria-label={t("app.animations")}>
       {opts.map((o) => (
         <button
           key={o.value}
@@ -154,19 +156,20 @@ export function RailControls() {
           )}
         </span>
       </button>
+      <LanguageButton />
       <button
         type="button"
         className={`ws-rc-btn ws-rc-avatar${open ? " is-open" : ""}`}
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="Preferences"
-        title="Preferences"
+        aria-label={t("app.preferences")}
+        title={t("app.preferences")}
       >
         {user?.name?.[0]?.toUpperCase() ?? "U"}
       </button>
       {open ? (
-        <div className="ws-rc-pop" role="dialog" aria-label="Preferences">
+        <div className="ws-rc-pop" role="dialog" aria-label={t("app.preferences")}>
           <div className="ws-rc-who">
             <span className="ws-rc-who-av" aria-hidden="true">{user?.name?.[0]?.toUpperCase() ?? "U"}</span>
             <span className="ws-rc-who-text">
@@ -179,7 +182,11 @@ export function RailControls() {
             <ThemeToggle />
           </div>
           <div className="ws-rc-row">
-            <span>Animations</span>
+            <span>{t("app.language")}</span>
+            <LanguageToggle />
+          </div>
+          <div className="ws-rc-row">
+            <span>{t("app.animations")}</span>
             <MotionToggle />
           </div>
           <div className="ws-rc-actions">
@@ -192,6 +199,47 @@ export function RailControls() {
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/** 图标轨里的语言圆钮：显示当前语言，点一下切到另一种。 */
+export function LanguageButton() {
+  const { t, i18n } = useTranslation();
+  const lang: Lang = i18n.language === "zh" ? "zh" : "en";
+  return (
+    <button
+      type="button"
+      className="ws-rc-btn ws-rc-lang"
+      onClick={() => setLanguage(lang === "zh" ? "en" : "zh")}
+      title={t("app.switchLanguage")}
+      aria-label={t("app.switchLanguage")}
+    >
+      <span key={lang} className="ws-rc-swap ws-rc-lang-label" aria-hidden="true">
+        {lang === "zh" ? "中" : "EN"}
+      </span>
+    </button>
+  );
+}
+
+/** 语言分段：English / 中文。 */
+export function LanguageToggle() {
+  const { t, i18n } = useTranslation();
+  const lang: Lang = i18n.language === "zh" ? "zh" : "en";
+  return (
+    <div className="kn-segmented-pill ws-pref-seg" role="group" aria-label={t("app.language")}>
+      {(["en", "zh"] as const).map((value) => (
+        <button
+          key={value}
+          type="button"
+          lang={value === "zh" ? "zh-CN" : "en"}
+          className={`kn-segmented-pill-btn ${lang === value ? "active" : ""}`}
+          aria-pressed={lang === value}
+          onClick={() => setLanguage(value)}
+        >
+          {value === "zh" ? t("app.langZh") : t("app.langEn")}
+        </button>
+      ))}
     </div>
   );
 }

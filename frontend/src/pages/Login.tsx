@@ -60,15 +60,15 @@ export function Login() {
         <ul className="login-brand-points">
           <li>
             <span className="login-dot login-dot--blue" />
-            Multi-standard mapping
+            {t("app.pointMapping")}
           </li>
           <li>
             <span className="login-dot login-dot--emerald" />
-            Evidence validity tracking
+            {t("app.pointEvidence")}
           </li>
           <li>
             <span className="login-dot login-dot--amber" />
-            AI cost &amp; audit intelligence
+            {t("app.pointCost")}
           </li>
         </ul>
       </aside>
@@ -156,11 +156,11 @@ export function Login() {
 
             <div className="login-demo">
               <div>
-                <div className="login-demo-title">Offline demo</div>
-                <span className="login-demo-hint">Explore the interface with sample data</span>
+                <div className="login-demo-title">{t("app.demoTitle")}</div>
+                <span className="login-demo-hint">{t("app.demoHint")}</span>
               </div>
               <button type="button" onClick={enterDemo} className="kn-btn-secondary kn-btn-sm login-demo-go">
-                Enter demo ➜
+                {t("app.demoGo")}
               </button>
             </div>
           </form>

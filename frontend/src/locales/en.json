@@ -6,7 +6,23 @@
     "theme": "Appearance",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "tagline": "AI Governance Studio"
+    "tagline": "AI Governance Studio",
+    "preferences": "Preferences",
+    "animations": "Animations",
+    "motionSystem": "System",
+    "motionOn": "On",
+    "motionOff": "Off",
+    "language": "Language",
+    "switchLanguage": "切换到中文",
+    "langEn": "English",
+    "langZh": "中文",
+    "wordmarkSub": "Governance · Risk · Compliance",
+    "pointMapping": "Multi-standard mapping",
+    "pointEvidence": "Evidence validity tracking",
+    "pointCost": "AI cost & audit intelligence",
+    "demoTitle": "Offline demo",
+    "demoHint": "Explore the interface with sample data",
+    "demoGo": "Enter demo ➜"
   },
   "nav": {
     "groups": {
@@ -96,7 +112,11 @@
     "cell": "Row {{row}}, column {{column}}",
     "previous": "Previous blocks",
     "next": "Next blocks",
-    "origin": { "pdf_text": "PDF text", "docx_xml": "Word text", "pasted_text": "Manually pasted text" }
+    "origin": {
+      "pdf_text": "PDF text",
+      "docx_xml": "Word text",
+      "pasted_text": "Manually pasted text"
+    }
   },
   "documents": {
     "referenceIssuesTitle": "Internal references need review",
@@ -934,9 +954,15 @@
       "needs_review": "The model could not fully assess this clause. Human review is needed."
     },
     "components": {
-      "subject": "Responsible party", "action": "Action", "object": "Object",
-      "scope": "Scope", "trigger": "Trigger", "frequency": "Frequency",
-      "deadline": "Deadline", "exceptions": "Exceptions", "normative_strength": "Normative wording"
+      "subject": "Responsible party",
+      "action": "Action",
+      "object": "Object",
+      "scope": "Scope",
+      "trigger": "Trigger",
+      "frequency": "Frequency",
+      "deadline": "Deadline",
+      "exceptions": "Exceptions",
+      "normative_strength": "Normative wording"
     }
   },
   "account": {
@@ -950,7 +976,9 @@
     "passwordChanged": "Password changed. Your other sessions have been signed out."
   },
   "errors": {
-    "extraction": { "inventory_not_found": "Requirement inventory not found." },
+    "extraction": {
+      "inventory_not_found": "Requirement inventory not found."
+    },
     "answer": {
       "clause_missing": "The answer cites a clause that does not exist",
       "control_missing": "The answer cites a control that does not exist",
@@ -1035,7 +1063,9 @@
       "changed_since_loaded": "Someone changed this control after you started editing ({{fields}}). Cancel and edit again to work on the latest version."
     },
     "decision": {
-      "provider_required": "Select an available decision provider before enabling scans.", "capability_mismatch": "Decision providers must be configured separately from chat and embedding tasks.", "scan_in_progress": "A decision scan is already running for this document.",
+      "provider_required": "Select an available decision provider before enabling scans.",
+      "capability_mismatch": "Decision providers must be configured separately from chat and embedding tasks.",
+      "scan_in_progress": "A decision scan is already running for this document.",
       "invalid": "Invalid review decision",
       "payload_forbidden": "Only accept-with-changes may carry content",
       "payload_required": "Accepting with changes requires the edited content",

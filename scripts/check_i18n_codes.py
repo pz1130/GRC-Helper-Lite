@@ -196,6 +196,32 @@ def check_every_error_carries_a_code() -> int:
     return 0
 
 
+def check_locale_parity(name: str) -> list[str]:
+    """其他语言包必须与 en.json 键一一对应，插值占位符也要一致——缺一条界面就回落成英文或末段键名。"""
+    import re
+
+    def flat(node: dict, path: str = "") -> dict[str, str]:
+        out: dict[str, str] = {}
+        for key, value in node.items():
+            full = f"{path}.{key}" if path else key
+            if isinstance(value, dict):
+                out.update(flat(value, full))
+            else:
+                out[full] = value
+        return out
+
+    en = flat(json.loads((LOCALES / "en.json").read_text()))
+    other = flat(json.loads((LOCALES / name).read_text()))
+    problems = [f"{name}: 缺少 {k}" for k in sorted(set(en) - set(other))]
+    problems += [f"{name}: 多出 {k}" for k in sorted(set(other) - set(en))]
+    slot = re.compile(r"\{\{\s*(\w+)\s*\}\}")
+    for key in sorted(set(en) & set(other)):
+        if sorted(slot.findall(en[key])) != sorted(slot.findall(other[key])):
+            problems.append(f"{name}: {key} 的占位符与 en.json 不一致")
+    print(f"  {name} 与 en.json: {len(other)} / {len(en)} 条，问题 {len(problems)}")
+    return problems
+
+
 def main() -> int:
     errors, warnings, merges = backend_codes()
     problems = (
@@ -203,7 +229,8 @@ def main() -> int:
         + check("解析告警", warnings, "parseWarnings")
         + check("合并原因", merges, "mergeReasons")
     )
-    for name in ("en.json",):
+    problems += check_locale_parity("zh.json")
+    for name in ("en.json", "zh.json"):
         dotted = dotted_keys(name)
         print(f"  {name} 里带点号的键: {len(dotted)}")
         problems += [f"{name}: 键 {key} 带点号，运行时按嵌套路径查，查不到它" for key in dotted]
