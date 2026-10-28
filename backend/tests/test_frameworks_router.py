@@ -127,9 +127,14 @@ async def test_import_rejections_carry_a_code(client, db_session):
     bad = await client.post("/api/frameworks/import", headers=headers, data=form,
                             files={"file": ("f.xlsx", _workbook(BAD), xlsx)})
     assert bad.status_code == 400
-    assert (bad.json()["code"], bad.json()["params"]) == (
-        "framework.parent_missing", {"code": "PR.AA-01", "parent": "MISSING"},
-    )
+    # 导入失败走信封 code；单条问题也包进 params.issues（count=1），信息不丢。
+    body = bad.json()
+    assert body["code"] == "framework.import_invalid"
+    assert body["params"]["count"] == 1
+    assert body["params"]["issues"] == [
+        {"code": "framework.parent_missing", "detail": body["params"]["issues"][0]["detail"],
+         "params": {"code": "PR.AA-01", "parent": "MISSING"}},
+    ]
 
     first = await client.post("/api/frameworks/import", headers=headers, data=form,
                               files={"file": ("f.xlsx", _workbook(GOOD), xlsx)})

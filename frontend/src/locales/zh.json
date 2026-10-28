@@ -1098,6 +1098,7 @@
       "item_not_found": "未找到框架条目",
       "not_found": "未找到框架",
       "file_too_large": "文件超过 10 MiB 上限",
+      "import_invalid": "框架导入校验未通过（共 {{count}} 个问题）。请修正以下问题后重新上传。",
       "import_rejected": "框架导入被拒绝：{{detail}}",
       "key_exists": "标识为“{{key}}”的框架已存在；请使用新标识重新导入",
       "missing_column": "缺少必需列 {{column}}",
@@ -1133,6 +1134,7 @@
       "control_context_too_large": "完整控制项集合（{{controls}} 个控制项，{{chars}} 个字符）超过映射任务的上限 {{limit}}。映射必须看到所有控制项才能判断差距，因此不会截断"
     },
     "matrix": {
+      "import_invalid": "Excel 导入校验未通过（共 {{count}} 个问题）。请修正以下问题后重新上传。",
       "file_mismatch": "上传的文件与生成列映射提议时使用的文件不同",
       "mapping_mismatch": "导入映射必须与已确认的映射完全一致",
       "proposal_not_confirmed": "只能导入已确认的 Excel 列映射提议",

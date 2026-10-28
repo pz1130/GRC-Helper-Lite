@@ -33,7 +33,7 @@ export class ApiError extends Error {
     public status: number,
     public code: string,
     message: string,
-    params?: Record<string, unknown>,
+    public params?: Record<string, unknown>,
   ) {
     const key = `errors.${code}`;
     super(hasText(key) ? i18n.t(key, renderParams(params)) : message);

@@ -58,6 +58,8 @@ export function Frameworks() {
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  // 导入失败的信封错误（framework.import_invalid）带来的全部问题，按条渲染。
+  const [importIssues, setImportIssues] = useState<Issue[]>([]);
 
   const frameworks = useQuery({
     queryKey: ["frameworks"],
@@ -87,12 +89,20 @@ export function Frameworks() {
       form.append("source", source.trim());
       return upload<Framework>("/api/frameworks/import", form);
     },
-    onMutate: () => { setError(""); setNotice(""); },
-    onError: (caught: Error) => setError(caught.message),
+    onMutate: () => { setError(""); setNotice(""); setImportIssues([]); },
+    onError: (caught: Error) => {
+      // 信封错误：摘要行照常显示 message，下面按条列出全部问题（与「校验」报告同款）。
+      if (caught instanceof ApiError && caught.code === "framework.import_invalid") {
+        const issues = caught.params?.issues;
+        setImportIssues(Array.isArray(issues) ? (issues as Issue[]) : []);
+      }
+      setError(caught.message);
+    },
     onSuccess: async (framework) => {
       setNotice(t("frameworks.imported", { key: framework.key }));
       setValidation(null);
       setFile(null);
+      setImportIssues([]);
       await client.invalidateQueries({ queryKey: ["frameworks"] });
     },
   });
@@ -210,7 +220,18 @@ export function Frameworks() {
           </div>
 
           {busy && <LoadingState inline />}
-          {error && <p role="alert"><span>⚠️</span> {error}</p>}
+          {error && (
+            <div role="alert">
+              <p><span>⚠️</span> {error}</p>
+              {importIssues.length > 0 && (
+                <ul style={{ paddingLeft: 18, margin: 0, fontSize: "0.8125rem" }}>
+                  {importIssues.map((issue, index) => (
+                    <li key={index}>{issueText(issue)}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
           {notice && <p role="status">{notice}</p>}
 
           {validation && (
