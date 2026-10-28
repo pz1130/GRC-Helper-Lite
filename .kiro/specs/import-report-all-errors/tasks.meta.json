@@ -1,0 +1,133 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Write bug condition exploration test (import surfaces all validation issues)": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127133
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186133007
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186292713
+      }
+    ],
+    "2. Write preservation property tests (BEFORE implementing fix)": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127166
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186297880
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186681859
+      }
+    ],
+    "3.1 Implement the backend fix (shared helper + matrix sites + framework site + i18n)": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127194
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186688134
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189450683
+      }
+    ],
+    "3.2 Implement the frontend envelope rendering": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127221
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189455806
+      }
+    ],
+    "3.3 Verify bug condition exploration test now passes": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127245
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189461521
+      }
+    ],
+    "3.4 Verify preservation tests still pass": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127272
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189466719
+      }
+    ],
+    "4. Supplementary unit and integration tests": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127294
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189472419
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189713428
+      }
+    ],
+    "5. Checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793186127336
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189718999
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190119264
+      }
+    ],
+    "3. Fix: import surfaces all validation issues (envelope aggregation)": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793189466754
+      }
+    ]
+  }
+}

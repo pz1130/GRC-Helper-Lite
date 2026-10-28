@@ -1,0 +1,132 @@
+{
+  "pbtResults": {
+    "1. 编写 bug 条件探查测试（在修复之前）": {
+      "status": "passed",
+      "failingExample": "4/4 用例在未修复代码上 FAIL（正确——证明缺陷存在）。观测到的反例（PTTL=-1 表示键存在但无过期）：\n\n用例1 首次expire丢失后账号键无TTL:\n  键 login:fail:account:ttl-probe-...@example.com 被 incr 到 1，PTTL=-1。\n  日志: \"登录失败计数写入失败\"（首次 expire 抛错被外层 except 吞掉）。assert -1 > 0 失败。\n\n用例2 无TTL键上的后续失败仍无TTL:\n  账号键计数已到 b'2'，PTTL 仍 = -1。count != 1 故 expire 永不重试。assert -1 > 0 失败。\n\n用例3 IP键丢TTL后clear不碰它(永久锁死):\n  IP 键 login:fail:ip:10.0.0.... 计数 b'1'，PTTL=-1；clear 只删账号键、从不碰 IP 键 → 无恢复路径。assert -1 > 0 失败。\n\n用例4 allow同样受影响:\n  键 test:allow:ttl-probe:... 计数 b'1'，PTTL=-1。日志: \"限流计数失败，本次放行\"。allow 与 record_failure 共用同一 incr-then-conditional-expire 缺陷模式。assert -1 > 0 失败。\n\n根因确认：incr 与 expire 拆成两条命令、expire 只在 count==1 执行、首次 expire 失败被宽泛 except 吞掉 → 键永久停在「有计数、无 TTL」。",
+      "lastRunTimestamp": 1793157474243
+    },
+    "3.2 验证 bug 条件探查测试现在通过（Fix Checking）": {
+      "status": "failed",
+      "failingExample": "tests/test_throttle_ttl_persistence.py::test_IP键丢TTL后clear不碰它导致永久锁死\nAssertionError: IP 键 login:fail:ip:10.0.0.d26bec9d 计数 b'1' 却无 TTL（PTTL=-1）、且 clear 从不碰它 —— 没有任何恢复路径，整个 IP 永久锁死\nassert -1 > 0\n\nContext: 3/4 reproduction cases flipped fail→pass after the fix (cases 1, 2, 4). Case 3 remains failing because it manually creates a no-TTL IP key via raw real.incr(ip_key), then invokes ONLY throttle.clear(email), and asserts the IP key has PTTL > 0. But spec requirement 3.3 / design mandate that clear MUST NOT touch the per-IP key, and the no-TTL key never passes through the fixed _incr_with_ttl path. The test's expectation therefore contradicts requirement 3.3; it cannot pass via a spec-compliant throttle.py fix.",
+      "lastRunTimestamp": 1793158319853
+    }
+  },
+  "executionHistory": {
+    "1. 编写 bug 条件探查测试（在修复之前）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343197
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157348659
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157496646
+      }
+    ],
+    "2. 编写保持性属性测试（在修复之前）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343221
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157501492
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157939608
+      }
+    ],
+    "3.1 实现 Lua 脚本与 `_incr_with_ttl` 辅助并改造两个调用点": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343247
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157945193
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158539339
+      }
+    ],
+    "3.2 验证 bug 条件探查测试现在通过（Fix Checking）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343265
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158544533
+      }
+    ],
+    "3.3 验证保持性测试仍然通过（Preservation）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343282
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158549198
+      }
+    ],
+    "4. 补充单元 / 集成测试": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343306
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158554713
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158981303
+      }
+    ],
+    "5. Checkpoint - 确保所有测试通过": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793157343323
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158986445
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793159336014
+      }
+    ],
+    "3. 修复「计数键可能无 TTL」缺陷": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793158549221
+      }
+    ]
+  }
+}

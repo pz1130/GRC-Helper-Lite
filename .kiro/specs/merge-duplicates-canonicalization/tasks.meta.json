@@ -1,0 +1,185 @@
+{
+  "pbtResults": {
+    "1. 写缺陷条件探索测试（复现镜像缺陷，修复前先跑）": {
+      "status": "passed",
+      "failingExample": "缺陷条件探索测试在未修复代码上如期 FAIL（三条断言全部失败，佐证缺陷存在）：\n\n1) test_镜像碰撞在计划中应判为重复丢弃而非转挂 — AssertionError: assert 1 == 0\n   场景 L(id=1) 持 DUPLICATES(L,X)，W(id=3) 持 DUPLICATES(X=2,W)。merge L→W。\n   plan_merge 返回 MergePlan(moves={'control_relations': 1}, discards=[])。\n   计划用原始元组 (W,X,DUPLICATES) 比对 occupied={(X,W,DUPLICATES)} 未命中，误计一次 move 而非 relation_duplicate 丢弃。\n\n2) test_合并执行后不应同时存在镜像的两条DUPLICATES行 — assert 2 == 1\n   同场景执行 merge_controls 后，control_relations 中 X 与 W 之间同时存在 (X,W) 与 (W,X) 两条镜像 DUPLICATES 行（len(rows)=2，期望 1）。唯一约束 uq_control_relation 无法识别镜像，绕过成功落库。\n\n3) test_无碰撞但转挂后非规范序的DUPLICATES应以规范序落库 — assert 8 < 7\n   场景 W(id=6) 、A(id=7)、L(id=8)，L 持 DUPLICATES(A,L)，赢家无碰撞。merge L→W 后该行端点 from_control_id=8(原 L→已删? 注：id 为运行期实际值)、落库为 (A,W) 即 from=A(8?) ，断言 from<to 失败：实际 row.from_control_id=8 > to=7，端点未按规范序 from<to 落库。",
+      "lastRunTimestamp": 1793154019143
+    }
+  },
+  "executionHistory": {
+    "1. 写缺陷条件探索测试（复现镜像缺陷，修复前先跑）": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590253
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153600158
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154045333
+      }
+    ],
+    "2. 写保持性属性测试（修复前先写，观察优先）": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590285
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154051298
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154450021
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154455031
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154634914
+      }
+    ],
+    "3.1 新增共享函数 `canonicalize_relation_endpoints`": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590311
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154640255
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154829284
+      }
+    ],
+    "3.2 改动 1 —— 写入路径收敛到共享函数（behavior-preserving）": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590326
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154834625
+      }
+    ],
+    "3.3 改动 2 —— 合并执行路径规范化并处理镜像碰撞": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590342
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154839266
+      }
+    ],
+    "3.4 改动 3 —— 合并计划路径规范化 occupied 与转挂 key": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590365
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154843816
+      }
+    ],
+    "3.5 改动 4 —— 计划与执行一致性（plan_digest 不发散）": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590382
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154848297
+      }
+    ],
+    "3.6 验证缺陷条件探索测试现在通过（Fix Checking）": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590398
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154863056
+      }
+    ],
+    "3.7 验证保持性测试仍然通过（Preservation Checking）": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590415
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154867614
+      }
+    ],
+    "4. 补充单元测试、集成测试与指纹一致性测试": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590431
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154873026
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793155269962
+      }
+    ],
+    "5. Checkpoint - 确保所有测试通过": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793153590447
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793155275754
+      },
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793155374362
+      }
+    ],
+    "3. 修复：合并路径对称关系规范化并去镜像": [
+      {
+        "executionId": "f542626b-ef95-4a1f-b8e2-5f67a4a3144c",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793154867635
+      }
+    ]
+  }
+}
