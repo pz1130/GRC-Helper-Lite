@@ -17,6 +17,7 @@ from app.controls.models import (
     RelationType,
     SourceRelation,
     active_controls,
+    canonicalize_relation_endpoints,
 )
 from app.errors import AppError, Conflict, NotFound, describe_validation
 from app.frameworks.models import FrameworkItem, Mapping, MappingStrength
@@ -131,9 +132,9 @@ async def _materialize_relation(
     if start == end:
         raise AppError("合并后关系的两端是同一条控制点", code="relation.same_after_merge")
     # duplicates 对称：不规范化就会存下 A→B 与 B→A 两条互为镜像的记录，
-    # (from, to, relation_type) 的唯一约束对它们无能为力。
-    if validated.relation_type is RelationType.DUPLICATES and start > end:
-        start, end = end, start
+    # (from, to, relation_type) 的唯一约束对它们无能为力。写入、计划、执行三处
+    # 共用同一份规范化，规则不分叉。
+    start, end = canonicalize_relation_endpoints(start, end, validated.relation_type)
 
     await lock_control_writes(session)
     existing = await session.scalar(
@@ -698,6 +699,18 @@ async def merge_controls(
         for row in list(await session.scalars(select(model).where(model.control_id == loser.id))):
             row.control_id = winner.id
 
+    # 转挂前先读出赢家侧既有关系键（排除任何涉及输家端点的行），用于判定
+    # 规范化后是否与赢家既有行镜像碰撞。计划已把这类碰撞判为
+    # merge.discard.relation_duplicate，执行据此丢弃该行，两边一致、指纹不发散。
+    occupied = {
+        (row.from_control_id, row.to_control_id, row.relation_type)
+        for row in await session.scalars(
+            select(ControlRelation).where(
+                ControlRelation.from_control_id != loser.id,
+                ControlRelation.to_control_id != loser.id,
+            )
+        )
+    }
     for row in list(
         await session.scalars(
             select(ControlRelation).where(
@@ -708,10 +721,21 @@ async def merge_controls(
             )
         )
     ):
-        if row.from_control_id == loser.id:
-            row.from_control_id = winner.id
-        if row.to_control_id == loser.id:
-            row.to_control_id = winner.id
+        new_from = winner.id if row.from_control_id == loser.id else row.from_control_id
+        new_to = winner.id if row.to_control_id == loser.id else row.to_control_id
+        # DUPLICATES 对称：转挂后规范化端点，与写入/计划路径同一份规则。
+        new_from, new_to = canonicalize_relation_endpoints(
+            new_from, new_to, row.relation_type
+        )
+        key = (new_from, new_to, row.relation_type)
+        # 镜像碰撞：规范化后与赢家既有行相同 —— 丢弃（删除）而非写入，顺序上
+        # 先删避免插入镜像行触发唯一约束。不引入 plan.discards 之外的新删除语义。
+        if key in occupied:
+            await session.delete(row)
+            continue
+        row.from_control_id = new_from
+        row.to_control_id = new_to
+        occupied.add(key)
 
     loser.status = "merged"
     loser.merged_into_id = winner.id
