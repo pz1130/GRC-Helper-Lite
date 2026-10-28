@@ -45,6 +45,8 @@ function MatrixImport() {
   const [report, setReport] = useState<SheetReport | null>(null);
   const [result, setResult] = useState<{ imported: number; proposal_ids: number[]; mapping_proposal_id: number } | null>(null);
   const [error, setError] = useState("");
+  // 导入失败的信封错误（matrix.import_invalid）带来的全部问题，按条渲染。
+  const [importIssues, setImportIssues] = useState<Issue[]>([]);
   const [resumeId, setResumeId] = useState("");
   function body() {
     if (!file) throw new Error(t("matrix.chooseFile"));
@@ -55,13 +57,13 @@ function MatrixImport() {
   }
   const propose = useMutation({
     mutationFn: () => upload<Proposal>("/api/matrix/propose-mapping", body()),
-    onMutate: () => setError(""),
+    onMutate: () => { setError(""); setImportIssues([]); },
     onError: (e: Error) => setError(e.message),
     onSuccess: async (p) => { setProposal(p); setMapping(p.payload.mapping as Record<string, string>); setReport(null); setResult(null); await refresh(); },
   });
   const validate = useMutation({
     mutationFn: () => { const form = body(); form.append("mapping_json", JSON.stringify(mapping)); return upload<SheetReport>("/api/matrix/validate", form); },
-    onMutate: () => { setError(""); setReport(null); },
+    onMutate: () => { setError(""); setReport(null); setImportIssues([]); },
     onError: (e: Error) => setError(e.message),
     onSuccess: setReport,
   });
@@ -72,7 +74,7 @@ function MatrixImport() {
       const changed = JSON.stringify(Object.entries(original).sort()) !== JSON.stringify(Object.entries(mapping).sort());
       return request<Proposal>(`/api/proposals/${proposal.id}/decide`, { method: "POST", body: JSON.stringify(changed ? { decision: "modify", payload: { ...proposal.payload, mapping } } : { decision: "accept" }) });
     },
-    onMutate: () => setError(""),
+    onMutate: () => { setError(""); setImportIssues([]); },
     onError: (e: Error) => setError(e.message),
     onSuccess: async (p) => { setProposal(p); await refresh(); },
   });
@@ -82,9 +84,16 @@ function MatrixImport() {
       const form = body(); form.append("proposal_id", proposal ? String(proposal.id) : resumeId);
       return upload<{ imported: number; proposal_ids: number[]; mapping_proposal_id: number }>("/api/matrix/import", form);
     },
-    onMutate: () => setError(""),
-    onError: (e: Error) => setError(e.message),
-    onSuccess: async (data) => { setResult(data); await refresh(); },
+    onMutate: () => { setError(""); setImportIssues([]); },
+    onError: (e: Error) => {
+      // 信封错误：摘要行照常显示 message，下面按条列出全部问题（与「校验」报告同款）。
+      if (e instanceof ApiError && e.code === "matrix.import_invalid") {
+        const issues = e.params?.issues;
+        setImportIssues(Array.isArray(issues) ? (issues as Issue[]) : []);
+      }
+      setError(e.message);
+    },
+    onSuccess: async (data) => { setResult(data); setImportIssues([]); await refresh(); },
   });
   const approved = proposal?.status === "accepted" || proposal?.status === "modified";
   const busy = propose.isPending || validate.isPending || approve.isPending || importRows.isPending;
@@ -100,7 +109,7 @@ function MatrixImport() {
           type="file"
           accept=".xlsx"
           disabled={busy}
-          onChange={(e) => { setFile(e.target.files?.[0] ?? null); setProposal(null); setMapping({}); setReport(null); setResult(null); setError(""); }}
+          onChange={(e) => { setFile(e.target.files?.[0] ?? null); setProposal(null); setMapping({}); setReport(null); setResult(null); setError(""); setImportIssues([]); }}
         />
       </label>
       <button
@@ -140,7 +149,16 @@ function MatrixImport() {
     )}
 
     {busy && <LoadingState inline />}
-    {error && <p role="alert"><span>⚠️</span> {error}</p>}
+    {error && (
+      <div role="alert">
+        <p><span>⚠️</span> {error}</p>
+        {importIssues.length > 0 && (
+          <ul style={{ paddingLeft: 18, margin: "6px 0 0 0" }}>
+            {importIssues.map((issue, i) => <li key={i}>{issueText(issue)}</li>)}
+          </ul>
+        )}
+      </div>
+    )}
 
     {proposal && (
       <div className="kn-mt-4">

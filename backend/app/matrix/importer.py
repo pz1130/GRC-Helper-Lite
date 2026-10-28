@@ -9,7 +9,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.errors import Conflict, NotFound
 from app.iam.models import AuditLog, User
-from app.matrix.template import MAX_COLUMNS, MAX_ROWS, Sheet, SheetRejected, validate
+from app.matrix.template import (
+    MAX_COLUMNS,
+    MAX_ROWS,
+    Sheet,
+    SheetRejected,
+    rejected_report,
+    validate,
+)
 from app.review.models import Proposal, ProposalKind, ProposalStatus
 
 _SOURCE_KEYS = ("source_sha256", "source_headers", "source_rows")
@@ -47,8 +54,8 @@ def validate_mapping_proposal(proposal: Proposal, data: dict[str, Any]) -> dict[
     # 用一行占位数据验映射的形状，不必重新读一遍源数据。
     report = validate(Sheet(headers, [["sample"] * len(headers)]), mapping)
     if report:
-        # 报告可能有好几条，错误只能带一个 code：给第一条。全部问题看「校验」。
-        raise report[0].rejected()
+        # 报告可能有好几条：全部打包进信封，一个都不丢（与「校验」预览一致）。
+        raise rejected_report(report)
     return dict(mapping)
 
 
@@ -59,7 +66,8 @@ async def import_rows(
     """内部的确定性转换；鉴权与事务由调用方负责。"""
     report = validate(sheet, mapping)
     if report:
-        raise report[0].rejected()
+        # 报告可能有好几条：全部打包进信封，一个都不丢（与「校验」预览一致）。
+        raise rejected_report(report)
     index = {field: sheet.headers.index(column) for field, column in mapping.items()}
     proposals: list[Proposal] = []
     for ordinal, row in enumerate(sheet.rows, start=1):
@@ -114,7 +122,8 @@ async def import_confirmed(
         raise Conflict("上传文件与列映射提案的原始文件不一致", code="matrix.file_mismatch")
     report = validate(sheet, confirmed)
     if report:
-        raise report[0].rejected()
+        # 报告可能有好几条：全部打包进信封，一个都不丢（与「校验」预览一致）。
+        raise rejected_report(report)
     # 锁住父行把重试串起来，审计记录与它的子提案同一个事务落盘。
     # 原始 payload 与裁定后的 payload 都原样保留，不做改写。
     previous = await session.scalar(select(AuditLog).where(

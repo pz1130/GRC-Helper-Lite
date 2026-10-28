@@ -1,5 +1,6 @@
 """确定性导入：无 AI，因此不进确认队列，凭 FRAMEWORK_WRITE 直接落库。"""
 
+from dataclasses import asdict
 from typing import Any
 
 from sqlalchemy import select
@@ -60,9 +61,12 @@ async def import_framework(
     """事务性导入。调用方负责权限与提交；校验不过一行都不写。"""
     parsed, report = parse_rows(headers, rows)
     if report:
-        # 报告可能有好几条，错误只能带一个 code：给第一条。全部问题看「校验」。
-        first = report[0]
-        raise FrameworkImportError(first.detail, code=first.code, params=first.params)
+        # 报告可能有好几条：全部打包进信封，一个都不丢（与「校验」预览一致）。
+        raise FrameworkImportError(
+            f"框架导入校验未通过，共 {len(report)} 个问题",
+            code="framework.import_invalid",
+            params={"issues": [asdict(issue) for issue in report], "count": len(report)},
+        )
 
     existing = await session.scalar(select(Framework).where(Framework.key == key))
     if existing is not None:

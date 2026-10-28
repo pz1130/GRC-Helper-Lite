@@ -4,7 +4,7 @@ import io
 import re
 import zipfile
 from collections import Counter
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from xml.etree import ElementTree
 
 from openpyxl import load_workbook
@@ -44,6 +44,19 @@ class Issue:
 
     def rejected(self) -> SheetRejected:
         return SheetRejected(self.detail, code=self.code, params=self.params)
+
+
+def rejected_report(report: list[Issue]) -> SheetRejected:
+    """把整份校验报告打包成一个「信封」错误：code 单一，全部问题进 params。
+
+    三个矩阵校验点共用这一个，免得各自漂移。每条问题按 asdict 序列化成
+    {code, detail, params}（行号在 params 里），顺序与报告一致。
+    """
+    return SheetRejected(
+        f"导入校验未通过，共 {len(report)} 个问题",
+        code="matrix.import_invalid",
+        params={"issues": [asdict(issue) for issue in report], "count": len(report)},
+    )
 
 
 @dataclass(frozen=True)

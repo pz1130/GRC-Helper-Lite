@@ -1098,6 +1098,7 @@
       "item_not_found": "Framework item not found",
       "not_found": "Framework not found",
       "file_too_large": "The file exceeds the 10 MiB limit",
+      "import_invalid": "The framework import failed validation ({{count}} issues). Fix the problems below and re-upload.",
       "import_rejected": "The framework import was rejected: {{detail}}",
       "key_exists": "A framework with the key \"{{key}}\" already exists; use a new key to import again",
       "missing_column": "Required column {{column}} is missing",
@@ -1133,6 +1134,7 @@
       "control_context_too_large": "The full control set ({{controls}} controls, {{chars}} characters) exceeds the mapping task's limit of {{limit}}. Mapping must see every control to judge gaps, so it is not truncated"
     },
     "matrix": {
+      "import_invalid": "The Excel import failed validation ({{count}} issues). Fix the problems below and re-upload.",
       "file_mismatch": "The uploaded file differs from the one the column mapping proposal was made from",
       "mapping_mismatch": "The import mapping must match the confirmed mapping exactly",
       "proposal_not_confirmed": "Only a confirmed Excel column mapping proposal can be imported",
