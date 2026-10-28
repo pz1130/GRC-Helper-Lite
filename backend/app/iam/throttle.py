@@ -36,6 +36,86 @@ class TooManyAttempts(AppError):
     code = "auth.too_many_attempts"
 
 
+# 「自增 + 幂等确保 TTL」的单一来源：服务端原子执行的 Lua 脚本。
+#
+# 原先的缺陷是把「自增」与「设 TTL」拆成两条命令，且只在 count==1 时 expire。
+# 一旦首次 expire 遇到瞬时错误（被外层宽泛 except 吞掉），键就永久停在「有计数、
+# 无 TTL」，之后 count != 1 永不补设，窗口永不过期。
+#
+# 这段脚本在服务端一次性完成：先 INCR，再在键没有 TTL 时（PTTL < 0，
+# -1 表示无过期、-2 表示键不存在）才补 EXPIRE，最后返回计数值。
+#   - 原子：不存在「incr 成功、expire 丢失」的中间窗口；
+#   - 幂等：任何一次调用都能在键缺 TTL 时补回 TTL；
+#   - 固定窗口：只在「无 TTL」时补设、从不覆盖已有 TTL，窗口始终锚定在第一次失败，
+#     后续命中只自增计数、不延长 TTL（不是滑动窗口）。
+_INCR_WITH_TTL_LUA = """
+-- KEYS[1] = 计数键; ARGV[1] = 窗口秒数
+local n = redis.call('INCR', KEYS[1])
+if redis.call('PTTL', KEYS[1]) < 0 then   -- -1 无过期, -2 不存在
+    redis.call('EXPIRE', KEYS[1], ARGV[1])
+end
+return n
+"""
+
+
+async def _incr_with_ttl(redis: Any, key: str, window_seconds: int) -> int:
+    """原子地自增计数并在键缺 TTL 时补设 TTL，返回自增后的计数值。
+
+    首选路径（真实 Redis）：用服务端 Lua 脚本一次性完成 INCR + 条件 EXPIRE。脚本仅在
+    键没有有效 TTL（PTTL < 0）时才补 EXPIRE，**永不覆盖已有 TTL**——窗口始终锚定在第一次
+    失败（固定窗口，非滑动窗口）。因为在服务端原子执行，不存在「incr 成功、expire 丢失」
+    的中间状态，缺陷无从产生；即便某次 TTL 曾经丢失，后续任一次调用也会把它补回来。
+    脚本通过传入的 `redis` 对象执行（优先 `register_script` 生成的可调用对象，其次
+    `redis.eval`），因此始终作用在调用方 `_client()` 返回的那个连接上。
+
+    回退路径（不支持脚本的连接，如测试替身）：退化为 Python 侧的「INCR + 幂等确保 TTL」。
+    仍然遵守同一不变式——只在键缺 TTL 时补设、不覆盖已有 TTL；并对「补设 TTL 这一步
+    瞬时失败」做一次补偿重试，从而消除原缺陷里「首次 expire 丢失后再无补设路径」的缺口。
+    """
+    register = getattr(redis, "register_script", None)
+    if register is not None:
+        script = register(_INCR_WITH_TTL_LUA)
+        count = await script(keys=[key], args=[window_seconds], client=redis)
+        return int(count)
+
+    evaluate = getattr(redis, "eval", None)
+    if evaluate is not None:
+        count = await evaluate(_INCR_WITH_TTL_LUA, 1, key, window_seconds)
+        return int(count)
+
+    # 回退：连接不支持脚本。保持与 Lua 相同的语义——仅在键缺 TTL 时补设。
+    count = await redis.incr(key)
+    await _ensure_ttl(redis, key, window_seconds)
+    return int(count)
+
+
+async def _ensure_ttl(redis: Any, key: str, window_seconds: int) -> None:
+    """回退路径下在键缺 TTL 时补设 TTL（固定窗口，不覆盖已有 TTL）。
+
+    若连接能查 PTTL，则只在 `PTTL < 0`（无过期/刚被 incr 创建）时才 EXPIRE，天然不延长
+    已有窗口；并对「首次 EXPIRE 瞬时失败」做一次补偿重试，关掉原缺陷「TTL 丢了就永不补」
+    的缺口。若连接不支持 PTTL（最简易的测试替身），退化为尽力而为地 EXPIRE 一次。
+    """
+    pttl = getattr(redis, "pttl", None)
+    if pttl is None:
+        # 最简易替身（无 PTTL）：沿用原始的尽力而为 expire，计数语义不变。
+        try:
+            await redis.expire(key, window_seconds)
+        except Exception:  # noqa: BLE001 —— 设 TTL 失败不应阻断计数
+            logger.warning("设置限流窗口 TTL 失败: %s", key)
+        return
+
+    # 支持 PTTL：固定窗口——仅在缺 TTL 时补设，并对瞬时失败补偿重试一次。
+    if int(await pttl(key)) >= 0:
+        return
+    try:
+        await redis.expire(key, window_seconds)
+    except Exception:  # noqa: BLE001 —— 首次设 TTL 瞬时失败，下面补偿重试
+        logger.warning("设置限流窗口 TTL 首次失败，重试补设: %s", key)
+        if int(await pttl(key)) < 0:
+            await redis.expire(key, window_seconds)
+
+
 async def _client() -> Any:
     return from_url(get_settings().redis_url)
 
@@ -80,9 +160,7 @@ async def record_failure(email: str, ip: str | None) -> None:
         return
     try:
         for key in _keys(email, ip):
-            count = await redis.incr(key)
-            if count == 1:
-                await redis.expire(key, WINDOW_SECONDS)
+            await _incr_with_ttl(redis, key, WINDOW_SECONDS)
     except Exception:  # noqa: BLE001
         logger.warning("登录失败计数写入失败")
     finally:
@@ -123,9 +201,7 @@ async def allow(key: str, *, limit: int, window_seconds: int) -> bool:
         logger.warning("限流不可用（Redis 连不上），本次放行: %s", key)
         return True
     try:
-        count = await redis.incr(key)
-        if count == 1:
-            await redis.expire(key, window_seconds)
+        count = await _incr_with_ttl(redis, key, window_seconds)
         return int(count) <= limit
     except Exception:  # noqa: BLE001
         logger.warning("限流计数失败，本次放行: %s", key)
