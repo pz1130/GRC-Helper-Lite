@@ -1,0 +1,127 @@
+{
+  "pbtResults": {
+    "1. 编写撞号复现探索测试（在修复前必须 FAIL）": {
+      "status": "passed",
+      "failingExample": "三个用例在未修复代码上均 FAIL，证明缺陷存在（flatten 对不同条款写入相同 citation_label）：\n- 用例1 正文与附录1撞号: citation_label = ['1', '附录 A', '1'] —— 正文\"1\"与附录子条款\"1\"相撞\n- 用例2 无未编号祖先的撞号: citation_label = ['1', '1'] —— 两个顶层条款\"1\"相撞（无未编号祖先可供限定）\n- 用例3 两个同名附录各含1: citation_label = ['附录', '1', '附录', '1'] —— 两个子条款\"1\"相撞；两个未编号祖先标题均为\"附录\"，仅用最近未编号祖先限定仍会得到重复\"附录 › 1\"，暴露需要确定性最终兜底",
+      "lastRunTimestamp": 1793190964497
+    }
+  },
+  "executionHistory": {
+    "1. 编写撞号复现探索测试（在修复前必须 FAIL）": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875773
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190881274
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190985176
+      }
+    ],
+    "2. 编写保全性测试（修复前，观察优先，必须 PASS）": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875795
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190992855
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191119537
+      }
+    ],
+    "3.1 实现 ancestor_chains 记录与 _disambiguate_labels 两趟算法": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875819
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191127477
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191270934
+      }
+    ],
+    "3.2 重新运行撞号探索测试，确认现在 PASS（Fix Checking）": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875839
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191281355
+      }
+    ],
+    "3.3 重新运行保全性测试，确认仍 PASS（Preservation）": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875872
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191290418
+      }
+    ],
+    "4. 补充单元测试与基于属性的测试": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875890
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191296645
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191461420
+      }
+    ],
+    "5. Checkpoint - 确保全部测试通过": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793190875907
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191466986
+      },
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191876402
+      }
+    ],
+    "3. 修复 citation_label 文档级唯一性（附录重启编号撞号）": [
+      {
+        "executionId": "b430e584-631d-4905-86bd-b4ca0189bdde",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793191290445
+      }
+    ]
+  }
+}

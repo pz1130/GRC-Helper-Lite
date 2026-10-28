@@ -1,0 +1,132 @@
+{
+  "pbtResults": {
+    "1. 编写 Bug Condition 复现测试（修复前必须失败）": {
+      "status": "passed",
+      "failingExample": "在未修复代码上，3 个用例全部按预期 FAIL，确认缺陷存在（PBT 校验通过）：\n\n用例 A（同批兄弟映射冲突，test_同批两条映射指向同一目标_接受首条跳过次条）：\n反例 = 两条 MAPPING 提案指向同一 (control_id=1, framework_item_id=1)。\nbulk_accept 在处理第二条时于 _materialize_mapping (materialize.py:240) 抛\napp.errors.Conflict: code=\"mapping.already_confirmed\"。该 Conflict 穿透 bulk_accept 的\nbegin_nested()（service.py:661 → decide service.py:601 → materialize），整批中止，\naccepted==0，第一条的接受一并回滚。期望为 {\"accepted\": 1, \"skipped\": 1}。\n\n用例 B（关系已确认，test_关系目标已确认_跳过冲突条接受其余）：\n反例 = (left, right) 已有 depends_on 确认关系；批内一条 RELATION 再次指向该对 + 一条\n无冲突 RELATION。第一条在 _materialize_relation (materialize.py:147) 抛\napp.errors.Conflict: code=\"relation.already_confirmed\"，穿透批次事务、整批回滚，\n无冲突条也未被接受。期望为 {\"accepted\": 1, \"skipped\": 1}。\n\n用例 C（映射目标批外已确认，test_映射目标批外已确认_跳过冲突条接受其余）：\n反例 = (control, item) 已在批外确认映射；批内一条指向它的 MAPPING + 一条指向\nother control 的无冲突 MAPPING。冲突条在 _materialize_mapping (materialize.py:240)\n抛 app.errors.Conflict: code=\"mapping.already_confirmed\"，穿透批次事务、整批回滚。\n期望为 {\"accepted\": 1, \"skipped\": 1}。\n\n根因确认：Conflict 是 AppError（非 IntegrityError），decide 只 except IntegrityError\n不捕获它；bulk_accept 循环缺逐条 try/except，Conflict 逃出外层 begin_nested() 致整批回滚。",
+      "lastRunTimestamp": 1793160205661
+    }
+  },
+  "executionHistory": {
+    "1. 编写 Bug Condition 复现测试（修复前必须失败）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044085
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160049732
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160229709
+      }
+    ],
+    "2. 编写 Preservation 测试（实现修复前，须在未修复代码上通过）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044111
+      },
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160235149
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160405639
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160756692
+      }
+    ],
+    "3.1 实现修复（code 允许清单 + 逐条 savepoint + 精确捕获）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044127
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160762304
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160928717
+      }
+    ],
+    "3.2 验证 Bug Condition 复现测试现在通过（Fix Checking）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044144
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160934009
+      }
+    ],
+    "3.3 验证 Preservation 测试仍然通过（无回归）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044164
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160939157
+      }
+    ],
+    "4. 补充单元 / 集成测试（事务完整性属性 + 路由端点）": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044185
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160944803
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793161158716
+      }
+    ],
+    "5. Checkpoint - 确认全部测试通过": [
+      {
+        "executionId": "6e89c4e0-403d-401e-9714-e11d639025e4",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160044203
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793161163802
+      },
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793161520235
+      }
+    ],
+    "3. 修复 bulk_accept：对已确认类冲突逐条跳过并继续": [
+      {
+        "executionId": "eee21fc6-dda9-4bc9-a71d-92ae9b37747a",
+        "chatSessionId": "sess_d44622c0-34a6-484c-8c74-4ae2a4a60ebf",
+        "timestamp": 1793160939191
+      }
+    ]
+  }
+}
