@@ -139,6 +139,16 @@ _STATUS = {
     Decision.REJECT: ProposalStatus.REJECTED,
 }
 
+# 批量接受时可按「跳过」处理的冲突 code：目标已确认 / 过期冲突这一类。
+# 它们表示该条提案的目标已被别的提案（同批更靠前的兄弟或并发事务）占用，
+# 跳过这一条即可，不应因此让整批回滚。其余 AppError（尤其是内容非法的
+# payload/校验类）必须外抛，以保留「内容非法就整批不落」的既有刻意行为。
+_BULK_SKIP_CONFLICT_CODES = {
+    "mapping.already_confirmed",
+    "relation.already_confirmed",
+    "proposal.stale_conflict",
+}
+
 
 async def create(
     session: AsyncSession,
@@ -658,8 +668,22 @@ async def bulk_accept(
             if not acceptable:
                 skipped += 1
                 continue
-            await decide(session, proposal_id, actor=actor, decision=Decision.ACCEPT)
-            accepted += 1
+            # 每条单独包一层 savepoint：目标已确认/过期冲突时，只回滚这一条，
+            # 靠前已接受的兄弟提案不受影响；其余错误（内容非法）外抛整批回滚。
+            try:
+                async with session.begin_nested():
+                    await decide(
+                        session, proposal_id, actor=actor, decision=Decision.ACCEPT
+                    )
+                accepted += 1
+            except IntegrityError:
+                # 防御性兜底：正常路径下 decide 已把它转成 proposal.stale_conflict。
+                skipped += 1
+            except AppError as exc:
+                if exc.code in _BULK_SKIP_CONFLICT_CODES:
+                    skipped += 1
+                else:
+                    raise
     return {"accepted": accepted, "skipped": skipped}
 
 
