@@ -13,7 +13,12 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.clauses.models import Clause
-from app.controls.models import Control, ControlRelation, ControlSource
+from app.controls.models import (
+    Control,
+    ControlRelation,
+    ControlSource,
+    canonicalize_relation_endpoints,
+)
 from app.environment.models import Implementation, TechAsset
 from app.evidence.models import EvidenceItem
 from app.frameworks.models import FrameworkItem, Mapping
@@ -125,8 +130,11 @@ async def _plan_embeddings(session: AsyncSession, loser_id: int) -> list[Discard
 async def _plan_relations(
     session: AsyncSession, loser: Control, winner: Control
 ) -> tuple[int, list[Discard]]:
+    # DUPLICATES 对称：赢家侧既有关系以规范形纳入集合，否则镜像比对必然漏判。
     occupied = {
-        (row.from_control_id, row.to_control_id, row.relation_type)
+        (*canonicalize_relation_endpoints(
+            row.from_control_id, row.to_control_id, row.relation_type
+        ), row.relation_type)
         for row in await session.scalars(
             select(ControlRelation).where(
                 ControlRelation.from_control_id != loser.id,
@@ -151,7 +159,7 @@ async def _plan_relations(
     for row in rows:
         new_from = winner.id if row.from_control_id == loser.id else row.from_control_id
         new_to = winner.id if row.to_control_id == loser.id else row.to_control_id
-        key = (new_from, new_to, row.relation_type)
+        # 自环判定在规范化前后等价（规范化不改变相等性），维持 relation_self_loop。
         if new_from == new_to:
             discards.append(
                 Discard(
@@ -162,7 +170,14 @@ async def _plan_relations(
                     params={"relation": row.relation_type.value},
                 )
             )
-        elif key in occupied:
+            continue
+        # DUPLICATES 对称：先规范化转挂后的端点再组键比对，否则镜像碰撞会被
+        # 漏判成 move。与执行路径同一份规则，plan_digest 不发散。
+        new_from, new_to = canonicalize_relation_endpoints(
+            new_from, new_to, row.relation_type
+        )
+        key = (new_from, new_to, row.relation_type)
+        if key in occupied:
             discards.append(
                 Discard(
                     table="control_relations",

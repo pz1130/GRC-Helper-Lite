@@ -35,6 +35,23 @@ class RelationType(StrEnum):
     DUPLICATES = "duplicates"
 
 
+def canonicalize_relation_endpoints(
+    from_id: int, to_id: int, relation_type: RelationType
+) -> tuple[int, int]:
+    """把关系端点规范化为可落库的顺序。
+
+    `DUPLICATES` 是对称关系：A→B 与 B→A 含义相同。不规范化就会存下两条互为
+    镜像、唯一约束 `uq_control_relation` 无法识别的记录。故对 `DUPLICATES`
+    统一存成 `from_id < to_id`；其它（有方向的）关系原样返回，不重排端点。
+
+    写入（`_materialize_relation`）、合并计划（`_plan_relations`）、合并执行
+    （`merge_controls`）三处共用这一份实现——规则一旦分叉，后果静默。
+    """
+    if relation_type is RelationType.DUPLICATES and from_id > to_id:
+        return to_id, from_id
+    return from_id, to_id
+
+
 def _enum(enum_cls, name: str):
     """不加 values_callable 会存枚举名而不是取值，而且测试看不出来（M1 踩过）。"""
     return SAEnum(
