@@ -15,12 +15,83 @@ def build_citation_label(number: str | None, heading_path: str) -> str:
     return number if number else heading_path
 
 
+def _collision_keys(labels: list[str]) -> list[int]:
+    """返回当前标签列表中仍相撞（被多行共享）的行下标，按行序返回。
+
+    只依赖行序遍历，不依赖 set/dict 的迭代随机性，保证确定性。
+    """
+    counts: dict[str, int] = {}
+    for label in labels:
+        counts[label] = counts.get(label, 0) + 1
+    return [i for i, label in enumerate(labels) if counts[label] > 1]
+
+
+def _nearest_unnumbered_heading(
+    ancestor_chain: list[tuple[str | None, str]],
+) -> str | None:
+    """沿祖先链（最近祖先在前）找第一个未编号祖先的标题，没有则返回 None。"""
+    for number, heading in ancestor_chain:
+        if number is None:
+            return heading
+    return None
+
+
+def _disambiguate_labels(
+    rows: list[dict[str, Any]],
+    ancestor_chains: list[list[tuple[str | None, str]]],
+) -> None:
+    """第二趟：就地消歧相撞的 citation_label。
+
+    无撞号时立即返回、不做任何修改（no-op），保证无撞号文档逐字节一致。
+    对相撞且标签来自编号的行，用其最近未编号祖先标题限定；仍相撞时按
+    heading_path → order_index 的确定性阶梯兜底，最终保证全局唯一且顺序稳定。
+    """
+    labels = [row["citation_label"] for row in rows]
+    collisions = _collision_keys(labels)
+    if not collisions:
+        return
+
+    # 第一级限定：仅处理标签来自编号的相撞行，用其最近未编号祖先标题限定。
+    for key in collisions:
+        row = rows[key]
+        if row["number"] is None:
+            continue
+        ancestor_heading = _nearest_unnumbered_heading(ancestor_chains[key])
+        if ancestor_heading is None:
+            continue
+        labels[key] = f"{ancestor_heading}{PATH_SEPARATOR}{row['number']}"
+
+    # 第二级兜底 (a)：对限定后仍相撞的行改用完整 heading_path 作为限定基。
+    for key in _collision_keys(labels):
+        row = rows[key]
+        if row["number"] is None:
+            labels[key] = row["heading_path"]
+        else:
+            labels[key] = f"{row['heading_path']}{PATH_SEPARATOR}{row['number']}"
+
+    # 第三级兜底 (b)：仍相撞则追加唯一且稳定的 order_index，保证绝对唯一。
+    for key in _collision_keys(labels):
+        row = rows[key]
+        labels[key] = f"{labels[key]}{PATH_SEPARATOR}#{row['order_index']}"
+
+    for key, label in enumerate(labels):
+        rows[key]["citation_label"] = label
+
+
 def flatten(
     nodes: list[ClauseNode], *, document_id: int, language: str = "en"
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
+    # 与 rows 下标对齐的并行列表：每项是该行从直接父到根的 (number, heading) 链
+    # （最近祖先在前），供第二趟就近查找未编号祖先，无需再遍历树。
+    ancestor_chains: list[list[tuple[str | None, str]]] = []
 
-    def walk(node: ClauseNode, ancestors: list[str], parent_key: int | None) -> None:
+    def walk(
+        node: ClauseNode,
+        ancestors: list[str],
+        parent_key: int | None,
+        ancestor_chain: list[tuple[str | None, str]],
+    ) -> None:
         path = [*ancestors, node.heading]
         heading_path = PATH_SEPARATOR.join(path)
         key = len(rows)
@@ -41,11 +112,16 @@ def flatten(
                 "language": language,
             }
         )
+        # key == len(ancestor_chains)，与 rows 严格对齐。
+        ancestor_chains.append(ancestor_chain)
+        # 子节点的祖先链 = 当前节点在前，其后接本节点的祖先链。
+        child_chain = [(node.number, node.heading), *ancestor_chain]
         for child in node.children:
-            walk(child, path, key)
+            walk(child, path, key, child_chain)
 
     for root in nodes:
-        walk(root, [], None)
+        walk(root, [], None, [])
+    _disambiguate_labels(rows, ancestor_chains)
     return rows
 
 
