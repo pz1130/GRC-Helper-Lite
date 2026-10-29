@@ -1,0 +1,1974 @@
+{
+ "id": "en-uk-mlr",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": "PART 1",
+   "heading": "Introduction",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "1",
+     "heading": "Citation and commencement",
+     "sentences": [
+      "1.—(1) These Regulations may be cited as the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017.",
+      "There are other amendments to section 417(1) which are not relevant to these Regulations."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 188
+    },
+    {
+     "number": "2",
+     "heading": "Prescribed regulations",
+     "sentences": [
+      "These Regulations are prescribed for the purposes of sections 168(4)(b) (appointment of persons to carry out investigations in particular cases) and 402(1)(b) (power of the FCA to institute proceedings for certain other offences) of the Financial Services and Markets Act 2000(a)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 203
+    },
+    {
+     "number": "3",
+     "heading": "General interpretation",
+     "sentences": [
+      "3.—(1) In these Regulations— “Annex 1 financial institution” has the meaning given by regulation 55(2);",
+      "(f) “parent undertaking” and “subsidiary undertaking” have the same meaning as in the Companies Acts (see section 1162 of and Schedule 7 to, the Companies Act 2006 (parent and subsidiary undertaking)(f))."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 208
+    },
+    {
+     "number": "4",
+     "heading": "Meaning of business relationship",
+     "sentences": [
+      "4.—(1) For the purpose of these Regulations, “business relationship” means a business, professional or commercial relationship between a relevant person and a customer, which— (a) 2000 c.11.",
+      "(3) For the purposes of these Regulations, an estate agent is to be treated as entering into a business relationship with a purchaser (as well as with a seller), at the point when the purchaser’s offer is accepted by the seller."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 434
+    },
+    {
+     "number": "5",
+     "heading": "Meaning of beneficial owner: bodies corporate or partnership",
+     "sentences": [
+      "5.—(1) In these Regulations, “beneficial owner”, in relation to a body corporate which is not a company whose securities are listed on a regulated market, means— (a) any individual who exercises ultimate control over the management of the body corporate;",
+      "(4) In this regulation “limited liability partnership” has the meaning given by the Limited Liability Partnerships Act 2000(c)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 452
+    },
+    {
+     "number": "6",
+     "heading": "Meaning of beneficial owner: trusts, similar arrangements and others",
+     "sentences": [
+      "6.—(1) In these Regulations, “beneficial owner”, in relation to a trust, means each of the following— (a) the settlor;",
+      "(9) In these Regulations, “beneficial owner”, in any other case, means the individual who ultimately owns or controls the entity or arrangement or on whose behalf a transaction is being conducted."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 478
+    },
+    {
+     "number": "7",
+     "heading": "Supervisory authorities",
+     "sentences": [
+      "7.—(1) Subject to paragraph (2), the following bodies are supervisory authorities in relation to relevant persons— (a) the FCA is the supervisory authority for— (i) credit and financial institutions (including money service businesses) which are authorised persons but not excluded money service businesses;",
+      "(7) For the purposes of paragraph (1), a credit union in Northern Ireland is a credit union which is— (a) registered under regulation 3 of the Credit Unions (Northern Ireland) Order 1985(c) (registration) and it is an authorised person; or (b) registered under Part 2 of the Industrial and Provident Societies Act (Northern Ireland) 1969(d) (registered societies) as a credit union and it is an authorised person."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 545
+    }
+   ],
+   "line": 186
+  },
+  {
+   "number": "PART 2",
+   "heading": "Money Laundering and Terrorist Financing",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "CHAPTER 1",
+     "heading": "Application",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "8",
+       "heading": "Application",
+       "sentences": [
+        "8.—(1) Parts 1 to 6 and 8 to 11 apply to the persons (“relevant persons”) acting in the course of business carried on by them in the United Kingdom, who— (a) are listed in paragraph (2); and (b) do not come within the exclusions set out in regulation 15.",
+        "Part 2 was amended, but the amendments are not relevant to these Regulations."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 601
+      },
+      {
+       "number": "9",
+       "heading": "Carrying on business in the United Kingdom",
+       "sentences": [
+        "9.—(1) For the purposes of these Regulations, a relevant person (“A”) is to be regarded as carrying on business in the United Kingdom in the cases described in this regulation even if A would not otherwise be regarded as doing so.",
+        "(b) it is irrelevant where the person with whom the business is carried on is situated."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 623
+      },
+      {
+       "number": "10",
+       "heading": "Credit institutions and financial institutions",
+       "sentences": [
+        "10.—(1) In these Regulations, “credit institution” means— (a) a credit institution as defined in Article 4.1(1) of the capital requirements regulation; or (b) a branch (as defined by Article 4.1(17) of that regulation) located in an EEA state of an institution falling within sub-paragraph (a) (or an equivalent institution whose head office is located in a third country) wherever the institution’s head office is located, (a) 2005 c.19.",
+        "(4) For the purposes of this regulation, a “listed activity” means an activity listed in points 2 to 12, 14 and 15 of Annex 1 to the capital requirements directive (the relevant text of which is set out in Schedule 2)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 658
+      },
+      {
+       "number": "11",
+       "heading": "Auditors and others",
+       "sentences": [
+        "(b) “insolvency practitioner” means any firm or individual who acts as an insolvency practitioner within the meaning of section 388 of the Insolvency Act 1986(c) or article 3 of the Insolvency (Northern Ireland) Order 1989(d) (meaning of “act as insolvency practitioner”).",
+        "(d) “tax adviser” means a firm or sole practitioner who by way of business provides advice about the tax affairs of other persons, when providing such services."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 721
+      },
+      {
+       "number": "12",
+       "heading": "Independent legal professionals and trust or company service providers",
+       "sentences": [
+        "12.—(1) In these Regulations, “independent legal professional” means a firm or sole practitioner who by way of business provides legal or notarial services to other persons, when participating in financial or real property transactions concerning— (a) the buying and selling of real property or business entities;",
+        "(d) acting, or arranging for another person to act, as— (i) a trustee of an express trust or similar legal arrangement; or (ii) a nominee shareholder for a person other than a company whose securities are listed on a regulated market."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 738
+      },
+      {
+       "number": "13",
+       "heading": "Estate agents",
+       "sentences": [
+        "13.—(1) In these Regulations, “estate agent” means a firm or a sole practitioner, who, or whose employees, carry out estate agency work, when the work is being carried out."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 773
+      },
+      {
+       "number": "14",
+       "heading": "High value dealers, casinos and auction platforms",
+       "sentences": [
+        "14.—(1) In these Regulations— (a) “high value dealer” means a firm or sole trader who by way of business trades in goods (including an auctioneer dealing in goods), when the trader makes or receives, in respect of any transaction, a payment or payments in cash of at least 10,000 euros in total, whether the transaction is executed in a single operation or in several operations which appear to be linked;",
+        "(2) A payment does not cease to be a “payment in cash” for the purposes of paragraph (1)(a) if cash is paid by or on behalf of the person making the payment— (a) to a person other than the other party to the transaction for the benefit of the other party, or (b) into a bank account for the benefit of the other party to the transaction."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 782
+      },
+      {
+       "number": "15",
+       "heading": "Exclusions",
+       "sentences": [
+        "15.—(1) Parts 1 to 4, 6 and 8 to 11 do not apply to the following persons when carrying on any of the following activities— (a) a registered society within the meaning of section 1 of the Co-operative and Community Benefit Societies Act 2014 (meaning of “registered society”)(c), when it— (a) 1979 c.38.",
+        "(g) the Treasury Solicitor."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 799
+      }
+     ],
+     "line": 599
+    },
+    {
+     "number": "CHAPTER 2",
+     "heading": "Risk assessment and controls",
+     "sentences": [
+      "Risk assessment by the Treasury and Home Office"
+     ],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "16",
+       "heading": "Risk assessment by the Treasury and Home Office",
+       "sentences": [
+        "(1) The Treasury and the Home Office must make arrangements before 26th June 2018 for a risk assessment to be undertaken to identify, assess, understand and mitigate the risks of money laundering and terrorist financing affecting the United Kingdom (“the risk assessment”).",
+        "Risk assessment by supervisory authorities"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 882
+      },
+      {
+       "number": "17",
+       "heading": "Risk assessment by supervisory authorities",
+       "sentences": [
+        "(1) Each supervisory authority must identify and assess the international and domestic risks of money laundering and terrorist financing to which those relevant persons for which it is the supervisory authority (“its own sector”) are subject.",
+        "(b) guidelines issued by the European Supervisory Authorities under Articles 17, 18.4 and"
+       ],
+       "table_cells": [],
+       "children": [
+        {
+         "number": "48.10",
+         "heading": "48.10",
+         "sentences": [
+          "of the fourth money laundering directive;",
+          "Risk assessment by relevant persons"
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 932
+        }
+       ],
+       "line": 924
+      },
+      {
+       "number": "18",
+       "heading": "Risk assessment by relevant persons",
+       "sentences": [
+        "(1) A relevant person must take appropriate steps to identify and assess the risks of money laundering and terrorist financing to which its business is subject.",
+        "Policies, controls and procedures"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 969
+      },
+      {
+       "number": "19",
+       "heading": "Policies, controls and procedures",
+       "sentences": [
+        "(1) A relevant person must— (a) establish and maintain policies, controls and procedures to mitigate and manage effectively the risks of money laundering and terrorist financing identified in any risk assessment undertaken by the relevant person under regulation 18(1);",
+        "(6) A relevant person must, where relevant, communicate the policies, controls and procedures which it establishes and maintains in accordance with this regulation to its branches and subsidiary undertakings which are located outside the United Kingdom."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 993
+      },
+      {
+       "number": "20",
+       "heading": "Policies, controls and procedures: group level",
+       "sentences": [
+        "20.—(1) A relevant parent undertaking must— (a) ensure that the policies, controls and procedures referred to in regulation 19(1) apply— (i) to all its subsidiary undertakings, including subsidiary undertakings located outside the United Kingdom; and (ii) to any branches it has established outside the United Kingdom; which is carrying out any activity in respect of which the relevant person is subject to these Regulations;",
+        "(5) A relevant parent undertaking must ensure that information relevant to the prevention of money laundering and terrorist financing is shared as appropriate between members of its group, subject to any restrictions on sharing information imposed by or under any enactment or otherwise."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1056
+      },
+      {
+       "number": "21",
+       "heading": "Internal controls",
+       "sentences": [
+        "21.—(1) Where appropriate with regard to the size and nature of its business, a relevant person must— (a) appoint one individual who is a member of the board of directors (or if there is no board, of its equivalent management body) or of its senior management as the officer responsible for the relevant person’s compliance with these Regulations;",
+        "(10) In determining what is appropriate with regard to the size and nature of its business, a relevant person— (a) must take into account its risk assessment under regulation 18(1); and (b) may take into account any guidance which has been— (i) issued by the FCA; or (ii) issued by any other supervisory authority or appropriate body and approved by the Treasury."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1093
+      },
+      {
+       "number": "22",
+       "heading": "Central contact points: electronic money issuers and payment service providers",
+       "sentences": [
+        "22.—(1) An electronic money issuer or a payment service provider to which paragraph (2) applies must, if requested by its supervisory authority, appoint a person to act as a central contact point in the United Kingdom for its supervisory authority on any issue relating to the prevention of money laundering or terrorist financing.",
+        "(2) This paragraph applies to any electronic money issuer or payment service provider which— (a) is established in the United Kingdom otherwise than by a branch; and (b) has its head office in an EEA state other than the United Kingdom."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1162
+      },
+      {
+       "number": "23",
+       "heading": "Requirement on authorised person to inform the FCA",
+       "sentences": [
+        "23.—(1) An authorised person whose supervisory authority is the FCA must, before acting as a money service business or a trust or company service provider or within 28 days of so doing, inform the FCA that it intends, or has begun, to act as such.",
+        "(5) Any information to be provided to the FCA under this regulation must be in such form or verified in such manner as it may specify."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1170
+      },
+      {
+       "number": "24",
+       "heading": "Training",
+       "sentences": [
+        "24.—(1) A relevant person must— (a) take appropriate measures to ensure that its relevant employees are— (i) made aware of the law relating to money laundering and terrorist financing, and to the requirements of data protection, which are relevant to the implementation of these Regulations; and (ii) regularly given training in how to recognise and deal with transactions and other activities or situations which may be related to money laundering or terrorist financing;",
+        "(iii) the nature and extent of the risks of money laundering and terrorist financing to which its business is subject; and (b) may take into account any guidance which has been— (i) issued by the FCA; or (ii) issued by any other supervisory authority or appropriate body and approved by the Treasury."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1188
+      },
+      {
+       "number": "25",
+       "heading": "Supervisory action",
+       "sentences": [
+        "25.—(1) The supervisory authority must determine whether the additional measures taken under regulation 20(4) by a relevant parent undertaking which is an authorised person or a qualifying parent undertaking (as defined by section 192B of FSMA(a)) are sufficient to handle the risk of money laundering and terrorist financing effectively.",
+        "(b) “specified” means specified in the direction."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1216
+      }
+     ],
+     "line": 879
+    },
+    {
+     "number": "CHAPTER 3",
+     "heading": "Ownership and Management Restrictions",
+     "sentences": [
+      "Prohibitions and approvals"
+     ],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "26",
+       "heading": "Prohibitions and approvals",
+       "sentences": [
+        "(1) No person may be the beneficial owner, officer or manager of a firm within paragraph (2) (“a relevant firm”), or a sole practitioner within paragraph (2) (“a relevant sole practitioner”), unless that person has been approved as a beneficial owner, officer or manager of the firm or as a sole practitioner by the supervisory authority of the firm or sole practitioner.",
+        "(14) The offences listed in Schedule 3 are relevant offences for the purposes of this regulation."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1285
+      }
+     ],
+     "line": 1282
+    }
+   ],
+   "line": 597
+  },
+  {
+   "number": "PART 3",
+   "heading": "Customer Due Diligence",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "CHAPTER 1",
+     "heading": "Customer due diligence: general",
+     "sentences": [
+      "Customer due diligence"
+     ],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "27",
+       "heading": "Customer due diligence",
+       "sentences": [
+        "(1) A relevant person must apply customer due diligence measures if the person— (a) establishes a business relationship;",
+        "Customer due diligence measures"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1348
+      },
+      {
+       "number": "28",
+       "heading": "Customer due diligence measures",
+       "sentences": [
+        "(1) This regulation applies when a relevant person is required by regulation 27 to apply customer due diligence measures.",
+        "(b) documents issued or made available by an official body are to be regarded as being independent of a person even if they are provided or made available to the relevant person by or on behalf of that person."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1399
+      },
+      {
+       "number": "29",
+       "heading": "Additional customer due diligence measures: credit institutions and financial institutions",
+       "sentences": [
+        "29.—(1) This regulation applies in addition to regulation 28 where a relevant person is a credit institution or a financial institution.",
+        "(9) Paragraph (8) does not apply to an open-ended investment company if— (a) an application for an authorisation order under regulation 12 of the Open-ended Investment Companies Regulations 2001 was made in relation to that open-ended investment company before the date on which these Regulations come into force; and (b) that application was not determined until a date on or after the date on which these Regulations come into force."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1516
+      },
+      {
+       "number": "30",
+       "heading": "Timing of verification",
+       "sentences": [
+        "30.—(1) This regulation applies when a relevant person is required to take any measures under regulation 27, 28 or 29.",
+        "(7) If this paragraph applies, the relevant person must establish and verify the identity of any beneficiary before— (a) any payment is made to the beneficiary; or (b) the beneficiary exercises its vested rights in the trust, legal entity or legal arrangement."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1558
+      },
+      {
+       "number": "31",
+       "heading": "Requirement to cease transactions etc",
+       "sentences": [
+        "31.—(1) Where, in relation to any customer, a relevant person is unable to apply customer due diligence measures as required by regulation 28, that person— (a) S.I. 2001/1228.",
+        "(5) Paragraph (1)(a) to (c) does not apply where an insolvency practitioner has been appointed by the court as administrator or liquidator of a company, provided that— (a) the insolvency practitioner has taken all reasonable steps to satisfy the requirements set out in regulation 28(2) and (10), and (b) the resignation of the insolvency practitioner would be prejudicial to the interests of the creditors of the company."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1588
+      },
+      {
+       "number": "32",
+       "heading": "Exception for trustees of debt issues",
+       "sentences": [
+        "32.—(1) A relevant person— (a) who is appointed by the issuer of instruments or securities specified in paragraph (2) as trustee of an issue of such instruments or securities; or (b) whose customer is a trustee of an issue of such instruments or securities, is not required to apply the customer due diligence measure referred to in regulation 28(3) and (4) in respect of the holders of such instruments or securities.",
+        "(b) securities which fall within article 78 of that Order(a)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1625
+      }
+     ],
+     "line": 1345
+    },
+    {
+     "number": "CHAPTER 2",
+     "heading": "Enhanced customer due diligence",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "33",
+       "heading": "Obligation to apply enhanced customer due diligence",
+       "sentences": [
+        "(b) in any business relationship or transaction with a person established in a high-risk third country;",
+        "(8) In determining what measures to take when paragraph (1) applies, and what the extent of those measures should be, credit institutions and financial institutions must also take account of any guidelines issued by the European Supervisory Authorities under Article 18.4 of the fourth money laundering directive."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1643
+      },
+      {
+       "number": "34",
+       "heading": "Enhanced customer due diligence: credit institutions, financial institutions and correspondent relationships",
+       "sentences": [
+        "34.—(1) A credit institution or financial institution (the “correspondent”) which has or proposes to have a correspondent relationship with another such institution (the “respondent”) from a third country must, in addition to the measures required by regulation 33— (a) gather sufficient information about the respondent to understand fully the nature of its business;",
+        "(c) in sub-paragraph (b), “financial conglomerate” and “third-country financial conglomerate” have the meanings given by regulations 1(2) and 7(1) respectively of the Financial Conglomerates and Other Financial Groups Regulations 2004(a)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1755
+      },
+      {
+       "number": "35",
+       "heading": "Enhanced customer due diligence: politically exposed persons",
+       "sentences": [
+        "35.—(1) A relevant person must have in place appropriate risk-management systems and procedures to determine whether a customer or the beneficial owner of a customer is— (a) a politically exposed person (a “PEP”); or (b) a family member or a known close associate of a PEP, and to manage the enhanced risks arising from the relevant person’s business relationship or transactions with such a customer.",
+        "(15) For the purpose of deciding whether a person is a known close associate of a politically exposed person, a relevant person need only have regard to information which is in its possession, or to credible information which is publicly available."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1801
+      },
+      {
+       "number": "36",
+       "heading": "Politically exposed persons: other duties",
+       "sentences": [
+        "36.—(1) The duty under section 30(1) of the Bank of England and Financial Services Act 2016 (duty to ensure that regulations or orders implementing the fourth money laundering directive comply with paragraphs (a) to (d) of that subsection)(a) does not apply if, and to the extent that, the duty is otherwise satisfied as a result of any provision contained in these Regulations, or any guidance issued by the FCA under these Regulations.",
+        "(b) Section 333U was inserted by the Bank of England and Financial Services Act 2016, s.30."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1904
+      }
+     ],
+     "line": 1641
+    },
+    {
+     "number": "CHAPTER 3",
+     "heading": "Simplified customer due diligence",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "37",
+       "heading": "Application of simplified customer due diligence",
+       "sentences": [
+        "37.—(1) A relevant person may apply simplified customer due diligence measures in relation to a particular business relationship or transaction if it determines that the business relationship or transaction presents a low degree of risk of money laundering and terrorist financing, having taken into account— (a) the risk assessment it carried out under regulation 18(1);",
+        "(c) if it suspects money laundering or terrorist financing; or (d) if any of the conditions set out in regulation 33(1) apply."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 1917
+      },
+      {
+       "number": "38",
+       "heading": "Electronic money",
+       "sentences": [
+        "38.—(1) Subject to paragraph (3), a relevant person is not required to apply customer due diligence measures in relation to electronic money, and regulations 27, 28, 30 and 33 to 37 do not apply provided that— (a) the maximum amount which can be stored electronically is 250 euros, or (if the amount stored can only be used in the United Kingdom), 500 euros;",
+        "(5) For the purposes of this regulation “payment instrument” has the meaning given by regulation 2(1) of the Electronic Money Regulations 2011(a)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2016
+      }
+     ],
+     "line": 1915
+    }
+   ],
+   "line": 1343
+  },
+  {
+   "number": "PART 4",
+   "heading": "Reliance and Record-keeping",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "39",
+     "heading": "Reliance",
+     "sentences": [
+      "39.—(1) A relevant person may rely on a person who falls within paragraph (3) (“the third party”) to apply any of the customer due diligence measures required by regulation 28(2) to (6) and (10) but, notwithstanding the relevant person’s reliance on the third party, the relevant person remains liable for any failure to apply such measures.",
+      "(8) For the purposes of paragraph (7), an “outsourcing service provider” means a person who— (a) performs a process, a service or an activity that would otherwise be undertaken by the relevant person, and (b) is not an employee of the relevant person."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2042
+    },
+    {
+     "number": "40",
+     "heading": "Record-keeping",
+     "sentences": [
+      "40.—(1) Subject to paragraph (5), a relevant person must keep the records specified in paragraph (2) for at least the period specified in paragraph (3).",
+      "(c) “personal data” and “data subject” have the meanings given in section 1 of the Data Protection Act 1998(a)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2107
+    },
+    {
+     "number": "41",
+     "heading": "Data Protection",
+     "sentences": [
+      "41.—(1) Any personal data obtained by relevant persons for the purposes of these Regulations may only be processed for the purposes of preventing money laundering or terrorist financing.",
+      "(5) For the purposes of this regulation, “personal data”, “processing” and “data subject” have the meanings given in section 1 of the Data Protection Act 1998 (basic interpretative provisions)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2155
+    }
+   ],
+   "line": 2040
+  },
+  {
+   "number": "PART 5",
+   "heading": "Beneficial Ownership Information",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "42",
+     "heading": "Application of this Part",
+     "sentences": [
+      "42.—(1) This Part applies to UK bodies corporate and relevant trusts.",
+      "(b) in the case of an individual, if the individual is resident in the United Kingdom for the purposes of one or more of the taxes referred to in regulation 45(14)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2181
+    },
+    {
+     "number": "43",
+     "heading": "Corporate bodies: obligations",
+     "sentences": [
+      "43.—(1) When a UK body corporate which is not listed on a regulated market enters into a relevant transaction with a relevant person, or forms a business relationship with a relevant person, the body corporate must on request from the relevant person provide the relevant person with— (a) information identifying— (i) its name, registered number, registered office and principal place of business;",
+      "(9) For the purposes of this regulation, a “relevant transaction” means a transaction in relation to which the relevant person is required to apply customer due diligence measures under regulation 27."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2213
+    },
+    {
+     "number": "44",
+     "heading": "Trustee obligations",
+     "sentences": [
+      "44.—(1) The trustees of a relevant trust must maintain accurate and up-to-date records in writing of all the beneficial owners of the trust, and of any potential beneficiaries referred to in paragraph (5)(b), containing the information required by regulation 45(2)(b) to (d) and (5)(f) and (g).",
+      "(11) For the purposes of this regulation, in the case of a relevant trust which is a collective investment scheme, a reference to the trustees of a relevant trust includes a reference to the manager or operator of the collective investment scheme."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2250
+    },
+    {
+     "number": "45",
+     "heading": "Register of beneficial ownership",
+     "sentences": [
+      "45.—(1) The Commissioners must maintain a register (“the register”) of— (a) beneficial owners of taxable relevant trusts; and (b) potential beneficiaries (referred to in regulation 44(5)(b)) of taxable relevant trusts.",
+      "(15) For the purpose of this regulation, in the case of a taxable relevant trust which is a collective investment scheme, a reference to the trustees of a taxable relevant trust includes a reference to the manager or operator of the collective investment scheme."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2304
+    }
+   ],
+   "line": 2179
+  },
+  {
+   "number": "PART 6",
+   "heading": "Money Laundering and Terrorist Financing: Supervision and Registration",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "CHAPTER 1",
+     "heading": "Duties of supervisory authorities",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "46",
+       "heading": "Duties of supervisory authorities",
+       "sentences": [
+        "46.—(1) A supervisory authority must effectively monitor the relevant persons for which it is the supervisory authority (“its own sector”) and take necessary measures for the purpose of securing compliance by such persons with the requirements of these Regulations.",
+        "(9) The functions of the FCA under these Regulations shall be treated for the purposes of Parts 1, 2 and 4 of Schedule 1ZA to FSMA(a) (the Financial Conduct Authority) as functions conferred on the FCA under that Act."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2399
+      },
+      {
+       "number": "47",
+       "heading": "Duties of supervisory authorities: information",
+       "sentences": [
+        "47.—(1) A supervisory authority must, in any way it considers appropriate, make up-to-date information on money laundering and terrorist financing available to those relevant persons which it supervises (“its own sector”).",
+        "(h) any relevant information published by the Director General of the NCA under section 4(9) (operations) or 6 (duty to publish information) of the Crime and Courts Act 2013(a)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2448
+      },
+      {
+       "number": "48",
+       "heading": "Duties of the FCA: guidance on politically exposed persons",
+       "sentences": [
+        "48.—(1) The FCA must give guidance under section 139A of FSMA (power of the FCA to give guidance)(b) to relevant persons, who are subject to rules made by the FCA, in relation to the enhanced customer due diligence measures required under regulation 35 in respect of politically exposed persons (“PEPs”), their family members and known close associates (within the meanings given in regulation 35(12)).",
+        "(iii) the beneficial owner of a beneficiary of a contract of long-term insurance."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2481
+      },
+      {
+       "number": "49",
+       "heading": "Duties of self-regulatory organisations",
+       "sentences": [
+        "49.—(1) Self-regulatory organisations must make arrangements to ensure that— (a) their supervisory functions are exercised independently of any of their other functions which do not relate to disciplinary matters;",
+        "(ii) any law enforcement authority; and (iii) any overseas authority (within the meaning of regulation 50(4)) (b) for ensuring that the self-regulatory organisation responds fully and rapidly to any request from an authority referred to in paragraph (a)(i) or (ii) for information about any person it supervises, whether that request concerns an application by that person for registration or any other matter."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2525
+      },
+      {
+       "number": "50",
+       "heading": "Duty to co-operate",
+       "sentences": [
+        "50.—(1) A supervisory authority must take such steps as it considers appropriate— (a) to co-operate with other supervisory authorities, the Treasury and law enforcement authorities in relation to the development and implementation of policies to counter money laundering and terrorist financing;",
+        "(5) A supervisory authority must on request provide a European Supervisory Authority with information reasonably required by the Authority to enable it to carry out its duties under the fourth money laundering directive."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2550
+      },
+      {
+       "number": "51",
+       "heading": "Regulatory information",
+       "sentences": [
+        "51.—(1) A supervisory authority within regulation 7 must collect such information as it considers necessary for the purpose of performing its supervisory functions, including the information specified in Schedule 4.",
+        "(5) Where a disclosure under paragraph (2) is made in good faith, no civil liability arises in respect of the disclosure on the part of the person by whom, or on whose behalf, it is made."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2574
+      },
+      {
+       "number": "52",
+       "heading": "Disclosure by supervisory authorities",
+       "sentences": [
+        "52.—(1) A supervisory authority may disclose to a relevant authority information it holds relevant to its supervisory functions, provided the disclosure is made for purposes connected with the effective exercise of— (a) the functions of the relevant authority under these Regulations;",
+        "(d) an overseas authority, within the meaning of regulation 50(4)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2588
+      }
+     ],
+     "line": 2397
+    },
+    {
+     "number": "CHAPTER 2",
+     "heading": "Registration",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "53",
+       "heading": "Interpretation",
+       "sentences": [
+        "For the purposes of this Chapter— “registering authority” means— (a) the FCA, in relation to— (i) those relevant persons which it is required to register under regulation 54(1); and (ii) those relevant persons it decides to register under regulation 55(1);",
+        "“telecommunication, digital and IT payment service provider” means an undertaking which provides payment services falling within paragraph 1(g) of Schedule 1 to the Payment Services Regulations 2009(a)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2618
+      },
+      {
+       "number": "54",
+       "heading": "Duty to maintain registers of certain relevant persons",
+       "sentences": [
+        "54.—(1) The FCA must maintain a register of those relevant persons who— (a) are authorised persons, and (b) have notified the FCA under regulation 23 that they are acting, or intend to act, as a money service business or a trust or company service provider.",
+        "(5) A registering authority may publish or make available to public inspection all or part of a register maintained by it under this regulation."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2630
+      },
+      {
+       "number": "55",
+       "heading": "Power to maintain registers",
+       "sentences": [
+        "55.—(1) The FCA may maintain a register of Annex 1 financial institutions.",
+        "(7) A registering authority may publish or make available to public inspection all or part of a register maintained by it under this regulation."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2652
+      },
+      {
+       "number": "56",
+       "heading": "Requirement to be registered",
+       "sentences": [
+        "56.—(1) Unless a person in respect of whom the registering authorities are required to maintain a register under regulation 54 is included in the appropriate register, or paragraph (2) applies, that person must not act as a— (a) high value dealer;",
+        "(4) A relevant person which is registered in the register maintained by the FCA under regulation 32 of the Money Laundering Regulations 2007 is to be treated as included in the register maintained by the FCA under regulation 55(1) for the purposes of paragraph (1)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2680
+      },
+      {
+       "number": "57",
+       "heading": "Applications for registration in a register maintained under regulation 54 or 55",
+       "sentences": [
+        "57.—(1) A person applying for registration in a register maintained under regulation 54 or 55 (“an applicant”) must make an application in such manner and provide such information as the registering authority may specify.",
+        "(6) Any information to be provided to the registering authority under this regulation must be in such form and verified in such manner as the authority may specify."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2712
+      },
+      {
+       "number": "58",
+       "heading": "Fit and proper test",
+       "sentences": [
+        "58.—(1) The registering authority must refuse to register an applicant for registration in a register maintained under regulation 54 as a money service business or as a trust or company service provider, if it is satisfied that— (a) the applicant;",
+        "(6) Where the registering authority is not the supervisory authority of the applicant, the registering authority must consult the supervisory authority and may rely on its opinion as to whether or not the applicant is a fit and proper person to carry on the business referred to in paragraph (1)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2761
+      },
+      {
+       "number": "59",
+       "heading": "Determination of applications for registration under regulations 54 and 55",
+       "sentences": [
+        "59.—(1) Subject to regulation 58, the registering authority may refuse to register an applicant for registration in a register maintained under regulation 54 or 55 if— (a) any requirement of, or imposed under, regulation 57 has not been complied with;",
+        "(5) The registering authority must, as soon as practicable after deciding to register a person, include that person in the relevant register."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2794
+      },
+      {
+       "number": "60",
+       "heading": "Cancellation and suspension of registration in a register under regulation 54 or 55",
+       "sentences": [
+        "(2) This paragraph applies if, at any time after registration, the registering authority is satisfied that— (a) the money service business, trust or company service provider, or Annex 1 financial institution (as the case may be); or (b) any other person mentioned in regulation 58(1) in relation to that business, provider, or financial institution, is not a fit and proper person for the purposes of regulation 58.",
+        "(10) If the registering authority— (a) considers that the interests of the public require the suspension or cancellation of a person’s registration to have immediate effect; and (b) includes a statement to that effect and the reasons for it in the notice given under paragraph (7) or (9), the suspension or cancellation takes effect when the notice is given to the person."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 2849
+      }
+     ],
+     "line": 2616
+    }
+   ],
+   "line": 2395
+  },
+  {
+   "number": "PART 7",
+   "heading": "Transfer of Funds (Information on the Payer) Regulations",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "61",
+     "heading": "Interpretation",
+     "sentences": [
+      "In this Part “transfer of funds supervisory authority” in relation to a payment service provider means the supervisory authority specified by regulation 62."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2927
+    },
+    {
+     "number": "62",
+     "heading": "Transfer of funds supervisory authorities",
+     "sentences": [
+      "62.—(1) The FCA is the transfer of funds supervisory authority for payment service providers, who are— (a) authorised persons;",
+      "(2) The Commissioners are the transfer of funds supervisory authority for payment service providers who do not come within paragraph (1)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2930
+    },
+    {
+     "number": "63",
+     "heading": "Duties of transfer of funds supervisory authorities",
+     "sentences": [
+      "63.—(1) A transfer of funds supervisory authority must— (a) monitor effectively the payment service providers for whom it is the transfer of funds supervisory authority;",
+      "(9) A transfer of funds supervisory authority must on request provide a European Supervisory Authority with information reasonably required by the Authority to enable it to carry out its duties under the funds transfer regulation."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2944
+    },
+    {
+     "number": "64",
+     "heading": "Obligations of payment service providers",
+     "sentences": [
+      "64.—(1) A payment service provider must take into account any guidelines issued by the European Supervisory Authorities under Article 25 of the funds transfer regulation in determining what measures are required to comply with that regulation.",
+      "(b) persons acting on behalf of the Scottish Ministers in their capacity as an enforcement authority under that Act; and (c) constables or equivalent officers of any law enforcement authority."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 2990
+    }
+   ],
+   "line": 2925
+  },
+  {
+   "number": "PART 8",
+   "heading": "Information and Investigation",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "65",
+     "heading": "Interpretation",
+     "sentences": [
+      "65.—(1) In this Part— “premises” means any building or other structure, including a moveable structure, other than premises used only as a dwelling;",
+      "(3) For the purposes of this Part, a person is connected to a relevant person or a payment service provider (“a connected person”) if that person is a person listed in Schedule 5 in relation to the relevant person or payment service provider."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3012
+    },
+    {
+     "number": "66",
+     "heading": "Power to require information",
+     "sentences": [
+      "66.—(1) A supervisory authority may, by notice in writing to a person (“P”) who is (or was at any time) a relevant person, a payment service provider or a connected person, require P to— (a) provide specified information, or information of a specified description;",
+      "(8) If a supervisory authority has power under this regulation to require a person to produce a document but it appears that the document is in the possession of a third person, that power may be exercised by the supervisory authority in relation to the third person."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3033
+    },
+    {
+     "number": "67",
+     "heading": "Requests in support of other authorities",
+     "sentences": [
+      "67.—(1) On receiving a request to which paragraph (2) applies from a foreign authority, the supervisory authority may exercise the power conferred by regulation 66, and for these purposes, regulation 66 has effect as if it also referred to information and documents reasonably required by the supervisory authority to meet such a request.",
+      "(6) “Foreign authority” means an authority in a territory which is not part of the United Kingdom which exercises functions referred to in paragraph (2)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3068
+    },
+    {
+     "number": "68",
+     "heading": "Requests to other authorities",
+     "sentences": [
+      "(2) A supervisory authority may request the assistance of the foreign authority in obtaining specified information or documents which satisfy the conditions in paragraph (1).",
+      "(5) In this regulation, “foreign authority” has the meaning given in regulation 67(6)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3097
+    },
+    {
+     "number": "69",
+     "heading": "Entry, inspection of premises without a warrant etc",
+     "sentences": [
+      "(2) The officer may, on producing evidence of the officer’s authority, at any reasonable time— (a) enter the premises;",
+      "(3) The officer may take copies of, or make extracts from, any documents found as a result of the exercise of the power in paragraph (2)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3115
+    },
+    {
+     "number": "70",
+     "heading": "Entry of premises under warrant",
+     "sentences": [
+      "70.—(1) A justice may issue a warrant under this regulation if satisfied on information given on oath (or in Scotland by evidence on oath) by a duly authorised officer acting on behalf of a supervisory authority that— (a) there are reasonable grounds for believing that the first, second, or third set of conditions is satisfied; or (b) there are reasonable grounds for suspecting that the fourth set of conditions is satisfied.",
+      "(b) in Northern Ireland, a lay magistrate; or (c) in Scotland, a sheriff or summary sheriff."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3142
+    },
+    {
+     "number": "71",
+     "heading": "Retention of documents taken under regulation 66 or 70",
+     "sentences": [
+      "71.—(1) Any material possession of which is taken in accordance with a requirement under regulation 66 or under a warrant issued under regulation 70 (“seized material”) may be retained for so long as it is necessary to retain it (rather than copies of it) in connection with the exercise of the functions of the supervisory authority under these Regulations for the purposes of which any requirement was imposed or the warrant was issued.",
+      "(5) An order under paragraph (3) or (4) does not affect the right of any person to take legal proceedings against any person in possession of seized material for the recovery of the material."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3243
+    },
+    {
+     "number": "72",
+     "heading": "Provision of information and warrants: safeguards",
+     "sentences": [
+      "72.—(1) A person may not be required under regulation 66, 69 or 70 to produce excluded material, or to provide information, produce documents or answer questions which that person would be entitled to refuse to provide, produce or answer on grounds of legal professional privilege in proceedings in the High Court, except that a lawyer may be required to provide the full name and address of the lawyer’s client.",
+      "(5) Privileged material is any material which the person would be entitled to refuse to produce on grounds of legal professional privilege in proceedings in the High Court."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3263
+    },
+    {
+     "number": "73",
+     "heading": "Admissibility of statements",
+     "sentences": [
+      "73.—(1) A statement made by a person in response to a requirement imposed under regulations 66(1)(c), 69(2)(e) or 70(7)(e) may not be used in evidence against the person in criminal proceedings.",
+      "(3) A statement may not be used by virtue of paragraph (2)(f) against a person unless— (a) evidence relating to it is adduced; or (b) a question relating to it is asked; by them or on their behalf in the proceedings arising out of the prosecution."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3291
+    },
+    {
+     "number": "74",
+     "heading": "Powers of relevant officers",
+     "sentences": [
+      "74.—(1) A relevant officer (“R”) may only exercise powers under this Part pursuant to arrangements made with the FCA or with the Commissioners— (a) by or on behalf of the local weights and measures authority of which R is an officer (“R’s authority”); or (b) by the Department for the Economy.",
+      "(4) R must not disclose to any person other than the FCA (if R is acting pursuant to arrangements made with the FCA), the Commissioners (if R is acting pursuant to arrangements made with the Commissioners), R’s authority or, as the case may be, the Department of the Economy, information obtained by R in the exercise of such powers unless— (a) R has the approval of the FCA or where appropriate the Commissioners to do so, or (b) R is under a duty to make the disclosure."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 3314
+    }
+   ],
+   "line": 3010
+  },
+  {
+   "number": "PART 9",
+   "heading": "Enforcement",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "CHAPTER 1",
+     "heading": "General",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "75",
+       "heading": "Meaning of “relevant requirement”",
+       "sentences": [
+        "For the purposes of this Part, “relevant requirement” has the meaning given in Schedule 6.",
+        "(a) 1995 c.39."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3339
+      }
+     ],
+     "line": 3337
+    },
+    {
+     "number": "CHAPTER 2",
+     "heading": "Civil penalties and notices",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "76",
+       "heading": "Power to impose civil penalties: fines and statements",
+       "sentences": [
+        "76.—(1) Paragraph (2) applies if a designated supervisory authority is satisfied that any person (“P”) has contravened a relevant requirement imposed on that person.",
+        "(b) “designated supervisory authority” means the FCA or the Commissioners."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3344
+      },
+      {
+       "number": "77",
+       "heading": "Power to impose civil penalties: suspension and removal of authorisation",
+       "sentences": [
+        "77.—(1) Paragraph (2) applies if the FCA is satisfied that a relevant person or a payment service provider has— (a) repeatedly or systematically failed to include the information it is required to include on the payer or the payee under Articles 4, 5 or 6 of the funds transfer regulation;",
+        "(8) For the purposes of this regulation, “appropriate” means effective, proportionate and dissuasive."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3376
+      },
+      {
+       "number": "78",
+       "heading": "Power to impose civil penalties: prohibitions on management",
+       "sentences": [
+        "78.—(1) Paragraph (2) applies if a designated supervisory authority considers that another person who was at the material time an officer of P was knowingly concerned in a contravention of a relevant requirement by P.",
+        "(5) A relevant person or payment service provider must take reasonable care to ensure that no individual who is subject to a prohibition under paragraph (2) on having a management role with that relevant person or payment service provider is given such a role, or continues to act in such a role."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3426
+      },
+      {
+       "number": "79",
+       "heading": "Imposition of civil penalties",
+       "sentences": [
+        "Any one or more of the powers in regulations 76, 77 and 78 may be exercised by a designated supervisory authority in relation to the same contravention."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3454
+      },
+      {
+       "number": "80",
+       "heading": "Injunctions",
+       "sentences": [
+        "80.—(1) If, on the application of a designated supervisory authority, the court is satisfied— (a) that there is a reasonable likelihood that any person will contravene a relevant requirement; or (b) that any person has contravened a relevant requirement and that there is a reasonable likelihood that the contravention will continue or be repeated, the court may make an order restraining (or in Scotland an interdict prohibiting) the contravention.",
+        "(5) In paragraph (2), references to remedying a contravention include references to mitigating its effect."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3457
+      },
+      {
+       "number": "81",
+       "heading": "The FCA: disciplinary measures (procedure)",
+       "sentences": [
+        "81.—(1) When determining the type of sanction, and level of any penalty, to be imposed on a person (“P”) under regulation 76, 77 or 78, the FCA must take into account all relevant circumstances, including where appropriate— (a) the gravity and the duration of the contravention or failure;",
+        "(13) Section 388 of FSMA has effect for the purposes of paragraph (12) as if— (a) in subsection (1)(e)(i) for “this Act” there were substituted “regulation 93(1) of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”, and (b) subsections (1A) and (2) were omitted."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3479
+      },
+      {
+       "number": "82",
+       "heading": "The FCA: procedure (general)",
+       "sentences": [
+        "82.—(1) Sections 389 (notices of discontinuance), 390 (final notices) and 392 (application of sections 393 and 394) to 395 (the FCA’s and PRA’s procedures) of FSMA(b) apply in relation to a warning notice given under regulation 81(2) and a decision notice given under regulation 81(6) as they apply in relation to a warning notice or decision notice given under FSMA, subject to paragraphs (2) to (3).",
+        "S.I. 2005/381, 2005/1433, 2007/1973, 2009/534 and 2013/1388."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3532
+      },
+      {
+       "number": "83",
+       "heading": "The Commissioners: disciplinary measures (procedure)",
+       "sentences": [
+        "83.—(1) When determining the type of sanction, and level of any penalty, to be imposed on a person (“P”) under regulation 76 or 78, the Commissioners must take into account all relevant circumstances, including where appropriate— (a) the gravity and the duration of the contravention or failure;",
+        "(b) give details of the way in which the penalty may be recovered if it is not paid by the date stated in the notice."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3569
+      },
+      {
+       "number": "84",
+       "heading": "Publication: the FCA",
+       "sentences": [
+        "84.—(1) Where a warning notice is given by the FCA under regulation 81(2), neither the FCA nor any person to whom it is given or copied may publish the notice or any details concerning it.",
+        "(11) For the purposes of this regulation “personal data” has the meaning given in section 1 of the Data Protection Act 1998 (basic interpretative provisions)(b)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3597
+      },
+      {
+       "number": "85",
+       "heading": "Publication: the Commissioners",
+       "sentences": [
+        "85.—(1) Where the Commissioners give a notice under regulation 83, the Commissioners must publish on their official website such information about the matter to which the notice relates as they consider appropriate, subject to paragraphs (2) to (8).",
+        "(10) For the purposes of this regulation “personal data” has the meaning given in section 1 of the Data Protection Act 1998 (basic interpretative provisions)(b)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3645
+      }
+     ],
+     "line": 3342
+    },
+    {
+     "number": "CHAPTER 3",
+     "heading": "Criminal offences, penalties and proceedings etc.",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "86",
+       "heading": "Criminal offence",
+       "sentences": [
+        "86.—(1) A person who contravenes a relevant requirement imposed on that person is guilty of an offence and liable— (a) on summary conviction— (i) in England and Wales, to imprisonment for a term not exceeding three months, to a fine or to both;",
+        "(4) Where a person has been convicted of an offence under this regulation, that person is not also to be liable to a sanction under Chapter 2 of this Part."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3696
+      },
+      {
+       "number": "87",
+       "heading": "Offences of prejudicing investigations",
+       "sentences": [
+        "87.—(1) This regulation applies if a person (“P”) knows or suspects that an appropriate officer is acting (or proposing to act) in connection with an investigation into a potential contravention of a relevant requirement which is being or is about to be conducted.",
+        "(b) in Northern Ireland, an officer of the Department for the Economy; acting pursuant to arrangements made with the FCA or with the Commissioners for the purposes of these Regulations."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3722
+      },
+      {
+       "number": "88",
+       "heading": "Information offences",
+       "sentences": [
+        "88.—(1) A person (“P”) commits an offence if, in purported compliance with a requirement imposed on P by or under these Regulations, P provides information to any person which is false or misleading in a material particular, and— (a) P knows that the information is false or misleading; or (b) P is reckless as to whether the information is false or misleading.",
+        "(4) It is a defence for a person charged with an offence under paragraph (3) of disclosing information to prove that they reasonably believed— (a) that the disclosure was lawful; or (b) that the information had already and lawfully been made available to the public."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3780
+      },
+      {
+       "number": "89",
+       "heading": "Proceedings: general",
+       "sentences": [
+        "89.—(1) Proceedings for an offence under these Regulations may be instituted by— (a) order of the Commissioners;",
+        "(6) In its application to the Commissioners acting in Scotland, paragraph (4)(b) is to be read as referring to the Commissioners determining whether to refer the matter to the Crown Office and Procurator Fiscal Service with a view to the Procurator Fiscal determining whether a person should be prosecuted for such an offence."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3807
+      },
+      {
+       "number": "90",
+       "heading": "Proceedings: jurisdiction",
+       "sentences": [
+        "90.—(1) Proceedings against any person for an offence under these Regulations may be taken before the appropriate court in the United Kingdom having jurisdiction in the place where that person is for the time being.",
+        "The definition of “assigned matter” was substituted by paragraph 22 of Schedule 4 to the Commissioners of Revenue and Customs Act 2006 (c.11) and amended by section 24(7) of the Scotland Act 2012 (c.11) and section 7 of the Wales Act 2014 (c.29)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3832
+      },
+      {
+       "number": "91",
+       "heading": "Proceedings: partnership or unincorporated association",
+       "sentences": [
+        "91.—(1) Proceedings for an offence alleged to have been committed by— (a) a partnership must be brought in the name of the partnership; or (b) an unincorporated association must be brought in the name of the association, and not in that of its members.",
+        "(3) Rules of court relating to the service of documents are to have effect as if a partnership or unincorporated association were a body corporate."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3844
+      },
+      {
+       "number": "92",
+       "heading": "Offence by bodies corporate, partnership or unincorporated association",
+       "sentences": [
+        "92.—(1) If an offence under this Part committed by a body corporate is shown— (a) to have been committed with the consent or the connivance of an officer of the body corporate; or (b) to be attributable to any neglect on the part of an officer, the officer (as well as the body corporate) is guilty of the offence and is liable to be proceeded against and punished accordingly.",
+        "(d) S.I. 1981/1675 (N.I. 26). that officer (as well as the association) is guilty of the offence and is liable to be proceeded against and punished accordingly."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3864
+      }
+     ],
+     "line": 3694
+    }
+   ],
+   "line": 3335
+  },
+  {
+   "number": "PART 10",
+   "heading": "Appeals",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "CHAPTER 1",
+     "heading": "Decisions of the FCA",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "93",
+       "heading": "Appeals against decisions of the FCA",
+       "sentences": [
+        "93.—(1) A person may appeal from a decision by the FCA under these Regulations to the Upper Tribunal.",
+        "(2) The Tribunal may, on determining a reference under these Regulations in respect of a decision of the FCA, make recommendations as to its regulating provisions or its procedures.”."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3897
+      }
+     ],
+     "line": 3895
+    },
+    {
+     "number": "CHAPTER 2",
+     "heading": "Decisions of the Commissioners",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "94",
+       "heading": "Offer of review",
+       "sentences": [
+        "94.—(1) The Commissioners must offer a person (“P”) a review of a decision that has been notified to P if an appeal lies under this Chapter in respect of the decision.",
+        "(3) This regulation does not apply to the notification of the conclusions of a review."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3924
+      },
+      {
+       "number": "95",
+       "heading": "Review by the Commissioners",
+       "sentences": [
+        "95.—(1) The Commissioners must review a decision if— (a) they have offered a review of the decision under this Chapter, and (b) the person concerned (“P”) notifies the Commissioners that P accepts the offer within 30 days from the date of the notice of the offer of a review.",
+        "(3) The Commissioners must not review a decision if P has appealed to the tribunal under regulation 100 in respect of the decision."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3933
+      },
+      {
+       "number": "96",
+       "heading": "Extensions of time",
+       "sentences": [
+        "96.—(1) If under this Chapter the Commissioners have offered a person (“P”) a review of a decision the Commissioners may within the relevant period notify P that the relevant period is extended.",
+        "(4) In this regulation, “relevant period” means— (a) the period of 30 days referred to in regulation 95(1)(b); or (b) in the case where one or more notices have already been given under paragraph (1) the period as extended (or as most recently extended) in accordance with paragraph (2)."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3942
+      },
+      {
+       "number": "97",
+       "heading": "Review out of time",
+       "sentences": [
+        "97.—(1) This regulation applies if— (a) the Commissioners have offered a review of a decision under this Chapter to a person (“P”); and (b) P does not accept the offer within the time allowed under regulation 95(1)(b) or 96(2).",
+        "(b) the Commissioners are satisfied that P had a reasonable excuse for not accepting the offer of a review within the time allowed; and (c) the Commissioners are satisfied that P made the request without unreasonable delay after the excuse had ceased to apply."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3954
+      },
+      {
+       "number": "98",
+       "heading": "Nature of review etc",
+       "sentences": [
+        "98.—(1) This regulation applies if the Commissioners are required to undertake a review under regulation 95 or 97.",
+        "(9) If paragraph (8) applies, the Commissioners must notify P of the conclusion which the review is treated as having reached."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3966
+      },
+      {
+       "number": "99",
+       "heading": "Appeals against decisions of the Commissioners",
+       "sentences": [
+        "99.—(1) Any person who is the subject of a decision by the Commissioners under these Regulations may appeal to the tribunal in accordance with regulation 100.",
+        "(f) Section 82 was amended by S.I. 2009/56."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 3995
+      },
+      {
+       "number": "100",
+       "heading": "Appeals against decisions of the Commissioners: procedure",
+       "sentences": [
+        "100.—(1) Subject to paragraphs (2) to (4), an appeal under regulation 99 is to be made to the tribunal before— (a) the end of the period of 30 days beginning with the date of the notice notifying the decision to which the appeal relates; or (b) if later, the end of the relevant period (within the meaning of regulation 96).",
+        "(6) In this regulation, “conclusion date” means the date of the notice notifying the conclusions of the review."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 4021
+      }
+     ],
+     "line": 3922
+    }
+   ],
+   "line": 3893
+  },
+  {
+   "number": "PART 11",
+   "heading": "Miscellaneous Provisions",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "101",
+     "heading": "Recovery of charges and penalties through the court",
+     "sentences": [
+      "Any charge or penalty imposed on a relevant person or on a payment service provider by the FCA or the Commissioners under these Regulations is a debt due from that person to the FCA or the Commissioners respectively, and is recoverable accordingly."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4049
+    },
+    {
+     "number": "102",
+     "heading": "Costs of supervision",
+     "sentences": [
+      "102.—(1) The FCA and the Commissioners may impose charges on— (a) applicants for approval under Chapter 3 of Part 2;",
+      "(8) In paragraph (2), “expenses” includes expenses incurred by a local weights and measures authority or the Department for the Economy pursuant to arrangements made for the purposes of these Regulations with the FCA or with the Commissioners— (a) by or on behalf of the authority; or (b) by the Department for the Economy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4053
+    },
+    {
+     "number": "103",
+     "heading": "Obligations on public authorities",
+     "sentences": [
+      "103.—(1) The following bodies and persons must, if they know or suspect or have reasonable grounds for knowing or suspecting that a person is or has engaged in money laundering or terrorist financing, as soon as practicable, inform the NCA— (a) the Auditor General for Scotland;",
+      "(3) Where a disclosure under paragraph (1) is made in good faith, no civil liability arises in respect of the disclosure on the part of the person by whom, or on whose behalf, it is made."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4085
+    },
+    {
+     "number": "104",
+     "heading": "Suspicious activity disclosures",
+     "sentences": [
+      "104.—(1) The NCA must make arrangements to provide appropriate feedback on the suspicious activity disclosures it has received at least once a year.",
+      "(k) 2002 c.29."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4129
+    },
+    {
+     "number": "105",
+     "heading": "Disclosure by the Commissioners",
+     "sentences": [
+      "105.—(1) The Commissioners may disclose to the FCA information held in connection with their functions under these Regulations if the disclosure is made for the purpose of enabling or assisting the FCA to discharge any of its functions under the Payment Services Regulations 2009(a) or the Electronic Money Regulations 2011(b).",
+      "(c) with a view to the institution of any other proceedings by the FCA, for the purposes of any such proceedings, or for the purposes of any reference to the Upper Tribunal under the Payment Services Regulations 2009; or (d) in the form of a summary or collection of information so framed as not to enable information relating to any particular person to be ascertained from it."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4160
+    },
+    {
+     "number": "106",
+     "heading": "General restrictions",
+     "sentences": [
+      "These Regulations do not authorise or require— (a) a disclosure, in contravention of any provisions of the Data Protection Act 1998(c), of personal data which are not exempt from those provisions; or (b) a disclosure which is prohibited by any of Parts 1 to 3 or 5 to 7 of the Investigatory Powers Act 2016(d)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4175
+    },
+    {
+     "number": "107",
+     "heading": "Transfers between the United Kingdom and the Channel Islands and the Isle of Man",
+     "sentences": [
+      "In determining whether a person has failed to comply with any requirement in the funds transfer regulation, any transfer of funds between the United Kingdom and— (a) the Channel Islands; or (b) the Isle of Man; is to be treated as a transfer of funds within the United Kingdom."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4181
+    },
+    {
+     "number": "108",
+     "heading": "Review",
+     "sentences": [
+      "108.—(1) The Treasury must from time to time— (a) carry out a review of the regulatory provision contained in these Regulations; and (b) publish a report setting out the conclusions of the review.",
+      "(6) In this regulation, “regulatory provision” has the same meaning as in sections 28 to 32 of the Small Business, Enterprise and Employment Act 2015 (see section 32 of that Act)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4187
+    },
+    {
+     "number": "109",
+     "heading": "Consequential amendments",
+     "sentences": [
+      "Schedule 7 makes amendments relating to these Regulations."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4215
+    },
+    {
+     "number": "110",
+     "heading": "Revocation and saving provisions",
+     "sentences": [
+      "110.—(1) The old money laundering regulations and the old transfer of funds regulations are revoked.",
+      "David Evennett Andrew Griffiths At 9.20 a.m. on 22nd June 2017 Two of the Lords Commissioners of Her Majesty’s Treasury (a) S.I. 2007/3298."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4217
+    }
+   ],
+   "line": 4047
+  },
+  {
+   "number": null,
+   "heading": "SCHEDULES",
+   "sentences": [
+    "SCHEDULE 1 Regulation 7(1)(b)"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "SCHEDULE 1",
+     "heading": "Professional Bodies",
+     "sentences": [
+      "Association of Accounting Technicians 2.",
+      "Law Society of Scotland SCHEDULE 2 Regulation 10(4)"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4249
+    },
+    {
+     "number": "SCHEDULE 2",
+     "heading": "Activities listed in points 2 to 12, 14 and 15 of Annex I to the Capital Requirements Directive",
+     "sentences": [
+      "The activities listed in points 2 to 12, 14 and 15 of Annex I to the Capital Requirements Directive are— “2.",
+      "Issuing electronic money.” SCHEDULE 3 Regulation 26(14)"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4273
+    },
+    {
+     "number": "SCHEDULE 3",
+     "heading": "Relevant Offences",
+     "sentences": [
+      "An offence under the Perjury Act 1911(b). 2.",
+      "(h) Schedule 7A was inserted by section 48 of the Crime and Courts Act 2013 (c.22)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4300
+    },
+    {
+     "number": "SCHEDULE 4",
+     "heading": "Supervisory Information",
+     "sentences": [
+      "Regulation 51(1) Supervisory Information 1.",
+      "Indications that the supervisory authority considers to suggest that a transfer of criminal funds takes place in their own sector."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4411
+    },
+    {
+     "number": "SCHEDULE 5",
+     "heading": "Connected Persons",
+     "sentences": [
+      "Regulation 65(3) Connected Persons"
+     ],
+     "table_cells": [],
+     "children": [
+      {
+       "number": null,
+       "heading": "Corporate Bodies",
+       "sentences": [
+        "If the relevant person or payment service provider is a body corporate, any person who is or has been— (a) an officer or manager of the body corporate;",
+        "(d) an agent of the body corporate; or (e) an agent of a parent undertaking of the body corporate."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 4460
+      },
+      {
+       "number": null,
+       "heading": "Partnerships",
+       "sentences": [
+        "If the relevant person or payment service provider is a partnership, any person who is or has been a member, manager, employee or agent of the partnership."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 4468
+      },
+      {
+       "number": null,
+       "heading": "Unincorporated Associations",
+       "sentences": [
+        "If the relevant person or payment service provider is an unincorporated association of persons which is not a partnership, any person who is or has been a member, an officer, manager, employee or agent of the association."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 4471
+      },
+      {
+       "number": null,
+       "heading": "Individuals",
+       "sentences": [
+        "If the relevant person or payment service provider is an individual, any person who is or has been an employee or agent of that individual."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 4475
+      }
+     ],
+     "line": 4458
+    },
+    {
+     "number": "SCHEDULE 6",
+     "heading": "Meaning of “relevant requirement”",
+     "sentences": [
+      "Regulation 75 Meaning of “relevant requirement” 1.",
+      "The requirement specified in this paragraph is the requirement imposed in regulation 84(1)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 4478
+    },
+    {
+     "number": "SCHEDULE 7",
+     "heading": "Consequential Amendments",
+     "sentences": [
+      "Regulation 109 Consequential Amendments"
+     ],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "PART 1",
+       "heading": "Consequential Amendments to Primary Legislation",
+       "sentences": [],
+       "table_cells": [],
+       "children": [
+        {
+         "number": null,
+         "heading": "Solicitors (Scotland) Act 1980",
+         "sentences": [
+          "In section 34 of the Solicitors (Scotland) Act 1980(a), after subsection (1C), insert— “(1D) Rules made under this section may make provision as to the way in which solicitors and incorporated practices are to comply with the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017.”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4572
+        },
+        {
+         "number": null,
+         "heading": "Northern Ireland Act 1998",
+         "sentences": [
+          "In Schedule 3 to the Northern Ireland Act 1998 (reserved matters)(b)— (a) in paragraph 25, for “the Money Laundering Regulations 2007”(c) substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”;",
+          "(b) omit paragraph 25A."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4577
+        },
+        {
+         "number": null,
+         "heading": "Financial Services and Markets Act 2000",
+         "sentences": [
+          "3.—(1) FSMA(d) is amended as follows.",
+          "(4) In section 333U (guidance relating to money laundering and politically exposed persons)— (a) in the heading, after “Money laundering” insert “and terrorist financing”; and (b) in subsection (3)— (i) for “Secretary of State” substitute “Treasury”; and (ii) in paragraph (b), after “by the FCA” insert “or under the ombudsman scheme”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4583
+        },
+        {
+         "number": null,
+         "heading": "Terrorism Act 2000",
+         "sentences": [
+          "4.—(1) The Terrorism Act 2000(b) is amended as follows.",
+          "(ii) omit paragraph (f)."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4615
+        },
+        {
+         "number": null,
+         "heading": "Criminal Justice and Police Act 2001",
+         "sentences": [
+          "In the Criminal Justice and Police Act 2001(f)— (a) in section 68(2) (application to Scotland)— (i) in paragraph (g), for “regulation 39(6) of the Money Laundering Regulations 2007”(g) substitute “regulation 70(7) of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”;",
+          "(iii) omit paragraph 73K and the heading above it."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4686
+        },
+        {
+         "number": null,
+         "heading": "Proceeds of Crime Act 2002",
+         "sentences": [
+          "6.—(1) The Proceeds of Crime Act 2002(a) is amended as follows.",
+          "(ii) omit paragraph (f)."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4709
+        },
+        {
+         "number": null,
+         "heading": "Counter-Terrorism Act 2008",
+         "sentences": [
+          "In Schedule 7 to the Counter-Terrorism Act 2008(f) (terrorist financing and money laundering), for paragraph 45(3), substitute— “(3) Unless otherwise defined, expressions used in this Schedule and in Directive 2015/849/EU of the European Parliament and of the Council of 20th May 2015 on the (a) Paragraph 1(6) was amended by S.I. 2016/680.",
+          "(f) 2008 c.28. prevention of the use of the financial system for the purpose of money laundering or terrorist financing have the same meaning as in that Directive.”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4785
+        },
+        {
+         "number": null,
+         "heading": "Borders, Citizenship and Immigration Act 2009",
+         "sentences": [
+          "(b) in paragraph (e), for “Regulation (EC) No 1781/2006 on information on the payer accompanying transfers of funds”(d) substitute “Regulation (EU) 2015/847 of the European Parliament and of the Council of 20th May 2015 on information accompanying transfers of funds”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4798
+        },
+        {
+         "number": null,
+         "heading": "Crime and Courts Act 2013",
+         "sentences": [
+          "In Schedule 17 (offences in relation to which a deferred prosecution arrangement may be entered into) to the Crime and Courts Act 2013(e), in paragraph 27, for “regulation 45 of the Money Laundering Regulations 2007 (S.I. 2007/2157)” substitute “regulation 86 of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4810
+        },
+        {
+         "number": null,
+         "heading": "Finance Act 2014",
+         "sentences": [
+          "In Schedule 34 to the Finance Act 2014(f), in paragraph 6(4)(j) (criminal offences) for “regulation 45(1) of the Money Laundering Regulations 2007 (S.I. 2007/2157)” substitute “regulation 86(1) of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4816
+        },
+        {
+         "number": null,
+         "heading": "Bank of England and Financial Services Act 2016",
+         "sentences": [
+          "In the Bank of England and Financial Services Act 2016— (a) in the italic heading above section 30, after “Money laundering” insert “and terrorist financing”;",
+          "(g) 2016 c. 14."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4821
+        }
+       ],
+       "line": 4570
+      },
+      {
+       "number": "PART 2",
+       "heading": "Consequential Amendments to Secondary Legislation",
+       "sentences": [],
+       "table_cells": [],
+       "children": [
+        {
+         "number": null,
+         "heading": "Estate Agents (Undesirable Practices) (No 2) Order 1991",
+         "sentences": [
+          "Schedule 3 (other matters) to the Estate Agents (Undesirable Practices) (No 2) Order 1991(a) is amended as follows— (a) at the beginning of paragraph 2, insert “Subject to paragraph 2A”;",
+          "Paragraph 2 does not apply if the estate agent does not forward accurate details of the offer because the estate agent is unable to apply the customer due diligence measures required by regulation 28, and where relevant, those required by regulations 33, and 35 to 37 of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017 in relation to the offeror.”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4837
+        },
+        {
+         "number": null,
+         "heading": "Public Interest Disclosure (Prescribed Persons) Order (Northern Ireland) 1999",
+         "sentences": [
+          "In the Schedule (description of persons and matters) to the Public Interest Disclosure (Prescribed Persons) Order (Northern Ireland) 1999(b)— (a) in the entry relating to Her Majesty’s Revenue and Customs, in column 2, for “regulation 23(1)(d)(vii) of the Money Laundering Regulations 2007” substitute “regulation 7(1)(c)(vii) of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”;",
+          "(b) the Proceeds of Crime Act 2002; or (c) the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”"
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4847
+        },
+        {
+         "number": null,
+         "heading": "Terrorism Act 2000 (Crown Servants and Regulators) Regulations 2001",
+         "sentences": [
+          "In the meaning of “relevant business” in regulation 2 (interpretation) of the Terrorism Act 2000 (Crown Servants and Regulators) Regulations 2001(c) for “regulation 3(1)(a) to (h) of the Money Laundering Regulations 2007” substitute “regulation 8(2)(a) to (h) of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4862
+        },
+        {
+         "number": null,
+         "heading": "Representation of the People (England and Wales) Regulations 2001",
+         "sentences": [
+          "In regulation 114(3)(b) in the Representation of the People (England and Wales) Regulations 2001(d) (sale of full register to credit reference agencies), for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”.",
+          "Regulation 114(3)(b)was amended by S.I. 2003/3075, 2007/2157, 2013/472."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4868
+        },
+        {
+         "number": null,
+         "heading": "Representation of the People (Scotland) Regulations 2001",
+         "sentences": [
+          "In regulation 113(3)(b) in the Representation of the People (Scotland) Regulations 2001(a) (sale of full register to credit reference agencies), for “the Money Laundering Regulations 2007” substitute “Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4878
+        },
+        {
+         "number": null,
+         "heading": "Financial Services and Markets Act 2000 (Regulated Activities) Order 2001",
+         "sentences": [
+          "In article 72E(9) in the Financial Services and Markets Act 2000 (Regulated Activities) Order 2001(b) (Business and Angel-led Enterprise Capital Funds) for “the Money Laundering Regulations 2007”(c) substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4883
+        },
+        {
+         "number": null,
+         "heading": "Open-Ended Investment Companies Regulations 2001",
+         "sentences": [
+          "Regulation 48 (bearer shares) of the Open-Ended Investment Companies Regulations 2001(d) is amended as follows— (a) the existing text is renumbered as paragraph (1);",
+          "(3) Paragraph (2) does not apply to an open-ended investment company if— (a) an application for an authorisation order was made in relation to that open-ended investment company before the relevant date; and (b) that application was not determined until a date on or after the relevant date.”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4888
+        },
+        {
+         "number": null,
+         "heading": "Proceeds of Crime Act 2002 (Disclosure of information to and by Lord Advocate and Scottish Ministers) Order 2003",
+         "sentences": [
+          "In article 3(d) (disclosure of information by Lord Advocate and by Scottish Ministers) of the Proceeds of Crime Act 2002 (Disclosure of Information to and by Lord Advocate and Scottish Ministers) Order 2003(e) for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4904
+        },
+        {
+         "number": null,
+         "heading": "Proceeds of Crime Act 2002 (Failure to Disclose Money Laundering: Specified Training) Order 2003",
+         "sentences": [
+          "In article 2 of the Proceeds of Crime Act 2002 (Failure to Disclose Money Laundering: Specified Training) Order 2003(f) (training specified), for “regulation 21 of the Money Laundering Regulations 2007” substitute “regulation 24 of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”.",
+          "Article 2 was amended by S.I. 2007/2157."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4911
+        },
+        {
+         "number": null,
+         "heading": "Legislative and Regulatory Reform (Regulatory Functions) Order 2007",
+         "sentences": [
+          "21.—(1) Part 1 of the Schedule to the Legislative and Regulatory Reform (Regulatory Functions) Order 2007(a) is amended as follows.",
+          "(3) In the reference to a “professional body” for “Schedule 3 to the Money Laundering Regulations 2007” substitute “Schedule 1 to the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4923
+        },
+        {
+         "number": null,
+         "heading": "Representation of the People (Northern Ireland) Regulations 2008",
+         "sentences": [
+          "In regulation 112(3)(b) of the Representation of the People (Northern Ireland) Regulations 2008(b) (sale of full register etc to credit reference agencies), for paragraph (i), substitute— “(i) the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017;”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4932
+        },
+        {
+         "number": null,
+         "heading": "Transfer of Tribunal Functions and Revenue and Customs Appeals Order 2009",
+         "sentences": [
+          "In paragraph 2(6) of Schedule 3 (transitional and saving provisions) to the Transfer of Tribunal Functions and Revenue and Customs Appeals Order 2009(c), in the definition of “review and appeal provisions”— (a) in paragraph (i) for “regulations 43 and 44 of the Money Laundering Regulations 2007” substitute “regulations 94 to 100 of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”;",
+          "(b) omit paragraph (j)."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4937
+        },
+        {
+         "number": null,
+         "heading": "Payment Services Regulations 2009",
+         "sentences": [
+          "24.—(1) The Payment Services Regulations 2009(d) are amended as follows.",
+          "(10) In paragraph 10(h) in Part 2 of Schedule 5(d) (application and modification of secondary legislation) for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4945
+        },
+        {
+         "number": null,
+         "heading": "Companies (Disclosure of Address) Regulations 2009",
+         "sentences": [
+          "In paragraph 7(b) of Schedule 2 (disclosure to a credit reference agency) of the Companies (Disclosure of Address) Regulations 2009(e)— (a) for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”;",
+          "(b) for “Directive 2005/60/EC of the European Parliament and of the Council of 26 October 2005 on the prevention of the use of the financial system for the purpose of money laundering and terrorist financing”(f) substitute “Directive 2015/849/EU of the European Parliament and of the Council of 20 May 2015 on the prevention of the use of the financial system for the purpose of money laundering or terrorist financing”(g)."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 4997
+        },
+        {
+         "number": null,
+         "heading": "Overseas Companies Regulations 2009",
+         "sentences": [
+          "In paragraph 7(b) of Schedule 2 (disclosure to a credit reference agency) of the Overseas Companies Regulations 2009(h)— (a) OJ L 345, 8.12.2006, p.1.",
+          "(b) for “Directive 2005/60/EC of the European Parliament and of the Council of 26 October 2005 on the prevention of the use of the financial system for the purpose of money laundering and terrorist financing” substitute “Directive 2015/849/EU of the European Parliament and of the Council of 20 May 2015 on the prevention of the use of the financial system for the purpose of money laundering or terrorist financing”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5007
+        },
+        {
+         "number": null,
+         "heading": "Defence and Security Public Contracts Regulations 2011",
+         "sentences": [
+          "In regulation 23(1)(i) of Part 4 (criteria for the rejection of economic operators) to the Defence and Security Public Contracts Regulations 2011(a), at the end insert “or of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5025
+        },
+        {
+         "number": null,
+         "heading": "Electronic Money Regulations 2011",
+         "sentences": [
+          "28.—(1) The Electronic Money Regulations 2011(b) are amended as follows.",
+          "(b) for “Regulation (EC) No 1781/2006 of the European Parliament and of the Council of 15 November 2006 on information on the payer accompanying transfers of funds”(a) substitute “Regulation 2015/847/EU of the European Parliament and of the Council of 20 May 2015 on information accompanying transfers of funds”(b)."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5030
+        },
+        {
+         "number": null,
+         "heading": "Terrorism Act 2000 and Proceeds of Crime Act 2002 (Business in the Regulated Sector) (No 2) Order 2012",
+         "sentences": [
+          "29.—(1) Regulation 4 (review) of the Terrorism Act 2000 and Proceeds of Crime Act 2002 (Business in the Regulated Sector) (No 2) Order 2012(c) is amended as follows.",
+          "(3) In paragraph (4) for “the end of the period of five years beginning with the day on which this Order comes into force” substitute “26th June 2022”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5074
+        },
+        {
+         "number": null,
+         "heading": "Payment to Treasury of Penalties (Enforcement Costs) Order 2013",
+         "sentences": [
+          "In regulation 2(1)(d) (enforcement of powers) of the Payment to Treasury of Penalties (Enforcement Costs) Order 2013(e) for “regulation 42 of the Money Laundering Regulations 2007” substitute “regulation 76 of the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5085
+        },
+        {
+         "number": null,
+         "heading": "Public Interest Disclosure (Prescribed Persons) Order 2014",
+         "sentences": [
+          "In the Schedule (description of persons and matters) to the Public Interest Disclosure (Prescribed Persons) Order 2014(f), in the entry relating to the National Crime Agency, for the words in the second column substitute— “Matters relating to— (a) corrupt individuals or companies offering or receiving bribes to secure a benefit for themselves or others;",
+          "(ii) the Proceeds of Crime Act 2002; or (iii) the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5090
+        },
+        {
+         "number": null,
+         "heading": "Companies (Disclosure of Date of Birth Information) Regulations 2015",
+         "sentences": [
+          "In paragraph 7(b) of Schedule 2 (disclosure to a credit reference agency) to the Companies (Disclosure of Date of Birth Information) Regulations 2015(g)— (a) OJ No L 345, 8.12. 06, p1.",
+          "(b) for “Directive 2005/60/EC of the European Parliament and of the Council of 26 October 2005 on the prevention of the use of the financial system for the purpose of money laundering and terrorist financing”(a) substitute “Directive 2015/849/EU of the European Parliament and of the Council of 20 May 2015 on the prevention of the use of the financial system for the purpose of money laundering or terrorist financing”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5102
+        },
+        {
+         "number": null,
+         "heading": "Payment Accounts Regulations 2015",
+         "sentences": [
+          "In regulation 25(1)(b) of Part 4 (refusal of application) in the Payment Accounts Regulation 2015(b) for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5119
+        },
+        {
+         "number": null,
+         "heading": "Register of People with Significant Control Regulations 2016",
+         "sentences": [
+          "In paragraph 8(b) of Schedule 4 (disclosure to a credit reference agency) of the Register of People with Significant Control Regulations 2016(c)— (a) in paragraph (i) for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”;",
+          "(b) in paragraph (iii) for “Directive 2005/60/EC of the European Parliament and of the Council on the prevention of the use of the financial system for the purpose of money laundering and terrorist financing” substitute “Directive 2015/849/EU of the European Parliament and of the Council on the prevention of the use of the financial system for the purpose of money laundering or terrorist financing”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5123
+        },
+        {
+         "number": null,
+         "heading": "Economic Growth (Regulatory Functions) Order 2017",
+         "sentences": [
+          "In Part 1 of the Schedule to the Economic Growth (Regulatory Functions) Order 2017(d), in the entry for Her Majesty’s Revenue and Customs, for “the Money Laundering Regulations 2007” substitute “the Money Laundering, Terrorist Financing and Transfer of Funds (Information on the Payer) Regulations 2017”."
+         ],
+         "table_cells": [],
+         "children": [],
+         "line": 5134
+        }
+       ],
+       "line": 4835
+      }
+     ],
+     "line": 4568
+    }
+   ],
+   "line": 4247
+  },
+  {
+   "number": null,
+   "heading": "EXPLANATORY NOTE",
+   "sentences": [
+    "Part 1 (introduction) sets out the definitions and meanings that apply throughout these Regulations, and the supervisory authorities for those persons within the scope of these Regulations.",
+    "UK201706226 06/2017 19585 http://www.legislation.gov.uk/id/uksi/2017/692"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 5139
+  }
+ ],
+ "reviewed": true,
+ "review_note": "人工复核（高分歧）：抽查 PART 1–11、各 CHAPTER、条文 1–110 和附表 1–7，标准答案与原文一致；附表结构解析器未识别（已知问题）。"
+}

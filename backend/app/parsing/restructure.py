@@ -41,8 +41,31 @@ def adopt_article_titles(nodes: list[ClauseNode]) -> None:
         adopt_article_titles(node.children)
 
 
+_PART = re.compile(r"\s*(?:PART|Part)\s+([IVXLC]+|\d+)\s*[.:]?\s*(.*)$")
+
+
 def nest_chapters(nodes: list[ClauseNode]) -> list[ClauseNode]:
-    """正文里独占一行的 CHAPTER I / II …（连续编号、至少两章）提升为顶层章节。
+    """英国 SI 的「PART 1 > CHAPTER 1 > 条」：先按 PART 分组，章号在每个 PART 内重新计数。"""
+    parts = _nest_marker(nodes, _PART, "Part", 1)
+    if parts is nodes:
+        return _nest_marker(nodes, _CHAPTER, "Chapter", 1)
+    for part in parts:
+        if part.number and part.number.startswith("Part "):
+            # 「PART 2 / CHAPTER 1」紧挨着：第一章的标记在 PART 自己的正文里。
+            head = ClauseNode(heading="", text=part.text, level=2, kind="unstructured")
+            nested = _nest_marker([head, *part.children], _CHAPTER, "Chapter", 2)
+            if nested and nested[0] is head:
+                part.text = head.text
+                nested = nested[1:]
+            else:
+                part.text = ""
+            part.children = nested
+    return parts
+
+
+def _nest_marker(nodes: list[ClauseNode], pattern: re.Pattern, word: str,
+                 level: int) -> list[ClauseNode]:
+    """正文里独占一行的 CHAPTER I / II …（连续编号、至少两章）提升为一层章节。
 
     章标题行通常被吞进前一条的正文末尾（或文档开头的无结构段落）。
     """
@@ -50,11 +73,27 @@ def nest_chapters(nodes: list[ClauseNode]) -> list[ClauseNode]:
     for position, node in enumerate(nodes):
         lines = node.text.split("\n")
         for index, line in enumerate(lines):
-            match = _CHAPTER.fullmatch(line)
+            match = pattern.fullmatch(line)
+            # 「Chapter VIII, a body as referred to…」是正文里的引用，不是章标题。
+            if match and match[2] and (match[2][0] in ",;)(" or match[2][0].islower()):
+                continue
             if match:
                 found.append((position, index, match[1], match[2].strip()))
-    numbers = [_roman(number) for _, _, number, _ in found]
-    if len(found) < 2 or numbers != list(range(numbers[0], numbers[0] + len(numbers))):
+    # 全大写的 CHAPTER 至少两处时，混合大小写的「Chapter VII.」是折行到行首的正文引用。
+    def _caps(item) -> bool:
+        return nodes[item[0]].text.split("\n")[item[1]].lstrip().startswith(word.upper())
+    if sum(map(_caps, found)) >= 2:
+        found = [item for item in found if _caps(item)]
+    # 目录残行、附表、说明注释会各自再出现一遍 PART 1…：只取最长的一段 +1 递增序列。
+    runs: list[list] = []
+    for item in found:
+        if runs and _roman(item[2]) == _roman(runs[-1][-1][2]) + 1:
+            runs[-1].append(item)
+        else:
+            runs.append([item])
+    # 等长时取跨节点最多的一段：目录残行全挤在开头那个无结构段落里。
+    found = max(runs, key=lambda run: (len({item[0] for item in run}), len(run))) if runs else []
+    if len(found) < 2:
         return nodes
 
     by_node: dict[int, list[tuple[int, str, str]]] = {}
@@ -78,12 +117,12 @@ def nest_chapters(nodes: list[ClauseNode]) -> list[ClauseNode]:
             tail = lines[index + 1:stop]
             if not title and tail and _looks_like_title(tail[0]):
                 title, tail = tail[0].strip(), tail[1:]
-            current = ClauseNode(heading=title or f"Chapter {number}", text="\n".join(tail).strip("\n"),
-                                 level=1, number=f"Chapter {number}", page_ref=node.page_ref)
+            current = ClauseNode(heading=title or f"{word} {number}", text="\n".join(tail).strip("\n"),
+                                 level=level, number=f"{word} {number}", page_ref=node.page_ref)
             result.append(current)
     for chapter in result:
-        if chapter.number and chapter.number.startswith("Chapter "):
-            _deepen(chapter.children, 2)
+        if chapter.number and chapter.number.startswith(f"{word} "):
+            _deepen(chapter.children, level + 1)
     return result
 
 

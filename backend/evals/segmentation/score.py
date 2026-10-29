@@ -63,7 +63,12 @@ def _heading_matches(gold: dict, pred: ClauseNode) -> bool:
     num = norm(gold["number"])
     h, pn = norm(pred.heading), norm(pred.number)
     candidates = {h, pn + h, h.removeprefix(pn)}
-    return g in candidates or (num + g) in candidates or (g == num and h.startswith(g))
+    if g in candidates or (num + g) in candidates or (g == num and h.startswith(g)):
+        return True
+    # 编号段落（「4.1.2 Executives must…」）没有真标题：一方用编号、一方用句子开头，
+    # 或两边截断长度不同，都算同一条——编号相同且标题互为前缀/有一方只是编号。
+    h = h.removeprefix(pn)
+    return bool(num) and pn == num and (not h or g == num or h.startswith(g) or g.startswith(h))
 
 
 def score_doc(gold: dict, clauses: list[ClauseNode]) -> dict:

@@ -9,7 +9,7 @@ from docx.oxml.ns import qn
 from docx.table import Table
 from docx.text.paragraph import Paragraph
 
-from app.parsing.chinese import Item, detect_style, segment
+from app.parsing.chinese import Item, detect_style, match_label, segment
 from app.parsing.contract import (
     ClauseNode,
     DocumentMeta,
@@ -97,6 +97,15 @@ def _heading_level(paragraph: Paragraph) -> int | None:
     ppr = paragraph._p.pPr
     outline = ppr.find(qn("w:outlineLvl")) if ppr is not None else None
     if outline is None:
+        # 自定义标题样式（如 "H2FacilityPlan"）在样式**本身**上设了大纲级别，也算；
+        # 仍不沿 basedOn 往上找，目录类样式另外排除。
+        style = paragraph.style
+        name = (style.name or "").lower() if style is not None else ""
+        if style is not None and not any(word in name for word in ("toc", "contents", "title", "目录")):
+            style_ppr = style.element.pPr
+            if style_ppr is not None:
+                outline = style_ppr.find(qn("w:outlineLvl"))
+    if outline is None:
         return None
     value = outline.get(qn("w:val"))
     if value is None or not value.isdigit() or int(value) > 8:
@@ -104,6 +113,22 @@ def _heading_level(paragraph: Paragraph) -> int | None:
     if _reads_as_sentence(_paragraph_text(paragraph).strip()):
         return None
     return int(value) + 1
+
+
+def _with_cn_number(numbering: HeadingNumbering, paragraph: Paragraph, text: str) -> str:
+    """Word 自动编号是中文条章号（「第一章」「第三条」「一、」「（一）」）时拼回段落文字。"""
+    try:
+        number = numbering.number_for(paragraph)
+    except Exception:  # noqa: BLE001 — 编号定义残缺时宁可不拼，也不让整份文档解析失败
+        return text
+    if not number:
+        return text
+    number = number.strip()
+    if match_label(number) is None and match_label(number + "x") is None:
+        return text
+    if text.startswith(number):
+        return text
+    return f"{number} {text}"
 
 
 def _parse_date(raw: str) -> date | None:
@@ -198,6 +223,9 @@ class DocxParser:
         # Word 的标题编号不在文字里，是渲染时按 numbering.xml 画上去的。
         # 不还原的话 citation_label 只能退化成标题路径，而审计引用要的是 3.4.2。
         numbering = HeadingNumbering(document)
+        # 中文切割另起一台状态机：Normal 样式里的「第%1章」「%1、」自动编号也要画回文字，
+        # 和上面那台分开，免得两边各推一次计数器。
+        cn_numbering = HeadingNumbering(document)
         # 样式在每个段落上优先；同一文档中的 Normal 编号标题仍可被识别。
         styled = any(_heading_level(paragraph) is not None for paragraph in document.paragraphs)
         survey = [
@@ -296,7 +324,8 @@ class DocxParser:
                     key=source_key, text=original_text, kind="paragraph",
                     locator={"body_index": body_index, "style": paragraph.style.name},
                 ))
-                sequence.append(Item(text, source_key=source_key))
+                sequence.append(Item(_with_cn_number(cn_numbering, paragraph, text),
+                                     source_key=source_key))
             if _mark_deleted(paragraph):
                 # 不当标题、不推进编号；还剩的文字按正文留下。Word 里它会并到下一段
                 # 开头，这里挂在当前章节末尾——位置差一段，但一个字不丢。

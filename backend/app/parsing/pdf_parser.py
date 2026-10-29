@@ -169,6 +169,58 @@ def _body_sizes(lines: list[str], layout: list[dict], limit: int = 3) -> list[fl
     return [size for size, _ in weights.most_common(limit)]
 
 
+def _title_key(title: str) -> str:
+    title = re.sub(r"[.\u2026·]{2,}.*$", "", title)
+    return re.sub(r"[^0-9a-z\u4e00-\u9fff]", "", title.lower())[:24]
+
+
+_ZERO_POINT = re.compile(r"^(\s*)(\d{1,2})\.0(?=\s+\S)")
+
+
+def _zero_point_chapters(candidates: list[str]) -> list[str]:
+    """「1.0 Purpose / 1.1 Background / 2.0 Scope」：`N.0` 是第 N 章本身，不是第 N 章的
+    第 0 节。不改写的话会凭空补出 `1`、`2` 占位，真正的章全降成它们的孩子（SANS 模板实测）。
+    只在至少两处 `N.0` 且序号不重复时改写，读作 `N.`。"""
+    hits = [found[2] for line in candidates if (found := _ZERO_POINT.match(line))]
+    if len(hits) < 2 or len(set(hits)) != len(hits):
+        return candidates
+    return [_ZERO_POINT.sub(r"\1\2.", line) for line in candidates]
+
+
+def _defer_to_contents(candidates: list[str], lines: list[str], layout: list[dict]) -> list[str]:
+    """目录写了「4. Introduction to Online Resources」，正文里先出现的「4. Analyze the
+    gaps」就是步骤列表，不是第 4 章。目录只用来**否决**（同号异名，或目录列到了这一级却没有这个号），从不新增标题——
+    目录过期时最坏是退回原来的读法。"""
+    listed: dict[str, str] = {}
+    for line, loc in zip(lines, layout, strict=True):
+        if loc["role"] != "contents":
+            continue
+        label = vocabulary("decimal").match(line.strip())
+        if label is not None and (key := _title_key(label.title)):
+            listed.setdefault(".".join(str(part) for part in label.parts), key)
+    if len(listed) < 3:
+        return candidates
+    per_depth = Counter(number.count(".") for number in listed)
+    # 一两条同级的「目录行」可能是版本历史之类的误判，至少三条才算目录列到了这一级。
+    depths = {depth for depth, count in per_depth.items() if count >= 3}
+    out = list(candidates)
+    for index, line in enumerate(candidates):
+        label = vocabulary("decimal").match(line) if line.strip() else None
+        if label is None:
+            continue
+        number = ".".join(str(part) for part in label.parts)
+        expected = listed.get(number)
+        if expected is None:
+            # 目录列到了这一级却没有这个号：正文里的列表号、表格号、地址门牌。
+            if number.count(".") in depths:
+                out[index] = ""
+            continue
+        key = _title_key(label.title)
+        if key and not (key.startswith(expected[:12]) or expected.startswith(key[:12])):
+            out[index] = ""
+    return out
+
+
 def _numbered(line: str) -> Numbering | None:
     if not line.strip() or is_page_footer(line) or is_toc_line(line) or is_version_history_line(line):
         return None
@@ -243,7 +295,10 @@ def display_headings(
     **不比谁的标题多**——比数量正是原先段落号胜出的原因。
     """
     def coherent(found: list[NumberedHeading]) -> bool:
-        return len(found) >= 2 and consistency_score([h.number for h in found]) >= FLOOR
+        # 补出来的父级占位（标题就是编号本身）不算证据：一条表格里的 `1.1` 补个 `1`
+        # 就「成树」，会把正文字号的整套章节标题顶掉（NIST CSF 2.0 实测）。
+        real = sum(h.title != h.number for h in found)
+        return real >= 2 and consistency_score([h.number for h in found]) >= FLOOR
 
     # 先补父级再评分，与十进制读法的次序一致：缺一级父号是版式常态，不是不自洽。
     for guess in body_sizes:
@@ -510,6 +565,8 @@ class PdfParser:
             demote_fragment_headings(clauses)
             return ParsedDocument(meta=_cover_meta(lines), clauses=clauses, warnings=warnings,
                                   source_blocks=blocks, source_origin="pdf_text")
+        candidates = _defer_to_contents(candidates, lines, layout)
+        candidates = _zero_point_chapters(candidates)
         displayed, body_size = display_headings(candidates, layout, _body_sizes(lines, layout))
         headings, filter_warnings = extract_headings(candidates)
         # 分开考察不同字号/缩进的连续正文编号，避免章节号和段落号互相污染。
@@ -548,8 +605,34 @@ class PdfParser:
             explicit.setdefault(match[1].lower(), []).append(NumberedHeading(
                 match[2], title, index, body_start,
             ))
+        # 英国 SI 体例：标题独占一行，下一行才是「19.—(1) …」或「2. These …」。
+        for index, line in enumerate(candidates[:-1]):
+            title = line.strip()
+            if (not title or len(title) > 120 or title[-1] in ".,;:" or not title[0].isupper()
+                    or re.match(r"(?:PART|CHAPTER|SCHEDULE)\b", title)):
+                continue
+            nxt = re.match(r"\s*(\d{1,3})\.(?:—|–|\s+[A-Z(“\"])", lines[index + 1])
+            # 目录否决可能已抹掉「1.—(1)」这一行（编号同、标题不同），这里读原行。
+            if nxt and layout[index + 1]["role"] == "body" and page_of.get(index + 1) == page_of.get(index):
+                explicit.setdefault("regulation", []).append(NumberedHeading(
+                    nxt[1], title, index, index + 1,
+                ))
+        if regulations := explicit.pop("regulation", None):
+            # 封面残页、附表会各自从 1 重新编号：只留最长的一段大致连续递增的序列。
+            runs_: list[list[NumberedHeading]] = []
+            for heading in regulations:
+                if runs_ and 0 < int(heading.number) - int(runs_[-1][-1].number) <= 3:
+                    runs_[-1].append(heading)
+                else:
+                    runs_.append([heading])
+            best = max(runs_, key=len)
+        else:
+            best = []
         coherent = [stream for stream in explicit.values()
                     if acts_as_headings([h.number for h in stream])]
+        if len(best) >= 5:
+            # 分段时已保证递增、间隔不超过 3（漏掉的是 19A 这类插入条），不再要求严格 +1。
+            coherent.append(best)
         if coherent:
             headings = max(coherent, key=len)
             displayed = []

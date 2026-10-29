@@ -59,3 +59,7 @@ frontend/sample_*.xlsx
 
 # 评估缓存（向量、生成的语料）
 backend/evals/.cache/
+
+# 真实制度语料：原文件体积大，留在本地不入库（来源见 backend/evals/real/manifest.csv）
+backend/evals/real/docs/
+backend/evals/real/work/

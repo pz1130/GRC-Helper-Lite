@@ -1,0 +1,224 @@
+{
+ "reviewed": true,
+ "note": "人工复核：大模型只标了最后一块里的 3.–7. 表单题号（6 条），漏掉整份模板的版块结构。该文档是 CISA 化学设施安保计划填空模板，条款单位是版块标题（Detection / Delay / Response / Cyber …）及其下的 Directions / Notes / … Security Measures 小节；1./a./i. 是表单题目，不作为条款。按原文手工重标 35 个节点。",
+ "drop": [
+  429,
+  443,
+  449,
+  452,
+  460,
+  464
+ ],
+ "add": [
+  {
+   "line": 5,
+   "level": 1,
+   "number": "",
+   "heading": "Instructions"
+  },
+  {
+   "line": 18,
+   "level": 1,
+   "number": "",
+   "heading": "Revisions"
+  },
+  {
+   "line": 21,
+   "level": 1,
+   "number": "",
+   "heading": "Contact Information"
+  },
+  {
+   "line": 44,
+   "level": 1,
+   "number": "",
+   "heading": "Critical Asset Identification"
+  },
+  {
+   "line": 54,
+   "level": 1,
+   "number": "",
+   "heading": "Detection"
+  },
+  {
+   "line": 131,
+   "level": 1,
+   "number": "",
+   "heading": "Delay"
+  },
+  {
+   "line": 210,
+   "level": 1,
+   "number": "",
+   "heading": "Response"
+  },
+  {
+   "line": 265,
+   "level": 1,
+   "number": "",
+   "heading": "Cyber"
+  },
+  {
+   "line": 344,
+   "level": 1,
+   "number": "",
+   "heading": "Policies, Plans, and Procedures"
+  },
+  {
+   "line": 22,
+   "level": 2,
+   "number": "",
+   "heading": "Facility Contact Information"
+  },
+  {
+   "line": 33,
+   "level": 2,
+   "number": "",
+   "heading": "Other Contact Information"
+  },
+  {
+   "line": 46,
+   "level": 2,
+   "number": "",
+   "heading": "Directions"
+  },
+  {
+   "line": 49,
+   "level": 2,
+   "number": "",
+   "heading": "Critical Assets"
+  },
+  {
+   "line": 52,
+   "level": 2,
+   "number": "",
+   "heading": "Notes"
+  },
+  {
+   "line": 56,
+   "level": 2,
+   "number": "",
+   "heading": "Directions"
+  },
+  {
+   "line": 63,
+   "level": 2,
+   "number": "",
+   "heading": "Notes"
+  },
+  {
+   "line": 65,
+   "level": 2,
+   "number": "",
+   "heading": "Detection Security Measures"
+  },
+  {
+   "line": 127,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 134,
+   "level": 2,
+   "number": "",
+   "heading": "Directions"
+  },
+  {
+   "line": 141,
+   "level": 2,
+   "number": "",
+   "heading": "Notes"
+  },
+  {
+   "line": 143,
+   "level": 2,
+   "number": "",
+   "heading": "Delay Security Measures"
+  },
+  {
+   "line": 206,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 215,
+   "level": 2,
+   "number": "",
+   "heading": "Directions"
+  },
+  {
+   "line": 222,
+   "level": 2,
+   "number": "",
+   "heading": "Notes"
+  },
+  {
+   "line": 224,
+   "level": 2,
+   "number": "",
+   "heading": "Response Security Measures"
+  },
+  {
+   "line": 261,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 267,
+   "level": 2,
+   "number": "",
+   "heading": "Directions"
+  },
+  {
+   "line": 275,
+   "level": 2,
+   "number": "",
+   "heading": "Notes"
+  },
+  {
+   "line": 277,
+   "level": 2,
+   "number": "",
+   "heading": "Cyber Assets"
+  },
+  {
+   "line": 281,
+   "level": 2,
+   "number": "",
+   "heading": "Cybersecurity Measures"
+  },
+  {
+   "line": 340,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 346,
+   "level": 2,
+   "number": "",
+   "heading": "Directions"
+  },
+  {
+   "line": 354,
+   "level": 2,
+   "number": "",
+   "heading": "Notes"
+  },
+  {
+   "line": 356,
+   "level": 2,
+   "number": "",
+   "heading": "Policies, Plans, and Procedures to Implement Security Measures"
+  },
+  {
+   "line": 464,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  }
+ ]
+}

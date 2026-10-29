@@ -50,8 +50,32 @@ def _roman(n: int) -> str:
     return out
 
 
+_CN_DIGITS = "零一二三四五六七八九"
+
+
+def _chinese(n: int) -> str | None:
+    """1→一、10→十、12→十二、25→二十五、105→一百零五（1–999）。"""
+    if not 0 < n < 1000:
+        return None
+    hundreds, rest = divmod(n, 100)
+    tens, ones = divmod(rest, 10)
+    out = f"{_CN_DIGITS[hundreds]}百" if hundreds else ""
+    if tens:
+        out += ("" if tens == 1 and not hundreds else _CN_DIGITS[tens]) + "十"
+    elif hundreds and ones:
+        out += "零"
+    if ones:
+        out += _CN_DIGITS[ones]
+    return out
+
+
 def format_counter(value: int, fmt: str) -> str | None:
     """不认识的格式返回 None——错的条款号比没有更糟。"""
+    if fmt in ("chineseCounting", "chineseCountingThousand", "japaneseCounting",
+               "taiwaneseCounting", "taiwaneseCountingThousand"):
+        return _chinese(value)
+    if fmt in ("decimalFullWidth", "decimalFullWidth2", "decimalEnclosedParen"):
+        return str(value) if fmt != "decimalEnclosedParen" else f"({value})"
     if fmt == "decimal":
         return str(value)
     if fmt == "lowerLetter":

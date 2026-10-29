@@ -1,0 +1,12 @@
+{"reviewed": true,
+ "note": "人工复核：大模型两次返回空标注（第一次是抽取文本被 \\r 拆成一词一行，修 extract.py 后重标仍为空），按原文逐行手工标注 8 个编号章节。3.0 的标题只取「Policy」，后半句是小节说明。",
+ "add": [
+  {"line": 4, "level": 1, "number": "1.0", "heading": "Purpose"},
+  {"line": 19, "level": 2, "number": "1.1", "heading": "Background"},
+  {"line": 31, "level": 1, "number": "2.0", "heading": "Scope"},
+  {"line": 37, "level": 1, "number": "3.0", "heading": "Policy"},
+  {"line": 70, "level": 2, "number": "3.2", "heading": "Ownership and Responsibilities"},
+  {"line": 91, "level": 1, "number": "4.0", "heading": "Enforcement"},
+  {"line": 96, "level": 1, "number": "5.0", "heading": "Definitions"},
+  {"line": 121, "level": 1, "number": "6.0", "heading": "Revision History"}
+ ]}

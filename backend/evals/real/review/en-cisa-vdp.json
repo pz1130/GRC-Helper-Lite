@@ -1,0 +1,4 @@
+{"reviewed": true,
+ "note": "人工复核：Word 样式里「What we would like to see from you」「What you can expect from us」是 Heading 2，属于「Reporting a vulnerability」，改为第 2 层；补上漏标的 Heading 1「Document change history」。第 67 行虽套了 Heading 2 样式，但是一整句承诺正文（样式误用），不算条款，解析器把它当小节属于已知误判。",
+ "set": {"61": {"level": 2}, "66": {"level": 2}},
+ "add": [{"line": 73, "level": 1, "number": "", "heading": "Document change history"}]}

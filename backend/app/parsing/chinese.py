@@ -87,7 +87,9 @@ def match_label(line: str, kinds: Iterable[str] = ARTICLE_KINDS + OUTLINE_KINDS)
         if ordinal is None or ordinal == 0:
             continue
         rest = found.group(2).strip()
-        if kind == "tiao" and _REFERENCE_AFTER.match(rest):
+        # 「第三条规定的……」是引用；「第二条  中国证监会……」条号后有空白，是条文本身。
+        separated = found.group(2)[:1].isspace() or line[found.end(1) + 1:found.end(1) + 2].isspace()
+        if kind == "tiao" and not separated and _REFERENCE_AFTER.match(rest):
             continue
         return CnLabel(kind, ordinal, found.group(1), rest)
     return None

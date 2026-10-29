@@ -1,0 +1,30 @@
+{
+ "id": "en-cisa-bgcheck",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": null,
+   "heading": "Introduction",
+   "sentences": [
+    "Performing background checks on and ensuring appropriate credentials for facility personnel and visitors who have or are seeking access to restricted areas and dangerous chemicals is a key aspect of your facility’s security.",
+    "This template includes example language and should be adjusted to match your company’s existing policy."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 2
+  },
+  {
+   "number": null,
+   "heading": "Example Policy",
+   "sentences": [
+    "[Insert company name] conducts background checks on [all employees/all employees with access to dangerous chemicals] at the [insert facility name] as defined in [insert company name] security plan for the facility.",
+    "All employees and contractors have been screened by use of E-Verify. [Name Approval Authority] [Title]"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 14
+  }
+ ],
+ "reviewed": false,
+ "review_note": ""
+}
