@@ -229,6 +229,37 @@ def _is_bold(font: str) -> bool:
 _APPENDIX = re.compile(r"\s*(Appendix|Annex)\s+([A-Z]|\d{1,2})\s*[.:\u2014\u2013-]?\s+(\S.{0,90})$")
 
 
+def _ends_paragraph(candidates: list[str], index: int) -> bool:
+    """index 之前最近的非空行是以句末标点收尾的正文。"""
+    prev = next((candidates[j].strip() for j in range(index - 1, max(index - 4, -1), -1)
+                 if candidates[j].strip()), "")
+    return bool(prev) and prev[-1] in ".!?)"
+
+
+_GLOSSARY = re.compile(r"(?:glossary|definitions?|terms and definitions|acronyms)\b", re.IGNORECASE)
+
+
+def _glossary_terms(headings: list[NumberedHeading], candidates: list[str], all_bold) -> list[NumberedHeading]:
+    """词汇表附录里每个粗体术语（NIST CSF「CSF Category」）各成一条，挂在该附录下。
+
+    术语常比章标题字号小，heading_like 的字号条件接不住。只在标题是
+    Glossary/Definitions 的那一章里找：整行粗体、不超过 60 字符、下一非空行不是粗体。
+    """
+    out: list[NumberedHeading] = []
+    for position, heading in enumerate(headings):
+        if not _GLOSSARY.match((heading.title or "").strip()):
+            continue
+        end = headings[position + 1].line_index if position + 1 < len(headings) else len(candidates)
+        for index in range(heading.line_index + 1, end):
+            text = candidates[index].strip()
+            if not text or len(text) > 60 or not all_bold(index) or re.match(r"[\d(•]", text):
+                continue
+            nxt = next((j for j in range(index + 1, min(index + 4, end)) if candidates[j].strip()), None)
+            if nxt is not None and not all_bold(nxt):
+                out.append(NumberedHeading(f"{heading.number}.{_UNNUMBERED}{index}", text, index))
+    return out
+
+
 def _refine_by_bold_headings(
     headings: list[NumberedHeading], candidates: list[str], layout: list[dict],
 ) -> list[NumberedHeading]:
@@ -283,6 +314,12 @@ def _refine_by_bold_headings(
             # 章内缩进的粗体小标题（Sussex「Executive Committee (ExCo)」）：挂到所在章下。
             chapter = max((h for h in top if h.line_index < index), key=lambda h: h.line_index)
             extra.append(NumberedHeading(f"{chapter.number}.{_UNNUMBERED}{index}", text, index))
+        elif _ends_paragraph(candidates, index):
+            # 不缩进、与正文同字号的整行粗体小标题（SANS 数据泄露模板「Work with Forensic
+            # Investigators」）：上一段正文以句末标点收尾才算，挂到最近的编号标题下。
+            owner = max((h for h in kept if h.line_index < index), key=lambda h: h.line_index)
+            extra.append(NumberedHeading(f"{owner.number}.{_UNNUMBERED}{index}", text, index))
+    extra += _glossary_terms(sorted(kept + extra, key=lambda h: h.line_index), candidates, all_bold)
     front = [h for h in extra if h.number.startswith(_UNNUMBERED)]
     if len(front) < 2:
         # 只有一行的是文档标题（SANS 模板封面「Policy」），不是前言章节。
