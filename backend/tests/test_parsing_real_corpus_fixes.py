@@ -58,3 +58,31 @@ def test_gold_nests_articles_under_sections():
     labels = [{"number": "第三章", "level": 1}, {"number": "第一节", "level": 2},
               {"number": "第十二条", "level": 2}, {"number": "第四章", "level": 1}, {"number": "第十三条", "level": 2}]
     assert [x["level"] for x in nest_articles_in_sections(labels)] == [1, 2, 3, 1, 2]
+
+
+def test_toc_line_keeps_numbered_noun_heading():
+    from app.parsing.numbering import is_toc_line
+    assert not is_toc_line("3 Appendix 2")
+    assert is_toc_line("4.1 Access control 12")
+
+
+def test_uk_schedules_become_their_own_subtree():
+    from app.parsing.numbering import NumberedHeading
+    from app.parsing.pdf_parser import _schedules
+    lines = ["2 Body", "text", "SCHEDULE", "Regulation 2(1)", "EXEMPT PROCESSING", "1 Interpretation", "x"]
+    paragraphs = [NumberedHeading("1", "Interpretation", 5, 6)]
+    out = _schedules(lines, 1, paragraphs)
+    assert [(h.number, h.title) for h in out] == [("Sch1", "EXEMPT PROCESSING"), ("Sch1.1", "Interpretation")]
+
+
+def test_heading_styled_long_sentence_is_body(tmp_path):
+    import docx
+
+    from app.parsing.docx_parser import _heading_level
+    document = docx.Document()
+    short = document.add_paragraph("What you can expect from us", style="Heading 2")
+    long = document.add_paragraph(
+        "When you choose to share your contact information with us, we commit to coordinating "
+        "with you as openly and as quickly as possible.", style="Heading 2")
+    assert _heading_level(short) == 2
+    assert _heading_level(long) is None

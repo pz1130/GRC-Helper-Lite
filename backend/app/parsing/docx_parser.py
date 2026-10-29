@@ -93,6 +93,10 @@ def _heading_level(paragraph: Paragraph) -> int | None:
     """
     match = _HEADING.match(paragraph.style.name or "")
     if match:
+        # 正文一整句误套了 Heading 样式（en-cisa-vdp）：长且读起来是句子，不当标题。
+        text = _paragraph_text(paragraph).strip()
+        if len(text) > 80 and _reads_as_sentence(text):
+            return None
         return int(match.group(1))
     ppr = paragraph._p.pPr
     outline = ppr.find(qn("w:outlineLvl")) if ppr is not None else None

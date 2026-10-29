@@ -292,9 +292,52 @@ _UNNUMBERED = "\u0000front:"
 
 def _clear_unnumbered(nodes) -> None:
     for node in nodes:
-        if node.number and _UNNUMBERED in node.number:
+        if node.number and _UNNUMBERED in node.number or node.number == "Sch":
             node.number = None
+        elif node.number and node.number.startswith("Sch"):
+            parts = node.number.split(".")
+            if parts[0] != "Sch":  # 无总标题时 key 为 SchN
+                parts = ["Sch", parts[0][3:], *parts[1:]]
+            node.number = f"SCHEDULE {parts[1]}" if len(parts) == 2 else parts[-1]
         _clear_unnumbered(node.children)
+
+
+_SCHEDULE = re.compile(r"\s*SCHEDULE(?:\s+(\d{1,2}))?\s*$")
+_SCHEDULE_NOTE = re.compile(r"\s*(?:Regulations?|Articles?|Sections?)\s+\d")
+
+
+def _schedules(lines: list[str], after: int, paragraphs: list[NumberedHeading]) -> list[NumberedHeading]:
+    """英国 SI 正文后的附表：「SCHEDULE N / Regulation 7(1) / 标题」，附表内段落从 1 重新编号。
+
+    内部编号用 Sch / Sch.N / Sch.N.k（或无总标题时 SchN），assemble_tree 之后由
+    _clear_unnumbered 改回原文的「SCHEDULE N」与段落号。
+    """
+    markers = []
+    for index in range(after + 1, len(lines)):
+        match = _SCHEDULE.match(lines[index])
+        if not match:
+            continue
+        title_at = index + 1
+        while title_at < len(lines) and (not lines[title_at].strip() or _SCHEDULE_NOTE.match(lines[title_at])):
+            title_at += 1
+        if title_at >= len(lines) or len(lines[title_at].strip()) > 120:
+            continue
+        markers.append((index, match[1] or "1", lines[title_at].strip(), title_at + 1))
+    if not markers:
+        return []
+    out: list[NumberedHeading] = []
+    container = next((i for i in range(after + 1, markers[0][0]) if lines[i].strip() == "SCHEDULES"), None)
+    if container is not None:
+        out.append(NumberedHeading("Sch", "SCHEDULES", container, container + 1))
+    for position, (index, number, title, body) in enumerate(markers):
+        end = markers[position + 1][0] if position + 1 < len(markers) else len(lines)
+        key = f"Sch.{number}" if container is not None else f"Sch{number}"
+        out.append(NumberedHeading(key, title, index, body))
+        for paragraph in paragraphs:
+            if body <= paragraph.line_index < end:
+                out.append(NumberedHeading(f"{key}.{paragraph.number}", paragraph.title,
+                                           paragraph.line_index, paragraph.body_start))
+    return out
 
 
 def _numbered(line: str) -> Numbering | None:
@@ -708,7 +751,7 @@ class PdfParser:
                     if acts_as_headings([h.number for h in stream])]
         if len(best) >= 5:
             # 分段时已保证递增、间隔不超过 3（漏掉的是 19A 这类插入条），不再要求严格 +1。
-            coherent.append(best)
+            coherent.append(best + _schedules(lines, best[-1].line_index, regulations or []))
         if coherent:
             headings = max(coherent, key=len)
             displayed = []
