@@ -1,9 +1,9 @@
 {
  "summary": {
   "documents": 50,
-  "overall": 0.947,
-  "structure_f1": 0.969,
-  "content": 0.925,
+  "overall": 0.954,
+  "structure_f1": 0.977,
+  "content": 0.932,
   "format:docx": {
    "n": 19,
    "score": 0.985,
@@ -12,9 +12,9 @@
   },
   "format:pdf": {
    "n": 31,
-   "score": 0.924,
-   "f1": 0.952,
-   "content": 0.895
+   "score": 0.936,
+   "f1": 0.964,
+   "content": 0.907
   },
   "kind:corporate_policy": {
    "n": 12,
@@ -36,15 +36,15 @@
   },
   "kind:template_manual": {
    "n": 11,
-   "score": 0.876,
-   "f1": 0.91,
-   "content": 0.841
+   "score": 0.909,
+   "f1": 0.943,
+   "content": 0.875
   },
   "lang:en": {
    "n": 15,
-   "score": 0.865,
-   "f1": 0.898,
-   "content": 0.832
+   "score": 0.89,
+   "f1": 0.922,
+   "content": 0.857
   },
   "lang:zh": {
    "n": 35,
@@ -728,13 +728,13 @@
   },
   "en-nist-csf2": {
    "gold": 25,
-   "pred": 11,
-   "correct": 9,
-   "precision": 0.818,
-   "recall": 0.36,
-   "f1": 0.5,
-   "content": 0.3,
-   "score": 0.4,
+   "pred": 19,
+   "correct": 19,
+   "precision": 1.0,
+   "recall": 0.76,
+   "f1": 0.864,
+   "content": 0.675,
+   "score": 0.769,
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",

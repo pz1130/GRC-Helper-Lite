@@ -242,11 +242,17 @@ def _refine_by_bold_headings(
         return bool(fonts) and all(_is_bold(f) for f in fonts)
 
     bold = [h for h in headings if all_bold(h.line_index)]
-    if len(bold) < 0.8 * len(headings):
+    top = [h for h in headings if h.level == 1]
+    top_bold = [h for h in top if all_bold(h.line_index)]
+    if len(top) < 3 or len(top_bold) < 0.8 * len(top):
         return headings
-    sizes = {round(layout[h.line_index]["font_size"]) for h in bold if h.level == 1}
-    kept = [h for h in headings
-            if any(_is_bold(f) for f in layout[h.line_index].get("fonts") or [])]
+    sizes = {round(layout[h.line_index]["font_size"]) for h in top_bold}
+    top_x = min(layout[h.line_index]["bbox"][0] for h in top_bold)
+    if len(bold) >= 0.8 * len(headings):
+        kept = [h for h in headings
+                if any(_is_bold(f) for f in layout[h.line_index].get("fonts") or [])]
+    else:
+        kept = list(headings)
 
     def heading_like(index: int) -> bool:
         text = candidates[index].strip()
@@ -267,9 +273,15 @@ def _refine_by_bold_headings(
         text = line.strip()
         if (match := _APPENDIX.match(line)) and index > first:
             extra.append(NumberedHeading(f"{match[1]} {match[2]}", match[3].strip(), index))
-        elif (index < first and len(text) <= 60 and text[0].isupper()
-              and text[-1] not in ".,;:" and not re.match(r"[\d(]", text)):
+        elif not (len(text) <= 60 and text[0].isupper() and text[-1] not in ".,;:"
+                  and not re.match(r"[\d(]", text)):
+            continue
+        elif index < first:
             extra.append(NumberedHeading(f"{_UNNUMBERED}{index}", text, index))
+        elif layout[index]["bbox"][0] > top_x + 8:
+            # 章内缩进的粗体小标题（Sussex「Executive Committee (ExCo)」）：挂到所在章下。
+            chapter = max((h for h in top if h.line_index < index), key=lambda h: h.line_index)
+            extra.append(NumberedHeading(f"{chapter.number}.{_UNNUMBERED}{index}", text, index))
     if not extra and len(kept) == len(headings):
         return headings
     return sorted(kept + extra, key=lambda h: h.line_index)
@@ -280,7 +292,7 @@ _UNNUMBERED = "\u0000front:"
 
 def _clear_unnumbered(nodes) -> None:
     for node in nodes:
-        if node.number and node.number.startswith(_UNNUMBERED):
+        if node.number and _UNNUMBERED in node.number:
             node.number = None
         _clear_unnumbered(node.children)
 
