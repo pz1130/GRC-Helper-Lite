@@ -93,10 +93,30 @@ def numbered_paragraphs(row: dict, ls: list[str], labels: list[dict]) -> list[di
     return sorted(out, key=lambda x: x["line"])
 
 
+_JIE = re.compile(r"^第[一二三四五六七八九十百零〇\d]+节$")
+_ZHANG = re.compile(r"^第[一二三四五六七八九十百零〇\d]+章$")
+_TIAO = re.compile(r"^第[一二三四五六七八九十百零〇\d]+条$")
+
+
+def nest_articles_in_sections(labels: list[dict]) -> list[dict]:
+    """中文规章「章 > 节 > 条」：LLM 常把节下的条和节标成同一层，按惯例把它们挂到节下面。"""
+    jie = None
+    for lab in labels:
+        number = (lab.get("number") or "").replace(" ", "")
+        if _ZHANG.match(number):
+            jie = None
+        elif _JIE.match(number):
+            jie = lab["level"]
+        elif jie is not None and _TIAO.match(number) and lab["level"] <= jie:
+            lab["level"] = jie + 1
+    return labels
+
+
 def build(row: dict) -> tuple[dict, dict]:
     ls = lines(row)
     labels = json.loads((WORK / "labels" / f"{row['id']}.llm.json").read_text(encoding="utf-8"))
     labels, rv = apply_review(row["id"], numbered_paragraphs(row, ls, labels))
+    labels = nest_articles_in_sections(labels)
     nodes, stack = [], []
     for i, lab in enumerate(labels):
         end = labels[i + 1]["line"] if i + 1 < len(labels) else len(ls)

@@ -1,14 +1,14 @@
 {
  "summary": {
   "documents": 50,
-  "overall": 0.188,
-  "structure_f1": 0.175,
+  "overall": 0.191,
+  "structure_f1": 0.18,
   "content": 0.202,
   "format:docx": {
    "n": 19,
-   "score": 0.145,
-   "f1": 0.147,
-   "content": 0.143
+   "score": 0.152,
+   "f1": 0.16,
+   "content": 0.144
   },
   "format:pdf": {
    "n": 31,
@@ -36,15 +36,15 @@
   },
   "kind:template_manual": {
    "n": 11,
-   "score": 0.723,
-   "f1": 0.689,
-   "content": 0.756
+   "score": 0.735,
+   "f1": 0.712,
+   "content": 0.758
   },
   "lang:en": {
    "n": 15,
-   "score": 0.624,
-   "f1": 0.577,
-   "content": 0.672
+   "score": 0.633,
+   "f1": 0.594,
+   "content": 0.673
   },
   "lang:zh": {
    "n": 35,
@@ -80,7 +80,7 @@
    "lang": "zh",
    "format": "docx",
    "kind": "financial_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "csrc-zrt": {
    "gold": 61,
@@ -136,7 +136,7 @@
    "lang": "zh",
    "format": "docx",
    "kind": "financial_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "csrc-jjtg": {
    "gold": 49,
@@ -164,7 +164,7 @@
    "lang": "zh",
    "format": "docx",
    "kind": "financial_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "csrc-bjyw": {
    "gold": 90,
@@ -332,7 +332,7 @@
    "lang": "zh",
    "format": "pdf",
    "kind": "financial_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "csrc-ctpz": {
    "gold": 68,
@@ -346,7 +346,7 @@
    "lang": "zh",
    "format": "docx",
    "kind": "financial_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "csrc-xzxk": {
    "gold": 63,
@@ -416,7 +416,7 @@
    "lang": "zh",
    "format": "pdf",
    "kind": "corporate_policy",
-   "reviewed": false
+   "reviewed": true
   },
   "cn-nkzd": {
    "gold": 67,
@@ -472,7 +472,7 @@
    "lang": "zh",
    "format": "pdf",
    "kind": "corporate_policy",
-   "reviewed": false
+   "reviewed": true
   },
   "cn-zgrj-gljy": {
    "gold": 43,
@@ -514,7 +514,7 @@
    "lang": "zh",
    "format": "pdf",
    "kind": "corporate_policy",
-   "reviewed": false
+   "reviewed": true
   },
   "cn-sg-mjzj": {
    "gold": 38,
@@ -528,10 +528,10 @@
    "lang": "zh",
    "format": "pdf",
    "kind": "corporate_policy",
-   "reviewed": false
+   "reviewed": true
   },
   "cn-dwdb": {
-   "gold": 65,
+   "gold": 64,
    "pred": 0,
    "correct": 0,
    "precision": 0.0,
@@ -542,21 +542,21 @@
    "lang": "zh",
    "format": "pdf",
    "kind": "corporate_policy",
-   "reviewed": false
+   "reviewed": true
   },
   "en-cisa-vdp": {
-   "gold": 9,
+   "gold": 10,
    "pred": 11,
-   "correct": 7,
-   "precision": 0.636,
-   "recall": 0.778,
-   "f1": 0.7,
-   "content": 0.714,
-   "score": 0.707,
+   "correct": 10,
+   "precision": 0.909,
+   "recall": 1.0,
+   "f1": 0.952,
+   "content": 0.733,
+   "score": 0.843,
    "lang": "en",
    "format": "docx",
    "kind": "template_manual",
-   "reviewed": false
+   "reviewed": true
   },
   "en-cisa-bgcheck": {
    "gold": 2,
@@ -612,7 +612,7 @@
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",
-   "reviewed": false
+   "reviewed": true
   },
   "en-sans-pwd": {
    "gold": 29,
@@ -682,7 +682,7 @@
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",
-   "reviewed": false
+   "reviewed": true
   },
   "en-sussex-ig": {
    "gold": 62,
@@ -696,7 +696,7 @@
    "lang": "en",
    "format": "pdf",
    "kind": "corporate_policy",
-   "reviewed": false
+   "reviewed": true
   },
   "en-uk-dpcharges": {
    "gold": 9,
@@ -710,7 +710,7 @@
    "lang": "en",
    "format": "pdf",
    "kind": "law_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "en-uk-mlr": {
    "gold": 185,
@@ -724,7 +724,7 @@
    "lang": "en",
    "format": "pdf",
    "kind": "law_regulation",
-   "reviewed": false
+   "reviewed": true
   },
   "en-nist-csf2": {
    "gold": 25,

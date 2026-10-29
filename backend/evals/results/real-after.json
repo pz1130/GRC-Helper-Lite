@@ -1,31 +1,31 @@
 {
  "summary": {
   "documents": 50,
-  "overall": 0.939,
-  "structure_f1": 0.954,
+  "overall": 0.947,
+  "structure_f1": 0.969,
   "content": 0.925,
   "format:docx": {
    "n": 19,
-   "score": 0.98,
-   "f1": 0.988,
+   "score": 0.985,
+   "f1": 0.997,
    "content": 0.973
   },
   "format:pdf": {
    "n": 31,
-   "score": 0.914,
-   "f1": 0.933,
+   "score": 0.924,
+   "f1": 0.952,
    "content": 0.895
   },
   "kind:corporate_policy": {
    "n": 12,
-   "score": 0.955,
-   "f1": 0.944,
+   "score": 0.98,
+   "f1": 0.994,
    "content": 0.966
   },
   "kind:financial_regulation": {
    "n": 23,
-   "score": 0.976,
-   "f1": 0.992,
+   "score": 0.98,
+   "f1": 1.0,
    "content": 0.96
   },
   "kind:law_regulation": {
@@ -48,8 +48,8 @@
   },
   "lang:zh": {
    "n": 35,
-   "score": 0.971,
-   "f1": 0.978,
+   "score": 0.982,
+   "f1": 1.0,
    "content": 0.965
   }
  },
@@ -295,12 +295,12 @@
   "csrc-qhjd": {
    "gold": 138,
    "pred": 138,
-   "correct": 113,
-   "precision": 0.819,
-   "recall": 0.819,
-   "f1": 0.819,
+   "correct": 138,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
    "content": 1.0,
-   "score": 0.909,
+   "score": 1.0,
    "lang": "zh",
    "format": "docx",
    "kind": "financial_regulation",
@@ -407,12 +407,12 @@
   "cn-nkjc": {
    "gold": 90,
    "pred": 90,
-   "correct": 37,
-   "precision": 0.411,
-   "recall": 0.411,
-   "f1": 0.411,
+   "correct": 90,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
    "content": 0.941,
-   "score": 0.676,
+   "score": 0.971,
    "lang": "zh",
    "format": "pdf",
    "kind": "corporate_policy",
