@@ -1,9 +1,9 @@
 {
  "summary": {
   "documents": 50,
-  "overall": 0.957,
-  "structure_f1": 0.97,
-  "content": 0.943,
+  "overall": 0.963,
+  "structure_f1": 0.982,
+  "content": 0.944,
   "format:docx": {
    "n": 19,
    "score": 0.986,
@@ -12,9 +12,9 @@
   },
   "format:pdf": {
    "n": 31,
-   "score": 0.938,
-   "f1": 0.951,
-   "content": 0.925
+   "score": 0.949,
+   "f1": 0.971,
+   "content": 0.926
   },
   "kind:corporate_policy": {
    "n": 12,
@@ -36,15 +36,15 @@
   },
   "kind:template_manual": {
    "n": 11,
-   "score": 0.882,
-   "f1": 0.891,
-   "content": 0.873
+   "score": 0.911,
+   "f1": 0.947,
+   "content": 0.875
   },
   "lang:en": {
    "n": 15,
-   "score": 0.896,
-   "f1": 0.9,
-   "content": 0.893
+   "score": 0.918,
+   "f1": 0.941,
+   "content": 0.895
   },
   "lang:zh": {
    "n": 35,
@@ -616,13 +616,13 @@
   },
   "en-sans-pwd": {
    "gold": 29,
-   "pred": 31,
+   "pred": 30,
    "correct": 29,
-   "precision": 0.935,
+   "precision": 0.967,
    "recall": 1.0,
-   "f1": 0.967,
+   "f1": 0.983,
    "content": 0.931,
-   "score": 0.949,
+   "score": 0.957,
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",
@@ -644,13 +644,13 @@
   },
   "en-sans-email": {
    "gold": 22,
-   "pred": 23,
+   "pred": 22,
    "correct": 22,
-   "precision": 0.957,
+   "precision": 1.0,
    "recall": 1.0,
-   "f1": 0.978,
+   "f1": 1.0,
    "content": 0.964,
-   "score": 0.971,
+   "score": 0.982,
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",
@@ -658,13 +658,13 @@
   },
   "en-sans-pandemic": {
    "gold": 25,
-   "pred": 26,
-   "correct": 11,
-   "precision": 0.423,
-   "recall": 0.44,
-   "f1": 0.431,
-   "content": 0.938,
-   "score": 0.684,
+   "pred": 25,
+   "correct": 25,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "content": 0.969,
+   "score": 0.984,
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",
@@ -672,13 +672,13 @@
   },
   "en-sans-ethics": {
    "gold": 35,
-   "pred": 36,
+   "pred": 35,
    "correct": 35,
-   "precision": 0.972,
+   "precision": 1.0,
    "recall": 1.0,
-   "f1": 0.986,
+   "f1": 1.0,
    "content": 0.947,
-   "score": 0.967,
+   "score": 0.974,
    "lang": "en",
    "format": "pdf",
    "kind": "template_manual",
