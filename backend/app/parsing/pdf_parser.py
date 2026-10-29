@@ -26,6 +26,7 @@ from app.parsing.headings import (
     FLOOR,
     acts_as_headings,
     consistency_score,
+    continues_the_heading,
     demote_fragment_headings,
 )
 from app.parsing.numbering import (
@@ -521,6 +522,23 @@ def _join_wrapped_headings(
             heading, title=f"{title} {extra}".strip(), body_start=index)
 
 
+def _has_decimal_paragraphs(nodes: list[ClauseNode]) -> bool:
+    """文档已经用多段编号（`4.1.2 Executives must…`）给段落编号。
+
+    这种文档里段落层级已经是 `4.1.2` 这一层，同一份文档不会再叠一套 `N.` 段落号；
+    节内的 1. 2. 3. 是正文列表（SANS AUP 4.3.2 的禁止事项，引导句不以冒号结尾）。
+    判据：至少两条三段以上编号的条款没有真标题——标题就是编号，或"标题"是半句话。
+    """
+    count = 0
+    for node in nodes:
+        if node.kind != "section" or len((node.number or "").split(".")) < 3:
+            continue
+        heading = (node.heading or "").strip()
+        if heading == node.number or continues_the_heading(node.text or ""):
+            count += 1
+    return count >= 2
+
+
 def split_numbered_paragraphs(
     nodes: list[ClauseNode], candidates: list[str], layout: list[dict],
     body_lines: list[str], body_size: float, page_of: dict[int, int],
@@ -543,6 +561,8 @@ def split_numbered_paragraphs(
             yield item
             yield from walk(item.children)
 
+    if _has_decimal_paragraphs(list(walk(nodes))):
+        return
     last: int | None = None
     made: list[tuple[ClauseNode, ClauseNode]] = []
     for node in list(walk(nodes)):  # 先取定文档顺序，下面会往 children 里插段落
