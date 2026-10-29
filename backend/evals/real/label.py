@@ -22,6 +22,8 @@ from concurrent.futures import ThreadPoolExecutor
 from evals.real.extract import HERE, lines
 
 WORK = HERE / "work"
+# v2（2026-10-29）：从零重标，缓存与标注放在 work/v2/，与 v1 不共用任何文件。
+VWORK = WORK / os.environ.get("GOLD_VERSION", "v2")
 BASE = os.environ.get("MINIMAX_BASE_URL", "https://api.minimaxi.com/v1")
 MODEL = os.environ.get("MINIMAX_MODEL", "MiniMax-M3")
 CHUNK, OVERLAP = 220, 15
@@ -84,7 +86,7 @@ _ROW = re.compile(r"^L(\d+)\s*\|\s*(\d+)\s*\|([^|]*)\|(.*)$")
 
 
 def llm_label(doc_id: str, ls: list[str]) -> list[dict]:
-    cache = WORK / "llm" / doc_id
+    cache = VWORK / "llm" / doc_id
     cache.mkdir(parents=True, exist_ok=True)
     found: dict[int, dict] = {}
     start = 0
@@ -119,6 +121,26 @@ _EN_UNIT = re.compile(r"^(PART|Part|CHAPTER|Chapter|SECTION|Section|ARTICLE|Arti
 _EN_NUM = re.compile(r"^(\d+(?:\.\d+)*)\.?\s+([A-Z][^.;:]{1,80})$")
 
 
+_DIGIT = {c: i for i, c in enumerate("〇一二三四五六七八九")} | {"零": 0, "两": 2}
+
+
+def cn_to_int(text: str) -> int | None:
+    """本地实现，不引用项目代码（标准答案与解析器保持独立）。"""
+    if text.isdigit():
+        return int(text)
+    total, section, digit = 0, 0, 0
+    for ch in text:
+        if ch in _DIGIT:
+            digit = _DIGIT[ch]
+        elif ch in "十百千":
+            unit = {"十": 10, "百": 100, "千": 1000}[ch]
+            section += (digit or 1) * unit
+            digit = 0
+        else:
+            return None
+    return total + section + digit
+
+
 def rule_label(ls: list[str]) -> list[dict]:
     out = []
     has_tiao = sum(bool(re.match(_ZH[3][1], s)) for s in ls) >= 2
@@ -131,7 +153,6 @@ def rule_label(ls: list[str]) -> list[dict]:
             if not m:
                 continue
             if kind == "tiao":
-                from app.parsing.chinese import cn_to_int
                 n = cn_to_int(m[1]) or 0
                 if n != prev_tiao + 1:
                     break
@@ -165,13 +186,13 @@ def manifest() -> list[dict]:
 
 def main(ids: list[str]) -> None:
     rows = [r for r in manifest() if not ids or r["id"] in ids]
-    (WORK / "labels").mkdir(parents=True, exist_ok=True)
+    (VWORK / "labels").mkdir(parents=True, exist_ok=True)
 
     def one(row):
         ls = lines(row)
-        (WORK / "labels" / f"{row['id']}.rule.json").write_text(
+        (VWORK / "labels" / f"{row['id']}.rule.json").write_text(
             json.dumps(rule_label(ls), ensure_ascii=False, indent=0), encoding="utf-8")
-        out = WORK / "labels" / f"{row['id']}.llm.json"
+        out = VWORK / "labels" / f"{row['id']}.llm.json"
         if not out.exists():
             out.write_text(json.dumps(llm_label(row["id"], ls), ensure_ascii=False, indent=0), encoding="utf-8")
         print("done", row["id"], len(ls), "lines", flush=True)

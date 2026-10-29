@@ -1,4 +1,8 @@
-"""由大模型标注 + 人工复核修正生成标准答案，并计算与规则标注、解析器输出的分歧。
+"""由大模型标注 + 人工复核修正生成标准答案，并计算与规则标注的分歧。
+
+v2（2026-10-29）独立性约束：本模块与 label/extract 一样**不导入 app/**，标准答案只来自
+pdftotext/LibreOffice 抽出的文本行、MiniMax 标注、确定性编号规则与人工复核；项目解析器
+（main 或分支）的输出不参与生成、初始化或复核（见 tests/test_real_gold_independence.py）。
 
     python -m evals.real.gold            # 写 gold/<id>.gold.json 与 work/disagreement.json
 
@@ -11,8 +15,8 @@ from __future__ import annotations
 import json
 import re
 
-from evals.real.extract import HERE, lines, parse_path
-from evals.real.label import WORK, manifest
+from evals.real.extract import HERE, lines
+from evals.real.label import VWORK, manifest
 
 GOLD = HERE / "gold"
 REVIEW = HERE / "review"
@@ -114,7 +118,7 @@ def nest_articles_in_sections(labels: list[dict]) -> list[dict]:
 
 def build(row: dict) -> tuple[dict, dict]:
     ls = lines(row)
-    labels = json.loads((WORK / "labels" / f"{row['id']}.llm.json").read_text(encoding="utf-8"))
+    labels = json.loads((VWORK / "labels" / f"{row['id']}.llm.json").read_text(encoding="utf-8"))
     labels, rv = apply_review(row["id"], numbered_paragraphs(row, ls, labels))
     labels = nest_articles_in_sections(labels)
     nodes, stack = [], []
@@ -141,41 +145,26 @@ def _f1(a: set, b: set) -> float:
 
 
 def disagreement(row: dict, gold_labels: list[dict]) -> dict:
-    rule = json.loads((WORK / "labels" / f"{row['id']}.rule.json").read_text(encoding="utf-8"))
+    rule = json.loads((VWORK / "labels" / f"{row['id']}.rule.json").read_text(encoding="utf-8"))
     g_lines = {x["line"] for x in gold_labels}
     r_lines = {x["line"] for x in rule}
     # 规则与大模型：按行号比对（±1 行容差）
     r_fuzzy = {next((g for g in (r, r - 1, r + 1) if g in g_lines), r) for r in r_lines}
-    from app.parsing.registry import get_parser
-    try:
-        parsed = get_parser(parse_path(row)).parse(parse_path(row))
-        keys = set()
-
-        def walk(ns):
-            for n in ns:
-                if n.kind == "section":
-                    keys.add(nz(n.heading).removeprefix(nz(n.number)) or nz(n.number))
-                walk(n.children)
-        walk(parsed.clauses)
-    except Exception:  # noqa: BLE001
-        keys = set()
-    g_keys = {nz(x["heading"] or x["number"]).removeprefix(nz(x["number"])) or nz(x["number"]) for x in gold_labels}
-    return {"rule_f1": _f1(g_lines, r_fuzzy), "parser_f1": _f1(g_keys, keys),
-            "gold": len(gold_labels), "rule": len(rule), "parser": len(keys)}
+    return {"rule_f1": _f1(g_lines, r_fuzzy), "gold": len(gold_labels), "rule": len(rule)}
 
 
 def main() -> None:
     GOLD.mkdir(exist_ok=True)
     report = {}
     for row in manifest():
-        if not (WORK / "labels" / f"{row['id']}.llm.json").exists():
+        if not (VWORK / "labels" / f"{row['id']}.llm.json").exists():
             continue
         gold, _ = build(row)
         (GOLD / f"{row['id']}.gold.json").write_text(json.dumps(gold, ensure_ascii=False, indent=1), encoding="utf-8")
-        raw = json.loads((WORK / "labels" / f"{row['id']}.llm.json").read_text(encoding="utf-8"))
+        raw = json.loads((VWORK / "labels" / f"{row['id']}.llm.json").read_text(encoding="utf-8"))
         labels, _ = apply_review(row["id"], numbered_paragraphs(row, lines(row), raw))
         report[row["id"]] = disagreement(row, labels) | {"reviewed": gold["reviewed"]}
-    (WORK / "disagreement.json").write_text(json.dumps(report, ensure_ascii=False, indent=1))
+    (VWORK / "disagreement.json").write_text(json.dumps(report, ensure_ascii=False, indent=1))
     for k, v in report.items():
         print(f"{k:22s} {v}")
 
