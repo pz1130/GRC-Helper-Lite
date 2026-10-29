@@ -24,6 +24,12 @@ _DOT_LEADER = re.compile(r"\.{4,}")
 # 目录形态之二：行尾跟着页码。实测这批文件的目录不带引导点，而是
 # "1 Introduction 1" 这种形状——只认引导点会让 84 条目录行全部漏进来。
 _TOC_TRAILING_PAGE = re.compile(r"^\d+(?:\.\d+)*\s+.+?\s+\d{1,3}$")
+# 「3 Appendix 2」「4.1 Phase 2」：末尾数字是标题自己的编号，不是页码。
+_NUMBERED_NOUN_TAIL = re.compile(
+    r"(?:appendix|annex|schedule|part|chapter|section|article|phase|level|tier|step|stage|"
+    r"table|figure|version|附录|附件|附表|阶段|第)\s*\d{1,3}$",
+    re.IGNORECASE,
+)
 _VERSION_ROW = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s+\d{2}/\d{2}/\d{4}\b")
 # 页脚。pdfplumber 会把字距拉开的页码渲染成 "1 | P a g e"
 _PAGE_FOOTER = re.compile(
@@ -49,7 +55,10 @@ class NumberedHeading:
 
 def is_toc_line(line: str) -> bool:
     """两种目录形态：带引导点的，和行尾跟页码的。"""
-    return bool(_DOT_LEADER.search(line)) or bool(_TOC_TRAILING_PAGE.match(line.strip()))
+    stripped = line.strip()
+    if _DOT_LEADER.search(line):
+        return True
+    return bool(_TOC_TRAILING_PAGE.match(stripped)) and not _NUMBERED_NOUN_TAIL.search(stripped)
 
 
 def is_page_footer(line: str) -> bool:

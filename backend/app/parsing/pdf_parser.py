@@ -221,6 +221,70 @@ def _defer_to_contents(candidates: list[str], lines: list[str], layout: list[dic
     return out
 
 
+def _is_bold(font: str) -> bool:
+    return any(word in font.lower() for word in ("bold", "black", "heavy", "semibold"))
+
+
+_APPENDIX = re.compile(r"\s*(Appendix|Annex)\s+([A-Z]|\d{1,2})\s*[.:\u2014\u2013-]?\s+(\S.{0,90})$")
+
+
+def _refine_by_bold_headings(
+    headings: list[NumberedHeading], candidates: list[str], layout: list[dict],
+) -> list[NumberedHeading]:
+    """标题与正文同字号、只靠粗体区分时（如 NIST CSF 2.0）：
+    丢掉不是粗体的「标题」（折行正文以数字开头，如「2.0 website and…」），
+    补上同样粗体的「Appendix A.」和首个编号标题之前的无编号前言标题（Abstract、Preface…）。"""
+    if len(headings) < 3:
+        return headings
+
+    def all_bold(index: int) -> bool:
+        fonts = layout[index].get("fonts") or []
+        return bool(fonts) and all(_is_bold(f) for f in fonts)
+
+    bold = [h for h in headings if all_bold(h.line_index)]
+    if len(bold) < 0.8 * len(headings):
+        return headings
+    sizes = {round(layout[h.line_index]["font_size"]) for h in bold if h.level == 1}
+    kept = [h for h in headings
+            if any(_is_bold(f) for f in layout[h.line_index].get("fonts") or [])]
+
+    def heading_like(index: int) -> bool:
+        text = candidates[index].strip()
+        if not text or not all_bold(index) or round(layout[index]["font_size"]) not in sizes:
+            return False
+        if _APPENDIX.match(text):
+            return True  # 「Appendix C. Glossary」下面紧跟粗体术语，不看下一行
+        nxt = next((j for j in range(index + 1, min(index + 4, len(candidates)))
+                    if candidates[j].strip()), None)
+        return nxt is not None and not all_bold(nxt)
+
+    taken = {h.line_index for h in kept}
+    extra: list[NumberedHeading] = []
+    first = min(taken) if taken else len(candidates)
+    for index, line in enumerate(candidates):
+        if index in taken or not heading_like(index):
+            continue
+        text = line.strip()
+        if (match := _APPENDIX.match(line)) and index > first:
+            extra.append(NumberedHeading(f"{match[1]} {match[2]}", match[3].strip(), index))
+        elif (index < first and len(text) <= 60 and text[0].isupper()
+              and text[-1] not in ".,;:" and not re.match(r"[\d(]", text)):
+            extra.append(NumberedHeading(f"{_UNNUMBERED}{index}", text, index))
+    if not extra and len(kept) == len(headings):
+        return headings
+    return sorted(kept + extra, key=lambda h: h.line_index)
+
+
+_UNNUMBERED = "\u0000front:"
+
+
+def _clear_unnumbered(nodes) -> None:
+    for node in nodes:
+        if node.number and node.number.startswith(_UNNUMBERED):
+            node.number = None
+        _clear_unnumbered(node.children)
+
+
 def _numbered(line: str) -> Numbering | None:
     if not line.strip() or is_page_footer(line) or is_toc_line(line) or is_version_history_line(line):
         return None
@@ -636,6 +700,8 @@ class PdfParser:
         if coherent:
             headings = max(coherent, key=len)
             displayed = []
+        if not coherent:
+            headings = _refine_by_bold_headings(headings, candidates, layout)
         warnings.extend(filter_warnings)
         toc_count = sum(loc["role"] == "contents" for loc in layout)
         if toc_count:
@@ -655,6 +721,7 @@ class PdfParser:
         body_lines = [line if loc["role"] not in _LAYOUT_ROLES else ""
                       for line, loc in zip(lines, layout, strict=True)]
         clauses = assemble_tree(headings, body_lines, page_of=page_of)
+        _clear_unnumbered(clauses)
         if displayed:
             split_numbered_paragraphs(clauses, candidates, layout, body_lines, body_size, page_of)
         adopt_article_titles(clauses)
