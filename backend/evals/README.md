@@ -72,17 +72,22 @@ Overall = mean over the 18 documents (also reported for en / zh).
 | PDF / DOCX | 31 / 19 |
 | 金融监管规章 / 公司制度 / 模板手册 / 法律法规 | 23 / 12 / 11 / 4 |
 
-**标准答案怎么来的（混合标注）**：`label.py` 用 MiniMax（CN）逐段标出条款标题行和层级，遇到 429 指数退避重试；`gold.py` 再用规则（第X章/节/条、编号段落 4.1.1 等）和解析器结果交叉核对，写出 `work/disagreement.json`。人工复核了 **19 份**：随机抽样 10 份（seed 8）加上所有 LLM、规则、解析器三方分歧大的文档，修改记录在 `real/review/<id>.json`，可审计。
+**标准答案 v2（与解析器无关，2026-10-29）**：
+- 来源只有文档文本：`extract.py` 用 pdftotext / soffice 转 txt（不经过项目解析器）；`label.py` 用 MiniMax（CN）每 220 行一段（重叠 15 行）标出标题行、编号、层级，429 指数退避，空回答重试；同文件里的规则启发式（第X章/节/条、PART/CHAPTER/Article、4.1.1 编号）只做交叉核对。
+- 独立性保障：`extract/label/gold/review_view` 不 import `app`（`tests/test_real_gold_independence.py` 用 AST 检查）；不读取 main 或分支的解析结果；v1 金标/复核（曾参考解析器分歧）已归档到 `real/gold/v1/`、`real/review/v1/`，v2 缓存全部重建于 `work/v2/`。只有 `score.py` 调解析器。
+- **50 份全部人工逐份复核**（`python -m evals.real.review_view <id>` 对照原文看 LLM/规则分歧、编号连续性、层级），每份记录在 `real/review/<id>.json`（reviewed + 说明 + drop/add/set/add_rule/replace）。主要修正：GDPR 补回 LLM 漏掉的一段（Art. 31–37、Ch. IV Sec. 2–4）；UK MLR 重建 PART/CHAPTER 层级；securechems 因 LLM 多次空回答改为全手工标注；若干漏标的 Revision History / 条。
+- 约定：编号段落（4.1.1）算条款；条内（一）、1、 列项、表单问题、正文 1. 2. 3. 清单不算；「章>节>条」「Chapter>Section>Article」中条挂在节下。
+- 局限：单一 LLM + 单一复核者（机器人，非领域专家）；文本抽取伪影（GDPR 小节标题字距、PDF 折行）会进入金标标题文本；v2 数字与 v1（96.3%）不可直接比较。
 
-约定：编号段落（4.1.1 这类）算条款；表单里的问题、正文里的 1. 2. 3. 清单不算；中文「章 > 节 > 条」中，条挂在节下面。
+评分：`python evals/real/score.py results/real-after-v2.json`，单份 = (结构 F1 + 内容覆盖)/2，层级敏感。BEFORE = main 9076849，同一评分器、同一 v2 金标（`results/real-before-v2.json`）。
 
-评分：`python evals/real/score.py results/real-after.json`，单份得分 = (结构 F1 + 内容覆盖) / 2，层级敏感。BEFORE 用同一套评分和标准答案在 main 上跑。评分器新增按编号匹配：一边用编号作标题、另一边用句首作标题时，只要编号相同就算命中。
-
-| | BEFORE (main) | AFTER |
+| v2 | BEFORE (main) | AFTER |
 |---|---|---|
-| 总体 | 19.1% | **96.3%** |
-| 中文 / 英文 | 0.1% / 63.3% | 98.2% / 91.8% |
-| PDF / DOCX | 21.5% / 15.2% | 94.9% / 98.6% |
-| 金融监管 / 公司制度 / 模板 / 法律 | 0.2% / 7.2% / 73.5% / 13.8% | 98.0% / 98.0% / 87.6% / 85.6% |
+| 总体 | 18.8% | **93.7%** |
+| 中文 / 英文 | 0.1% / 62.3% | 98.4% / 82.6% |
+| PDF / DOCX | 21.3% / 14.8% | 92.4% / 95.6% |
+| 金融监管 / 公司制度 / 模板 / 法律 | 0.2% / 7.2% / 71.1% / 16.7% | 98.0% / 99.1% / 82.1% / 84.0% |
+
+最弱：en-cisa-securechems 0.39、en-nist-csf2 0.53、en-sans-breach 0.56、en-eu-gdpr 0.69、en-cisa-vdp 0.78、en-uk-mlr 0.80。v1（旧金标）结果保留在 `results/real-after.json`，仅供参考。
 
 剩余失败见 `KNOWN_ISSUES.md`。
