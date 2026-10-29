@@ -86,3 +86,30 @@ def test_heading_styled_long_sentence_is_body(tmp_path):
         "with you as openly and as quickly as possible.", style="Heading 2")
     assert _heading_level(short) == 2
     assert _heading_level(long) is None
+
+
+def test_bold_refinement_drops_plain_numbered_body_and_adds_front_matter():
+    from app.parsing.numbering import NumberedHeading
+    from app.parsing.pdf_parser import _refine_by_bold_headings
+    b, r = ["X-Bold"], ["X-Regular"]
+    rows = [("Abstract", b), ("text", r), ("Keywords", b), ("text", r),
+            ("1. Intro", b), ("text", r), ("2.0 website and more words", r),
+            ("2. Scope", b), ("text", r), ("3. Use", b), ("text", r), ("4. More", b), ("text", r), ("5. End", b), ("text", r),
+            ("Appendix A. Terms", b), ("t", r)]
+    lines = [t for t, _ in rows]
+    layout = [{"font_size": 11.0, "fonts": f, "bbox": (72, 0, 0, 0)} for _, f in rows]
+    heads = [NumberedHeading("1", "Intro", 4), NumberedHeading("2", "website", 6),
+             NumberedHeading("2", "Scope", 7), NumberedHeading("3", "Use", 9),
+             NumberedHeading("4", "More", 11), NumberedHeading("5", "End", 13)]
+    out = _refine_by_bold_headings(heads, lines, layout)
+    assert [h.title for h in out] == ["Abstract", "Keywords", "Intro", "Scope", "Use", "More", "End", "Terms"]
+
+
+def test_single_bold_title_is_not_front_matter():
+    from app.parsing.numbering import NumberedHeading
+    from app.parsing.pdf_parser import _refine_by_bold_headings
+    b, r = ["X-Bold"], ["X-Regular"]
+    rows = [("Policy", b), ("text", r), ("1. A", b), ("t", r), ("2. B", b), ("t", r), ("3. C", b), ("t", r)]
+    layout = [{"font_size": 11.0, "fonts": f, "bbox": (72, 0, 0, 0)} for _, f in rows]
+    heads = [NumberedHeading(str(i), c, 2 * i) for i, c in ((1, "A"), (2, "B"), (3, "C"))]
+    assert [h.title for h in _refine_by_bold_headings(heads, [t for t, _ in rows], layout)] == ["A", "B", "C"]

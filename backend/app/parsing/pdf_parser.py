@@ -282,6 +282,10 @@ def _refine_by_bold_headings(
             # 章内缩进的粗体小标题（Sussex「Executive Committee (ExCo)」）：挂到所在章下。
             chapter = max((h for h in top if h.line_index < index), key=lambda h: h.line_index)
             extra.append(NumberedHeading(f"{chapter.number}.{_UNNUMBERED}{index}", text, index))
+    front = [h for h in extra if h.number.startswith(_UNNUMBERED)]
+    if len(front) < 2:
+        # 只有一行的是文档标题（SANS 模板封面「Policy」），不是前言章节。
+        extra = [h for h in extra if h not in front]
     if not extra and len(kept) == len(headings):
         return headings
     return sorted(kept + extra, key=lambda h: h.line_index)

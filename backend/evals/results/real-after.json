@@ -1,13 +1,13 @@
 {
  "summary": {
   "documents": 50,
-  "overall": 0.956,
-  "structure_f1": 0.969,
+  "overall": 0.957,
+  "structure_f1": 0.97,
   "content": 0.943,
   "format:docx": {
    "n": 19,
-   "score": 0.985,
-   "f1": 0.997,
+   "score": 0.986,
+   "f1": 1.0,
    "content": 0.973
   },
   "format:pdf": {
@@ -36,14 +36,14 @@
   },
   "kind:template_manual": {
    "n": 11,
-   "score": 0.88,
-   "f1": 0.887,
+   "score": 0.882,
+   "f1": 0.891,
    "content": 0.873
   },
   "lang:en": {
    "n": 15,
-   "score": 0.895,
-   "f1": 0.896,
+   "score": 0.896,
+   "f1": 0.9,
    "content": 0.893
   },
   "lang:zh": {
@@ -546,13 +546,13 @@
   },
   "en-cisa-vdp": {
    "gold": 10,
-   "pred": 11,
+   "pred": 10,
    "correct": 10,
-   "precision": 0.909,
+   "precision": 1.0,
    "recall": 1.0,
-   "f1": 0.952,
+   "f1": 1.0,
    "content": 0.733,
-   "score": 0.843,
+   "score": 0.867,
    "lang": "en",
    "format": "docx",
    "kind": "template_manual",
