@@ -129,6 +129,9 @@ numbering (第X编/章/节/条, 一、/（一）/1.) in both DOCX and PDF, Engli
 that wrap onto a second line, and stray `1. 2. 3.` body lists in unstyled DOCX.
 On the synthetic segmentation eval (`backend/evals/segmentation/`, 18 documents)
 accuracy went from **46.1% to 99.3%** (Chinese 29.8% → 100%, English 66.4% → 98.4%).
+On a corpus of **50 real public policy/regulation documents** (`backend/evals/real/`:
+35 Chinese, 15 English; 31 PDF, 19 DOCX) accuracy went from **19.1% to 94.7%**
+(Chinese 0.1% → 98.2%, English 63.3% → 86.5%; PDF 21.5% → 92.4%, DOCX 15.2% → 98.5%).
 
 
 ## Trying it on your own policies

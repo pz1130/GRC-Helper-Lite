@@ -61,3 +61,28 @@ Overall = mean over the 18 documents (also reported for en / zh).
 |---|---|---|---|---|---|
 | before (`segmentation-before.json`) | 0.461 | 0.431 | 0.490 | 0.664 | 0.298 |
 | after (`segmentation-after.json`)   | 0.993 | 0.993 | 0.993 | 0.984 | 1.000 |
+
+## Real-document eval (`evals/real/`)
+
+50 份公开制度/法规原文（来源、许可、URL 见 `real/manifest.csv`；原文件和中间产物在 `real/docs/`、`real/work/`，不入库，可用 `python -m evals.real.collect` 重新下载）。
+
+| 维度 | 份数 |
+|---|---|
+| 中文 / 英文 | 35 / 15 |
+| PDF / DOCX | 31 / 19 |
+| 金融监管规章 / 公司制度 / 模板手册 / 法律法规 | 23 / 12 / 11 / 4 |
+
+**标准答案怎么来的（混合标注）**：`label.py` 用 MiniMax（CN）逐段标出条款标题行和层级，遇到 429 指数退避重试；`gold.py` 再用规则（第X章/节/条、编号段落 4.1.1 等）和解析器结果交叉核对，写出 `work/disagreement.json`。人工复核了 **19 份**：随机抽样 10 份（seed 8）加上所有 LLM、规则、解析器三方分歧大的文档，修改记录在 `real/review/<id>.json`，可审计。
+
+约定：编号段落（4.1.1 这类）算条款；表单里的问题、正文里的 1. 2. 3. 清单不算；中文「章 > 节 > 条」中，条挂在节下面。
+
+评分：`python evals/real/score.py results/real-after.json`，单份得分 = (结构 F1 + 内容覆盖) / 2，层级敏感。BEFORE 用同一套评分和标准答案在 main 上跑。评分器新增按编号匹配：一边用编号作标题、另一边用句首作标题时，只要编号相同就算命中。
+
+| | BEFORE (main) | AFTER |
+|---|---|---|
+| 总体 | 19.1% | **94.7%** |
+| 中文 / 英文 | 0.1% / 63.3% | 98.2% / 86.5% |
+| PDF / DOCX | 21.5% / 15.2% | 92.4% / 98.5% |
+| 金融监管 / 公司制度 / 模板 / 法律 | 0.2% / 7.2% / 73.5% / 13.8% | 98.0% / 98.0% / 87.6% / 85.6% |
+
+剩余失败见 `KNOWN_ISSUES.md`。

@@ -51,3 +51,10 @@ def test_scorer_matches_numbered_paragraph_by_number():
     gold = {"heading": "Employees must report incidents", "number": "4.1.1"}
     assert seg._heading_matches(gold, ClauseNode(heading="4.1.1", text="", level=3, number="4.1.1"))
     assert not seg._heading_matches(gold, ClauseNode(heading="4.1.2", text="", level=3, number="4.1.2"))
+
+
+def test_gold_nests_articles_under_sections():
+    from evals.real.gold import nest_articles_in_sections
+    labels = [{"number": "第三章", "level": 1}, {"number": "第一节", "level": 2},
+              {"number": "第十二条", "level": 2}, {"number": "第四章", "level": 1}, {"number": "第十三条", "level": 2}]
+    assert [x["level"] for x in nest_articles_in_sections(labels)] == [1, 2, 3, 1, 2]
