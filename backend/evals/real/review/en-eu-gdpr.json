@@ -1,0 +1,66 @@
+{
+ "reviewed": true,
+ "note": "v2 review: CHAPTER I-XI, Sections and Articles 1-99 checked for continuity. LLM silently dropped one chunk (Articles 31-37 and Chapter IV Sections 2-4, L2290-2470); reviewer added them from the text (number line + following title line). ~80 rule-only hits rejected: OJ running headers '4.5.2016 EN Official Journal…' and inline cross-references ('Article 8(1) of…', 'Chapter VII.'). Recitals (before L1533) contain no headings.",
+ "add": [
+  {
+   "line": 2305,
+   "level": 2,
+   "number": "Section 2",
+   "heading": "Se cur it y of pe r so na l da t a"
+  },
+  {
+   "line": 2371,
+   "level": 2,
+   "number": "Section 3",
+   "heading": "D at a p ro te ctio n im p a ct a s ses sm ent a nd p r io r co nsu ltati o n"
+  },
+  {
+   "line": 2451,
+   "level": 2,
+   "number": "Section 4",
+   "heading": "D a t a p ro t ecti on o ff icer"
+  },
+  {
+   "line": 2301,
+   "level": 3,
+   "number": "Article 31",
+   "heading": "Cooperation with the supervisory authority"
+  },
+  {
+   "line": 2307,
+   "level": 3,
+   "number": "Article 32",
+   "heading": "Security of processing"
+  },
+  {
+   "line": 2330,
+   "level": 3,
+   "number": "Article 33",
+   "heading": "Notification of a personal data breach to the supervisory authority"
+  },
+  {
+   "line": 2351,
+   "level": 3,
+   "number": "Article 34",
+   "heading": "Communication of a personal data breach to the data subject"
+  },
+  {
+   "line": 2373,
+   "level": 3,
+   "number": "Article 35",
+   "heading": "Data protection impact assessment"
+  },
+  {
+   "line": 2420,
+   "level": 3,
+   "number": "Article 36",
+   "heading": "Prior consultation"
+  },
+  {
+   "line": 2453,
+   "level": 3,
+   "number": "Article 37",
+   "heading": "Designation of the data protection officer"
+  }
+ ]
+}

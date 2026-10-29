@@ -1,0 +1,7 @@
+{
+ "reviewed": true,
+ "note": "v2 review: front-matter headings (Abstract … Preface), numbered sections 1.-5.2., Appendix A-C, the six Function headings in Appendix A and glossary term headings verified against text. Dropped 'Table 2.' (L805, a table caption, not a heading). Rule-only '100 Bureau Drive' (L937) is an address line, rejected.",
+ "drop": [
+  805
+ ]
+}

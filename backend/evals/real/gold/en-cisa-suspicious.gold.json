@@ -1,0 +1,52 @@
+{
+ "id": "en-cisa-suspicious",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": null,
+   "heading": "Introduction",
+   "sentences": [
+    "As one part of a holistic security plan, the Cybersecurity and Infrastructure Security Agency (CISA) encourages facilities with dangerous chemicals to establish a suspicious activity and security incident reporting process.",
+    "A reporting process can not only aid facility personnel in recording key information so that details of a suspicious activity or security incident can be referred to at a later time, but also inform facility personnel to whom suspicious activity or other security incident should be reported."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 1
+  },
+  {
+   "number": null,
+   "heading": "Suspicious Activity and Security Incidents",
+   "sentences": [
+    "When reporting suspicious activity, remember to include who or what you saw, when you saw it, where it occurred, and why the behavior is suspicious.",
+    "For more information and additional resources on reporting suspicious activity, visit cisa.gov/resources-tools/programs/chemlock/reporting-suspicious-activities-incidents."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 5
+  },
+  {
+   "number": null,
+   "heading": "Reporting Form Template",
+   "sentences": [
+    "If a significant security incident warrants emergency response (whether detected while in progress or after the event has concluded), the facility should immediately call local law enforcement and first responders via 9-1-1.",
+    "Who did you see (i.e., name, gender, height, clothes, etc.): What did you see (i.e., actions, words, behaviors, etc.): When did you see it (i.e., day and time): Where it occurred (be as specific as possible): Why it is suspicious:"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 15
+  },
+  {
+   "number": null,
+   "heading": "Points of Contact",
+   "sentences": [
+    "Based on the facility’s standard procedure for reporting suspicious activity and security incidents, the template for reporting incidents should include all relevant points of contact for the facility so that personnel know to whom suspicious activity or other security incident should be reported.",
+    "Facility Security Officer: Facility Cybersecurity Officer: Local law enforcement: Local fire department: Local fusion center: County/local emergency management official: County/local public health official: County/local environmental protection official: CISA Central: Central@cisa.gov Federal Bureau of Investigation Weapons of Mass Destruction (FBI WMD) Coordinator:"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 23
+  }
+ ],
+ "reviewed": true,
+ "review_note": "v2 review: unnumbered DOCX heading lines verified against text (short title-case standalone lines followed by body); rule heuristic finds none because there is no numbering. LLM labels accepted."
+}

@@ -1,0 +1,138 @@
+{
+ "id": "en-sans-breach",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": "1.0",
+   "heading": "Purpose",
+   "sentences": [
+    "The purpose of the policy is to establish the goals and the vision for the breach response process.",
+    "This policy will clearly define to whom it applies and under what circumstances, and it will include the definition of a breach, staff roles and responsibilities, standards and metrics (e.g., to enable prioritization of the incidents), as well as reporting, remediation, and feedback mechanisms."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "1.1",
+     "heading": "Background",
+     "sentences": [
+      "This policy mandates that any individual who suspects that a theft, breach or exposure of <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data has occurred must immediately provide a description of what occurred via e-­‐mail to Helpdesk@<ORGANIZATION NAME>.org, by calling 555-­‐ 1212, or through the use of the help desk reporting web page at http://<ORGANIZATION NAME>.",
+      "If a theft, breach or exposure has occurred, the Information Security Administrator will follow the appropriate procedure in place."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 19
+    }
+   ],
+   "line": 4
+  },
+  {
+   "number": "2.0",
+   "heading": "Scope",
+   "sentences": [
+    "This policy applies to all whom collect, access, maintain, distribute, process, protect, store, use, transmit, dispose of, or otherwise handle personally identifiable information or Protected Health Information (PHI) of <ORGANIZATION NAME> members.",
+    "Any agreements with vendors will contain language similar that protects the fund."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Confirmed theft, data breach or exposure of <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data",
+     "sentences": [
+      "3.0 Policy Confirmed theft, data breach or exposure of <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data As soon as a theft, data breach or exposure containing <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data is identified, the process of removing all access to that resource will begin.",
+      "The team will include members from: • IT Infrastructure • IT Applications • Finance (if applicable) • Legal • Communications • Member Services (if Member data is affected) • Human Resources • The affected unit or department that uses the involved system or output or whose data may have been breached or exposed • Additional departments based on the data type involved, Additional individuals as deemed necessary by the Executive Director"
+     ],
+     "table_cells": [],
+     "children": [
+      {
+       "number": null,
+       "heading": "Confirmed theft, breach or exposure of <ORGANIZATION NAME> data",
+       "sentences": [
+        "The Executive Director will be notified of the theft, breach or exposure.",
+        "IT, along with the designated forensic team, will analyze the breach or exposure to determine the root cause."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 56
+      },
+      {
+       "number": null,
+       "heading": "Work with Forensic Investigators",
+       "sentences": [
+        "As provided by <ORGANIZATION NAME> cyber insurance, the insurer will need to provide access to forensic investigators and experts that will determine how the breach or exposure occurred; the types of data involved; the number of internal/external individuals and/or organizations impacted; and analyze the breach or exposure to determine the root cause."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 60
+      },
+      {
+       "number": null,
+       "heading": "Develop a communication plan.",
+       "sentences": [
+        "Work with <ORGANIZATION NAME> communications, legal and human resource departments to decide how to communicate the breach to: a) internal employees, b) the public, and c) those directly affected."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 66
+      }
+     ],
+     "line": 37
+    },
+    {
+     "number": "3.2",
+     "heading": "Ownership and Responsibilities",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": null,
+       "heading": "Roles & Responsibilities:",
+       "sentences": [
+        "• Sponsors -­‐ Sponsors are those members of the <ORGANIZATION NAME> community that have primary responsibility for maintaining any particular information resource.",
+        "Human Resources."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 71
+      }
+     ],
+     "line": 70
+    }
+   ],
+   "line": 31
+  },
+  {
+   "number": "4.0",
+   "heading": "Enforcement",
+   "sentences": [
+    "Any < ORGANIZATION NAME > personnel found in violation of this policy may be subject to disciplinary action, up to and including termination of employment.",
+    "Any third party partner company found in violation may have their network connection terminated."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 91
+  },
+  {
+   "number": "5.0",
+   "heading": "Definitions",
+   "sentences": [
+    "Encryption or encrypted data – The most effective way to achieve data security.",
+    "See PII and PHI above."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 96
+  },
+  {
+   "number": "6.0",
+   "heading": "Revision History",
+   "sentences": [
+    "Version Date of Revision Author Description of Changes 1.0 August 17, 2016 SANS Institute Initial version 1.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 121
+  }
+ ],
+ "reviewed": true,
+ "review_note": "v2 review: LLM outline 1.0-6.0 with 1.1/3.2 and unnumbered bold sub-headings under 3.x checked against text; rule-only 1.0 at L123 is a revision-history table row, rejected. No corrections."
+}

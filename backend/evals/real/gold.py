@@ -108,13 +108,13 @@ def numbered_paragraphs(row: dict, ls: list[str], labels: list[dict]) -> list[di
     return sorted(out, key=lambda x: x["line"])
 
 
-_JIE = re.compile(r"^第[一二三四五六七八九十百零〇\d]+节$")
-_ZHANG = re.compile(r"^第[一二三四五六七八九十百零〇\d]+章$")
-_TIAO = re.compile(r"^第[一二三四五六七八九十百零〇\d]+条$")
+_JIE = re.compile(r"^第[一二三四五六七八九十百零〇\d]+节$|^Section\d+$")
+_ZHANG = re.compile(r"^第[一二三四五六七八九十百零〇\d]+章$|^(CHAPTER|Chapter|PART|Part)[IVXLC\d]+$")
+_TIAO = re.compile(r"^第[一二三四五六七八九十百零〇\d]+条$|^Article\d+$")
 
 
 def nest_articles_in_sections(labels: list[dict]) -> list[dict]:
-    """中文规章「章 > 节 > 条」：LLM 常把节下的条和节标成同一层，按惯例把它们挂到节下面。"""
+    """「章 > 节 > 条」/「Chapter > Section > Article」：LLM 常把节下的条和节标成同一层，按惯例把它们挂到节下面。"""
     jie = None
     for lab in labels:
         number = (lab.get("number") or "").replace(" ", "")
