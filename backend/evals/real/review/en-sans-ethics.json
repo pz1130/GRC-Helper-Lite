@@ -1,0 +1,7 @@
+{
+ "reviewed": true,
+ "note": "v2 review: 1-7 sections, 4.x, 4.x.y numbered paragraphs checked; LLM missed '8 Revision History' (L93) - added from rule.",
+ "add_rule": [
+  93
+ ]
+}

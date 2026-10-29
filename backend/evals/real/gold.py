@@ -8,7 +8,8 @@ pdftotext/LibreOffice 抽出的文本行、MiniMax 标注、确定性编号规�
 
 人工修正记录在 review/<id>.json（提交进仓库，可审计）：
   {"reviewed": true, "note": "...", "drop": [行号...], "add": [{line, level, number, heading}],
-   "set": {"行号": {字段: 值}}, "relevel": {"from_level": to_level}}
+   "set": {"行号": {字段: 值}}, "relevel": {"from_level": to_level},
+   "add_rule": [行号 | {line, level}]}  # add_rule: 复核确认后从规则启发式标注拷贝
 """
 from __future__ import annotations
 
@@ -29,6 +30,9 @@ def nz(s: str) -> str:
 def apply_review(doc_id: str, labels: list[dict]) -> tuple[list[dict], dict]:
     f = REVIEW / f"{doc_id}.json"
     rv = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+    if rv.get("replace"):
+        # LLM 无法给出可用结果时，复核者逐行手工标注全部标题（add 即完整金标）
+        labels = []
     drop = set(rv.get("drop", []))
     out = [dict(x) for x in labels if x["line"] not in drop]
     for k, v in rv.get("set", {}).items():
@@ -36,6 +40,13 @@ def apply_review(doc_id: str, labels: list[dict]) -> tuple[list[dict], dict]:
             if x["line"] == int(k):
                 x.update(v)
     out += rv.get("add", [])
+    if rv.get("add_rule"):
+        # 复核者确认 LLM 漏标、规则启发式标对的行：从 rule 标注拷贝（可覆盖 level）
+        rule = {x["line"]: x for x in json.loads(
+            (VWORK / "labels" / f"{doc_id}.rule.json").read_text(encoding="utf-8"))}
+        for e in rv["add_rule"]:
+            e = e if isinstance(e, dict) else {"line": e}
+            out.append({**rule[e["line"]], **e})
     rl = {int(a): b for a, b in rv.get("relevel", {}).items()}
     for x in out:
         x["level"] = rl.get(x["level"], x["level"])

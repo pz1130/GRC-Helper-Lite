@@ -1,0 +1,4 @@
+{
+ "reviewed": true,
+ "note": "v2 review: rule heuristic flagged ~25 '1. ... 17.' lines under 4.2/4.3 — checked source: these are bullet-style prohibited-activity list items inside sections, not headings; rejected. LLM's 1./4.x/4.x.y hierarchy matches the document outline; accepted as is."
+}

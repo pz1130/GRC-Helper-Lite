@@ -1,0 +1,4 @@
+{
+ "reviewed": true,
+ "note": "v2 review: unnumbered DOCX heading lines verified against text (short title-case standalone lines followed by body); rule heuristic finds none because there is no numbering. LLM labels accepted."
+}

@@ -17,12 +17,18 @@ def show(doc_id: str, full: bool = False) -> None:
     llm = {x["line"]: x for x in json.loads((VWORK / "labels" / f"{doc_id}.llm.json").read_text())}
     rule = {x["line"]: x for x in json.loads((VWORK / "labels" / f"{doc_id}.rule.json").read_text())}
     print(f"# {doc_id} {row['lang']} {row['format']} {row['kind']} lines={len(ls)} llm={len(llm)} rule={len(rule)}")
+    agreed = [llm[i] for i in sorted(llm) if i in rule]
+    levels = sorted({x["level"] for x in llm.values()})
+    print(f"  agreed={len(agreed)} levels={levels} first={agreed[0]['number'] if agreed else ''} "
+          f"last={agreed[-1]['number'] if agreed else ''}")
+    for lv in levels:
+        sample = [x["number"] or x["heading"][:12] for x in llm.values() if x["level"] == lv][:6]
+        print(f"  L{lv}: {sample}")
     for i in sorted(set(llm) | set(rule)):
         a, b = llm.get(i), rule.get(i)
         near = any(j in llm for j in (i - 1, i + 1))
         tag = "  " if a and b else ("L " if a else ("r~" if near else "R "))
         if not full and tag == "  ":
-            print(f"{tag}{i:5d} {a['level']} {a['number'][:14]:14s} {a['heading'][:50]}")
             continue
         lab = a or b
         print(f"{tag}{i:5d} {lab['level']} {lab['number'][:14]:14s} {lab['heading'][:50]:50s} | {ls[i][:70]}")

@@ -53,7 +53,7 @@ L<行号>|<层级>|<编号>|<标题>
 
 def _call(prompt: str) -> str:
     key = os.environ["MINIMAX_CN_API_KEY"]
-    body = json.dumps({"model": MODEL, "temperature": 0.1, "max_tokens": 8000,
+    body = json.dumps({"model": MODEL, "temperature": 0.1, "max_tokens": 16000,
                        "messages": [{"role": "user", "content": prompt}]}).encode()
     waits = [60, 120, 240, 600]
     attempt = 0
@@ -71,7 +71,10 @@ def _call(prompt: str) -> str:
             text = data["choices"][0]["message"]["content"] or ""
             if not text.strip():
                 raise RuntimeError("empty completion")
-            return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+            answer = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+            if not answer or answer.startswith("<think>"):
+                raise RuntimeError("no answer after reasoning")
+            return answer
         except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, RuntimeError, OSError) as exc:
             code = getattr(exc, "code", None)
             if code in (400, 401, 403, 404):
@@ -93,7 +96,7 @@ def llm_label(doc_id: str, ls: list[str]) -> list[dict]:
     while start < len(ls):
         end = min(len(ls), start + CHUNK)
         f = cache / f"{start:05d}.txt"
-        if not f.exists():
+        if not f.exists() or not f.read_text(encoding="utf-8").strip():
             recent = [found[k] for k in sorted(found)][-10:]
             ctx = ""
             if recent:
