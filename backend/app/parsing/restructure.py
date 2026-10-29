@@ -48,19 +48,32 @@ def nest_chapters(nodes: list[ClauseNode]) -> list[ClauseNode]:
     """英国 SI 的「PART 1 > CHAPTER 1 > 条」：先按 PART 分组，章号在每个 PART 内重新计数。"""
     parts = _nest_marker(nodes, _PART, "Part", 1)
     if parts is nodes:
-        return _nest_marker(nodes, _CHAPTER, "Chapter", 1)
-    for part in parts:
-        if part.number and part.number.startswith("Part "):
-            # 「PART 2 / CHAPTER 1」紧挨着：第一章的标记在 PART 自己的正文里。
-            head = ClauseNode(heading="", text=part.text, level=2, kind="unstructured")
-            nested = _nest_marker([head, *part.children], _CHAPTER, "Chapter", 2)
-            if nested and nested[0] is head:
-                part.text = head.text
-                nested = nested[1:]
-            else:
-                part.text = ""
-            part.children = nested
+        chapters = _nest_marker(nodes, _CHAPTER, "Chapter", 1)
+        if chapters is not nodes:
+            _nest_inside(chapters, "Chapter ", _SECTION, "Section", 2)
+        return chapters
+    _nest_inside(parts, "Part ", _CHAPTER, "Chapter", 2)
     return parts
+
+
+# GDPR「CHAPTER III > Section 1 > Article 12」：章内的 Section 独占一行，每章从 1 重新计数。
+_SECTION = re.compile(r"\s*(?:SECTION|Section)\s+(\d+)\s*[.:]?\s*(.*)$")
+
+
+def _nest_inside(groups: list[ClauseNode], prefix: str, pattern: re.Pattern, word: str,
+                 level: int) -> None:
+    for group in groups:
+        if not (group.number and group.number.startswith(prefix)):
+            continue
+        # 「PART 2 / CHAPTER 1」紧挨着：第一个下级标记在上级自己的正文里。
+        head = ClauseNode(heading="", text=group.text, level=level, kind="unstructured")
+        nested = _nest_marker([head, *group.children], pattern, word, level)
+        if nested and nested[0] is head:
+            group.text = head.text
+            nested = nested[1:]
+        else:
+            group.text = ""
+        group.children = nested
 
 
 def _nest_marker(nodes: list[ClauseNode], pattern: re.Pattern, word: str,
