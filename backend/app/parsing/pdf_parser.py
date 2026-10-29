@@ -4,6 +4,7 @@
 不是 OCR 出来的条款。这个产品不支持扫描件，理由与重开条件见
 `KNOWN_ISSUES.md` 的 K19（原 OQ-18）。"""
 
+import dataclasses
 import re
 from collections import Counter
 from datetime import date, datetime
@@ -12,6 +13,7 @@ from statistics import median
 
 import pdfplumber
 
+from app.parsing.chinese import Item, detect_style, segment
 from app.parsing.contract import (
     ClauseNode,
     DocumentMeta,
@@ -35,6 +37,7 @@ from app.parsing.numbering import (
     is_version_history_line,
 )
 from app.parsing.pdf_tables import PdfTable, attach_tables, read_tables
+from app.parsing.restructure import adopt_article_titles, nest_chapters
 from app.parsing.unstructured import structure_warnings
 from app.parsing.vocab import Numbering, vocabulary
 
@@ -312,6 +315,34 @@ def _is_a_list(
     return False
 
 
+def _join_wrapped_headings(
+    headings: list[NumberedHeading], candidates: list[str], layout: list[dict], body_size: float,
+) -> None:
+    """标题折成两行时，第二行字号字体与标题行相同且大于正文：接回标题。"""
+    taken = {heading.line_index for heading in headings}
+    for position, heading in enumerate(headings):
+        start = heading.line_index
+        head = layout[start]
+        if not body_size or head["font_size"] < body_size + DISPLAY_MARGIN_PT:
+            continue
+        index = (heading.body_start or start + 1)
+        if index != start + 1:
+            continue
+        while (index < len(candidates) and index not in taken and candidates[index].strip()
+               and abs(layout[index]["font_size"] - head["font_size"]) < 0.5
+               and layout[index]["fonts"] == head["fonts"]
+               and _numbered(candidates[index]) is None):
+            index += 1
+        if index == start + 1:
+            continue
+        extra = " ".join(candidates[i].strip() for i in range(start + 1, index))
+        label = _numbered(candidates[start])
+        title = heading.title if heading.title and heading.title != heading.number else (
+            label.title if label else "")
+        headings[position] = dataclasses.replace(
+            heading, title=f"{title} {extra}".strip(), body_start=index)
+
+
 def split_numbered_paragraphs(
     nodes: list[ClauseNode], candidates: list[str], layout: list[dict],
     body_lines: list[str], body_size: float, page_of: dict[int, int],
@@ -466,6 +497,19 @@ class PdfParser:
 
         candidates = [line if loc["role"] == "body" else ""
                       for line, loc in zip(lines, layout, strict=True)]
+        cn_style = detect_style(candidates)
+        if cn_style is not None:
+            # 中文条文体/公文体：字号与英文编号读法都不适用，见 chinese.py。
+            body_lines = [line if loc["role"] not in _LAYOUT_ROLES else ""
+                          for line, loc in zip(lines, layout, strict=True)]
+            clauses = segment([Item(line, source_key=f"line:{index}",
+                                    page_ref=page_of.get(index))
+                               for index, line in enumerate(body_lines)], cn_style)
+            attach_tables(clauses, tables, lines=lines, layout=layout)
+            warnings.extend(structure_warnings(clauses))
+            demote_fragment_headings(clauses)
+            return ParsedDocument(meta=_cover_meta(lines), clauses=clauses, warnings=warnings,
+                                  source_blocks=blocks, source_origin="pdf_text")
         displayed, body_size = display_headings(candidates, layout, _body_sizes(lines, layout))
         headings, filter_warnings = extract_headings(candidates)
         # 分开考察不同字号/缩进的连续正文编号，避免章节号和段落号互相污染。
@@ -524,11 +568,14 @@ class PdfParser:
                 )
             )
 
+        _join_wrapped_headings(headings, candidates, layout, body_size)
         body_lines = [line if loc["role"] not in _LAYOUT_ROLES else ""
                       for line, loc in zip(lines, layout, strict=True)]
         clauses = assemble_tree(headings, body_lines, page_of=page_of)
         if displayed:
             split_numbered_paragraphs(clauses, candidates, layout, body_lines, body_size, page_of)
+        adopt_article_titles(clauses)
+        clauses = nest_chapters(clauses)
         attach_tables(clauses, tables, lines=lines, layout=layout)
         warnings.extend(structure_warnings(clauses))
         # 段落级编号的文档里，"标题"其实是段落的前半句——整段收回正文。

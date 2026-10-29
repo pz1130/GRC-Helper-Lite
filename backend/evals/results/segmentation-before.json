@@ -1,0 +1,191 @@
+{
+ "summary": {
+  "overall": 0.461,
+  "structure_f1": 0.431,
+  "content": 0.49,
+  "en": 0.664,
+  "zh": 0.298
+ },
+ "documents": {
+  "en_article.docx": {
+   "gold": 16,
+   "pred": 12,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.0,
+   "score": 0.0
+  },
+  "en_article.pdf": {
+   "gold": 16,
+   "pred": 12,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.917,
+   "score": 0.458
+  },
+  "en_manual.docx": {
+   "gold": 21,
+   "pred": 29,
+   "correct": 17,
+   "precision": 0.586,
+   "recall": 0.81,
+   "f1": 0.68,
+   "content": 0.875,
+   "score": 0.778
+  },
+  "en_manual.pdf": {
+   "gold": 21,
+   "pred": 27,
+   "correct": 21,
+   "precision": 0.778,
+   "recall": 1.0,
+   "f1": 0.875,
+   "content": 0.875,
+   "score": 0.875
+  },
+  "en_styled.docx": {
+   "gold": 21,
+   "pred": 21,
+   "correct": 21,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "content": 1.0,
+   "score": 1.0
+  },
+  "en_styled.pdf": {
+   "gold": 21,
+   "pred": 21,
+   "correct": 21,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "content": 1.0,
+   "score": 1.0
+  },
+  "en_wrapped.docx": {
+   "gold": 6,
+   "pred": 6,
+   "correct": 6,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "content": 1.0,
+   "score": 1.0
+  },
+  "en_wrapped.pdf": {
+   "gold": 6,
+   "pred": 6,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.4,
+   "score": 0.2
+  },
+  "zh_plain_articles.docx": {
+   "gold": 8,
+   "pred": 1,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.0,
+   "score": 0.0
+  },
+  "zh_plain_articles.pdf": {
+   "gold": 8,
+   "pred": 0,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.0,
+   "score": 0.0
+  },
+  "zh_policy.docx": {
+   "gold": 16,
+   "pred": 13,
+   "correct": 4,
+   "precision": 0.308,
+   "recall": 0.25,
+   "f1": 0.276,
+   "content": 0.75,
+   "score": 0.513
+  },
+  "zh_policy.pdf": {
+   "gold": 16,
+   "pred": 0,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.0,
+   "score": 0.0
+  },
+  "zh_regulation.docx": {
+   "gold": 21,
+   "pred": 6,
+   "correct": 5,
+   "precision": 0.833,
+   "recall": 0.238,
+   "f1": 0.37,
+   "content": 0.0,
+   "score": 0.185
+  },
+  "zh_regulation.pdf": {
+   "gold": 21,
+   "pred": 0,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.0,
+   "score": 0.0
+  },
+  "zh_sections.docx": {
+   "gold": 23,
+   "pred": 9,
+   "correct": 9,
+   "precision": 1.0,
+   "recall": 0.391,
+   "f1": 0.562,
+   "content": 0.0,
+   "score": 0.281
+  },
+  "zh_sections.pdf": {
+   "gold": 23,
+   "pred": 0,
+   "correct": 0,
+   "precision": 0.0,
+   "recall": 0.0,
+   "f1": 0.0,
+   "content": 0.0,
+   "score": 0.0
+  },
+  "zh_styled_table.docx": {
+   "gold": 8,
+   "pred": 8,
+   "correct": 8,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "content": 1.0,
+   "score": 1.0
+  },
+  "zh_styled_table.pdf": {
+   "gold": 8,
+   "pred": 8,
+   "correct": 8,
+   "precision": 1.0,
+   "recall": 1.0,
+   "f1": 1.0,
+   "content": 1.0,
+   "score": 1.0
+  }
+ }
+}

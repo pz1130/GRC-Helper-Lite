@@ -123,6 +123,14 @@ it, you should know:
 [KNOWN_ISSUES.md](KNOWN_ISSUES.md) lists every known gap, why it has not been fixed yet, and
 what would make it worth fixing.
 
+**Document segmentation (2026-10-29).** Import now recognises Chinese regulatory
+numbering (第X编/章/节/条, 一、/（一）/1.) in both DOCX and PDF, English
+`CHAPTER I` + `Article N` layouts with the title on the following line, PDF headings
+that wrap onto a second line, and stray `1. 2. 3.` body lists in unstyled DOCX.
+On the synthetic segmentation eval (`backend/evals/segmentation/`, 18 documents)
+accuracy went from **46.1% to 99.3%** (Chinese 29.8% → 100%, English 66.4% → 98.4%).
+
+
 ## Trying it on your own policies
 
 The quickest way to judge whether it will work for your documents is to run the parser alone on a

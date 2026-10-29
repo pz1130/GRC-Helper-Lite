@@ -9,6 +9,7 @@ from docx.oxml.ns import qn
 from docx.table import Table
 from docx.text.paragraph import Paragraph
 
+from app.parsing.chinese import Item, detect_style, segment
 from app.parsing.contract import (
     ClauseNode,
     DocumentMeta,
@@ -20,6 +21,7 @@ from app.parsing.contract import (
 from app.parsing.docx_numbering import HeadingNumbering
 from app.parsing.headings import acts_as_headings, demote_fragment_headings
 from app.parsing.numbering import _noise
+from app.parsing.restructure import adopt_article_titles, demote_restarted_lists, nest_chapters
 from app.parsing.unstructured import append_text, structure_warnings
 from app.parsing.vocab import parse_label
 
@@ -177,6 +179,11 @@ def _looks_like_heading(paragraph, body_point: float | None) -> bool:
     return bool(points) and body_point is not None and max(points) > body_point
 
 
+# 中文切割接手后，这几条英文路径的告警不再成立。
+_CN_SUPERSEDED = {"parse.no_heading_styles", "parse.no_numbering_restored",
+                  "parse.suspect_numbering"}
+
+
 class DocxParser:
     def parse(self, path: Path) -> ParsedDocument:
         try:
@@ -224,6 +231,8 @@ class DocxParser:
         suspect_numbers = 0
         table_index = 0
         source_blocks: list[SourceBlock] = []
+        # 按文档顺序的全部段落与表格，中文条文体/公文体另走 chinese.segment。
+        sequence: list[Item] = []
 
         def attach(node: ClauseNode, level: int) -> None:
             while stack and stack[-1].level >= level:
@@ -268,6 +277,7 @@ class DocxParser:
                     kind="table",
                     source_keys=table_keys,
                 )
+                sequence.append(Item("", table=node))
                 if stack:
                     stack[-1].children.append(node)
                 else:
@@ -286,6 +296,7 @@ class DocxParser:
                     key=source_key, text=original_text, kind="paragraph",
                     locator={"body_index": body_index, "style": paragraph.style.name},
                 ))
+                sequence.append(Item(text, source_key=source_key))
             if _mark_deleted(paragraph):
                 # 不当标题、不推进编号；还剩的文字按正文留下。Word 里它会并到下一段
                 # 开头，这里挂在当前章节末尾——位置差一段，但一个字不丢。
@@ -459,7 +470,18 @@ class DocxParser:
             effective_date=_parse_date(meta_fields.get("Effective Date", "")),
             doc_type=doc_type,
         )
+        cn_style = detect_style(item.text for item in sequence if item.table is None)
+        if cn_style is not None:
+            # 中文编号结构的证据比英文样式/编号读法更强：Word 标题样式只标了章，
+            # 条全在正文样式里——不改走中文切割，条就全部沉进章的正文。
+            roots = segment(sequence, cn_style)
+            warnings = [w for w in warnings
+                        if getattr(w, "code", None) not in _CN_SUPERSEDED]
         # 同 PDF 路："标题"其实是段落前半句时，整段收回正文。
+        if cn_style is None:
+            roots = demote_restarted_lists(roots)
+            adopt_article_titles(roots)
+            roots = nest_chapters(roots)
         demote_fragment_headings(roots)
         warnings.extend(structure_warnings(roots))
         return ParsedDocument(meta=meta, clauses=roots, warnings=warnings,

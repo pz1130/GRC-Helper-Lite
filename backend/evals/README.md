@@ -37,3 +37,27 @@ GRC_EVAL_LLM_API_KEY=... python -m evals.harness extraction --label after [--ret
 - 抽取语料是 NIST 原文拼成的，不是真实机构制度；关键要求召回需要人工黄金集
   （`tests/test_extraction_quality.py`），这里不评估。
 - 模型输出有随机性：单次运行的差异在几个百分点以内时不能当作改进。
+
+
+## Segmentation eval (`evals/segmentation/`)
+
+Measures how well import splits a document into clauses.
+
+```
+cd backend && export PYTHONPATH=$PWD
+python -m evals.segmentation.corpus /tmp/segcorpus          # 9 docs -> .docx + .pdf + .gold.json (needs soffice)
+python -m evals.segmentation.score  /tmp/segcorpus evals/results/segmentation-after.json
+```
+
+Per-document score = mean of
+- **structure F1**: a predicted section counts when its heading matches a gold clause
+  and its parent heading matches too;
+- **content attribution**: share of gold sentences / table cells found (whitespace-normalised)
+  in the text of their own clause.
+
+Overall = mean over the 18 documents (also reported for en / zh).
+
+| run | overall | structure F1 | content | en | zh |
+|---|---|---|---|---|---|
+| before (`segmentation-before.json`) | 0.461 | 0.431 | 0.490 | 0.664 | 0.298 |
+| after (`segmentation-after.json`)   | 0.993 | 0.993 | 0.993 | 0.984 | 1.000 |
