@@ -56,9 +56,9 @@ def test_sections_nest_between_chapter_and_article():
              n("x", "1"), n("y\nCHAPTER II\nRights\nSection 1\nTransparency", "2"),
              n("z\nSection 2\nAccess", "3"), n("w", "4")]
     out = nest_chapters(nodes)
-    ch2 = [c for c in out if c.number == "Chapter II"][0]
+    ch2 = next(c for c in out if c.number == "Chapter II")
     assert [s.number for s in ch2.children] == ["Section 1", "Section 2"]
     assert [a.number for a in ch2.children[0].children] == ["3"]
     assert [a.number for a in ch2.children[1].children] == ["4"]
-    ch1 = [c for c in out if c.number == "Chapter I"][0]
+    ch1 = next(c for c in out if c.number == "Chapter I")
     assert [a.number for a in ch1.children] == ["1", "2"]

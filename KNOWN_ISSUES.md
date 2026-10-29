@@ -100,12 +100,21 @@
 
 | # | 事项 | 说明 |
 |---|---|---|
-| S1 | **未解决**：PDF 小节下夹着的 `1. 2. 3.` 列表仍被拆成段落子条款（如 `2(1)`） | `split_numbered_paragraphs` 的设计（文档C/D 段落号）与列表在版面上无法区分；DOCX 侧已由 `restructure.demote_restarted_lists` 处理。评测中 en_manual.pdf 得 87.5%。 |
+| S1 | **部分解决（2026-10-29 边界轮）**：PDF 小节下夹着的 `1. 2. 3.` 列表仍被拆成段落子条款（如 `2(1)`） | `split_numbered_paragraphs` 的设计（文档C/D 段落号）与列表在版面上无法区分；DOCX 侧已由 `restructure.demote_restarted_lists` 处理。评测中 en_manual.pdf 得 87.5%。边界轮：文档里有 ≥2 个三级以上小数编号段落（`4.3.2 文字…`）时不再做 `N.` 段落拆分（`_has_decimal_paragraphs`），en-sans-aup 0.844 → 0.973；没有小数段落的文档仍按原逻辑。 |
 | S2 | **已解决（2026-10-29）**：以数字结尾的标题行可能被当作目录行 | `is_toc_line` 末尾是「Appendix/Part/附录/第 + 数字」等编号名词时不当目录行（有测试）。原问题：`_TOC_TRAILING_PAGE` 把「标题 + 末尾数字」视为目录页码；如「附录 2」独占一行的标题会被丢掉。 |
 | S3 | **部分解决**：中文识别是规则式 | 真实语料 35 份中文 0.982（结构 F1 1.00），规则在真实文档上已够用；LLM 边界校正仍未接（需外部模型与数据政策）。原说明：条/章序号必须连续才采信；序号跳号、扫描件 OCR 错字的文档会退回原有英文逻辑。未接入 LLM 边界校正。 |
 | S4 | **已解决**：评测语料是合成的 | 已补 50 份公开真实制度文档（`backend/evals/real/`，中 35 / 英 15）与人工复核金标。原说明：9 份模板 × DOCX/PDF；真实制度文本的版式更杂，上线前应用真实文档抽样人工复核。 |
 
-### 真实语料剩余问题（evals/real，v2 金标：AFTER 93.7%，英文 82.6%）
+### 真实语料剩余问题（evals/real，v2 金标：边界轮后 95.0%，英文 87.1%；此前 93.7% / 82.6%）
+
+2026-10-29 边界轮（`tests/test_parsing_boundary_round3.py`，金标未改，独立性测试通过；合成集 99.3%）：
+- en-sans-aup 0.844 → 0.973：S1 小数段落文档不拆 `N.` 列表。剩余为修订记录表格单元格。
+- en-nist-csf2 0.53 → 0.792：段落结束后的未缩进粗体短行作无编号子节（`_ends_paragraph`）；Glossary/Definitions 附录里「粗体短行 + 非粗体正文」作术语子条（`_glossary_terms`）。剩余：金标里的伪条款与页眉句；封底「NIST Technical Series Policies」挂在 Glossary 下。
+- en-eu-gdpr 0.694 → 0.963：无 PART 时 CHAPTER 内的 `Section N` 作为中间层（`restructure._nest_inside`）。剩余：Article 12/19 两行标题被拆开。
+- en-sans-breach 0.563 → 0.575：剩余损失主要来自金标本身没有「3.0 Policy」标题（源 PDF 把它与下一行抽成一行），金标固定不改。
+- en-uk-mlr 0.797 未变：试过「SCHEDULES/EXPLANATORY NOTE 结束正文、回到顶层」，该文档降到 0.782，已回退。剩余：SCHEDULES 挂在 Part 11 下、EXPLANATORY NOTE 缺失、Schedule 7 内 PART 1/2、Part 9 Chapter 3 标题、Schedule 5 小标题多编号。
+- en-cisa-vdp 0.778、en-cisa-securechems 0.39（表单模板：分区标题是表单字段/方框文字，无编号无粗体规律，按行规则无法可靠识别，需版面/模型切分）：本轮未动。
+- K19 扫描件：未接 OCR，理由同 K19 条目（`ocr.py` 按词返回会塌树、镜像无 tesseract、无真实扫描语料）；需要行级版面 OCR 模型 + 真实扫描样本。
 
 2026-10-29 金标 v2：与解析器无关、50 份全部人工复核（方法见 `backend/evals/README.md`）。v2 下最弱：en-cisa-securechems 0.39（表单模板，手工金标含表单分区标题，解析器未识别）、en-nist-csf2 0.53（无编号前言/附录/术语表标题）、en-sans-breach 0.56、en-eu-gdpr 0.69（Section 层级、字距伪影）、en-cisa-vdp 0.78、en-uk-mlr 0.80（附表层级）。以下为 v1 金标时期记录（96.3% 为 v1 数字）：
 
@@ -138,7 +147,7 @@
 | P9 | 部分解决 | 字号大于正文的折行标题已接回（`_join_wrapped_headings`）；同字号折行仍可能进正文。 |
 | K2–K18 | 未解决（按设计/需外部条件） | 各条「为什么暂不修」仍成立：需迁移（K2、K13）、需产品决定（K3、K12）、需模型/数据政策复测（K15–K18），K5/K9 为已知低优先级。本轮未改动。 |
 | K19 | 未解决 | 扫描件需 OCR 模型与真实扫描语料，见原条目重开条件。 |
-| S1 | 未解决 | 与文档C 段落号版面不可分；尝试「号码独占一行即列表」等规则会误伤段落号，已回退。 |
+| S1 | 部分解决 | 有小数段落的文档已修（aup 0.97）；其余仍与文档C 段落号版面不可分。 |
 | S2 | 已解决 | 见上。 |
 | S3 | 部分解决 | 见上。 |
 | S4 | 已解决 | 见上。 |
