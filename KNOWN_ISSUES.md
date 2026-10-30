@@ -105,7 +105,16 @@
 | S3 | **部分解决**：中文识别是规则式 | 真实语料 35 份中文 0.982（结构 F1 1.00），规则在真实文档上已够用；LLM 边界校正仍未接（需外部模型与数据政策）。原说明：条/章序号必须连续才采信；序号跳号、扫描件 OCR 错字的文档会退回原有英文逻辑。未接入 LLM 边界校正。 |
 | S4 | **已解决**：评测语料是合成的 | 已补 50 份公开真实制度文档（`backend/evals/real/`，中 35 / 英 15）与人工复核金标。原说明：9 份模板 × DOCX/PDF；真实制度文本的版式更杂，上线前应用真实文档抽样人工复核。 |
 
-### 真实语料剩余问题（evals/real，v2 金标：边界轮后 95.0%，英文 87.1%；此前 93.7% / 82.6%）
+### 真实语料剩余问题（evals/real，v2 金标：第四轮后 96.6%，英文 92.5%；边界轮后 95.0% / 87.1%；此前 93.7% / 82.6%）
+
+2026-10-30 第四轮（`tests/test_parsing_boundary_round4.py`，金标未改，独立性测试通过；合成集 99.3%）：
+- en-uk-mlr 0.797 → 0.916（顺带 en-uk-dpcharges 0.895 → 0.974）：SCHEDULES/EXPLANATORY NOTE 结束正文回到顶层（`attach_tables` 按子节点位置排序无行号的 Part 容器，上一轮回退的原因）；EXPLANATORY NOTE 单独成节；Schedule 内 PART 1/2 挂到 Schedule 下；「… etc.」结尾的标题。剩余：Schedule 5 小标题被编号 1–4，金标无编号。
+- en-eu-gdpr 0.963 → 0.991：两行标题（第二行小写开头）不再被当成句子碎片降级，续行接回标题（`headings._wrapped_title`）。
+- en-cisa-vdp 0.778 → 0.885：Word 项目符号列表画回「•」（`docx_numbering.is_bullet`，样式给 numId 不给 ilvl 时按 0 级）。剩余：金标把同为 Heading 1 的「Test methods」判为子节、没有「Document change history」，不为此过拟合。
+- en-cisa-securechems 0.39 → 0.863：英文 Word 正文的自动编号画回文字（「a.」「i.」）；带下级小项的一级编号列表项作为所在节的条目（标题取冒号前）。没用模型。剩余：「Directions」「Notes」等 H3 金标不算标题。
+- en-sans-breach 0.575 未变：剩余损失来自金标「3.0 Policy」与正文抽成一行等源 PDF 伪影，解析器侧没有不过拟合的改法。
+- P3/P4/P7/P8/P9 部分解决项：本轮逐份看了剩余最低分（en-nist-csf2 0.792、csrc-jjpj 0.88 等），损失来自金标保留的页眉页脚（「- 1 证监会发布」「NIST CSWP 29 …」）和双栏抽字伪影，不是这些条目的解析缺陷；无低风险改动可做，未改代码。
+- K19 扫描件：本机评估——无 tesseract、无 GPU（8 核 / 15G 内存），仓库无真实扫描件语料，不可行，未实现。需求：(1) 行级版面 OCR（返回行与字号/坐标，而非按词），CPU 可跑或经数据政策批准的云端接口；(2) ≥10 份真实扫描制度做金标；(3) 镜像装 poppler + OCR 运行时；(4) 接入点 `app/parsing/ocr.py` → `pdf_parser` 在 `parse.scanned_no_text_layer` 处回退。
 
 2026-10-29 边界轮（`tests/test_parsing_boundary_round3.py`，金标未改，独立性测试通过；合成集 99.3%）：
 - en-sans-aup 0.844 → 0.973：S1 小数段落文档不拆 `N.` 列表。剩余为修订记录表格单元格。

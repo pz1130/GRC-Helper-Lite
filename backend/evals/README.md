@@ -83,11 +83,11 @@ Overall = mean over the 18 documents (also reported for en / zh).
 
 | v2 | BEFORE (main) | AFTER |
 |---|---|---|
-| 总体 | 18.8% | **95.0%**（边界轮前 93.7%） |
-| 中文 / 英文 | 0.1% / 62.3% | 98.4% / 82.6% |
-| PDF / DOCX | 21.3% / 14.8% | 92.4% / 95.6% |
-| 金融监管 / 公司制度 / 模板 / 法律 | 0.2% / 7.2% / 71.1% / 16.7% | 98.0% / 99.1% / 82.1% / 84.0% |
+| 总体 | 18.8% | **96.6%**（第四轮前 95.0%，边界轮前 93.7%） |
+| 中文 / 英文 | 0.1% / 62.3% | 98.4% / 92.5% |
+| PDF / DOCX | 21.3% / 14.8% | 95.3% / 98.7% |
+| 金融监管 / 公司制度 / 模板 / 法律 | 0.2% / 7.2% / 71.1% / 16.7% | 98.0% / 99.1% / 91.0% / 96.3% |
 
-最弱：en-cisa-securechems 0.39、en-nist-csf2 0.53、en-sans-breach 0.56、en-eu-gdpr 0.69、en-cisa-vdp 0.78、en-uk-mlr 0.80。边界轮后：en-sans-aup 0.973、en-nist-csf2 0.792、en-eu-gdpr 0.963、en-sans-breach 0.575，其余不变，结果 `results/real-after-v3.json`。v1（旧金标）结果保留在 `results/real-after.json`，仅供参考。
+最弱：en-cisa-securechems 0.39、en-nist-csf2 0.53、en-sans-breach 0.56、en-eu-gdpr 0.69、en-cisa-vdp 0.78、en-uk-mlr 0.80。边界轮后：en-sans-aup 0.973、en-nist-csf2 0.792、en-eu-gdpr 0.963、en-sans-breach 0.575，其余不变，结果 `results/real-after-v3.json`。第四轮（2026-10-30）：en-uk-mlr 0.916、en-uk-dpcharges 0.974、en-eu-gdpr 0.991、en-cisa-vdp 0.885、en-cisa-securechems 0.863，结果 `results/real-after-v4.json`。v1（旧金标）结果保留在 `results/real-after.json`，仅供参考。
 
 剩余失败见 `KNOWN_ISSUES.md`。
