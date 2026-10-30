@@ -1,5 +1,14 @@
 # GRC Helper — Open-source preview
 
+[![CI](https://github.com/pz1130/GRC-Helper-Lite/actions/workflows/ci.yml/badge.svg)](https://github.com/pz1130/GRC-Helper-Lite/actions/workflows/ci.yml)
+Repository: https://github.com/pz1130/GRC-Helper-Lite
+
+> **中文简介**：自托管的 IT 制度、控制点与证据管理工具。导入制度文件（Word / 带文字层的 PDF），
+> 按真实条款编号切成条款树（支持「第X章/第X条」「一、（一）1.」及英文 CHAPTER/Article/Section、
+> 英国法规 Schedules），由 AI 提出带原文引用的控制点并经人工确认，映射到 NIST 等框架，
+> 管理证据、风险登记、成熟度与审计问答；新增 RCSA（风险与控制自评）模块，默认关闭。
+> 50 份真实制度文档切分准确率 18.8% → 96.6%。详见下文与 [KNOWN_ISSUES.md](KNOWN_ISSUES.md)。
+
 **Preview scope:** one organisation’s internal IT team, with human review of AI output.
 Do not provision external auditor accounts or use this preview as proof of complete compliance.
 
@@ -67,6 +76,16 @@ Around this core there is an evidence register with validity dates, relationship
 detection between controls, a maturity assessment, a risk register, a register of the technology
 assets controls apply to, and search across all of it.
 
+**Risk and control self-assessment (RCSA).** A separate module under `/rcsa` runs assessment
+campaigns against confirmed controls: freeze a scope, answer design and operating effectiveness
+with evidence references, independent review of each answer, risk dispositions, tracked
+remediation and a fixed period report. It also has key risk indicators (KRIs), triggers, approved
+scoring profiles (a default 5×5 profile can be seeded with `make prod-seed-rcsa-profile`) and
+optional AI assistance (answer prefill, evidence relevance) that an admin enables per channel under
+RCSA → AI settings. The module is **off by default**: set `RCSA_ENABLED=true` and restart the API.
+While it is off (and in the offline demo, which has no RCSA sample data) the page shows
+"RCSA is not enabled". See [OPERATIONS.md](OPERATIONS.md#risk-and-control-self-assessment-rcsa-off-by-default).
+
 **Optionally finds requirements that keywords miss.** A separately enabled decision model can
 scan an active document for additional requirements needing review. Jev is the first adapter.
 It stays off until an administrator enables it, and only a manual scan sends redacted text.
@@ -113,7 +132,7 @@ it, you should know:
 
 | | |
 |---|---|
-| Language | English policies only. Clause numbering, full-text search and the prompts all assume English. |
+| Language | English and Chinese policies are parsed (clause numbering for both). Full-text search and the prompts are tuned for English; Chinese extraction quality has not been evaluated. |
 | Documents | Parsing handles documents with consistent numbering or heading styles. Scanned PDFs without a text layer are not supported (no OCR); paste the text instead. Unusual layouts can still produce a poor clause tree, which is why the parser can be run on its own first (see below), and clauses can be split and merged by hand. |
 | AI quality | On four public regulatory documents, extraction found 26 of 28 key requirements. 83% of extraction batches passed the verbatim-citation check on the first run (the target is 90%); the rest are flagged for retry. How many proposed controls are genuinely useful has not been measured yet; that takes a person reading them. Results vary between runs. |
 | Real audits | Not yet tested in a live audit. |
@@ -123,17 +142,29 @@ it, you should know:
 [KNOWN_ISSUES.md](KNOWN_ISSUES.md) lists every known gap, why it has not been fixed yet, and
 what would make it worth fixing.
 
-**Document segmentation (2026-10-29).** Import now recognises Chinese regulatory
-numbering (第X编/章/节/条, 一、/（一）/1.) in both DOCX and PDF, English
-`CHAPTER I` + `Article N` layouts with the title on the following line, PDF headings
-that wrap onto a second line, and stray `1. 2. 3.` body lists in unstyled DOCX.
-On the synthetic segmentation eval (`backend/evals/segmentation/`, 18 documents)
-accuracy went from **46.1% to 99.3%** (Chinese 29.8% → 100%, English 66.4% → 98.4%).
-On a corpus of **50 real public policy/regulation documents** (`backend/evals/real/`:
-35 Chinese, 15 English; 31 PDF, 19 DOCX) accuracy went from **18.8% to 96.6%** (95.0% after the 2026-10-29 boundary round, 93.7% before it)
-(Chinese 0.1% → 98.4%, English 62.3% → 82.6%; PDF 21.3% → 92.4%, DOCX 14.8% → 95.6%),
-scored against a parser-independent gold standard (v2) with all 50 documents manually reviewed.
+## Document import and segmentation
 
+Import is structure-aware: a document becomes a clause tree that follows its own numbering rather
+than fixed-size chunks. Supported layouts include:
+
+- Chinese regulatory numbering (第X编/章/节/条, 一、/（一）/1.) in DOCX and PDF, including Word
+  automatic numbering that is not in the text;
+- English `CHAPTER` / `Section` / `Article N` layouts (title on the next line, two-line titles),
+  UK statutory instruments with `PART`s, `SCHEDULE`s and an `EXPLANATORY NOTE`;
+- dotted section numbers (1.2.3), headings that wrap onto a second line, Word bullet and
+  numbered lists, and form templates whose numbered items carry sub-items.
+
+Accuracy is measured two ways (details in [backend/evals/README.md](backend/evals/README.md)):
+
+| Eval | Before | Now |
+|---|---|---|
+| 50 real public policy/regulation documents (`backend/evals/real/`; 35 Chinese / 15 English, 31 PDF / 19 DOCX), parser-independent gold v2, all manually reviewed | 18.8% | **96.6%** |
+| — Chinese / English | 0.1% / 62.3% | 98.4% / 92.5% |
+| — PDF / DOCX | 21.3% / 14.8% | 95.3% / 98.7% |
+| Synthetic segmentation set (`backend/evals/segmentation/`) | 46.1% | **99.3%** |
+
+Remaining weak spots (form templates, page headers kept in some sources, scanned PDFs without a
+text layer) are listed in [KNOWN_ISSUES.md](KNOWN_ISSUES.md).
 
 ## Trying it on your own policies
 
