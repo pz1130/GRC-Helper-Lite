@@ -148,5 +148,24 @@ def demote_fragment_headings(nodes: list) -> None:
             continue
         if not continues_the_heading(node.text or ""):
             continue
+        if _wrapped_title(node):
+            continue
         node.text = f"{node.heading} {node.text}".strip()
         node.heading = node.number
+
+
+def _wrapped_title(node) -> bool:
+    """「Transparent information … for the exercise / of the rights of the data subject / 1. …」：
+
+    折行的长标题。第二行很短、不以句末标点结束、下一行是新段落（编号或大写开头）时，
+    把第二行接回标题，而不是把整条降成半句话。
+    """
+    first, _, rest = (node.text or "").partition("\n")
+    first = first.strip()
+    following = rest.lstrip()[:1]
+    heading = (node.heading or "").strip()
+    if not (heading and len(first) <= 60 and len(heading) >= 40 and heading[-1:] not in ".;:,"
+            and first[-1:] not in ".;:," and (following.isdigit() or following.isupper())):
+        return False
+    node.heading, node.text = f"{heading} {first}", rest
+    return True

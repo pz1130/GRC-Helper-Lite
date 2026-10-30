@@ -44,3 +44,19 @@ def test_parts_inside_schedule_are_nested():
     assert [c.heading for c in sch.children[1].children] == ["Order B"]
 
 
+
+
+def test_wrapped_long_title_is_joined_not_demoted():
+    from app.parsing.headings import demote_fragment_headings
+    node = _node("12", "Transparent information, communication and modalities for the exercise",
+                 text="of the rights of the data subject\n1. The controller shall take measures")
+    demote_fragment_headings([node])
+    assert node.heading.endswith("for the exercise of the rights of the data subject")
+    assert node.text.startswith("1. The controller")
+
+
+def test_sentence_fragment_still_demoted():
+    from app.parsing.headings import demote_fragment_headings
+    node = _node("2.2", "The company shall ensure", text="that all staff are trained in the handling of data.")
+    demote_fragment_headings([node])
+    assert node.heading == "2.2"
