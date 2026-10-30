@@ -75,3 +75,21 @@ def test_docx_bullet_items_keep_their_bullet(tmp_path):
     d.save(path)
     node = next(c for c in DocxParser().parse(path).clauses if c.heading == "Guidelines")
     assert "• Notify us quickly." in node.text and "• Avoid harm." in node.text
+
+
+def test_docx_form_list_items_become_entries():
+    from pathlib import Path
+
+    from app.parsing.docx_parser import DocxParser
+
+    path = Path(__file__).parents[1] / "evals/real/docs/en-cisa-securechems.docx"
+    clauses = DocxParser().parse(path).clauses
+
+    def walk(nodes):
+        for node in nodes:
+            yield node
+            yield from walk(node.children)
+
+    entry = next(n for n in walk(clauses) if n.heading == "Intrusion detection system (IDS)")
+    assert entry.number == "1"
+    assert "a. " in entry.text and "☐" in entry.text

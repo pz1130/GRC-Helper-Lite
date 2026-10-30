@@ -119,6 +119,36 @@ def _heading_level(paragraph: Paragraph) -> int | None:
     return int(value) + 1
 
 
+_CJK = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _list_labels(document, headings: HeadingNumbering) -> dict:
+    """英文文档正文里 Word 自动编号的列表项：{段落元素: (编号, 是否带下级小项)}。
+
+    编号是渲染出来的，不在文字里；不画回去，「a. / b.」小项读起来像连成一段。
+    另起一台计数器，免得推进标题编号。中文文档的自动编号由 _with_cn_number 处理。
+    """
+    paragraphs = document.paragraphs
+    if any(_CJK.search(_paragraph_text(p)) for p in paragraphs[:200]):
+        return {}
+    machine = HeadingNumbering(document)
+    found = []
+    for paragraph in paragraphs:
+        if _heading_level(paragraph) is not None or headings.is_bullet(paragraph):
+            continue
+        try:
+            label = machine.number_for(paragraph)
+        except Exception:  # noqa: BLE001, S112 — 编号定义残缺时不画
+            continue
+        if label and _paragraph_text(paragraph).strip():
+            found.append((paragraph._p, label.strip(), machine.last_ilvl))
+    out = {}
+    for index, (element, label, ilvl) in enumerate(found):
+        following = found[index + 1][2] if index + 1 < len(found) else -1
+        out[element] = (label, ilvl == 0 and label.isdigit() and following > 0)
+    return out
+
+
 def _with_cn_number(numbering: HeadingNumbering, paragraph: Paragraph, text: str) -> str:
     """Word 自动编号是中文条章号（「第一章」「第三条」「一、」「（一）」）时拼回段落文字。"""
     try:
@@ -230,6 +260,7 @@ class DocxParser:
         # 中文切割另起一台状态机：Normal 样式里的「第%1章」「%1、」自动编号也要画回文字，
         # 和上面那台分开，免得两边各推一次计数器。
         cn_numbering = HeadingNumbering(document)
+        list_labels = _list_labels(document, numbering)
         # 样式在每个段落上优先；同一文档中的 Normal 编号标题仍可被识别。
         styled = any(_heading_level(paragraph) is not None for paragraph in document.paragraphs)
         survey = [
@@ -453,6 +484,23 @@ class DocxParser:
 
             if not text:
                 continue
+
+            entry = list_labels.get(element)
+            if entry is not None:
+                label, opens_items = entry
+                parent = next((node for node in reversed(stack) if node.number is None), None)
+                if opens_items and parent is not None:
+                    # 表单模板「1. Intrusion detection system (IDS): Yes ☐ No ☐ / a. … / b. …」：
+                    # 带下级小项的一级自动编号是该节下的一个条目。
+                    title = text.split(":", 1)[0].strip()
+                    while stack and stack[-1] is not parent:
+                        stack.pop()
+                    node = ClauseNode(heading=title, text=text[len(title):].strip(), level=parent.level + 1,
+                                      number=label, source_keys=[source_key])
+                    parent.children.append(node)
+                    stack.append(node)
+                    continue
+                text = f"{label}. {text}" if label.isalnum() else f"{label} {text}"
 
             if match := _META.match(text):
                 meta_fields.setdefault(match.group(1), match.group(2).strip())

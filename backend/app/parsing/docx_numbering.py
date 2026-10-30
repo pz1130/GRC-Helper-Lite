@@ -257,6 +257,7 @@ class HeadingNumbering:
         for deeper in [key for key in counters if key > ilvl]:
             del counters[deeper]
 
+        self.last_ilvl = ilvl
         return self._render(level, counters, abstract_id, num_id, ilvl)
 
     def is_bullet(self, paragraph) -> bool:
