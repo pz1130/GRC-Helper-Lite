@@ -13,8 +13,9 @@ import { useTheme } from "../theme";
 import { cssColor } from "./support";
 import { buildGlobeVariant, type GlobeVariant } from "./globes";
 import { buildGlobeVariant2, type GlobeVariant2 } from "./globes2";
+import { buildHeroVariant3, type HeroVariant3 } from "./heroes3";
 
-export type HeroConcept = "a" | "b" | "c" | GlobeVariant | GlobeVariant2;
+export type HeroConcept = "a" | "b" | "c" | GlobeVariant | GlobeVariant2 | HeroVariant3;
 export interface RiskPoint { likelihood: number; impact: number; score: number; open: boolean }
 
 interface Built { update: (t: number, px: number, py: number) => void; dispose: () => void }
@@ -49,7 +50,7 @@ export default function HeroV2({ concept, risks, className }: { concept: HeroCon
     };
     const ctx = { scene, camera, isDark, palette };
     const built: Built =
-      concept.startsWith("h") ? buildGlobeVariant2(concept as GlobeVariant2, ctx) : concept.startsWith("g") ? buildGlobeVariant(concept as GlobeVariant, ctx) : concept === "b" ? buildAurora(ctx) : concept === "c" ? buildTerrain(ctx, JSON.parse(riskKey) as RiskPoint[]) : buildGlobe(ctx);
+      concept.startsWith("k") ? buildHeroVariant3(concept as HeroVariant3, ctx) : concept.startsWith("h") ? buildGlobeVariant2(concept as GlobeVariant2, ctx) : concept.startsWith("g") ? buildGlobeVariant(concept as GlobeVariant, ctx) : concept === "b" ? buildAurora(ctx) : concept === "c" ? buildTerrain(ctx, JSON.parse(riskKey) as RiskPoint[]) : buildGlobe(ctx);
 
     const resize = () => {
       const w = Math.max(1, host.clientWidth);
