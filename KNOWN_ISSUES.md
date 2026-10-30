@@ -90,3 +90,74 @@
 - 账号到期日：含当天，管理员所在时区当天结束后失效。
 - 系统只给内部 IT 人员使用，不给审计员。
 - AI 批量任务的检查点身份 = 输入 + 模型；重复点击复用已付费的结果，换模型才重跑。
+
+
+---
+
+## 文档切分（2026-10-29，分支 fix/doc-chunking-accuracy）
+
+切分评测见 `backend/evals/segmentation/`（合成语料，46.1% → 99.3%）。仍然存在：
+
+| # | 事项 | 说明 |
+|---|---|---|
+| S1 | **部分解决（2026-10-29 边界轮）**：PDF 小节下夹着的 `1. 2. 3.` 列表仍被拆成段落子条款（如 `2(1)`） | `split_numbered_paragraphs` 的设计（文档C/D 段落号）与列表在版面上无法区分；DOCX 侧已由 `restructure.demote_restarted_lists` 处理。评测中 en_manual.pdf 得 87.5%。边界轮：文档里有 ≥2 个三级以上小数编号段落（`4.3.2 文字…`）时不再做 `N.` 段落拆分（`_has_decimal_paragraphs`），en-sans-aup 0.844 → 0.973；没有小数段落的文档仍按原逻辑。 |
+| S2 | **已解决（2026-10-29）**：以数字结尾的标题行可能被当作目录行 | `is_toc_line` 末尾是「Appendix/Part/附录/第 + 数字」等编号名词时不当目录行（有测试）。原问题：`_TOC_TRAILING_PAGE` 把「标题 + 末尾数字」视为目录页码；如「附录 2」独占一行的标题会被丢掉。 |
+| S3 | **部分解决**：中文识别是规则式 | 真实语料 35 份中文 0.982（结构 F1 1.00），规则在真实文档上已够用；LLM 边界校正仍未接（需外部模型与数据政策）。原说明：条/章序号必须连续才采信；序号跳号、扫描件 OCR 错字的文档会退回原有英文逻辑。未接入 LLM 边界校正。 |
+| S4 | **已解决**：评测语料是合成的 | 已补 50 份公开真实制度文档（`backend/evals/real/`，中 35 / 英 15）与人工复核金标。原说明：9 份模板 × DOCX/PDF；真实制度文本的版式更杂，上线前应用真实文档抽样人工复核。 |
+
+### 真实语料剩余问题（evals/real，v2 金标：第四轮后 96.6%，英文 92.5%；边界轮后 95.0% / 87.1%；此前 93.7% / 82.6%）
+
+2026-10-30 第四轮（`tests/test_parsing_boundary_round4.py`，金标未改，独立性测试通过；合成集 99.3%）：
+- en-uk-mlr 0.797 → 0.916（顺带 en-uk-dpcharges 0.895 → 0.974）：SCHEDULES/EXPLANATORY NOTE 结束正文回到顶层（`attach_tables` 按子节点位置排序无行号的 Part 容器，上一轮回退的原因）；EXPLANATORY NOTE 单独成节；Schedule 内 PART 1/2 挂到 Schedule 下；「… etc.」结尾的标题。剩余：Schedule 5 小标题被编号 1–4，金标无编号。
+- en-eu-gdpr 0.963 → 0.991：两行标题（第二行小写开头）不再被当成句子碎片降级，续行接回标题（`headings._wrapped_title`）。
+- en-cisa-vdp 0.778 → 0.885：Word 项目符号列表画回「•」（`docx_numbering.is_bullet`，样式给 numId 不给 ilvl 时按 0 级）。剩余：金标把同为 Heading 1 的「Test methods」判为子节、没有「Document change history」，不为此过拟合。
+- en-cisa-securechems 0.39 → 0.863：英文 Word 正文的自动编号画回文字（「a.」「i.」）；带下级小项的一级编号列表项作为所在节的条目（标题取冒号前）。没用模型。剩余：「Directions」「Notes」等 H3 金标不算标题。
+- en-sans-breach 0.575 未变：剩余损失来自金标「3.0 Policy」与正文抽成一行等源 PDF 伪影，解析器侧没有不过拟合的改法。
+- P3/P4/P7/P8/P9 部分解决项：本轮逐份看了剩余最低分（en-nist-csf2 0.792、csrc-jjpj 0.88 等），损失来自金标保留的页眉页脚（「- 1 证监会发布」「NIST CSWP 29 …」）和双栏抽字伪影，不是这些条目的解析缺陷；无低风险改动可做，未改代码。
+- K19 扫描件：本机评估——无 tesseract、无 GPU（8 核 / 15G 内存），仓库无真实扫描件语料，不可行，未实现。需求：(1) 行级版面 OCR（返回行与字号/坐标，而非按词），CPU 可跑或经数据政策批准的云端接口；(2) ≥10 份真实扫描制度做金标；(3) 镜像装 poppler + OCR 运行时；(4) 接入点 `app/parsing/ocr.py` → `pdf_parser` 在 `parse.scanned_no_text_layer` 处回退。
+
+2026-10-29 边界轮（`tests/test_parsing_boundary_round3.py`，金标未改，独立性测试通过；合成集 99.3%）：
+- en-sans-aup 0.844 → 0.973：S1 小数段落文档不拆 `N.` 列表。剩余为修订记录表格单元格。
+- en-nist-csf2 0.53 → 0.792：段落结束后的未缩进粗体短行作无编号子节（`_ends_paragraph`）；Glossary/Definitions 附录里「粗体短行 + 非粗体正文」作术语子条（`_glossary_terms`）。剩余：金标里的伪条款与页眉句；封底「NIST Technical Series Policies」挂在 Glossary 下。
+- en-eu-gdpr 0.694 → 0.963：无 PART 时 CHAPTER 内的 `Section N` 作为中间层（`restructure._nest_inside`）。剩余：Article 12/19 两行标题被拆开。
+- en-sans-breach 0.563 → 0.575：剩余损失主要来自金标本身没有「3.0 Policy」标题（源 PDF 把它与下一行抽成一行），金标固定不改。
+- en-uk-mlr 0.797 未变：试过「SCHEDULES/EXPLANATORY NOTE 结束正文、回到顶层」，该文档降到 0.782，已回退。剩余：SCHEDULES 挂在 Part 11 下、EXPLANATORY NOTE 缺失、Schedule 7 内 PART 1/2、Part 9 Chapter 3 标题、Schedule 5 小标题多编号。
+- en-cisa-vdp 0.778、en-cisa-securechems 0.39（表单模板：分区标题是表单字段/方框文字，无编号无粗体规律，按行规则无法可靠识别，需版面/模型切分）：本轮未动。
+- K19 扫描件：未接 OCR，理由同 K19 条目（`ocr.py` 按词返回会塌树、镜像无 tesseract、无真实扫描语料）；需要行级版面 OCR 模型 + 真实扫描样本。
+
+2026-10-29 金标 v2：与解析器无关、50 份全部人工复核（方法见 `backend/evals/README.md`）。v2 下最弱：en-cisa-securechems 0.39（表单模板，手工金标含表单分区标题，解析器未识别）、en-nist-csf2 0.53（无编号前言/附录/术语表标题）、en-sans-breach 0.56、en-eu-gdpr 0.69（Section 层级、字距伪影）、en-cisa-vdp 0.78、en-uk-mlr 0.80（附表层级）。以下为 v1 金标时期记录（96.3% 为 v1 数字）：
+
+2026-10-29 第三轮已修（`tests/test_parsing_real_corpus_fixes.py`）：
+- ~~无编号的前言和附录标题~~：标题只靠粗体区分的 PDF（顶层标题 ≥80% 全粗体）里，丢掉不是粗体的「编号行」（折行正文），补上粗体的 `Appendix X.`、首个编号标题前的前言标题（至少两条才算，只有一条的是文档标题）。en-nist-csf2 0.40 → 0.77。剩余：`GOVERN (GV)` 这类功能名小标题和封底「NIST Technical Series Policies」。
+- ~~无编号的粗体小标题~~：章内缩进的全粗体短行挂到所在章下作无编号子节。en-sussex-ig 0.87 → 1.00。
+- ~~英国 SI 附表~~：正文条款后的 `SCHEDULE [N]`（跳过「Regulation 7(1)」旁注取标题）各成一棵子树，附表内段落挂在其下；有「SCHEDULES」总标题时作为容器。en-uk-dpcharges 0.78 → 0.97，en-uk-mlr 0.77 → 0.86（剩余：附表内的 PART 层级与无编号小标题；SCHEDULES 容器挂在最后一个 PART 下而不是顶层）。
+- ~~正文误套 Heading 样式~~：超过 80 字且读起来是句子的 Heading 段落按正文处理。en-cisa-vdp 0.84 → 0.87。
+- ~~「附录 2」被当作目录行~~（S2）：见上表。
+
+仍未修：
+- en-sans-aup（0.84）正文清单拆成 `4.3.2(1)`：即 S1。
+- en-sans-breach（0.78）：PDF 文本层把 `3.0 Policy` 与下一小节标题抽成同一行（小节号缺失），属源文件版面问题，按行解析无法可靠拆开。
+
+---
+
+## 状态总览（2026-10-29 第三轮逐条核对）
+
+仓库 GitHub 上没有 open issue；`app/parsing` 无 TODO/FIXME。下表覆盖本文件所有条目。
+
+| # | 状态 | 说明 |
+|---|---|---|
+| G1–G4、G6 | 未解决 | 需正式机器、域名证书、异地备份目标、人工精确率抽看与同事试用；代码侧已就绪，属部署/人工工作，不能在仓库里完成。 |
+| P1 | 部分解决 | 真实语料 19 份 DOCX 0.985；以兄弟编号开头的正文句子仍有风险。 |
+| P2 | 部分解决 | CHAPTER/PART 已作为上层（`nest_chapters`，真实语料 eu-gdpr 0.92）；Article 内段落号仍不单独成条（按设计：段落引用写作「Article N(k)」由正文保留）。 |
+| P3、P4 | 部分解决 | 正文已修；同字号章节/列表、无边框附录表仍依赖 P8/语义判断。 |
+| P5 | 未解决 | 上传时明确拒绝 HTML；没有用户需求与真实网页语料，暂不做。 |
+| P6 | 已解决 | 50 份真实文档人工复核金标替代「只看没塌」。 |
+| P7、P8 | 未解决 | 无边框表格需列推断，无可靠语料；超长批次可见失败记录兜底。 |
+| P9 | 部分解决 | 字号大于正文的折行标题已接回（`_join_wrapped_headings`）；同字号折行仍可能进正文。 |
+| K2–K18 | 未解决（按设计/需外部条件） | 各条「为什么暂不修」仍成立：需迁移（K2、K13）、需产品决定（K3、K12）、需模型/数据政策复测（K15–K18），K5/K9 为已知低优先级。本轮未改动。 |
+| K19 | 未解决 | 扫描件需 OCR 模型与真实扫描语料，见原条目重开条件。 |
+| S1 | 部分解决 | 有小数段落的文档已修（aup 0.97）；其余仍与文档C 段落号版面不可分。 |
+| S2 | 已解决 | 见上。 |
+| S3 | 部分解决 | 见上。 |
+| S4 | 已解决 | 见上。 |
+| 真实语料弱项 | nist/sussex/dpcharges/mlr/vdp 已改善；aup、breach 未解决 | 见「真实语料剩余问题」。 |

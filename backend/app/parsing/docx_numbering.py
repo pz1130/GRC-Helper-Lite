@@ -50,8 +50,32 @@ def _roman(n: int) -> str:
     return out
 
 
+_CN_DIGITS = "零一二三四五六七八九"
+
+
+def _chinese(n: int) -> str | None:
+    """1→一、10→十、12→十二、25→二十五、105→一百零五（1–999）。"""
+    if not 0 < n < 1000:
+        return None
+    hundreds, rest = divmod(n, 100)
+    tens, ones = divmod(rest, 10)
+    out = f"{_CN_DIGITS[hundreds]}百" if hundreds else ""
+    if tens:
+        out += ("" if tens == 1 and not hundreds else _CN_DIGITS[tens]) + "十"
+    elif hundreds and ones:
+        out += "零"
+    if ones:
+        out += _CN_DIGITS[ones]
+    return out
+
+
 def format_counter(value: int, fmt: str) -> str | None:
     """不认识的格式返回 None——错的条款号比没有更糟。"""
+    if fmt in ("chineseCounting", "chineseCountingThousand", "japaneseCounting",
+               "taiwaneseCounting", "taiwaneseCountingThousand"):
+        return _chinese(value)
+    if fmt in ("decimalFullWidth", "decimalFullWidth2", "decimalEnclosedParen"):
+        return str(value) if fmt != "decimalEnclosedParen" else f"({value})"
     if fmt == "decimal":
         return str(value)
     if fmt == "lowerLetter":
@@ -233,7 +257,28 @@ class HeadingNumbering:
         for deeper in [key for key in counters if key > ilvl]:
             del counters[deeper]
 
+        self.last_ilvl = ilvl
         return self._render(level, counters, abstract_id, num_id, ilvl)
+
+    def is_bullet(self, paragraph) -> bool:
+        """段落是否挂在项目符号列表上（不推进计数器）。"""
+        ppr = paragraph._p.find(f"{W}pPr")
+        numpr = ppr.find(f"{W}numPr") if ppr is not None else None
+        num_id = _val(numpr, "numId")
+        ilvl_raw = _val(numpr, "ilvl")
+        ilvl = int(ilvl_raw) if ilvl_raw is not None else None
+        if num_id is None or ilvl is None:
+            style_num, style_ilvl = self._from_style(
+                paragraph.style.style_id if paragraph.style is not None else None
+            )
+            num_id = num_id or style_num
+            # 样式里只写 numId 不写 ilvl 时，Word 按第 0 级画。
+            ilvl = ilvl if ilvl is not None else (style_ilvl or 0)
+        if num_id is None or num_id == "0":
+            return False
+        abstract_id = self._resolve(num_id)
+        level = self._level(num_id, abstract_id, ilvl) if abstract_id is not None else None
+        return level is not None and level.fmt == "bullet"
 
     def _start(self, abstract_id: str, num_id: str, ilvl: int) -> int:
         level = self._level(num_id, abstract_id, ilvl)

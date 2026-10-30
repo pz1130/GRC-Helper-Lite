@@ -1,0 +1,266 @@
+{
+ "id": "en-sans-pandemic",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": "1.",
+   "heading": "Overview",
+   "sentences": [
+    "Overview This policy is intended for companies that do not meet the definition of critical infrastructure as defined by the US Federal Government.",
+    "Therefore, additional planning steps for IT architecture, situational awareness, employee training and other preparations are required."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 8
+  },
+  {
+   "number": "2.",
+   "heading": "Purpose",
+   "sentences": [
+    "Purpose This document directs planning, preparation and exercises for pandemic disease outbreak over and above the normal business continuity and disaster recovery planning process.",
+    "The objective is to address the reality that pandemic events can create personnel and technology issues outside the scope of the traditional Disaster Recovery/Business Continuity Planning process as potentially some if not the entire workforce may be unable to come to work for health or personal reasons."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 24
+  },
+  {
+   "number": "3.",
+   "heading": "Scope",
+   "sentences": [
+    "Scope The planning process will include personnel involved in the business continuity and disaster recovery process, enterprise architects and senior management of <Company Name>.",
+    "During the implementation of the plan, all employees and contractors will need to undergo training before and during a pandemic disease outbreak."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 31
+  },
+  {
+   "number": "4.",
+   "heading": "Policy",
+   "sentences": [
+    "Policy <Company Name> will authorize, develop and maintain a Pandemic Response Plan addressing the following areas:"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "4.1",
+     "heading": "4.1",
+     "sentences": [
+      "The Pandemic Response Plan leadership will be identified as a small team which will oversee the creation and updates of the plan.",
+      "However, as with any other critical position, the leadership must have trained alternates that can execute the plan should the leadership become unavailable due to illness."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 39
+    },
+    {
+     "number": "4.2",
+     "heading": "4.2",
+     "sentences": [
+      "The creation of a communications plan before and during an outbreak that accounts for congested telecommunications services."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 46
+    },
+    {
+     "number": "4.3",
+     "heading": "4.3",
+     "sentences": [
+      "An alert system based on monitoring of World Health Organization (WHO), the Centers for Disease Control (CDC) and other Federal, State and Local sources of information on the risk of a pandemic disease outbreak."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 48
+    },
+    {
+     "number": "4.4",
+     "heading": "4.4",
+     "sentences": [
+      "A predefined set of emergency policies that will preempt normal <Company Name> policies for the duration of a declared pandemic.",
+      "These emergency policies are to be organized into different levels of response that match the level of business disruption expected from a possible pandemic disease outbreak within the community."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 51
+    },
+    {
+     "number": "4.5",
+     "heading": "4.5",
+     "sentences": [
+      "A set of indicators to management that will aid them in selecting an appropriate level of response bringing into effect the related policies discussed in section 4.4—for the organization.",
+      "There should be a graduated level of response related to the WHO pandemic alert level or other authoritative indicators of a disease outbreak."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 65
+    },
+    {
+     "number": "4.6",
+     "heading": "4.6",
+     "sentences": [
+      "An employee training process covering personal protection including: a) Identifying and broadly communicating the symptoms of exposure b) The concept of disease clusters in daycares, schools or other large gatherings c) Basic prevention - limiting contact closer than 6 feet, cover your cough, hand washing d) When to stay home along with encouragement to do so e) Avoiding travel to all areas with high infection rates"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 70
+    },
+    {
+     "number": "4.7",
+     "heading": "4.7",
+     "sentences": [
+      "A process for the identification of employees with first responders or medical personnel in their household.",
+      "These people, along with single parents, have a higher likelihood of unavailability due to illness or child care issues."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 77
+    },
+    {
+     "number": "4.8",
+     "heading": "4.8",
+     "sentences": [
+      "A process to identify key personnel for each critical business function and transition their duties to others in the event they become ill or unable to perform their respective duties."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 80
+    },
+    {
+     "number": "4.9",
+     "heading": "4.9",
+     "sentences": [
+      "A list of supplies to be kept on hand or pre-contracted for supply, such as face masks, hand sanitizer, fuel, food and water."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 83
+    },
+    {
+     "number": "4.10",
+     "heading": "IT related issues",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 85
+    },
+    {
+     "number": "4.11",
+     "heading": "4.11",
+     "sentences": [
+      "The creation of exercises to test the plan in advance."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 99
+    },
+    {
+     "number": "4.12",
+     "heading": "4.12",
+     "sentences": [
+      "Performing a retrospective review to identify and solve for issues encountered in the test"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 100
+    },
+    {
+     "number": "4.13",
+     "heading": "4.13",
+     "sentences": [
+      "The process and frequency of plan updates and review at least annually with appropriate approvals or sign-off from organizational leadership or oversight."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 102
+    },
+    {
+     "number": "4.14",
+     "heading": "4.14",
+     "sentences": [
+      "Guidance for auditors indicating that any review of the business continuity plan or enterprise architecture should assess whether they appropriately address the <Company Name> Pandemic Response Plan."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 104
+    }
+   ],
+   "line": 36
+  },
+  {
+   "number": "5.",
+   "heading": "Policy Compliance",
+   "sentences": [
+    "Policy Compliance"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "5.1",
+     "heading": "Compliance Measurement",
+     "sentences": [
+      "The Infosec team will verify compliance to this policy through various methods, including but not limited to, periodic walk-thrus, video monitoring, business tool reports, internal and external audits, and feedback to the policy owner."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 108
+    },
+    {
+     "number": "5.2",
+     "heading": "Exceptions",
+     "sentences": [
+      "Any exception to this policy must be approved by the <company leadership> team in advance and revalidated annually."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 112
+    },
+    {
+     "number": "5.3",
+     "heading": "Non-Compliance",
+     "sentences": [
+      "An employee found to have violated this policy may be subject to disciplinary action, up to and including termination of employment."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 115
+    }
+   ],
+   "line": 107
+  },
+  {
+   "number": "6",
+   "heading": "Related Standards, Policies and Processes",
+   "sentences": [
+    "World Health Organization Centers for Disease Control and Prevention"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 118
+  },
+  {
+   "number": "7",
+   "heading": "Definitions and Terms",
+   "sentences": [
+    "The following definition and terms can be found in the SANS Glossary located at: https://www.sans.org/security-resources/glossary-of-terms/ ● Pandemic"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 121
+  },
+  {
+   "number": "8",
+   "heading": "Revision History",
+   "sentences": [
+    "Date of Change Responsible Summary of Change June 2014 SANS Policy Team Updated and converted to a new format.",
+    "Trip Hillman"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 125
+  }
+ ],
+ "reviewed": true,
+ "review_note": "v2 review: first LLM pass empty, re-run. 1-8, 4.1-4.14, 5.x checked; LLM-only 4.6/4.10/4.11/4.12 are genuine items of the 4.x sequence the rule missed (line-wrap) — accepted. No corrections."
+}

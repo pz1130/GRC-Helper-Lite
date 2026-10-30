@@ -1,0 +1,118 @@
+{
+ "id": "en-uk-dpcharges",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": "1",
+   "heading": "Citation, commencement and interpretation",
+   "sentences": [
+    "1.—(1) These Regulations may be cited as the Data Protection (Charges and Information) Regulations 2018 and come into force on 25th May 2018.",
+    "“public authority” means a public authority as defined by the Freedom of Information Act 2000(c) or a Scottish public authority as defined by the Freedom of Information (Scotland) Act 2002(d);"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 14
+  },
+  {
+   "number": "2",
+   "heading": "Requirements on data controllers",
+   "sentences": [
+    "2.—(1) A data controller must comply with the requirements of this regulation unless all of the processing of personal data they undertake is exempt processing.",
+    "“registered company” means a company registered under the Companies Acts as defined by section 2(1) of the Companies Act 2006."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 67
+  },
+  {
+   "number": "3",
+   "heading": "Amount of charge payable under regulation 2",
+   "sentences": [
+    "3.—(1) For the purposes of regulation 2(2), the charge payable by a data controller in— (a) tier 1 (micro organisations), is £40;",
+    "“small occupational pension scheme” has the meaning given in regulation 4 of the Occupational and Personal Pension Schemes (Consultation by Employers and Miscellaneous Amendment) Regulations 2006(d)."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 110
+  },
+  {
+   "number": "4",
+   "heading": "Requirements in respect of partnerships",
+   "sentences": [
+    "4.—(1) In any case in which two or more persons carrying on a business in partnership are the data controllers in respect of personal data for the purposes of that business, the requirements of regulation 2 may be satisfied in respect of those persons in the name of the firm.",
+    "(3) For the purposes of regulations 2 and 3, references to the turnover and number of members of staff of a data controller which is a partnership are references to the turnover and number of members of staff of the firm as a whole."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 145
+  },
+  {
+   "number": "5",
+   "heading": "Requirements in respect of the governing body of, and head teacher at, any school",
+   "sentences": [
+    "5.—(1) In any case in which a governing body of a school and a head teacher at a school are both data controllers for the purposes of that school, the requirements of regulation 2 may be satisfied in respect of that governing body and head teacher in the name of the school.",
+    "“school”— (a) in relation to England and Wales, has the same meaning as in the Education Act 1996(a), (b) in relation to Scotland, has the same meaning as in the Education (Scotland) Act 1980(b), and (c) in relation to Northern Ireland, has the same meaning as in the Education and Libraries (Northern Ireland) Order 1986(c)."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 158
+  },
+  {
+   "number": "6",
+   "heading": "Crown application",
+   "sentences": [
+    "These Regulations bind the Crown but do not apply to— (a) Her Majesty in Her private capacity, (b) Her Majesty in right of the Duchy of Lancaster, or (c) the Duke of Cornwall.",
+    "Margot James Minister of State 11th April 2018 Department for Digital, Culture, Media and Sport"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 179
+  },
+  {
+   "number": "SCHEDULE",
+   "heading": "EXEMPT PROCESSING",
+   "sentences": [
+    "Regulation 2(1) EXEMPT PROCESSING"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "1",
+     "heading": "Interpretation",
+     "sentences": [
+      "In this Schedule— “judge” includes— (a) a justice of the peace (or, in Northern Ireland, a lay magistrate), (b) a member of a tribunal, and (c) a clerk or other officer entitled to exercise the jurisdiction of a court or tribunal;",
+      "“public register” means any register which, pursuant to a requirement imposed— (a) by or under any enactment, or (b) in pursuance of any international agreement, is open to public inspection or open to any inspection by any person having a legitimate interest."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 189
+    },
+    {
+     "number": "2",
+     "heading": "Exempt processing",
+     "sentences": [
+      "2.—(1) For the purposes of regulation 2(1), processing of personal data is exempt processing if it— (a) 1996 c. 56.",
+      "(4) The processing of personal data by or obtained from a credit reference agency (within the meaning of section 145(8) of the Consumer Credit Act 1974(a)) does not fall within the description of processing set out in sub-paragraph (2)(f)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 199
+    }
+   ],
+   "line": 187
+  },
+  {
+   "number": null,
+   "heading": "EXPLANATORY NOTE",
+   "sentences": [
+    "(This note is not part of the Regulations) These Regulations set out the circumstances in which data controllers are required to pay a charge, and provide information, to the Information Commissioner from 25th May 2018.",
+    "Section 145(8) was substituted by S.I 2013/1881, art. 20(1) and (41)(g). £6.00 UK201804111012 04/2018 19585 http://www.legislation.gov.uk/id/uksi/2018/480"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 257
+  }
+ ],
+ "reviewed": true,
+ "review_note": "v2 review: regulations 1-6, SCHEDULE with paragraphs 1-2 and EXPLANATORY NOTE checked; rule-only '6. These Regulations...' / '1. In this Schedule' are the body lines directly after the heading, rejected. No corrections."
+}

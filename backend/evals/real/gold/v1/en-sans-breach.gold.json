@@ -1,0 +1,97 @@
+{
+ "id": "en-sans-breach",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": "1.0",
+   "heading": "Purpose",
+   "sentences": [
+    "The purpose of the policy is to establish the goals and the vision for the breach response process.",
+    "This policy will clearly define to whom it applies and under what circumstances, and it will include the definition of a breach, staff roles and responsibilities, standards and metrics (e.g., to enable prioritization of the incidents), as well as reporting, remediation, and feedback mechanisms."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "1.1",
+     "heading": "Background",
+     "sentences": [
+      "This policy mandates that any individual who suspects that a theft, breach or exposure of <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data has occurred must immediately provide a description of what occurred via e-­‐mail to Helpdesk@<ORGANIZATION NAME>.org, by calling 555-­‐ 1212, or through the use of the help desk reporting web page at http://<ORGANIZATION NAME>.",
+      "If a theft, breach or exposure has occurred, the Information Security Administrator will follow the appropriate procedure in place."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 19
+    }
+   ],
+   "line": 4
+  },
+  {
+   "number": "2.0",
+   "heading": "Scope",
+   "sentences": [
+    "This policy applies to all whom collect, access, maintain, distribute, process, protect, store, use, transmit, dispose of, or otherwise handle personally identifiable information or Protected Health Information (PHI) of <ORGANIZATION NAME> members.",
+    "Any agreements with vendors will contain language similar that protects the fund."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 31
+  },
+  {
+   "number": "3.0",
+   "heading": "Policy",
+   "sentences": [
+    "Confirmed theft, data breach or exposure of <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data As soon as a theft, data breach or exposure containing <ORGANIZATION NAME> Protected data or <ORGANIZATION NAME> Sensitive data is identified, the process of removing all access to that resource will begin.",
+    "Work with <ORGANIZATION NAME> communications, legal and human resource departments to decide how to communicate the breach to: a) internal employees, b) the public, and c) those directly affected."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "3.2",
+     "heading": "Ownership and Responsibilities",
+     "sentences": [
+      "Roles & Responsibilities: • Sponsors -­‐ Sponsors are those members of the <ORGANIZATION NAME> community that have primary responsibility for maintaining any particular information resource.",
+      "Human Resources."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 70
+    }
+   ],
+   "line": 37
+  },
+  {
+   "number": "4.0",
+   "heading": "Enforcement",
+   "sentences": [
+    "Any < ORGANIZATION NAME > personnel found in violation of this policy may be subject to disciplinary action, up to and including termination of employment.",
+    "Any third party partner company found in violation may have their network connection terminated."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 91
+  },
+  {
+   "number": "5.0",
+   "heading": "Definitions",
+   "sentences": [
+    "Encryption or encrypted data – The most effective way to achieve data security.",
+    "See PII and PHI above."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 96
+  },
+  {
+   "number": "6.0",
+   "heading": "Revision History",
+   "sentences": [
+    "Version Date of Revision Author Description of Changes 1.0 August 17, 2016 SANS Institute Initial version 1.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 121
+  }
+ ],
+ "reviewed": true,
+ "review_note": "人工复核：大模型两次返回空标注（第一次是抽取文本被 \\r 拆成一词一行，修 extract.py 后重标仍为空），按原文逐行手工标注 8 个编号章节。3.0 的标题只取「Policy」，后半句是小节说明。"
+}

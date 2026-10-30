@@ -9,6 +9,7 @@ from docx.oxml.ns import qn
 from docx.table import Table
 from docx.text.paragraph import Paragraph
 
+from app.parsing.chinese import Item, detect_style, match_label, segment
 from app.parsing.contract import (
     ClauseNode,
     DocumentMeta,
@@ -20,6 +21,7 @@ from app.parsing.contract import (
 from app.parsing.docx_numbering import HeadingNumbering
 from app.parsing.headings import acts_as_headings, demote_fragment_headings
 from app.parsing.numbering import _noise
+from app.parsing.restructure import adopt_article_titles, demote_restarted_lists, nest_chapters
 from app.parsing.unstructured import append_text, structure_warnings
 from app.parsing.vocab import parse_label
 
@@ -91,9 +93,22 @@ def _heading_level(paragraph: Paragraph) -> int | None:
     """
     match = _HEADING.match(paragraph.style.name or "")
     if match:
+        # 正文一整句误套了 Heading 样式（en-cisa-vdp）：长且读起来是句子，不当标题。
+        text = _paragraph_text(paragraph).strip()
+        if len(text) > 80 and _reads_as_sentence(text):
+            return None
         return int(match.group(1))
     ppr = paragraph._p.pPr
     outline = ppr.find(qn("w:outlineLvl")) if ppr is not None else None
+    if outline is None:
+        # 自定义标题样式（如 "H2FacilityPlan"）在样式**本身**上设了大纲级别，也算；
+        # 仍不沿 basedOn 往上找，目录类样式另外排除。
+        style = paragraph.style
+        name = (style.name or "").lower() if style is not None else ""
+        if style is not None and not any(word in name for word in ("toc", "contents", "title", "目录")):
+            style_ppr = style.element.pPr
+            if style_ppr is not None:
+                outline = style_ppr.find(qn("w:outlineLvl"))
     if outline is None:
         return None
     value = outline.get(qn("w:val"))
@@ -102,6 +117,52 @@ def _heading_level(paragraph: Paragraph) -> int | None:
     if _reads_as_sentence(_paragraph_text(paragraph).strip()):
         return None
     return int(value) + 1
+
+
+_CJK = re.compile(r"[\u4e00-\u9fff]")
+
+
+def _list_labels(document, headings: HeadingNumbering) -> dict:
+    """英文文档正文里 Word 自动编号的列表项：{段落元素: (编号, 是否带下级小项)}。
+
+    编号是渲染出来的，不在文字里；不画回去，「a. / b.」小项读起来像连成一段。
+    另起一台计数器，免得推进标题编号。中文文档的自动编号由 _with_cn_number 处理。
+    """
+    paragraphs = document.paragraphs
+    if any(_CJK.search(_paragraph_text(p)) for p in paragraphs[:200]):
+        return {}
+    machine = HeadingNumbering(document)
+    found = []
+    for paragraph in paragraphs:
+        if _heading_level(paragraph) is not None or headings.is_bullet(paragraph):
+            continue
+        try:
+            label = machine.number_for(paragraph)
+        except Exception:  # noqa: BLE001, S112 — 编号定义残缺时不画
+            continue
+        if label and _paragraph_text(paragraph).strip():
+            found.append((paragraph._p, label.strip(), machine.last_ilvl))
+    out = {}
+    for index, (element, label, ilvl) in enumerate(found):
+        following = found[index + 1][2] if index + 1 < len(found) else -1
+        out[element] = (label, ilvl == 0 and label.isdigit() and following > 0)
+    return out
+
+
+def _with_cn_number(numbering: HeadingNumbering, paragraph: Paragraph, text: str) -> str:
+    """Word 自动编号是中文条章号（「第一章」「第三条」「一、」「（一）」）时拼回段落文字。"""
+    try:
+        number = numbering.number_for(paragraph)
+    except Exception:  # noqa: BLE001 — 编号定义残缺时宁可不拼，也不让整份文档解析失败
+        return text
+    if not number:
+        return text
+    number = number.strip()
+    if match_label(number) is None and match_label(number + "x") is None:
+        return text
+    if text.startswith(number):
+        return text
+    return f"{number} {text}"
 
 
 def _parse_date(raw: str) -> date | None:
@@ -177,6 +238,11 @@ def _looks_like_heading(paragraph, body_point: float | None) -> bool:
     return bool(points) and body_point is not None and max(points) > body_point
 
 
+# 中文切割接手后，这几条英文路径的告警不再成立。
+_CN_SUPERSEDED = {"parse.no_heading_styles", "parse.no_numbering_restored",
+                  "parse.suspect_numbering"}
+
+
 class DocxParser:
     def parse(self, path: Path) -> ParsedDocument:
         try:
@@ -191,6 +257,10 @@ class DocxParser:
         # Word 的标题编号不在文字里，是渲染时按 numbering.xml 画上去的。
         # 不还原的话 citation_label 只能退化成标题路径，而审计引用要的是 3.4.2。
         numbering = HeadingNumbering(document)
+        # 中文切割另起一台状态机：Normal 样式里的「第%1章」「%1、」自动编号也要画回文字，
+        # 和上面那台分开，免得两边各推一次计数器。
+        cn_numbering = HeadingNumbering(document)
+        list_labels = _list_labels(document, numbering)
         # 样式在每个段落上优先；同一文档中的 Normal 编号标题仍可被识别。
         styled = any(_heading_level(paragraph) is not None for paragraph in document.paragraphs)
         survey = [
@@ -224,6 +294,8 @@ class DocxParser:
         suspect_numbers = 0
         table_index = 0
         source_blocks: list[SourceBlock] = []
+        # 按文档顺序的全部段落与表格，中文条文体/公文体另走 chinese.segment。
+        sequence: list[Item] = []
 
         def attach(node: ClauseNode, level: int) -> None:
             while stack and stack[-1].level >= level:
@@ -268,6 +340,7 @@ class DocxParser:
                     kind="table",
                     source_keys=table_keys,
                 )
+                sequence.append(Item("", table=node))
                 if stack:
                     stack[-1].children.append(node)
                 else:
@@ -280,12 +353,17 @@ class DocxParser:
             paragraph = Paragraph(element, document)
             original_text = _paragraph_text(paragraph)
             text = original_text.strip()
+            # Word 画在列表项前的「•」不在文字里；补回来，与渲染出的原文一致。
+            if text and numbering.is_bullet(paragraph) and _heading_level(paragraph) is None:
+                text = f"• {text}"
             source_key = f"body:{body_index}:paragraph"
             if text:
                 source_blocks.append(SourceBlock(
                     key=source_key, text=original_text, kind="paragraph",
                     locator={"body_index": body_index, "style": paragraph.style.name},
                 ))
+                sequence.append(Item(_with_cn_number(cn_numbering, paragraph, text),
+                                     source_key=source_key))
             if _mark_deleted(paragraph):
                 # 不当标题、不推进编号；还剩的文字按正文留下。Word 里它会并到下一段
                 # 开头，这里挂在当前章节末尾——位置差一段，但一个字不丢。
@@ -407,6 +485,23 @@ class DocxParser:
             if not text:
                 continue
 
+            entry = list_labels.get(element)
+            if entry is not None:
+                label, opens_items = entry
+                parent = next((node for node in reversed(stack) if node.number is None), None)
+                if opens_items and parent is not None:
+                    # 表单模板「1. Intrusion detection system (IDS): Yes ☐ No ☐ / a. … / b. …」：
+                    # 带下级小项的一级自动编号是该节下的一个条目。
+                    title = text.split(":", 1)[0].strip()
+                    while stack and stack[-1] is not parent:
+                        stack.pop()
+                    node = ClauseNode(heading=title, text=text[len(title):].strip(), level=parent.level + 1,
+                                      number=label, source_keys=[source_key])
+                    parent.children.append(node)
+                    stack.append(node)
+                    continue
+                text = f"{label}. {text}" if label.isalnum() else f"{label} {text}"
+
             if match := _META.match(text):
                 meta_fields.setdefault(match.group(1), match.group(2).strip())
             if doc_type is None and (match := _DOC_TYPE.search(text)):
@@ -459,7 +554,18 @@ class DocxParser:
             effective_date=_parse_date(meta_fields.get("Effective Date", "")),
             doc_type=doc_type,
         )
+        cn_style = detect_style(item.text for item in sequence if item.table is None)
+        if cn_style is not None:
+            # 中文编号结构的证据比英文样式/编号读法更强：Word 标题样式只标了章，
+            # 条全在正文样式里——不改走中文切割，条就全部沉进章的正文。
+            roots = segment(sequence, cn_style)
+            warnings = [w for w in warnings
+                        if getattr(w, "code", None) not in _CN_SUPERSEDED]
         # 同 PDF 路："标题"其实是段落前半句时，整段收回正文。
+        if cn_style is None:
+            roots = demote_restarted_lists(roots)
+            adopt_article_titles(roots)
+            roots = nest_chapters(roots)
         demote_fragment_headings(roots)
         warnings.extend(structure_warnings(roots))
         return ParsedDocument(meta=meta, clauses=roots, warnings=warnings,

@@ -26,7 +26,8 @@ def test_decimal_letters_and_roman():
 def test_an_unknown_format_returns_none_instead_of_guessing():
     """错的条款号比没有更糟——审计引用会指向不存在的位置。"""
     assert format_counter(1, "bullet") is None
-    assert format_counter(1, "chineseCounting") is None
+    assert format_counter(1, "ganada") is None
+    assert format_counter(12, "chineseCounting") == "十二"
 
 
 # ---- 状态机 ----

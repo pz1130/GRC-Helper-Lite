@@ -1,0 +1,104 @@
+{
+ "id": "en-cisa-vdp",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": null,
+   "heading": "Introduction",
+   "sentences": [
+    "An introductory section that provides background information about your organization and your VDP.",
+    "We encourage you to contact us to report potential vulnerabilities in our systems."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 10
+  },
+  {
+   "number": null,
+   "heading": "Authorization",
+   "sentences": [
+    "This section reflects your commitment to not take legal action against anyone in the general public for security research activities that represent a good faith effort to follow the policy.",
+    "Should legal action be initiated by a third party against you for activities that were conducted in accordance with this policy, we will make this authorization known."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 15
+  },
+  {
+   "number": null,
+   "heading": "Guidelines",
+   "sentences": [
+    "Under this policy, “research” means activities in which you: • Notify us as soon as possible after you discover a real or potential security issue. • Make every effort to avoid privacy violations, degradation of user experience, disruption to production systems, and destruction or manipulation of data. • Only use exploits to the extent necessary to confirm a vulnerability’s presence.",
+    "Once you’ve established that a vulnerability exists or encounter any sensitive data (including personally identifiable information, financial information, or proprietary information or trade secrets of any party), you must stop your test, notify us immediately, and not disclose this data to anyone else."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Test methods",
+     "sentences": [
+      "The following test methods are not authorized: • Network denial of service (DoS or DDoS) tests or other tests that impair access to or damage a system or data • Physical testing (e.g. office access, open doors, tailgating), social engineering (e.g. phishing, vishing), or any other non-technical vulnerability testing"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 27
+    }
+   ],
+   "line": 19
+  },
+  {
+   "number": null,
+   "heading": "Scope",
+   "sentences": [
+    "This section defines which internet-accessible systems or services are in scope of your policy.",
+    "Check out [hyperlink] for the current list of bounty-eligible systems.”"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 31
+  },
+  {
+   "number": null,
+   "heading": "Reporting a vulnerability",
+   "sentences": [
+    "This section describes communication mechanisms and processes for submitting vulnerabilities.",
+    "Government related to your submission.”"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "What we would like to see from you",
+     "sentences": [
+      "In order to help us triage and prioritize submissions, we recommend that your reports: • Describe the location the vulnerability was discovered and the potential impact of exploitation. • Offer a detailed description of the steps needed to reproduce the vulnerability (proof of concept scripts or screenshots are helpful). • Be in English, if possible."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 61
+    },
+    {
+     "number": null,
+     "heading": "What you can expect from us",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 66
+    }
+   ],
+   "line": 51
+  },
+  {
+   "number": null,
+   "heading": "Questions",
+   "sentences": [
+    "Questions regarding this policy may be sent to security@agency.gov.",
+    "Document change history Version\tDate\tDescription 1.0\tMonth Day, Year\tFirst issuance."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 71
+  }
+ ],
+ "reviewed": true,
+ "review_note": "v2 review: unnumbered DOCX heading lines verified against text (short title-case standalone lines followed by body); rule heuristic finds none because there is no numbering. LLM labels accepted."
+}

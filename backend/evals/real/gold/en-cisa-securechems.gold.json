@@ -1,0 +1,525 @@
+{
+ "id": "en-cisa-securechems",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": null,
+   "heading": "Instructions",
+   "sentences": [
+    "Understanding security principles is valuable, but without a facility security plan that implements specific security measures to meet those security principles, facilities may be unnecessarily exposing themselves to risk.",
+    "To request CISA’s chemical security expertise in helping to develop a facility security plan, please fill out the ChemLock Services Request Form."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 5
+  },
+  {
+   "number": null,
+   "heading": "Revisions",
+   "sentences": [
+    "Revision Version\tDate Finalized\tEffective Date\tAuthorized By Ex. v1.0\tJanuary 21, 2022\tFebruary 1, 2022\tFacility Security Officer John Doe"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 18
+  },
+  {
+   "number": null,
+   "heading": "Contact Information",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Facility Contact Information",
+     "sentences": [
+      "Facility Name: Address: Facility’s Primary Contact – Name: Facility’s Primary Contact – Phone/Email: Facility Security Officer: Facility Security Officer Phone/Email: Cybersecurity Officer: Cybersecurity Officer Phone/Email: Hours of Operation: Special Hours or Closures (Describe):"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 22
+    },
+    {
+     "number": null,
+     "heading": "Other Contact Information",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 33
+    }
+   ],
+   "line": 21
+  },
+  {
+   "number": null,
+   "heading": "Critical Asset Identification",
+   "sentences": [
+    "Identifying the dangerous chemicals at your facility is the first step in determining what you need to protect and how you will protect them from threats.",
+    "Directions • For each chemical, describe the location at your site and how it is used. • Consider the inclusion of maps or plot plans in your security plan to help your facility personnel and emergency responders quickly identify the locations of dangerous chemicals."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Critical Assets",
+     "sentences": [
+      "Chemical\tCritical Asset Name\tLocation\tUse (i.e., Ship, Sell, Manufacture, Receive) Ex.",
+      "Chlorine\tChlorine Storage Cage\tWarehouse Building 1\tReceive Notes Click or tap here to enter text."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 49
+    }
+   ],
+   "line": 44
+  },
+  {
+   "number": null,
+   "heading": "Detection",
+   "sentences": [
+    "Detection includes the capability to identify potential attacks or indicators of an attack—such as the theft, release, or sabotage of your chemicals—and to communicate that information, as appropriate.",
+    "Notes Click or tap here to enter text."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Detection Security Measures",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "1.",
+       "heading": "Intrusion detection system (IDS)",
+       "sentences": [
+        "Intrusion detection system (IDS): Yes ☐ No ☐ a.",
+        "Types of sensors (Select all that apply): ☐ Fence-mounted sensors ☐ Wall-mounted sensors ☐ Window-mounted sensors ☐ Volumetric sensors ☐ Beam sensors ☐ Gate/door sensors ☐ Counter-UAS/object-detecting sensors ☐ Other (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 66
+      },
+      {
+       "number": "2.",
+       "heading": "Camera system",
+       "sentences": [
+        "Camera system: Yes ☐ No ☐ a.",
+        "Camera system is integrated with IDS: Yes ☐ No ☐ If yes, describe: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 86
+      },
+      {
+       "number": "3.",
+       "heading": "Employees and onsite security personnel",
+       "sentences": [
+        "Employees and onsite security personnel a.",
+        "Personnel detection training: Yes ☐ No ☐"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 99
+      },
+      {
+       "number": "4.",
+       "heading": "Security lighting",
+       "sentences": [
+        "Security lighting a.",
+        "Yes ☐ No ☐ If yes, describe: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 112
+      },
+      {
+       "number": "5.",
+       "heading": "Chemical product inventory",
+       "sentences": [
+        "Chemical product inventory a.",
+        "Discrepancies in inventory are reported to: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 122
+      }
+     ],
+     "line": 65
+    },
+    {
+     "number": null,
+     "heading": "Additional Security Measures",
+     "sentences": [
+      "If gaps in detection capabilities were identified for any of the chemical assets listed in this section of this security plan, consider what additional security measures might be needed to close the identified gap.",
+      "Click or tap here to enter text."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 127
+    }
+   ],
+   "line": 54
+  },
+  {
+   "number": null,
+   "heading": "Delay",
+   "sentences": [
+    "Delay means physically limiting access to the facility and/or asset(s) to reduce the likelihood of an adversary successfully breaching the facility perimeter and/or asset(s) or using the area immediately outside of the facility’s perimeter to launch an attack.",
+    "Notes Click or tap here to enter text."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Delay Security Measures",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "1.",
+       "heading": "Perimeter and asset barriers",
+       "sentences": [
+        "Perimeter and asset barriers a.",
+        "Gate in west perimeter fence\tHinged gate in chain link fence\tGate\tGate is locked with padlock and chains"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 144
+      },
+      {
+       "number": "2.",
+       "heading": "Physical locking mechanism",
+       "sentences": [
+        "Physical locking mechanism a.",
+        "Upon termination/departure of employees, keys/credentials are collected: Yes ☐ No ☐"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 156
+      },
+      {
+       "number": "3.",
+       "heading": "Access control",
+       "sentences": [
+        "Access control a.",
+        "If yes, type of access control system: ☐ Proximity or smart card reader ☐ Token/fob reader ☐ Biometric reader ☐ Personal access code ☐ Common access code ☐ Other (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 171
+      },
+      {
+       "number": "4.",
+       "heading": "Inspection and screening",
+       "sentences": [
+        "Inspection and screening a.",
+        "Vehicle restrictions and parking restrictions: Yes ☐ No ☐ If yes, describe: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 189
+      },
+      {
+       "number": "5.",
+       "heading": "Shipping and receiving procedures",
+       "sentences": [
+        "Shipping and receiving procedures a.",
+        "Titles of procedures for controlling activities related to purchase and sale: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 196
+      }
+     ],
+     "line": 143
+    },
+    {
+     "number": null,
+     "heading": "Additional Security Measures",
+     "sentences": [
+      "If gaps in delay capabilities were identified for any of the chemical assets listed in this section of the security plan, consider what additional security measures might be needed to close the identified gap.",
+      "Click or tap here to enter text."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 206
+    }
+   ],
+   "line": 131
+  },
+  {
+   "number": null,
+   "heading": "Response",
+   "sentences": [
+    "Response within the security plan context primarily refers to the response of appropriately trained personnel—either facility personnel or external first responders—to a threat to or actual theft, release, or sabotage of dangerous chemicals.",
+    "Notes Click or tap here to enter text."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Response Security Measures",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "1.",
+       "heading": "Emergency response procedures and crisis management plan",
+       "sentences": [
+        "Emergency response procedures and crisis management plan a.",
+        "Response drills and exercises: Yes ☐ No ☐ If yes, frequency of drills and exercises: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 225
+      },
+      {
+       "number": "2.",
+       "heading": "Outreach Programs",
+       "sentences": [
+        "Outreach Programs a.",
+        "Joint initiatives and exercises (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 246
+      },
+      {
+       "number": "3.",
+       "heading": "Security plans for elevated threats",
+       "sentences": [
+        "Security plans for elevated threats a.",
+        "Imminent threat alert (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 255
+      }
+     ],
+     "line": 224
+    },
+    {
+     "number": null,
+     "heading": "Additional Security Measures",
+     "sentences": [
+      "If gaps in response capabilities were identified for any of the chemical assets listed in this section of the security plan, consider what additional security measures might be needed to close the identified gap.",
+      "Click or tap here to enter text."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 261
+    }
+   ],
+   "line": 210
+  },
+  {
+   "number": null,
+   "heading": "Cyber",
+   "sentences": [
+    "Because cyber systems and the network they operate on are often integrated throughout the operations of chemical facilities, defending against adverse cyber events is essential to the management of the overall risk for a facility.",
+    "Notes Click or tap here to enter text."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Cyber Assets",
+     "sentences": [
+      "Cyber System Type\tCyber Asset Name\tLocation and Description Ex.",
+      "Ordering and Inventory Management\t123 Ordering\tLocated onsite and controls the ordering of all chemicals at the site as well as the management of inventory."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 277
+    },
+    {
+     "number": null,
+     "heading": "Cybersecurity Measures",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "1.",
+       "heading": "Cybersecurity policies and procedures",
+       "sentences": [
+        "Cybersecurity policies and procedures a.",
+        "Policies and procedures maintained by: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 282
+      },
+      {
+       "number": "2.",
+       "heading": "Access control and password management",
+       "sentences": [
+        "Access control and password management a.",
+        "Policy for all IT technical assets and limiting system access points: Yes ☐ No ☐ If yes, title of policy: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 288
+      },
+      {
+       "number": "3.",
+       "heading": "Cybersecurity employee training and process",
+       "sentences": [
+        "Cybersecurity employee training and process a.",
+        "Procedures for conducting and documenting training: Yes ☐ No ☐ If yes, maintained by: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 308
+      },
+      {
+       "number": "4.",
+       "heading": "Cybersecurity controls, monitoring, response, and reporting",
+       "sentences": [
+        "Cybersecurity controls, monitoring, response, and reporting a.",
+        "Cybersecurity incident reporting (Select all that apply): ☐ CISA Central (Central@cisa.dhs.gov) ☐ Facility Cybersecurity Officer ☐ Other (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 320
+      },
+      {
+       "number": "5.",
+       "heading": "Disaster recovery and business continuity",
+       "sentences": [
+        "Disaster recovery and business continuity a.",
+        "Processes and procedures maintained by: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 329
+      }
+     ],
+     "line": 281
+    },
+    {
+     "number": null,
+     "heading": "Additional Security Measures",
+     "sentences": [
+      "If gaps in cybersecurity capabilities were identified for any of the chemical assets listed in this section of the security plan, consider what additional security measures might be needed to close the identified gap.",
+      "Click or tap here to enter text."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 340
+    }
+   ],
+   "line": 265
+  },
+  {
+   "number": null,
+   "heading": "Policies, Plans, and Procedures",
+   "sentences": [
+    "This section covers recommendations for maintenance of security equipment, training of personnel, employee background checks, incident reporting and investigation, security organization and officials, and recordkeeping.",
+    "Notes Click or tap here to enter text."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Policies, Plans, and Procedures to Implement Security Measures",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": "1.",
+       "heading": "Maintenance, inspection, and testing of security equipment program",
+       "sentences": [
+        "Maintenance, inspection, and testing of security equipment program a.",
+        "Policy includes (Select all that apply): ☐ Restricted areas/fence line ☐ Access doors/gates ☐ Vehicle barriers ☐ Lighting ☐ Locking mechanisms ☐ IDS ☐ Cameras ☐ ACS ☐ Other (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 357
+      },
+      {
+       "number": "2.",
+       "heading": "Security awareness and training program",
+       "sentences": [
+        "Security awareness and training program a.",
+        "Frequency of full-scale exercises: ☐ Weekly ☐ Monthly ☐ Quarterly ☐ Semi-annually ☐ Annually ☐ Biannually ☐ Other (Describe): Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 377
+      },
+      {
+       "number": "3.",
+       "heading": "Employee background checks",
+       "sentences": [
+        "Employee background checks a.",
+        "Adjudication completed on a case-by-case basis: Yes ☐ No ☐"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 429
+      },
+      {
+       "number": "4.",
+       "heading": "Insider threat",
+       "sentences": [
+        "Insider threat a.",
+        "Procedures for reporting insider threat: Yes ☐ No ☐ If yes, maintained by: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 443
+      },
+      {
+       "number": "5.",
+       "heading": "Visitor escort",
+       "sentences": [
+        "Visitor escort a.",
+        "Visitor escort policy: Yes ☐ No ☐ If yes, title of visitor escort policy: Click or tap here to enter text."
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 449
+      },
+      {
+       "number": "6.",
+       "heading": "Incident reporting and investigations",
+       "sentences": [
+        "Incident reporting and investigations a.",
+        "CISA Central (Central@cisa.dhs.gov) is included in reporting protocol: Yes ☐ No ☐"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 452
+      },
+      {
+       "number": "7.",
+       "heading": "Officials, organization, and records",
+       "sentences": [
+        "Officials, organization, and records a.",
+        "Policy for retaining security records: Yes ☐ No ☐"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 460
+      }
+     ],
+     "line": 356
+    },
+    {
+     "number": null,
+     "heading": "Additional Security Measures",
+     "sentences": [
+      "If gaps in policies, plans, and procedures were identified for any of the chemical assets listed in this section of the security plan, consider what additional policies, plans, and procedures might be needed to close the identified gap.",
+      "Click or tap here to enter text. [Insert organization branding on the back cover as desired.]"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 464
+    }
+   ],
+   "line": 344
+  }
+ ],
+ "reviewed": true,
+ "review_note": "v2 review: MiniMax repeatedly returned empty answers for this form-style DOCX (3 retries x2 runs), so the reviewer hand-labelled the full outline from the text: 9 part headings (Instructions ... Policies, Plans, and Procedures), sub-headings (… Security Measures, Additional Security Measures, Critical/Cyber Assets, contact blocks), and numbered measure items 1.-7. per part. Directions/Notes form labels, a./i. sub-items and checkbox lines are not headings."
+}

@@ -1,0 +1,295 @@
+{
+ "reviewed": true,
+ "replace": true,
+ "note": "v2 review: MiniMax repeatedly returned empty answers for this form-style DOCX (3 retries x2 runs), so the reviewer hand-labelled the full outline from the text: 9 part headings (Instructions ... Policies, Plans, and Procedures), sub-headings (… Security Measures, Additional Security Measures, Critical/Cyber Assets, contact blocks), and numbered measure items 1.-7. per part. Directions/Notes form labels, a./i. sub-items and checkbox lines are not headings.",
+ "add": [
+  {
+   "line": 5,
+   "level": 1,
+   "number": "",
+   "heading": "Instructions"
+  },
+  {
+   "line": 18,
+   "level": 1,
+   "number": "",
+   "heading": "Revisions"
+  },
+  {
+   "line": 21,
+   "level": 1,
+   "number": "",
+   "heading": "Contact Information"
+  },
+  {
+   "line": 44,
+   "level": 1,
+   "number": "",
+   "heading": "Critical Asset Identification"
+  },
+  {
+   "line": 54,
+   "level": 1,
+   "number": "",
+   "heading": "Detection"
+  },
+  {
+   "line": 131,
+   "level": 1,
+   "number": "",
+   "heading": "Delay"
+  },
+  {
+   "line": 210,
+   "level": 1,
+   "number": "",
+   "heading": "Response"
+  },
+  {
+   "line": 265,
+   "level": 1,
+   "number": "",
+   "heading": "Cyber"
+  },
+  {
+   "line": 344,
+   "level": 1,
+   "number": "",
+   "heading": "Policies, Plans, and Procedures"
+  },
+  {
+   "line": 22,
+   "level": 2,
+   "number": "",
+   "heading": "Facility Contact Information"
+  },
+  {
+   "line": 33,
+   "level": 2,
+   "number": "",
+   "heading": "Other Contact Information"
+  },
+  {
+   "line": 49,
+   "level": 2,
+   "number": "",
+   "heading": "Critical Assets"
+  },
+  {
+   "line": 65,
+   "level": 2,
+   "number": "",
+   "heading": "Detection Security Measures"
+  },
+  {
+   "line": 127,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 143,
+   "level": 2,
+   "number": "",
+   "heading": "Delay Security Measures"
+  },
+  {
+   "line": 206,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 224,
+   "level": 2,
+   "number": "",
+   "heading": "Response Security Measures"
+  },
+  {
+   "line": 261,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 277,
+   "level": 2,
+   "number": "",
+   "heading": "Cyber Assets"
+  },
+  {
+   "line": 281,
+   "level": 2,
+   "number": "",
+   "heading": "Cybersecurity Measures"
+  },
+  {
+   "line": 340,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 356,
+   "level": 2,
+   "number": "",
+   "heading": "Policies, Plans, and Procedures to Implement Security Measures"
+  },
+  {
+   "line": 464,
+   "level": 2,
+   "number": "",
+   "heading": "Additional Security Measures"
+  },
+  {
+   "line": 66,
+   "level": 3,
+   "number": "1.",
+   "heading": "Intrusion detection system (IDS)"
+  },
+  {
+   "line": 86,
+   "level": 3,
+   "number": "2.",
+   "heading": "Camera system"
+  },
+  {
+   "line": 99,
+   "level": 3,
+   "number": "3.",
+   "heading": "Employees and onsite security personnel"
+  },
+  {
+   "line": 112,
+   "level": 3,
+   "number": "4.",
+   "heading": "Security lighting"
+  },
+  {
+   "line": 122,
+   "level": 3,
+   "number": "5.",
+   "heading": "Chemical product inventory"
+  },
+  {
+   "line": 144,
+   "level": 3,
+   "number": "1.",
+   "heading": "Perimeter and asset barriers"
+  },
+  {
+   "line": 156,
+   "level": 3,
+   "number": "2.",
+   "heading": "Physical locking mechanism"
+  },
+  {
+   "line": 171,
+   "level": 3,
+   "number": "3.",
+   "heading": "Access control"
+  },
+  {
+   "line": 189,
+   "level": 3,
+   "number": "4.",
+   "heading": "Inspection and screening"
+  },
+  {
+   "line": 196,
+   "level": 3,
+   "number": "5.",
+   "heading": "Shipping and receiving procedures"
+  },
+  {
+   "line": 225,
+   "level": 3,
+   "number": "1.",
+   "heading": "Emergency response procedures and crisis management plan"
+  },
+  {
+   "line": 246,
+   "level": 3,
+   "number": "2.",
+   "heading": "Outreach Programs"
+  },
+  {
+   "line": 255,
+   "level": 3,
+   "number": "3.",
+   "heading": "Security plans for elevated threats"
+  },
+  {
+   "line": 282,
+   "level": 3,
+   "number": "1.",
+   "heading": "Cybersecurity policies and procedures"
+  },
+  {
+   "line": 288,
+   "level": 3,
+   "number": "2.",
+   "heading": "Access control and password management"
+  },
+  {
+   "line": 308,
+   "level": 3,
+   "number": "3.",
+   "heading": "Cybersecurity employee training and process"
+  },
+  {
+   "line": 320,
+   "level": 3,
+   "number": "4.",
+   "heading": "Cybersecurity controls, monitoring, response, and reporting"
+  },
+  {
+   "line": 329,
+   "level": 3,
+   "number": "5.",
+   "heading": "Disaster recovery and business continuity"
+  },
+  {
+   "line": 357,
+   "level": 3,
+   "number": "1.",
+   "heading": "Maintenance, inspection, and testing of security equipment program"
+  },
+  {
+   "line": 377,
+   "level": 3,
+   "number": "2.",
+   "heading": "Security awareness and training program"
+  },
+  {
+   "line": 429,
+   "level": 3,
+   "number": "3.",
+   "heading": "Employee background checks"
+  },
+  {
+   "line": 443,
+   "level": 3,
+   "number": "4.",
+   "heading": "Insider threat"
+  },
+  {
+   "line": 449,
+   "level": 3,
+   "number": "5.",
+   "heading": "Visitor escort"
+  },
+  {
+   "line": 452,
+   "level": 3,
+   "number": "6.",
+   "heading": "Incident reporting and investigations"
+  },
+  {
+   "line": 460,
+   "level": 3,
+   "number": "7.",
+   "heading": "Officials, organization, and records"
+  }
+ ]
+}

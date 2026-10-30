@@ -1,0 +1,3 @@
+{"reviewed": true,
+ "note": "人工复核：去掉编号段落约定误收的两条——517「1.1 Subcategories that were relocated in CSF 2.0.」是附录 A 表格的脚注，543「2.0 website and …」是正文折行里的版本号。其余 25 条（前言无编号小节、1–5 章、附录 A–C、封底版权页）核对无误。",
+ "drop": [517, 543]}

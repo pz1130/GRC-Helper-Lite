@@ -1,0 +1,277 @@
+{
+ "reviewed": true,
+ "note": "v2 review: regulations 1-106 continuous; rule-only hits are the table of contents (L9-~180, page numbers) and body paragraphs '11. In these Regulations—', rejected. Corrected LLM structure in the body: PART 3 (L1343) had been mislabelled as regulation 3, PART 7/8 pointed at the title line, CHAPTER 3 of Part 2 (L1282) and Chapters 1-2 of Part 3 missing, CHAPTER 3 of Part 3 at level 1. Reviewer re-derived PART(1)/CHAPTER(2) headings from the text and set regulation levels to 3 inside a chapter, 2 directly under a part. Schedules/Explanatory Note kept as labelled.",
+ "drop": [
+  186,
+  597,
+  599,
+  879,
+  1343,
+  1915,
+  2040,
+  2179,
+  2395,
+  2397,
+  2616,
+  2926,
+  3011,
+  3335,
+  3337,
+  3342,
+  3694,
+  3893,
+  3895,
+  3922,
+  4047
+ ],
+ "add": [
+  {
+   "line": 186,
+   "level": 1,
+   "number": "PART 1",
+   "heading": "Introduction"
+  },
+  {
+   "line": 597,
+   "level": 1,
+   "number": "PART 2",
+   "heading": "Money Laundering and Terrorist Financing"
+  },
+  {
+   "line": 599,
+   "level": 2,
+   "number": "CHAPTER 1",
+   "heading": "Application"
+  },
+  {
+   "line": 879,
+   "level": 2,
+   "number": "CHAPTER 2",
+   "heading": "Risk assessment and controls"
+  },
+  {
+   "line": 1282,
+   "level": 2,
+   "number": "CHAPTER 3",
+   "heading": "Ownership and Management Restrictions"
+  },
+  {
+   "line": 1343,
+   "level": 1,
+   "number": "PART 3",
+   "heading": "Customer Due Diligence"
+  },
+  {
+   "line": 1345,
+   "level": 2,
+   "number": "CHAPTER 1",
+   "heading": "Customer due diligence: general"
+  },
+  {
+   "line": 1641,
+   "level": 2,
+   "number": "CHAPTER 2",
+   "heading": "Enhanced customer due diligence"
+  },
+  {
+   "line": 1915,
+   "level": 2,
+   "number": "CHAPTER 3",
+   "heading": "Simplified customer due diligence"
+  },
+  {
+   "line": 2040,
+   "level": 1,
+   "number": "PART 4",
+   "heading": "Reliance and Record-keeping"
+  },
+  {
+   "line": 2179,
+   "level": 1,
+   "number": "PART 5",
+   "heading": "Beneficial Ownership Information"
+  },
+  {
+   "line": 2395,
+   "level": 1,
+   "number": "PART 6",
+   "heading": "Money Laundering and Terrorist Financing: Supervision and Registration"
+  },
+  {
+   "line": 2397,
+   "level": 2,
+   "number": "CHAPTER 1",
+   "heading": "Duties of supervisory authorities"
+  },
+  {
+   "line": 2616,
+   "level": 2,
+   "number": "CHAPTER 2",
+   "heading": "Registration"
+  },
+  {
+   "line": 2925,
+   "level": 1,
+   "number": "PART 7",
+   "heading": "Transfer of Funds (Information on the Payer) Regulations"
+  },
+  {
+   "line": 3010,
+   "level": 1,
+   "number": "PART 8",
+   "heading": "Information and Investigation"
+  },
+  {
+   "line": 3335,
+   "level": 1,
+   "number": "PART 9",
+   "heading": "Enforcement"
+  },
+  {
+   "line": 3337,
+   "level": 2,
+   "number": "CHAPTER 1",
+   "heading": "General"
+  },
+  {
+   "line": 3342,
+   "level": 2,
+   "number": "CHAPTER 2",
+   "heading": "Civil penalties and notices"
+  },
+  {
+   "line": 3694,
+   "level": 2,
+   "number": "CHAPTER 3",
+   "heading": "Criminal offences, penalties and proceedings etc."
+  },
+  {
+   "line": 3893,
+   "level": 1,
+   "number": "PART 10",
+   "heading": "Appeals"
+  },
+  {
+   "line": 3895,
+   "level": 2,
+   "number": "CHAPTER 1",
+   "heading": "Decisions of the FCA"
+  },
+  {
+   "line": 3922,
+   "level": 2,
+   "number": "CHAPTER 2",
+   "heading": "Decisions of the Commissioners"
+  },
+  {
+   "line": 4047,
+   "level": 1,
+   "number": "PART 11",
+   "heading": "Miscellaneous Provisions"
+  }
+ ],
+ "set": {
+  "1282": {
+   "level": 3
+  },
+  "1345": {
+   "level": 3
+  },
+  "1641": {
+   "level": 3
+  },
+  "2042": {
+   "level": 2
+  },
+  "2107": {
+   "level": 2
+  },
+  "2155": {
+   "level": 2
+  },
+  "2181": {
+   "level": 2
+  },
+  "2213": {
+   "level": 2
+  },
+  "2250": {
+   "level": 2
+  },
+  "2304": {
+   "level": 2
+  },
+  "2927": {
+   "level": 2
+  },
+  "2930": {
+   "level": 2
+  },
+  "2944": {
+   "level": 2
+  },
+  "2990": {
+   "level": 2
+  },
+  "3012": {
+   "level": 2
+  },
+  "3033": {
+   "level": 2
+  },
+  "3068": {
+   "level": 2
+  },
+  "3097": {
+   "level": 2
+  },
+  "3115": {
+   "level": 2
+  },
+  "3142": {
+   "level": 2
+  },
+  "3243": {
+   "level": 2
+  },
+  "3263": {
+   "level": 2
+  },
+  "3291": {
+   "level": 2
+  },
+  "3314": {
+   "level": 2
+  },
+  "4049": {
+   "level": 2
+  },
+  "4053": {
+   "level": 2
+  },
+  "4085": {
+   "level": 2
+  },
+  "4129": {
+   "level": 2
+  },
+  "4160": {
+   "level": 2
+  },
+  "4175": {
+   "level": 2
+  },
+  "4181": {
+   "level": 2
+  },
+  "4187": {
+   "level": 2
+  },
+  "4215": {
+   "level": 2
+  },
+  "4217": {
+   "level": 2
+  }
+ }
+}

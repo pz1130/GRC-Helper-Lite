@@ -1,0 +1,274 @@
+{
+ "id": "en-nist-csf2",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": null,
+   "heading": "Abstract",
+   "sentences": [
+    "The NIST Cybersecurity Framework (CSF) 2.0 provides guidance to industry, government agencies, and other organizations to manage cybersecurity risks.",
+    "This document describes CSF 2.0, its components, and some of the many ways that it can be used."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 5
+  },
+  {
+   "number": null,
+   "heading": "Keywords",
+   "sentences": [
+    "cybersecurity;",
+    "Cybersecurity Framework (CSF); cybersecurity risk governance; cybersecurity risk management; enterprise risk management;"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 14
+  },
+  {
+   "number": null,
+   "heading": "Audience",
+   "sentences": [
+    "Individuals responsible for developing and leading cybersecurity programs are the primary audience for the CSF.",
+    "Additionally, the CSF can be useful to those making and influencing policy (e.g., associations, professional organizations, regulators) who set and communicate priorities for cybersecurity risk management."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 17
+  },
+  {
+   "number": null,
+   "heading": "Supplemental Content",
+   "sentences": [
+    "NIST will continue to build and host additional resources to help organizations implement the CSF, including Quick Start Guides and Community Profiles.",
+    "Suggestions for additional resources to reference on the NIST CSF website can always be shared with NIST at cyberframework@nist.gov."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 25
+  },
+  {
+   "number": null,
+   "heading": "Note to Readers",
+   "sentences": [
+    "Unless otherwise noted, documents cited, referenced, or excerpted in this publication are not wholly incorporated into this publication.",
+    "Before version 2.0, the Cybersecurity Framework was called the “Framework for Improving Critical Infrastructure Cybersecurity.” This title is not used for CSF 2.0. i NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 30
+  },
+  {
+   "number": null,
+   "heading": "Acknowledgments",
+   "sentences": [
+    "The CSF is the result of a multi-year collaborative effort across industry, academia, and government in the United States and around the world.",
+    "Cybersecurity and privacy risk relationship .............................................................................13 iii NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 37
+  },
+  {
+   "number": null,
+   "heading": "Preface",
+   "sentences": [
+    "The Cybersecurity Framework (CSF) 2.0 is designed to help organizations of all sizes and sectors — including industry, government, academia, and nonprofit — to manage and reduce their cybersecurity risks.",
+    "The CSF is designed to be valuable for any type of organization and is expected to provide appropriate guidance over a long time. iv NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 63
+  },
+  {
+   "number": "1.",
+   "heading": "Cybersecurity Framework (CSF) Overview",
+   "sentences": [
+    "Cybersecurity Framework (CSF) Overview This document is version 2.0 of the NIST Cybersecurity Framework (Framework or CSF).",
+    "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 104
+  },
+  {
+   "number": "2.",
+   "heading": "Introduction to the CSF Core",
+   "sentences": [
+    "Introduction to the CSF Core Appendix A is the CSF Core — a set of cybersecurity outcomes arranged by Function, then Category, and finally Subcategory, as depicted in Fig. 1.",
+    "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 171
+  },
+  {
+   "number": "3.",
+   "heading": "Introduction to CSF Profiles and Tiers",
+   "sentences": [
+    "Introduction to CSF Profiles and Tiers This section defines the concepts of CSF Profiles and Tiers."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "3.1.",
+     "heading": "CSF Profiles",
+     "sentences": [
+      "CSF Profiles A CSF Organizational Profile describes an organization’s current and/or target cybersecurity posture in terms of the Core’s outcomes.",
+      "Also, a Target Profile can help express the organization’s cybersecurity risk management requirements and expectations to suppliers, partners, and other third parties as a target for those parties to achieve."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 256
+    },
+    {
+     "number": "3.2.",
+     "heading": "CSF Tiers",
+     "sentences": [
+      "CSF Tiers An organization can choose to use the Tiers to inform its Current and Target Profiles.",
+      "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 311
+    }
+   ],
+   "line": 254
+  },
+  {
+   "number": "4.",
+   "heading": "Introduction to Online Resources That Supplement the CSF",
+   "sentences": [
+    "Introduction to Online Resources That Supplement the CSF NIST and other organizations have produced a suite of online resources that help organizations understand, adopt, and use the CSF.",
+    "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 333
+  },
+  {
+   "number": "5.",
+   "heading": "Improving Cybersecurity Risk Communication and Integration",
+   "sentences": [
+    "Improving Cybersecurity Risk Communication and Integration The CSF’s use will vary based on an organization’s unique mission and risks.",
+    "The selected outcomes can be used to focus on and implement strategic decisions to improve cybersecurity postures and maintain continuity of mission- essential functions while taking priorities and available resources into account."
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "5.1.",
+     "heading": "Improving Risk Management Communication",
+     "sentences": [
+      "Improving Risk Management Communication The CSF provides a basis for improved communication regarding cybersecurity expectations, planning, and resources.",
+      "Updates to expectations and priorities are included in updated Organizational Profiles as the cycle repeats."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 378
+    },
+    {
+     "number": "5.2.",
+     "heading": "Improving Integration with Other Risk Management Programs",
+     "sentences": [
+      "Improving Integration with Other Risk Management Programs Every organization faces numerous types of ICT risk (e.g., privacy, supply chain, artificial intelligence) and may use frameworks and management tools that are specific to each risk.",
+      "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 424
+    }
+   ],
+   "line": 364
+  },
+  {
+   "number": "Appendix A.",
+   "heading": "CSF Core",
+   "sentences": [
+    "CSF Core This appendix describes the Functions, Categories, and Subcategories of the CSF Core.",
+    "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "GOVERN (GV): The organization’s cybersecurity risk management strategy, expectations, and policy are established, communicated, and monitored",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 547
+    }
+   ],
+   "line": 510
+  },
+  {
+   "number": "Appendix B.",
+   "heading": "CSF Tiers",
+   "sentences": [
+    "CSF Tiers Table 2 contains a notional illustration of the CSF Tiers discussed in Sec. 3.",
+    "NIST CSWP 29 The NIST Cybersecurity Framework (CSF) 2.0"
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 801
+  },
+  {
+   "number": "Appendix C.",
+   "heading": "Glossary",
+   "sentences": [
+    "Glossary CSF Category A group of related cybersecurity outcomes that collectively comprise a CSF Function.",
+    "Such identification does not imply recommendation or endorsement of any product or service by NIST, nor does it imply that the materials or equipment identified are necessarily the best available for the purpose."
+   ],
+   "table_cells": [],
+   "children": [],
+   "line": 886
+  },
+  {
+   "number": null,
+   "heading": "NIST Technical Series Policies",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": null,
+     "heading": "Copyright, Use, and Licensing Statements",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 927
+    },
+    {
+     "number": null,
+     "heading": "NIST Technical Series Publication Identifier Syntax",
+     "sentences": [],
+     "table_cells": [],
+     "children": [
+      {
+       "number": null,
+       "heading": "How to Cite this NIST Technical Series Publication:",
+       "sentences": [
+        "National Institute of Standards and Technology (2024) The NIST Cybersecurity Framework (CSF) 2.0.",
+        "(National Institute of Standards and Technology, Gaithersburg, MD), NIST Cybersecurity White Paper (CSWP) NIST CSWP 29. https://doi.org/10.6028/NIST.CSWP.29"
+       ],
+       "table_cells": [],
+       "children": [],
+       "line": 929
+      }
+     ],
+     "line": 928
+    },
+    {
+     "number": null,
+     "heading": "Contact Information",
+     "sentences": [
+      "cyberframework@nist.gov National Institute of Standards and Technology Attn: Applied Cybersecurity Division, Information Technology Laboratory 100 Bureau Drive (Mail Stop 2000) Gaithersburg, MD 20899-2000 All comments are subject to release under the Freedom of Information Act (FOIA)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 933
+    }
+   ],
+   "line": 926
+  }
+ ],
+ "reviewed": true,
+ "review_note": "人工复核：去掉编号段落约定误收的两条——517「1.1 Subcategories that were relocated in CSF 2.0.」是附录 A 表格的脚注，543「2.0 website and …」是正文折行里的版本号。其余 25 条（前言无编号小节、1–5 章、附录 A–C、封底版权页）核对无误。"
+}

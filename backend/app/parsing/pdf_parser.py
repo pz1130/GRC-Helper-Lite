@@ -4,6 +4,7 @@
 不是 OCR 出来的条款。这个产品不支持扫描件，理由与重开条件见
 `KNOWN_ISSUES.md` 的 K19（原 OQ-18）。"""
 
+import dataclasses
 import re
 from collections import Counter
 from datetime import date, datetime
@@ -12,6 +13,7 @@ from statistics import median
 
 import pdfplumber
 
+from app.parsing.chinese import Item, detect_style, segment
 from app.parsing.contract import (
     ClauseNode,
     DocumentMeta,
@@ -24,6 +26,7 @@ from app.parsing.headings import (
     FLOOR,
     acts_as_headings,
     consistency_score,
+    continues_the_heading,
     demote_fragment_headings,
 )
 from app.parsing.numbering import (
@@ -35,6 +38,7 @@ from app.parsing.numbering import (
     is_version_history_line,
 )
 from app.parsing.pdf_tables import PdfTable, attach_tables, read_tables
+from app.parsing.restructure import adopt_article_titles, nest_chapters
 from app.parsing.unstructured import structure_warnings
 from app.parsing.vocab import Numbering, vocabulary
 
@@ -166,6 +170,222 @@ def _body_sizes(lines: list[str], layout: list[dict], limit: int = 3) -> list[fl
     return [size for size, _ in weights.most_common(limit)]
 
 
+def _title_key(title: str) -> str:
+    title = re.sub(r"[.\u2026·]{2,}.*$", "", title)
+    return re.sub(r"[^0-9a-z\u4e00-\u9fff]", "", title.lower())[:24]
+
+
+_ZERO_POINT = re.compile(r"^(\s*)(\d{1,2})\.0(?=\s+\S)")
+
+
+def _zero_point_chapters(candidates: list[str]) -> list[str]:
+    """「1.0 Purpose / 1.1 Background / 2.0 Scope」：`N.0` 是第 N 章本身，不是第 N 章的
+    第 0 节。不改写的话会凭空补出 `1`、`2` 占位，真正的章全降成它们的孩子（SANS 模板实测）。
+    只在至少两处 `N.0` 且序号不重复时改写，读作 `N.`。"""
+    hits = [found[2] for line in candidates if (found := _ZERO_POINT.match(line))]
+    if len(hits) < 2 or len(set(hits)) != len(hits):
+        return candidates
+    return [_ZERO_POINT.sub(r"\1\2.", line) for line in candidates]
+
+
+def _defer_to_contents(candidates: list[str], lines: list[str], layout: list[dict]) -> list[str]:
+    """目录写了「4. Introduction to Online Resources」，正文里先出现的「4. Analyze the
+    gaps」就是步骤列表，不是第 4 章。目录只用来**否决**（同号异名，或目录列到了这一级却没有这个号），从不新增标题——
+    目录过期时最坏是退回原来的读法。"""
+    listed: dict[str, str] = {}
+    for line, loc in zip(lines, layout, strict=True):
+        if loc["role"] != "contents":
+            continue
+        label = vocabulary("decimal").match(line.strip())
+        if label is not None and (key := _title_key(label.title)):
+            listed.setdefault(".".join(str(part) for part in label.parts), key)
+    if len(listed) < 3:
+        return candidates
+    per_depth = Counter(number.count(".") for number in listed)
+    # 一两条同级的「目录行」可能是版本历史之类的误判，至少三条才算目录列到了这一级。
+    depths = {depth for depth, count in per_depth.items() if count >= 3}
+    out = list(candidates)
+    for index, line in enumerate(candidates):
+        label = vocabulary("decimal").match(line) if line.strip() else None
+        if label is None:
+            continue
+        number = ".".join(str(part) for part in label.parts)
+        expected = listed.get(number)
+        if expected is None:
+            # 目录列到了这一级却没有这个号：正文里的列表号、表格号、地址门牌。
+            if number.count(".") in depths:
+                out[index] = ""
+            continue
+        key = _title_key(label.title)
+        if key and not (key.startswith(expected[:12]) or expected.startswith(key[:12])):
+            out[index] = ""
+    return out
+
+
+def _is_bold(font: str) -> bool:
+    return any(word in font.lower() for word in ("bold", "black", "heavy", "semibold"))
+
+
+_APPENDIX = re.compile(r"\s*(Appendix|Annex)\s+([A-Z]|\d{1,2})\s*[.:\u2014\u2013-]?\s+(\S.{0,90})$")
+
+
+def _ends_paragraph(candidates: list[str], index: int) -> bool:
+    """index 之前最近的非空行是以句末标点收尾的正文。"""
+    prev = next((candidates[j].strip() for j in range(index - 1, max(index - 4, -1), -1)
+                 if candidates[j].strip()), "")
+    return bool(prev) and prev[-1] in ".!?)"
+
+
+_GLOSSARY = re.compile(r"(?:glossary|definitions?|terms and definitions|acronyms)\b", re.IGNORECASE)
+
+
+def _glossary_terms(headings: list[NumberedHeading], candidates: list[str], all_bold) -> list[NumberedHeading]:
+    """词汇表附录里每个粗体术语（NIST CSF「CSF Category」）各成一条，挂在该附录下。
+
+    术语常比章标题字号小，heading_like 的字号条件接不住。只在标题是
+    Glossary/Definitions 的那一章里找：整行粗体、不超过 60 字符、下一非空行不是粗体。
+    """
+    out: list[NumberedHeading] = []
+    for position, heading in enumerate(headings):
+        if not _GLOSSARY.match((heading.title or "").strip()):
+            continue
+        end = headings[position + 1].line_index if position + 1 < len(headings) else len(candidates)
+        for index in range(heading.line_index + 1, end):
+            text = candidates[index].strip()
+            if not text or len(text) > 60 or not all_bold(index) or re.match(r"[\d(•]", text):
+                continue
+            nxt = next((j for j in range(index + 1, min(index + 4, end)) if candidates[j].strip()), None)
+            if nxt is not None and not all_bold(nxt):
+                out.append(NumberedHeading(f"{heading.number}.{_UNNUMBERED}{index}", text, index))
+    return out
+
+
+def _refine_by_bold_headings(
+    headings: list[NumberedHeading], candidates: list[str], layout: list[dict],
+) -> list[NumberedHeading]:
+    """标题与正文同字号、只靠粗体区分时（如 NIST CSF 2.0）：
+    丢掉不是粗体的「标题」（折行正文以数字开头，如「2.0 website and…」），
+    补上同样粗体的「Appendix A.」和首个编号标题之前的无编号前言标题（Abstract、Preface…）。"""
+    if len(headings) < 3:
+        return headings
+
+    def all_bold(index: int) -> bool:
+        fonts = layout[index].get("fonts") or []
+        return bool(fonts) and all(_is_bold(f) for f in fonts)
+
+    bold = [h for h in headings if all_bold(h.line_index)]
+    top = [h for h in headings if h.level == 1]
+    top_bold = [h for h in top if all_bold(h.line_index)]
+    if len(top) < 3 or len(top_bold) < 0.8 * len(top):
+        return headings
+    sizes = {round(layout[h.line_index]["font_size"]) for h in top_bold}
+    top_x = min(layout[h.line_index]["bbox"][0] for h in top_bold)
+    if len(bold) >= 0.8 * len(headings):
+        kept = [h for h in headings
+                if any(_is_bold(f) for f in layout[h.line_index].get("fonts") or [])]
+    else:
+        kept = list(headings)
+
+    def heading_like(index: int) -> bool:
+        text = candidates[index].strip()
+        if not text or not all_bold(index) or round(layout[index]["font_size"]) not in sizes:
+            return False
+        if _APPENDIX.match(text):
+            return True  # 「Appendix C. Glossary」下面紧跟粗体术语，不看下一行
+        nxt = next((j for j in range(index + 1, min(index + 4, len(candidates)))
+                    if candidates[j].strip()), None)
+        return nxt is not None and not all_bold(nxt)
+
+    taken = {h.line_index for h in kept}
+    extra: list[NumberedHeading] = []
+    first = min(taken) if taken else len(candidates)
+    for index, line in enumerate(candidates):
+        if index in taken or not heading_like(index):
+            continue
+        text = line.strip()
+        if (match := _APPENDIX.match(line)) and index > first:
+            extra.append(NumberedHeading(f"{match[1]} {match[2]}", match[3].strip(), index))
+        elif not (len(text) <= 60 and text[0].isupper() and text[-1] not in ".,;:"
+                  and not re.match(r"[\d(]", text)):
+            continue
+        elif index < first:
+            extra.append(NumberedHeading(f"{_UNNUMBERED}{index}", text, index))
+        elif layout[index]["bbox"][0] > top_x + 8:
+            # 章内缩进的粗体小标题（Sussex「Executive Committee (ExCo)」）：挂到所在章下。
+            chapter = max((h for h in top if h.line_index < index), key=lambda h: h.line_index)
+            extra.append(NumberedHeading(f"{chapter.number}.{_UNNUMBERED}{index}", text, index))
+        elif _ends_paragraph(candidates, index):
+            # 不缩进、与正文同字号的整行粗体小标题（SANS 数据泄露模板「Work with Forensic
+            # Investigators」）：上一段正文以句末标点收尾才算，挂到最近的编号标题下。
+            owner = max((h for h in kept if h.line_index < index), key=lambda h: h.line_index)
+            extra.append(NumberedHeading(f"{owner.number}.{_UNNUMBERED}{index}", text, index))
+    extra += _glossary_terms(sorted(kept + extra, key=lambda h: h.line_index), candidates, all_bold)
+    front = [h for h in extra if h.number.startswith(_UNNUMBERED)]
+    if len(front) < 2:
+        # 只有一行的是文档标题（SANS 模板封面「Policy」），不是前言章节。
+        extra = [h for h in extra if h not in front]
+    if not extra and len(kept) == len(headings):
+        return headings
+    return sorted(kept + extra, key=lambda h: h.line_index)
+
+
+_UNNUMBERED = "\u0000front:"
+
+
+def _clear_unnumbered(nodes) -> None:
+    for node in nodes:
+        if node.number and _UNNUMBERED in node.number or node.number == "Sch":
+            node.number = None
+        elif node.number and node.number.startswith("Sch"):
+            parts = node.number.split(".")
+            if parts[0] != "Sch":  # 无总标题时 key 为 SchN
+                parts = ["Sch", parts[0][3:], *parts[1:]]
+            node.number = f"SCHEDULE {parts[1]}" if len(parts) == 2 else parts[-1]
+        _clear_unnumbered(node.children)
+
+
+_SCHEDULE = re.compile(r"\s*SCHEDULE(?:\s+(\d{1,2}))?\s*$")
+_SCHEDULE_NOTE = re.compile(r"\s*(?:Regulations?|Articles?|Sections?)\s+\d")
+
+
+def _schedules(lines: list[str], after: int, paragraphs: list[NumberedHeading]) -> list[NumberedHeading]:
+    """英国 SI 正文后的附表：「SCHEDULE N / Regulation 7(1) / 标题」，附表内段落从 1 重新编号。
+
+    内部编号用 Sch / Sch.N / Sch.N.k（或无总标题时 SchN），assemble_tree 之后由
+    _clear_unnumbered 改回原文的「SCHEDULE N」与段落号。
+    """
+    markers = []
+    for index in range(after + 1, len(lines)):
+        match = _SCHEDULE.match(lines[index])
+        if not match:
+            continue
+        title_at = index + 1
+        while title_at < len(lines) and (not lines[title_at].strip() or _SCHEDULE_NOTE.match(lines[title_at])):
+            title_at += 1
+        if title_at >= len(lines) or len(lines[title_at].strip()) > 120:
+            continue
+        markers.append((index, match[1] or "1", lines[title_at].strip(), title_at + 1))
+    if not markers:
+        return []
+    out: list[NumberedHeading] = []
+    container = next((i for i in range(after + 1, markers[0][0]) if lines[i].strip() == "SCHEDULES"), None)
+    if container is not None:
+        out.append(NumberedHeading("Sch", "SCHEDULES", container, container + 1))
+    # 附表之后的「EXPLANATORY NOTE」是顶层的说明注释，不属于最后一个附表。
+    note = next((i for i in range(markers[-1][3], len(lines)) if lines[i].strip() == "EXPLANATORY NOTE"), None)
+    for position, (index, number, title, body) in enumerate(markers):
+        end = markers[position + 1][0] if position + 1 < len(markers) else (note or len(lines))
+        key = f"Sch.{number}" if container is not None else f"Sch{number}"
+        out.append(NumberedHeading(key, title, index, body))
+        for paragraph in paragraphs:
+            if body <= paragraph.line_index < end:
+                out.append(NumberedHeading(f"{key}.{paragraph.number}", paragraph.title,
+                                           paragraph.line_index, paragraph.body_start))
+    if note is not None:
+        out.append(NumberedHeading(f"{_UNNUMBERED}note", "EXPLANATORY NOTE", note, note + 1))
+    return out
+
+
 def _numbered(line: str) -> Numbering | None:
     if not line.strip() or is_page_footer(line) or is_toc_line(line) or is_version_history_line(line):
         return None
@@ -240,7 +460,10 @@ def display_headings(
     **不比谁的标题多**——比数量正是原先段落号胜出的原因。
     """
     def coherent(found: list[NumberedHeading]) -> bool:
-        return len(found) >= 2 and consistency_score([h.number for h in found]) >= FLOOR
+        # 补出来的父级占位（标题就是编号本身）不算证据：一条表格里的 `1.1` 补个 `1`
+        # 就「成树」，会把正文字号的整套章节标题顶掉（NIST CSF 2.0 实测）。
+        real = sum(h.title != h.number for h in found)
+        return real >= 2 and consistency_score([h.number for h in found]) >= FLOOR
 
     # 先补父级再评分，与十进制读法的次序一致：缺一级父号是版式常态，不是不自洽。
     for guess in body_sizes:
@@ -312,6 +535,51 @@ def _is_a_list(
     return False
 
 
+def _join_wrapped_headings(
+    headings: list[NumberedHeading], candidates: list[str], layout: list[dict], body_size: float,
+) -> None:
+    """标题折成两行时，第二行字号字体与标题行相同且大于正文：接回标题。"""
+    taken = {heading.line_index for heading in headings}
+    for position, heading in enumerate(headings):
+        start = heading.line_index
+        head = layout[start]
+        if not body_size or head["font_size"] < body_size + DISPLAY_MARGIN_PT:
+            continue
+        index = (heading.body_start or start + 1)
+        if index != start + 1:
+            continue
+        while (index < len(candidates) and index not in taken and candidates[index].strip()
+               and abs(layout[index]["font_size"] - head["font_size"]) < 0.5
+               and layout[index]["fonts"] == head["fonts"]
+               and _numbered(candidates[index]) is None):
+            index += 1
+        if index == start + 1:
+            continue
+        extra = " ".join(candidates[i].strip() for i in range(start + 1, index))
+        label = _numbered(candidates[start])
+        title = heading.title if heading.title and heading.title != heading.number else (
+            label.title if label else "")
+        headings[position] = dataclasses.replace(
+            heading, title=f"{title} {extra}".strip(), body_start=index)
+
+
+def _has_decimal_paragraphs(nodes: list[ClauseNode]) -> bool:
+    """文档已经用多段编号（`4.1.2 Executives must…`）给段落编号。
+
+    这种文档里段落层级已经是 `4.1.2` 这一层，同一份文档不会再叠一套 `N.` 段落号；
+    节内的 1. 2. 3. 是正文列表（SANS AUP 4.3.2 的禁止事项，引导句不以冒号结尾）。
+    判据：至少两条三段以上编号的条款没有真标题——标题就是编号，或"标题"是半句话。
+    """
+    count = 0
+    for node in nodes:
+        if node.kind != "section" or len((node.number or "").split(".")) < 3:
+            continue
+        heading = (node.heading or "").strip()
+        if heading == node.number or continues_the_heading(node.text or ""):
+            count += 1
+    return count >= 2
+
+
 def split_numbered_paragraphs(
     nodes: list[ClauseNode], candidates: list[str], layout: list[dict],
     body_lines: list[str], body_size: float, page_of: dict[int, int],
@@ -334,6 +602,8 @@ def split_numbered_paragraphs(
             yield item
             yield from walk(item.children)
 
+    if _has_decimal_paragraphs(list(walk(nodes))):
+        return
     last: int | None = None
     made: list[tuple[ClauseNode, ClauseNode]] = []
     for node in list(walk(nodes)):  # 先取定文档顺序，下面会往 children 里插段落
@@ -466,6 +736,21 @@ class PdfParser:
 
         candidates = [line if loc["role"] == "body" else ""
                       for line, loc in zip(lines, layout, strict=True)]
+        cn_style = detect_style(candidates)
+        if cn_style is not None:
+            # 中文条文体/公文体：字号与英文编号读法都不适用，见 chinese.py。
+            body_lines = [line if loc["role"] not in _LAYOUT_ROLES else ""
+                          for line, loc in zip(lines, layout, strict=True)]
+            clauses = segment([Item(line, source_key=f"line:{index}",
+                                    page_ref=page_of.get(index))
+                               for index, line in enumerate(body_lines)], cn_style)
+            attach_tables(clauses, tables, lines=lines, layout=layout)
+            warnings.extend(structure_warnings(clauses))
+            demote_fragment_headings(clauses)
+            return ParsedDocument(meta=_cover_meta(lines), clauses=clauses, warnings=warnings,
+                                  source_blocks=blocks, source_origin="pdf_text")
+        candidates = _defer_to_contents(candidates, lines, layout)
+        candidates = _zero_point_chapters(candidates)
         displayed, body_size = display_headings(candidates, layout, _body_sizes(lines, layout))
         headings, filter_warnings = extract_headings(candidates)
         # 分开考察不同字号/缩进的连续正文编号，避免章节号和段落号互相污染。
@@ -504,11 +789,39 @@ class PdfParser:
             explicit.setdefault(match[1].lower(), []).append(NumberedHeading(
                 match[2], title, index, body_start,
             ))
+        # 英国 SI 体例：标题独占一行，下一行才是「19.—(1) …」或「2. These …」。
+        for index, line in enumerate(candidates[:-1]):
+            title = line.strip()
+            if (not title or len(title) > 120 or title[-1] in ".,;:" or not title[0].isupper()
+                    or re.match(r"(?:PART|CHAPTER|SCHEDULE)\b", title)):
+                continue
+            nxt = re.match(r"\s*(\d{1,3})\.(?:—|–|\s+[A-Z(“\"])", lines[index + 1])
+            # 目录否决可能已抹掉「1.—(1)」这一行（编号同、标题不同），这里读原行。
+            if nxt and layout[index + 1]["role"] == "body" and page_of.get(index + 1) == page_of.get(index):
+                explicit.setdefault("regulation", []).append(NumberedHeading(
+                    nxt[1], title, index, index + 1,
+                ))
+        if regulations := explicit.pop("regulation", None):
+            # 封面残页、附表会各自从 1 重新编号：只留最长的一段大致连续递增的序列。
+            runs_: list[list[NumberedHeading]] = []
+            for heading in regulations:
+                if runs_ and 0 < int(heading.number) - int(runs_[-1][-1].number) <= 3:
+                    runs_[-1].append(heading)
+                else:
+                    runs_.append([heading])
+            best = max(runs_, key=len)
+        else:
+            best = []
         coherent = [stream for stream in explicit.values()
                     if acts_as_headings([h.number for h in stream])]
+        if len(best) >= 5:
+            # 分段时已保证递增、间隔不超过 3（漏掉的是 19A 这类插入条），不再要求严格 +1。
+            coherent.append(best + _schedules(lines, best[-1].line_index, regulations or []))
         if coherent:
             headings = max(coherent, key=len)
             displayed = []
+        if not coherent:
+            headings = _refine_by_bold_headings(headings, candidates, layout)
         warnings.extend(filter_warnings)
         toc_count = sum(loc["role"] == "contents" for loc in layout)
         if toc_count:
@@ -524,11 +837,15 @@ class PdfParser:
                 )
             )
 
+        _join_wrapped_headings(headings, candidates, layout, body_size)
         body_lines = [line if loc["role"] not in _LAYOUT_ROLES else ""
                       for line, loc in zip(lines, layout, strict=True)]
         clauses = assemble_tree(headings, body_lines, page_of=page_of)
+        _clear_unnumbered(clauses)
         if displayed:
             split_numbered_paragraphs(clauses, candidates, layout, body_lines, body_size, page_of)
+        adopt_article_titles(clauses)
+        clauses = nest_chapters(clauses)
         attach_tables(clauses, tables, lines=lines, layout=layout)
         warnings.extend(structure_warnings(clauses))
         # 段落级编号的文档里，"标题"其实是段落的前半句——整段收回正文。

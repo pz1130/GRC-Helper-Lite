@@ -1,0 +1,7 @@
+{
+ "reviewed": true,
+ "note": "v2 review: first LLM pass returned empty, re-run. 1-6 and 4.x/5.x verified; LLM missed '7 Revision History' (L73), added from rule. 4.3.4 is a numbered paragraph (convention).",
+ "add_rule": [
+  73
+ ]
+}

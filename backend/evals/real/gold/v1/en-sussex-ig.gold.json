@@ -1,0 +1,657 @@
+{
+ "id": "en-sussex-ig",
+ "lang": "en",
+ "clauses": [
+  {
+   "number": "1.",
+   "heading": "Introduction",
+   "sentences": [
+    "Introduction"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "1.1",
+     "heading": "1.1",
+     "sentences": [
+      "The role of NHS Sussex Integrated Care Board (the ICB) is to support the commissioning of healthcare, both directly and indirectly, so that valuable public resources secure the best possible outcomes for patients.",
+      "This policy is important because it will help the people who work for the ICB to understand how to look after the information they need to do their jobs, and to protect this information on behalf of patients."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 37
+    }
+   ],
+   "line": 36
+  },
+  {
+   "number": "2.",
+   "heading": "Purpose",
+   "sentences": [],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "2.1",
+     "heading": "2.1",
+     "sentences": [
+      "Information is a vital asset.",
+      "It is therefore of paramount importance to ensure that information is efficiently managed, and that appropriate policies, procedures and management accountability and structures provide a robust governance framework for information management."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 44
+    },
+    {
+     "number": "2.2",
+     "heading": "2.2",
+     "sentences": [
+      "Information Governance looks at the way the NHS handles information about patients, staff, contractors, and the healthcare provided, with particular consideration of personal and confidential information.",
+      "A robust Information Governance Management Framework is required to be in place to manage this vital asset, providing a consistent way to deal with the many different information handling requirements including: • Information Governance Management • Confidentiality and Data Protection Legislation assurance • Corporate Information assurance • Information Security assurance • Secondary Use assurance"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 49
+    },
+    {
+     "number": "2.3",
+     "heading": "2.3",
+     "sentences": [
+      "The aims of this document are to maximise the value of organisational assets by ensuring that information is: • Held securely and confidentially. • Obtained fairly and efficiently. • Recorded accurately and reliably. • Used effectively and ethically. • Shared appropriately and lawfully."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 60
+    },
+    {
+     "number": "2.4",
+     "heading": "2.4",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 67
+    }
+   ],
+   "line": 43
+  },
+  {
+   "number": "3.",
+   "heading": "Responsibilities",
+   "sentences": [
+    "Responsibilities"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "3.1",
+     "heading": "3.1",
+     "sentences": [
+      "The ICB has a responsibility to ensure it meets corporate and legal responsibilities and for the adoption of internal and external governance requirements.",
+      "The Finance Directorate is also responsible for ensuring that sufficient resources are provided to support the requirements of the policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 77
+    },
+    {
+     "number": "3.2",
+     "heading": "3.2",
+     "sentences": [
+      "The hierarchical management structure and associated roles are detailed in the Information Governance Management Framework Document but also summarised below:"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 81
+    },
+    {
+     "number": null,
+     "heading": "Executive Committee (ExCo)",
+     "sentences": [
+      "It is the role of The NHS Sussex ExCo to define the ICB policy in respect of Information Governance, taking into account legislative and NHS requirements.",
+      "The ExCo is also responsible for ensuring that sufficient resources are provided to support the requirements of the policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 83
+    },
+    {
+     "number": null,
+     "heading": "Audit and Risk Committee",
+     "sentences": [
+      "The annual audit of the Data Security and Protection Toolkit (DSPT) shall be reported to the Audit and Risk Committee together with any recommendations identified and the associated improvement plans."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 88
+    },
+    {
+     "number": null,
+     "heading": "Information Governance and Cyber Security Oversight Group",
+     "sentences": [
+      "The ICB Information Governance and Cyber Security Oversight Group (IGCSOG) is responsible for overseeing day to day information governance issues; developing and maintaining policies, standards, procedures and guidance; coordinating information governance in the ICB and raising awareness of Information Governance."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 92
+    },
+    {
+     "number": null,
+     "heading": "Information Governance Team",
+     "sentences": [
+      "The IG team is responsible for ensuring that the policy and its supporting standards and guidelines are built into local processes and that there is on-going compliance.",
+      "Part of this obligation is to ensure that all staff are trained and made aware of confidentiality requirements and procedures."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 97
+    },
+    {
+     "number": null,
+     "heading": "All Staff",
+     "sentences": [
+      "All staff, whether permanent, temporary, contracted, or contractors are responsible for ensuring that they are aware of and comply with the requirements of this policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 102
+    }
+   ],
+   "line": 76
+  },
+  {
+   "number": "4.",
+   "heading": "Scope and Definitions",
+   "sentences": [
+    "Scope and Definitions"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "4.1",
+     "heading": "The scope of this document covers",
+     "sentences": [
+      "• All permanent employees of the ICB and; • Staff working on behalf of the ICB (this includes contractors, temporary staff, volunteers and secondees)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 106
+    },
+    {
+     "number": "4.2",
+     "heading": "4.2",
+     "sentences": [
+      "The ICB recognises the need for an appropriate balance between openness and confidentiality in the management and use of information.",
+      "As such it is the responsibility of managers and staff to ensure and promote the quality of information and to actively use information in decision making processes."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 110
+    },
+    {
+     "number": "4.3",
+     "heading": "4.3",
+     "sentences": [
+      "In order to assist staff with understanding their responsibilities under this policy, the following types of information and their definitions are applicable in all relevant policies and documents."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 118
+    },
+    {
+     "number": null,
+     "heading": "Personal Data",
+     "sentences": [
+      "Any information relating to an identified or identifiable natural person (‘data subject’); an identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as a name, an identification number, location data, an online identifier or to one or more factors specific to the physical, physiological, genetic, mental, economic, cultural, or social identity of that natural person."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 120
+    },
+    {
+     "number": null,
+     "heading": "Special Categories Data",
+     "sentences": [
+      "This is personal data relating to: (a) The racial or ethnic origin of the data subject (b) Their political opinions (c) Their religious beliefs or other beliefs of a similar nature (d) Whether a member of a trade union (within the meaning of the Trade Union and Labour Relations (Consolidation) Act 1998 (e) Genetic data (f) Biometric data for the purpose of uniquely identifying a natural person.",
+      "(g) Their physical or mental health or condition (h) Their sexual life"
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 126
+    },
+    {
+     "number": null,
+     "heading": "Personal Confidential Data",
+     "sentences": [
+      "Personal and Special Categories of Personal Data owed a duty of confidentiality (under the common law).",
+      "The term is used in the Caldicott 2 Review: Information: to share or not to share (published March 2013)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 137
+    },
+    {
+     "number": null,
+     "heading": "Commercially Confidential Information",
+     "sentences": [
+      "Business / Commercial information, including that subject to statutory or regulatory obligations, which may be damaging to any of the Sussex ICB if improperly accessed or shared.",
+      "Also as defined in the Freedom of Information Act 2000 and the Environmental Information Regulations."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 144
+    }
+   ],
+   "line": 105
+  },
+  {
+   "number": "5.",
+   "heading": "Legal Compliance",
+   "sentences": [
+    "Legal Compliance"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "5.1",
+     "heading": "5.1",
+     "sentences": [
+      "The ICB regards all identifiable personal information as confidential except where national policy on accountability and openness requires otherwise."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 150
+    },
+    {
+     "number": "5.2",
+     "heading": "5.2",
+     "sentences": [
+      "The ICB will maintain policies to ensure compliance with data protection legislation.",
+      "The above are hereafter referred to collectively as the ‘data protection legislation’."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 152
+    },
+    {
+     "number": "5.3",
+     "heading": "5.3",
+     "sentences": [
+      "In addition, consideration will also be given to all applicable law concerning privacy, confidentiality, the processing and sharing of personal data including the Human Rights Act 1998, the Health and Social Care Act 2012 as amended by the Health and Social Care (Safety and Quality) Act 2015, the common law duty of confidentiality and the Privacy and Electronic Communications (EC Directive) Regulations."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 157
+    },
+    {
+     "number": "5.4",
+     "heading": "5.4",
+     "sentences": [
+      "The ICB, when acting as a Data Controller, will identify and record a condition for processing, as identified by the UK GDPR under Articles 6 and 9 (where appropriate), for each activity it undertakes.",
+      "When relying on Article 6, 1 (e) ‘processing is necessary for the performance of a task carried out in the public interest or in the exercise of official authority vested in the Controller’, the ICB will identify the official authority (legal basis) and record this on relevant records of processing."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 162
+    }
+   ],
+   "line": 149
+  },
+  {
+   "number": "6.",
+   "heading": "Processes / Requirements",
+   "sentences": [
+    "Processes / Requirements"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "6.1",
+     "heading": "The ICB will ensure that they meet their national requirements in respect of its",
+     "sentences": [
+      "submission of the annual self-assessment Data Security and Protection Toolkit (DSPT)."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 169
+    },
+    {
+     "number": "6.2",
+     "heading": "6.2",
+     "sentences": [
+      "Non-confidential information about the ICB will be available to the public through a variety of media."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 171
+    },
+    {
+     "number": "6.3",
+     "heading": "6.3",
+     "sentences": [
+      "The ICB will maintain policies to ensure compliance with the Freedom of Information Act.",
+      "Please refer to the Freedom of Information Policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 173
+    },
+    {
+     "number": "6.4",
+     "heading": "6.4",
+     "sentences": [
+      "The ICB will have clear procedures and arrangements for liaison with the press and broadcasting media.",
+      "Please refer to the Communications Strategy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 175
+    },
+    {
+     "number": "6.5",
+     "heading": "6.5",
+     "sentences": [
+      "The ICB will maintain clear procedures and arrangements for handling Individual Rights Requests from the public or staff in accordance with data protection legislation.",
+      "Please refer to the Individual Rights Requests Policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 177
+    },
+    {
+     "number": "6.6",
+     "heading": "6.6",
+     "sentences": [
+      "The ICB will maintain policies to ensure compliance with the Records Management Code of Practice for Health and Social Care (2021).",
+      "Please refer to The Records Management Policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 180
+    }
+   ],
+   "line": 168
+  },
+  {
+   "number": "7.",
+   "heading": "Information Security",
+   "sentences": [
+    "Information Security"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "7.1",
+     "heading": "7.1",
+     "sentences": [
+      "The ICB will ensure the effective and secure management of their information assets and resources."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 183
+    },
+    {
+     "number": "7.2",
+     "heading": "7.2",
+     "sentences": [
+      "The ICB will promote effective confidentiality and security practice to its staff through policies, procedures and training."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 185
+    },
+    {
+     "number": "7.3",
+     "heading": "7.3",
+     "sentences": [
+      "The ICB will adhere to the NHS Digital Guide to the Notification of Data Security and Protection Incidents and as part of this, will review and maintain incident reporting procedures and monitor and investigate all reported instances of actual or potential breaches.",
+      "Please refer to the Information Governance Incident Management and Reporting Procedure."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 187
+    }
+   ],
+   "line": 182
+  },
+  {
+   "number": "8.",
+   "heading": "Information Quality Assurance",
+   "sentences": [
+    "Information Quality Assurance"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "8.1",
+     "heading": "8.1",
+     "sentences": [
+      "The ICB Information Governance Team will maintain policies and procedures for information quality assurance and the effective management of records.",
+      "Please see the Records Management Policy."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 195
+    },
+    {
+     "number": "8.2",
+     "heading": "8.2",
+     "sentences": [
+      "The ICB will undertake or commission annual assessments and audits of its information quality and records management arrangements."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 198
+    },
+    {
+     "number": "8.3",
+     "heading": "8.3",
+     "sentences": [
+      "Managers are expected to take ownership of, and seek to improve, the quality of information within their services."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 200
+    },
+    {
+     "number": "8.4",
+     "heading": "8.4",
+     "sentences": [
+      "Wherever possible, information quality will be assured at the point of collection."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 202
+    },
+    {
+     "number": "8.5",
+     "heading": "8.5",
+     "sentences": [
+      "Data standards will be set through clear and consistent definition of data items, in accordance with national standards."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 203
+    }
+   ],
+   "line": 194
+  },
+  {
+   "number": "9.",
+   "heading": "Commissioning of New Services",
+   "sentences": [
+    "Commissioning of New Services"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "9.1",
+     "heading": "9.1",
+     "sentences": [
+      "The ICB Data Protection Officer (DPO) will be consulted during the design phase of any new service, process or information asset and contribute to the statutory Data Protection Impact Assessment (DPIA) process when new processing of personal data or special categories data is being considered."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 206
+    },
+    {
+     "number": "9.2",
+     "heading": "9.2",
+     "sentences": [
+      "All staff members who may be responsible for introducing changes to services, processes or information assets must be effectively informed about the requirement to complete a statutory DPIA and where required, seek review from the DPIA Panel prior to approval of further work."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 210
+    },
+    {
+     "number": "9.3",
+     "heading": "9.3",
+     "sentences": [
+      "The ICB will maintain a DPIA framework that includes an approved template, guidance and supporting checklists."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 213
+    }
+   ],
+   "line": 205
+  },
+  {
+   "number": "10.",
+   "heading": "Process for Approval and Ratification",
+   "sentences": [
+    "Process for Approval and Ratification"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "10.1",
+     "heading": "10.1",
+     "sentences": [
+      "Approval of the policy is obtained from the Information Governance and Cyber Security Oversight Group (IGCSOG), following which it will be ratified according to relevant organisational processes."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 216
+    }
+   ],
+   "line": 215
+  },
+  {
+   "number": "11.",
+   "heading": "Dissemination, Training and Advice",
+   "sentences": [
+    "Dissemination, Training and Advice"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "11.1",
+     "heading": "11.1",
+     "sentences": [
+      "This policy will be uploaded to the intranet pages of the ICB, new staff will be directed to read it as part of their induction."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 220
+    },
+    {
+     "number": "11.2",
+     "heading": "11.2",
+     "sentences": [
+      "All staff whether permanent, temporary or contracted are required to comply with staff IG guidelines provided at the start of employment, which stress the importance of appropriate information handling and incorporate legislation, and the common law and best practice requirements.",
+      "Information Governance is the framework drawing these requirements together therefore it is important that staff receive the appropriate training."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 222
+    },
+    {
+     "number": "11.3",
+     "heading": "11.3",
+     "sentences": [
+      "The ICB will ensure that all staff receive annual Information Governance training appropriate to their role through the online NHS Digital provided Training tool.",
+      "New starters and any temporary, contract or agency staff must also complete the information governance training when beginning their employment and annually thereafter."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 227
+    }
+   ],
+   "line": 219
+  },
+  {
+   "number": "12.",
+   "heading": "Review, Monitoring and Compliance",
+   "sentences": [
+    "Review, Monitoring and Compliance"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "12.1",
+     "heading": "12.1",
+     "sentences": [
+      "This policy will be reviewed every three years by the Sussex ICB IG Team or if otherwise required by law."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 233
+    },
+    {
+     "number": "12.2",
+     "heading": "12.2",
+     "sentences": [
+      "This policy will be monitored by the IGCSOG to ensure any legislative changes that occur before the review date are incorporated."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 235
+    },
+    {
+     "number": "12.3",
+     "heading": "12.3",
+     "sentences": [
+      "Compliance with the Data Security and Protection Toolkit will be assessed by NHS Digital including a review of evidence, as part of the ICB performance assessments.",
+      "Reports will also be provided to the Audit and Risk Committee."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 237
+    },
+    {
+     "number": "12.4",
+     "heading": "12.4",
+     "sentences": [
+      "Compliance with ICB policies is stipulated in staff contracts of employment.",
+      "Any non-compliance with ICB policies or failure to report non-compliance may be treated as a disciplinary offence."
+     ],
+     "table_cells": [],
+     "children": [],
+     "line": 242
+    }
+   ],
+   "line": 232
+  },
+  {
+   "number": "13.",
+   "heading": "References",
+   "sentences": [
+    "References"
+   ],
+   "table_cells": [],
+   "children": [
+    {
+     "number": "13.1",
+     "heading": "NHS Digital Codes of Practice",
+     "sentences": [],
+     "table_cells": [],
+     "children": [],
+     "line": 248
+    }
+   ],
+   "line": 247
+  }
+ ],
+ "reviewed": true,
+ "review_note": "人工复核（高分歧）：标准答案正确。3.2 下的委员会小标题和 4.3 下的术语小标题是无编号的粗体行，解析器未识别（已知问题）。"
+}
