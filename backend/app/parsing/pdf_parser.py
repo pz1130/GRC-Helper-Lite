@@ -371,14 +371,18 @@ def _schedules(lines: list[str], after: int, paragraphs: list[NumberedHeading]) 
     container = next((i for i in range(after + 1, markers[0][0]) if lines[i].strip() == "SCHEDULES"), None)
     if container is not None:
         out.append(NumberedHeading("Sch", "SCHEDULES", container, container + 1))
+    # 附表之后的「EXPLANATORY NOTE」是顶层的说明注释，不属于最后一个附表。
+    note = next((i for i in range(markers[-1][3], len(lines)) if lines[i].strip() == "EXPLANATORY NOTE"), None)
     for position, (index, number, title, body) in enumerate(markers):
-        end = markers[position + 1][0] if position + 1 < len(markers) else len(lines)
+        end = markers[position + 1][0] if position + 1 < len(markers) else (note or len(lines))
         key = f"Sch.{number}" if container is not None else f"Sch{number}"
         out.append(NumberedHeading(key, title, index, body))
         for paragraph in paragraphs:
             if body <= paragraph.line_index < end:
                 out.append(NumberedHeading(f"{key}.{paragraph.number}", paragraph.title,
                                            paragraph.line_index, paragraph.body_start))
+    if note is not None:
+        out.append(NumberedHeading(f"{_UNNUMBERED}note", "EXPLANATORY NOTE", note, note + 1))
     return out
 
 

@@ -27,7 +27,8 @@ def _roman(token: str) -> int:
 
 def _looks_like_title(line: str) -> bool:
     line = line.strip()
-    return (0 < len(line) <= 120 and not line.endswith((".", ";", ":", ","))
+    # 「…proceedings etc.」以缩写结尾，仍是标题。
+    return (0 < len(line) <= 120 and (not line.endswith((".", ";", ":", ",")) or line.endswith(" etc."))
             and not _NUMBERED_START.match(line) and not _CHAPTER.match(line))
 
 
@@ -53,7 +54,17 @@ def nest_chapters(nodes: list[ClauseNode]) -> list[ClauseNode]:
             _nest_inside(chapters, "Chapter ", _SECTION, "Section", 2)
         return chapters
     _nest_inside(parts, "Part ", _CHAPTER, "Chapter", 2)
+    _nest_schedule_parts(parts)
     return parts
+
+
+def _nest_schedule_parts(nodes: list[ClauseNode]) -> None:
+    """附表内的「PART 1 / PART 2」（英国 SI Schedule 7）：在该附表内分组。"""
+    for node in nodes:
+        if node.number and node.number.startswith("SCHEDULE "):
+            _nest_inside([node], "SCHEDULE ", _PART, "Part", node.level + 1)
+        elif node.number is None and node.children:
+            _nest_schedule_parts(node.children)
 
 
 # GDPR「CHAPTER III > Section 1 > Article 12」：章内的 Section 独占一行，每章从 1 重新计数。
@@ -74,6 +85,15 @@ def _nest_inside(groups: list[ClauseNode], prefix: str, pattern: re.Pattern, wor
         else:
             group.text = ""
         group.children = nested
+
+
+# 英国 SI 正文之后的「SCHEDULES」总标题与「EXPLANATORY NOTE」不属于最后一个 PART。
+_BACK_MATTER = re.compile(r"\s*(?:SCHEDULES?(?:\s+\d{1,2})?|EXPLANATORY NOTE)\s*$")
+
+
+def _ends_body(node: ClauseNode) -> bool:
+    return bool(_BACK_MATTER.fullmatch(node.heading or "")) or bool(
+        node.number and node.number.startswith("SCHEDULE"))
 
 
 def _nest_marker(nodes: list[ClauseNode], pattern: re.Pattern, word: str,
@@ -117,6 +137,8 @@ def _nest_marker(nodes: list[ClauseNode], pattern: re.Pattern, word: str,
     current: ClauseNode | None = None
     for position, node in enumerate(nodes):
         marks = by_node.get(position)
+        if current is not None and _ends_body(node):
+            current = None
         if not marks:
             (current.children if current else result).append(node)
             continue

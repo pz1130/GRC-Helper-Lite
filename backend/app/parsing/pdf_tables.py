@@ -174,8 +174,10 @@ def attach_tables(nodes: list[ClauseNode], tables: list[PdfTable], *,
         previous, previous_node, previous_parent = table, node, parent
 
     def position(node):
-        return min((int(k.split(":")[1]) for k in node.source_keys if k.startswith("line:")),
-                   default=float("inf"))
+        # 合成的 PART/CHAPTER 容器没有自己的行号：按最早的子节点排序。
+        own = min((int(k.split(":")[1]) for k in node.source_keys if k.startswith("line:")),
+                  default=float("inf"))
+        return min([own, *(position(child) for child in node.children)])
 
     def sort(items):
         items.sort(key=position)
