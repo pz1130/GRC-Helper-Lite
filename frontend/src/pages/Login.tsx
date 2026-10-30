@@ -12,10 +12,11 @@ import { wantsHero3d } from "../three/support";
 // 登录页用 hero 概念 A（控制网络地球）：节点 = 控制项，弧线流光 = 框架间的映射。
 const HeroV2 = lazy(() => import("../three/HeroV2"));
 
-// 登录页地球特效候选：?globe=g1|g2|g3|g4 对比，不带参数仍为原版控制网络地球 a。
-function loginGlobe(): "a" | "g1" | "g2" | "g3" | "g4" {
+// 登录页地球特效候选：?globe=g1..g4|h1..h4 对比，不带参数仍为原版控制网络地球 a。
+const GLOBES = ["g1", "g2", "g3", "g4", "h1", "h2", "h3", "h4"] as const;
+function loginGlobe(): "a" | (typeof GLOBES)[number] {
   const q = new URLSearchParams(window.location.search).get("globe");
-  return q === "g1" || q === "g2" || q === "g3" || q === "g4" ? q : "a";
+  return (GLOBES as readonly string[]).includes(q ?? "") ? (q as (typeof GLOBES)[number]) : "a";
 }
 
 export function Login() {
