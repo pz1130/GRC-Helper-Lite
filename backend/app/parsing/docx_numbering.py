@@ -259,6 +259,26 @@ class HeadingNumbering:
 
         return self._render(level, counters, abstract_id, num_id, ilvl)
 
+    def is_bullet(self, paragraph) -> bool:
+        """段落是否挂在项目符号列表上（不推进计数器）。"""
+        ppr = paragraph._p.find(f"{W}pPr")
+        numpr = ppr.find(f"{W}numPr") if ppr is not None else None
+        num_id = _val(numpr, "numId")
+        ilvl_raw = _val(numpr, "ilvl")
+        ilvl = int(ilvl_raw) if ilvl_raw is not None else None
+        if num_id is None or ilvl is None:
+            style_num, style_ilvl = self._from_style(
+                paragraph.style.style_id if paragraph.style is not None else None
+            )
+            num_id = num_id or style_num
+            # 样式里只写 numId 不写 ilvl 时，Word 按第 0 级画。
+            ilvl = ilvl if ilvl is not None else (style_ilvl or 0)
+        if num_id is None or num_id == "0":
+            return False
+        abstract_id = self._resolve(num_id)
+        level = self._level(num_id, abstract_id, ilvl) if abstract_id is not None else None
+        return level is not None and level.fmt == "bullet"
+
     def _start(self, abstract_id: str, num_id: str, ilvl: int) -> int:
         level = self._level(num_id, abstract_id, ilvl)
         return level.start if level else 1

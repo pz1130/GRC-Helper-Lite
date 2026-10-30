@@ -322,6 +322,9 @@ class DocxParser:
             paragraph = Paragraph(element, document)
             original_text = _paragraph_text(paragraph)
             text = original_text.strip()
+            # Word 画在列表项前的「•」不在文字里；补回来，与渲染出的原文一致。
+            if text and numbering.is_bullet(paragraph) and _heading_level(paragraph) is None:
+                text = f"• {text}"
             source_key = f"body:{body_index}:paragraph"
             if text:
                 source_blocks.append(SourceBlock(

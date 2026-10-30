@@ -60,3 +60,18 @@ def test_sentence_fragment_still_demoted():
     node = _node("2.2", "The company shall ensure", text="that all staff are trained in the handling of data.")
     demote_fragment_headings([node])
     assert node.heading == "2.2"
+
+
+def test_docx_bullet_items_keep_their_bullet(tmp_path):
+    import docx
+
+    from app.parsing.docx_parser import DocxParser
+    d = docx.Document()
+    d.add_heading("Guidelines", 1)
+    d.add_paragraph("Under this policy you:")
+    d.add_paragraph("Notify us quickly.", style="List Bullet")
+    d.add_paragraph("Avoid harm.", style="List Bullet")
+    path = tmp_path / "b.docx"
+    d.save(path)
+    node = next(c for c in DocxParser().parse(path).clauses if c.heading == "Guidelines")
+    assert "• Notify us quickly." in node.text and "• Avoid harm." in node.text
