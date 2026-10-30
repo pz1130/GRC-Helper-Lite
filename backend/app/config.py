@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     # 调用失败、超时或预算耗尽，都回退到关键词 + 向量预筛。
     mapping_jev_prefilter: bool = False
 
+    # RCSA 模块的总开关。默认关闭：关闭时 /api/rcsa 下除 status 外一律 404，前端也不显示
+    # 入口。与 RCSA 的两个 AI 开关完全独立。生产上要等 PR-5 的发布验收通过再打开。
+    rcsa_enabled: bool = False
+
     @field_validator("app_secret_key", "jwt_secret")
     @classmethod
     def reject_placeholder_secrets(cls, value: str) -> str:

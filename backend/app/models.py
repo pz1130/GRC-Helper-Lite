@@ -25,6 +25,7 @@ from app.iam import models as iam_models
 from app.ingest import models as ingest_models
 from app.llm import models as llm_models
 from app.maturity import models as maturity_models
+from app.rcsa import models as rcsa_models
 from app.relations import models as relations_models
 from app.review import models as review_models
 from app.risk import models as risk_models
@@ -44,6 +45,7 @@ __all__ = [
     "ingest_models",
     "llm_models",
     "maturity_models",
+    "rcsa_models",
     "relations_models",
     "review_models",
     "risk_models",

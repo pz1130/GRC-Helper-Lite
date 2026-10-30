@@ -256,6 +256,83 @@ that provider (KNOWN_ISSUES K17).
 
 ---
 
+## Risk and control self-assessment (RCSA, off by default)
+
+RCSA lets internal IT staff assess confirmed controls against a framework: freeze a scope, answer
+design and operating effectiveness with evidence references, have someone else review each
+answer, decide what to do about each risk scenario, track remediation until a different person
+verifies it, and close the period with a fixed report. It is a manual workflow; no model is
+called anywhere in it.
+
+**Turning it on.** Set `RCSA_ENABLED=true` in `.env` and restart the API. While it is off, every
+`/api/rcsa` route except `/api/rcsa/status` answers 404 and the navigation shows no RCSA entry.
+Audit-scoped accounts are always refused. Turn it on in production only after the release
+checks below have passed on that build and the pilot has been agreed (KNOWN_ISSUES G7).
+
+**Before the first campaign.**
+
+```bash
+make prod-seed-rcsa-profile   # loads an unapproved default 5x5 scoring profile; safe to repeat
+```
+
+The seeded labels and band thresholds are product suggestions, not a regulatory standard or your
+risk appetite. A GRC lead or admin fills in the assessment horizon, the criteria for each
+likelihood and impact level, the impact dimensions and gap-free bands under RCSA → Scoring
+profiles, then approves it. Only an approved profile can be used to activate a campaign, and an
+approved profile can no longer change: a change in method is a new revision, and campaigns
+scored with different revisions are never compared as if they were the same.
+
+You need at least two people with the GRC lead or admin role: reviewers cannot review answers they
+submitted, and whoever proposes a risk disposition cannot approve it. Admins get no exception.
+
+**Deploying and rolling back.** Follow *Upgrading* (back up, upgrade, migrate). Migration `0034`
+adds the RCSA tables; the module stays off until you enable it. Rolling back:
+
+- If no RCSA data has been written yet, `alembic downgrade 0033` removes the tables. The seeded
+  scoring profile counts as data, so seed it only when you mean to keep the module.
+- Once any RCSA record exists, the downgrade refuses to run rather than drop it. Set
+  `RCSA_ENABLED=false` to take the module out of use and fix forward. Restoring an earlier backup
+  loses everything written after that backup, so plan how to re-enter it before you choose that.
+
+**Backups.** The RCSA tables are ordinary tables in the database dump, and the restore drill's
+row counts include them. Before a release, also run:
+
+```bash
+make rcsa-restore-check
+```
+
+It drives a synthetic campaign to closed in a scratch database, backs it up with `pg_dump`,
+restores it into a second scratch database with `psql`, and compares scoring revisions, response
+revisions, RCSA audit events, trigger links, register links, the closed snapshot and report, and
+the freeze triggers. It also checks that the restored copy still refuses to edit a closed
+campaign. It uses only the dev stack's db container, and drops both scratch databases when it
+finishes.
+
+**Capacity.** The report, campaign, item list, campaign list and my-work endpoints run the same
+number of SQL queries whatever the number of items (`backend/tests/test_rcsa_scaling.py`).
+No throughput or latency target has been measured at your size; agree the expected volume
+(controls per campaign, concurrent assessors) and measure on a copy before relying on it
+(KNOWN_ISSUES K22).
+
+**Optional AI assistance (off by default).** Under RCSA → AI settings an admin can enable two
+channels separately: answer prefill (a chat model drafts suggestions with citations to the inputs
+it was sent) and evidence relevance (the decision model orders a control's registered evidence).
+Each needs its own bound service, an approval reference and the input types that may be sent
+(control text, policy clause text, evidence titles and dates; never evidence locations or tester
+names). Neither uses the global backup provider or the document-scan switch, and neither is
+touched by bulk provider binding. The assessor sees what will be sent before asking; suggestions
+are labelled Suggested and become part of an answer only when the assessor applies chosen
+fields, which is audited. Enable a channel only after your data policy approves it, and evaluate
+it on public material with thresholds fixed in advance (KNOWN_ISSUES K20).
+
+**Not in this release.** Loss events and KRIs, third-party
+assessments (only internally performed controls can be activated), e-mail notifications (the
+work list is computed when you open it), and automatic detection of changes or incidents
+(triggers are registered by hand). A self-assessment record is not proof that a control works or
+that remediation is complete, and the module makes no regulatory compliance claim (K23).
+
+---
+
 ## Master key
 
 `APP_SECRET_KEY` is a Fernet key. It encrypts every AI provider API key stored in the database.
@@ -380,3 +457,111 @@ For contributors: business code depends on `DecisionProvider` and `DecisionReque
 `app/decision/base.py`. Register another adapter in `app/decision/factory.py` with its provider
 kind/migration; do not put vendor-specific HTTP details in the requirement scanning service.
 No institutional corpus or real provider call was used to validate this integration.
+
+**Optional IT guidance and manual signal checks.** The assessment page offers 31 English risk
+scenario examples and 40 evidence/test guides. Under **Add scenario → Optional IT risk templates**,
+select a template and choose **Fill empty scenario fields**. This fills only empty scenario text;
+ratings, owners, control records and framework mappings are not set by the template. Select relevant
+**Evidence and test guides** in the answer and save. These are examples to adapt to approved local
+requirements, not evidence or completed independent tests. Supplier examples concern internal oversight;
+the assessment scope remains internal controls.
+
+Under **Related adverse signals**, the assignee can record an overdue high-severity vulnerability,
+major incident, failed change, red KRI reading, or open audit/inspection finding. Each record needs a
+source reference, relevance to this control, and the dates of the adverse condition. Use the first overdue
+date for a vulnerability and the affected period for a red KRI. References are text, never fetched.
+Checks use the campaign period, including conditions resolved during that period. If operating effectiveness
+is rated effective, or the response states there is no risk and has no risk scenarios, each overlapping
+signal needs an assessor explanation before submission. Approval then requires an independent review
+rationale. An effective design alone does not imply effective operation. No signal is automatically
+imported, no score is adjusted, and no reassessment campaign is created.
+
+Selected guides and signals remain with each response revision, including returned revisions, and
+are included in the closing snapshot. History exposes the saved details. The report shows counts for
+approved responses and whether an approval rationale was recorded, without exposing source references.
+The new answer fields are optional; existing responses need no database migration. The `it-v1` catalog
+ships in the application package and must remain immutable so historical guide references retain their
+meaning. Any later content revision needs a new version and compatible historical lookup.
+
+### RCSA system and implementation scope (migration 0036)
+
+Draft campaigns can select either whole controls or individual control implementations from the
+existing environment inventory. Multiple implementations of one control can be assessed separately;
+a whole control and its implementations cannot overlap in the same campaign. An implementation
+without a linked asset represents a process implementation. The implementation owner is the default
+assessor, falling back to the control owner; normal role and reviewer-separation checks still apply.
+
+Activation freezes the asset name/environment and implementation details. Later inventory edits do
+not rewrite assessment history or closed reports. Referenced implementations cannot be deleted,
+reassigned to another asset, or moved through control merging. Descriptive inventory updates remain
+available. Responses, evidence, risks, and actions remain independent per assessment item. Cross-period
+comparison matches the control, implementation identity, and scenario key; legacy whole-control
+snapshots remain readable and are not matched to individual implementations.
+
+Control-level triggers still require whole-control coverage or explicit exclusions. A system-only
+assessment must not silently satisfy a trigger affecting the entire control. Automatic KRI ingestion
+and implementation-specific triggers are not part of this migration. AI assistance receives the scope
+limitation but no additional asset names, descriptions, or owners through existing input permissions.
+
+Apply migration 0036 before running the updated backend. It preserves existing items as whole-control
+assessments. Downgrade is refused when implementation-scoped items exist; retain the data and fix
+forward instead.
+
+### KRI ingestion and automatic review events (migration 0037)
+
+The RCSA **Key risk indicators** page supports indicator definitions, explicit enablement,
+owner reassignment, observation entry, and observation history. Definitions are created disabled.
+Choose an existing control and optionally one of its implementations. Configure a unit, source name,
+adverse direction, amber/red thresholds, and the number of days allowed for deciding how to respond.
+Thresholds are inclusive. For “higher is worse”, amber must be below red; for “lower is worse”, amber
+must be above red. Values support up to 14 integer digits and 6 fractional digits; NaN and infinity
+are rejected. Definitions and historical observations cannot be rewritten or deleted. To change
+thresholds, units, sources, or scope, disable the old indicator and create a replacement.
+
+Push integrations use the existing authenticated RCSA API:
+
+- `POST /api/rcsa/kris` creates a definition; `PATCH /api/rcsa/kris/{id}` updates only enablement and
+  responsibility with `expected_version`, `enabled`, and `owner_id`.
+- `POST /api/rcsa/kris/{id}/observations` accepts `external_id`, `observed_at`, `value`, and `source_ref`.
+  `observed_at` must include a timezone. `value` can be a decimal string to retain precision.
+- `GET /api/rcsa/kris` and `GET /api/rcsa/kris/{id}/observations` accept `limit` and `offset`.
+  The list includes the latest recorded observation; no observations is not green.
+
+For example, an authenticated sender can post this synthetic payload:
+
+```json
+{
+  "external_id": "acme-access-2026-01-15",
+  "observed_at": "2026-01-15T09:00:00Z",
+  "value": "12",
+  "source_ref": "ACME-ACCESS-15"
+}
+```
+
+Only internal GRC lead/admin accounts can configure indicators or ingest observations; read-only users
+can inspect history. Existing authentication, RCSA enablement, and audit-scoped-account restrictions
+apply. No anonymous webhook, outbound collector, third-party credentials, or scheduled polling is
+installed by this change. Connect a specific source using its approved authentication and delivery
+mechanism; do not embed credentials in source references. The service never fetches `source_ref`.
+
+Use a stable source record ID per indicator when retrying. Identical retries return the original
+observation, including after the indicator is disabled. Reusing an ID with different contents returns
+409. New observations must be later than the latest accepted observation and cannot be future-dated;
+rejected or out-of-order data must be investigated by the sender, not silently skipped. If a new red
+interval has an unavailable owner, ingestion is rejected atomically; a manager can reassign the
+indicator and retry the same source record. Existing event ownership is managed on the event itself.
+
+Entering the red range creates one registered KRI event with the frozen target and threshold context.
+Additional red observations refer to that same event, even if it has already been dispositioned. An
+amber or green observation ends the red interval; a subsequent red observation creates a new event.
+Recovery never closes a review event, approves a response, changes an assessment score, or accepts a
+risk. Decision deadlines run from receipt, so delayed but valid observations remain actionable.
+Events enter the existing owner triage, reassessment, independent review, and campaign-close workflow.
+System-scoped events require the same implementation in the linked campaign or an explicit exclusion;
+a whole-control item does not silently stand in for a system-specific assessment. Coverage is checked
+again at campaign close. The source indicator's target cannot be edited on an automatic event.
+
+The latest band describes a historical observation, not a current-health guarantee. Review its timestamp
+and monitor delivery failures in the source integration. This stage does not configure source-specific
+collection or detect missing heartbeats. Apply migration 0037 before the new backend. Downgrade refuses
+existing KRI definitions or implementation-scoped trigger records; preserve the data and fix forward.

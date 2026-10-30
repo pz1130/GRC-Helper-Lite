@@ -8,6 +8,7 @@ from sqlalchemy import (
     Integer,
     String,
     func,
+    text,
 )
 from sqlalchemy import (
     Enum as SAEnum,
@@ -55,6 +56,13 @@ class AuditLog(Base):
     __table_args__ = (
         Index("ix_audit_log_entity", "entity_type", "entity_id"),
         Index("ix_audit_log_at", "at"),
+        # RCSA 命令的幂等键（见 app/rcsa/models.py）。只覆盖 rcsa.* 动作，旧日志不受影响。
+        Index(
+            "uq_audit_log_rcsa_command",
+            text("(after ->> 'command_key')"),
+            unique=True,
+            postgresql_where=text("action LIKE 'rcsa.%' AND (after ->> 'command_key') IS NOT NULL"),
+        ),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)

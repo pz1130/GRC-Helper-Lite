@@ -20,6 +20,7 @@ from app.evidence.schemas import (
 from app.iam.deps import require
 from app.iam.models import User
 from app.iam.permissions import Permission
+from app.rcsa.models import RcsaResponseEvidence
 
 router = APIRouter(tags=["evidence"])
 Reader = Annotated[User, Depends(require(Permission.READ))]
@@ -198,6 +199,19 @@ async def delete_evidence(
     item = await session.get(EvidenceItem, evidence_id)
     if item is None:
         raise NotFound("证据不存在", code="evidence.not_found")
+    # RCSA 评估响应引用的证据不能删：外键 RESTRICT 会拦，但那是一条 500。评估
+    # 保存了提交时的证据快照，删除仍会让「这份证据去哪了」答不出来，所以要求归档或改状态。
+    cited = await session.scalar(
+        select(func.count()).select_from(RcsaResponseEvidence).where(
+            RcsaResponseEvidence.evidence_item_id == evidence_id
+        )
+    )
+    if cited:
+        raise Conflict(
+            f"有 {cited} 条 RCSA 评估引用了这份证据，不能删除；请改它的状态而不是删除",
+            code="evidence.in_use_by_rcsa",
+            params={"count": cited},
+        )
     await service.delete_item(
         session, item, actor=actor, ip=request.client.host if request.client else None
     )

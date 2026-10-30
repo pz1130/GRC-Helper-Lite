@@ -49,20 +49,17 @@ async def test_kind_persists_spec_value(db_session):
 
 
 @pytest.mark.asyncio
-async def test_all_eight_ai_task_kinds_plus_matrix_are_representable(db_session):
-    """spec §6.5 的八个 AI 任务，加上 M4 的 Excel 列映射。"""
-    expected = {
-        "control_extract",
-        "mapping",
-        "relation",
-        "conflict",
-        "answer",
-        "maturity_score",
-        "evidence_suggestion",
-        "audit_prediction",
-        "matrix_mapping",
-    }
-    assert {kind.value for kind in ProposalKind} == expected
+async def test_every_proposal_kind_can_be_stored(db_session):
+    """每个提案种类都能落库：枚举加了值而迁移没放宽 CHECK 约束时，这里会失败。
+
+    spec §6.5 的八个 AI 任务、M4 的 Excel 列映射，以及 RCSA 的作答预填。
+    """
+    for kind in ProposalKind:
+        db_session.add(Proposal(kind=kind, payload={}, citations=[]))
+    await db_session.flush()
+    stored = set(await db_session.scalars(select(Proposal.kind)))
+    assert {str(kind) for kind in stored} >= {kind.value for kind in ProposalKind}
+    assert "rcsa_prefill" in {kind.value for kind in ProposalKind}
 
 
 @pytest.mark.asyncio

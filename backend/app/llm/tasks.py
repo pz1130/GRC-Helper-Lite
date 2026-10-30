@@ -28,6 +28,9 @@ class TaskSpec:
     key: str
     capability: Capability
     implemented: bool
+    # False：不参与「一键绑定」。RCSA 的两个通道要单独批准、单独绑定（RCSA → AI 设置），
+    # 一键把聊天模型绑上去等于绕过了那份数据外发批准。
+    bulk: bool = True
 
 
 TASK_SPECS: tuple[TaskSpec, ...] = (
@@ -43,11 +46,13 @@ TASK_SPECS: tuple[TaskSpec, ...] = (
     TaskSpec("matrix_mapping", "chat", True),
     TaskSpec("maturity_suggestion", "chat", True),
     TaskSpec("embedding", "embedding", True),
+    TaskSpec("rcsa_prefill", "chat", True, bulk=False),
+    TaskSpec("rcsa_evidence_relevance", "decision", True, bulk=False),
 )
 
 
 def bulk_assignable_keys(capability: Capability) -> tuple[str, ...]:
     """批量绑定要覆盖的任务：只取该 capability 下**已实现**的。"""
     return tuple(
-        spec.key for spec in TASK_SPECS if spec.capability == capability and spec.implemented
+        spec.key for spec in TASK_SPECS if spec.capability == capability and spec.implemented and spec.bulk
     )

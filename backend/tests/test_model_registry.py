@@ -35,6 +35,16 @@ EXPECTED_TABLES = {
     "implementations",
     "evidence_types",
     "evidence_items",
+    "rcsa_scoring_profiles",
+    "rcsa_campaigns",
+    "rcsa_items",
+    "rcsa_responses",
+    "rcsa_response_evidence",
+    "rcsa_item_risks",
+    "rcsa_actions",
+    "rcsa_triggers",
+    "rcsa_trigger_controls",
+    "rcsa_reviews",
 }
 
 

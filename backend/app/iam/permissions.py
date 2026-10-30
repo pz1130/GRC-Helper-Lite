@@ -28,6 +28,11 @@ class Permission(StrEnum):
     LLM_CONFIG_WRITE = "llm_config:write"  # AI provider 配置
     REDACTION_WRITE = "redaction:write"    # 脱敏规则
     AUDIT_LOG_READ = "audit_log:read"      # 查看操作审计日志
+    RCSA_MANAGE = "rcsa:manage"            # RCSA 活动、范围、分派、评分档案、发布到登记册
+    RCSA_RESPOND = "rcsa:respond"          # 作答、提交、登记触发
+    RCSA_REVIEW = "rcsa:review"            # 复核响应、排除、验证行动、确认触发处置
+    RCSA_RISK_ACCEPT = "rcsa:risk_accept"  # 批准风险处置（含风险接受）
+    RCSA_ACTION_UPDATE = "rcsa:action_update"  # 更新自己负责的整改行动
 
 
 _CONTRIBUTOR: frozenset[Permission] = frozenset({
@@ -36,6 +41,8 @@ _CONTRIBUTOR: frozenset[Permission] = frozenset({
     Permission.ENVIRONMENT_WRITE,
     Permission.EVIDENCE_WRITE,
     Permission.ANSWER_DRAFT,
+    Permission.RCSA_RESPOND,
+    Permission.RCSA_ACTION_UPDATE,
 })
 
 _GRC_LEAD: frozenset[Permission] = _CONTRIBUTOR | frozenset({
@@ -46,6 +53,9 @@ _GRC_LEAD: frozenset[Permission] = _CONTRIBUTOR | frozenset({
     Permission.MATURITY_SCORE,
     Permission.RISK_WRITE,
     Permission.AUDIT_LOG_READ,
+    Permission.RCSA_MANAGE,
+    Permission.RCSA_REVIEW,
+    Permission.RCSA_RISK_ACCEPT,
 })
 
 ROLE_PERMISSIONS: dict[Role, frozenset[Permission]] = {

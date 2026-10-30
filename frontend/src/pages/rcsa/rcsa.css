@@ -1,0 +1,39 @@
+/* RCSA 页面的少量布局；其余沿用 kn-* 的全站样式。 */
+
+.rcsa-error { display: grid; gap: 6px; margin-top: 8px; }
+.rcsa-blockers { margin: 0; padding-left: 1.2rem; font-size: 0.875rem; color: var(--text-secondary); }
+.rcsa-tabs { margin-bottom: 16px; flex-wrap: wrap; }
+.rcsa-pager { justify-content: flex-end; margin-top: 12px; align-items: center; }
+
+.rcsa-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.875rem; color: var(--text-secondary); margin: 0 0 16px; }
+.rcsa-meta dt { font-weight: 600; color: var(--text-tertiary); }
+.rcsa-meta dd { margin: 0; }
+.rcsa-meta div { display: flex; gap: 6px; }
+
+.rcsa-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; align-items: end; }
+.rcsa-form label { display: grid; gap: 4px; font-size: 0.875rem; }
+.rcsa-form .rcsa-wide { grid-column: 1 / -1; }
+.rcsa-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+
+/* 评估页：左冻结控制、中作答、右复核与历史。窄屏依次堆叠。 */
+.rcsa-assessment { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr) minmax(220px, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .rcsa-assessment { grid-template-columns: 1fr; } }
+.rcsa-frozen { font-size: 0.875rem; }
+.rcsa-frozen h4 { margin: 12px 0 4px; font-size: 0.8125rem; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.rcsa-work-group { margin-bottom: 16px; }
+.rcsa-overdue { color: var(--accent-ruby); font-weight: 600; }
+
+.rcsa-report { position: relative; }
+.rcsa-watermark {
+  display: inline-block; padding: 4px 12px; border: 2px solid var(--accent-ruby); color: var(--accent-ruby);
+  font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border-radius: 6px;
+}
+.rcsa-figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; margin-bottom: 16px; }
+
+@media print {
+  .rcsa-no-print, .ws-shell-nav, nav, header.ws-topbar { display: none !important; }
+  .rcsa-report .kn-card { break-inside: avoid; box-shadow: none; }
+  .rcsa-watermark { border-color: #000; color: #000; }
+}
+.rcsa-warning { color: var(--accent-amber); font-weight: 600; }

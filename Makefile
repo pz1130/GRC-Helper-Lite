@@ -1,4 +1,4 @@
-.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
+.PHONY: backup-scheduled restore-drill up down logs test verify prod-up prod-down prod-logs prod-migrate prod-create-admin prod-seed-frameworks prod-seed-rcsa-profile seed-rcsa-profile rcsa-restore-check prod-rotate-secret backup restore migrate revision migrate-roundtrip fmt create-admin ping-worker purge-staging e2e e2e-down corpus retrieval extraction-eval seed-frameworks mapping-eval relation-eval
 
 up:
 	docker compose up -d --build db redis api
@@ -97,6 +97,11 @@ prod-seed-frameworks:
 	$(PROD) run --rm api python -m app.cli import-framework \
 	  seeds/nist-800-53-r5.csv nist-800-53-r5 "NIST SP 800-53 Rev.5" "NIST SP 800-53 Rev.5" 5.1.1 nist.gov
 
+# RCSA 的默认评分档案（未批准）。可重复跑：已有就不动，不覆盖人工校准与批准。
+# 标签与阈值只是初始建议；激活活动前要由 GRC lead/admin 补全口径并批准。
+prod-seed-rcsa-profile:
+	$(PROD) run --rm api python -m app.cli seed-rcsa-profile
+
 # 换主密钥：先把新值写进 .env 并 make prod-up 重启，再拿**旧**值跑这条。
 prod-rotate-secret:
 	@test -n "$(old)" || (echo "用法: make prod-rotate-secret old='旧的 APP_SECRET_KEY'"; exit 1)
@@ -127,6 +132,11 @@ backup:
 # 定时备份入口：make backup + 完整性校验 + 清单 + 异地复制（scripts/backup.sh）
 backup-scheduled:
 	PROD_PROJECT=$(PROD_PROJECT) scripts/backup.sh
+
+# RCSA 备份恢复核对：合成数据走完一期，pg_dump/psql 恢复进另一个临时库，逐项比对后删除。
+# 只用开发栈的 db 容器，不碰开发库与生产栈（见脚本开头）。
+rcsa-restore-check:
+	scripts/rcsa-restore-check.sh
 
 # 在隔离的临时栈里恢复最新（或指定）备份并逐项核对，跑完自动拆除
 restore-drill:
@@ -164,6 +174,9 @@ fmt:
 create-admin:
 	docker compose run --rm api python -m app.cli create-admin "$(email)" "$(name)" "$(password)"
 
+seed-rcsa-profile:
+	docker compose run --rm api python -m app.cli seed-rcsa-profile
+
 ping-worker:
 	docker compose run --rm api python -c "import asyncio; from app.worker import enqueue; print(asyncio.run(enqueue('ping')))"
 
@@ -176,7 +189,9 @@ purge-staging:
 # 项目名不同 → 容器、网络、数据卷（pgdata/docstore/staging）全部另开一套，
 # 跑完 down -v 一次性扔掉，开发库一条痕迹都不留（OQ-3）。端口也要错开，
 # 否则和正在跑的开发栈抢 5432/6379/8000/5173。
-E2E_COMPOSE = COMPOSE_PROJECT_NAME=grc-e2e DB_PORT=5433 REDIS_PORT=6380 API_PORT=8001 WEB_PORT=5174 docker compose
+# 可指定用例文件做定向复验，仍然使用同一套隔离和清理流程。
+E2E_ARGS ?=
+E2E_COMPOSE = COMPOSE_PROJECT_NAME=grc-e2e DB_PORT=5433 REDIS_PORT=6380 API_PORT=8001 WEB_PORT=5174 RCSA_ENABLED=true docker compose
 
 # 先 down -v 再起：上一次被打断、或有人在这套栈上手动跑过单个 spec，库里就留着
 # 那次建的数据。有几条用例依赖冷启动状态（比如「还没有证据类型」），会因此失败，
@@ -192,7 +207,8 @@ e2e:
 	$(E2E_COMPOSE) up -d --build; \
 	$(E2E_COMPOSE) run --rm api alembic upgrade head; \
 	$(E2E_COMPOSE) run --rm api python -m app.cli create-admin admin@example.com Admin pw123456; \
-	(cd frontend && E2E_BASE_URL=http://localhost:5174 E2E_API_BASE=http://localhost:8001 npm run test:e2e)
+	$(E2E_COMPOSE) run --rm api python -m tests.e2e_rcsa_seed; \
+	(cd frontend && E2E_BASE_URL=http://localhost:5174 E2E_API_BASE=http://localhost:8001 npm run test:e2e -- $(E2E_ARGS))
 
 # 单独留一个出口：e2e 中途被 Ctrl-C 打断时，那套栈还在后台占着端口。
 e2e-down:

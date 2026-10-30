@@ -5,6 +5,7 @@
     python -m app.cli import-framework seeds/nist-csf-2.0.csv nist-csf-2.0 "NIST CSF 2.0" "NIST CSF 2.0" 2.0 nist.gov
     python -m app.cli purge-staging
     python -m app.cli rotate-secret <旧的 APP_SECRET_KEY>
+    python -m app.cli seed-rcsa-profile
 """
 
 import asyncio
@@ -96,6 +97,21 @@ async def import_framework_cli(
         print(f"已导入 {framework.key} v{framework.version}：{framework.item_count} 条")
 
 
+async def seed_rcsa_profile_cli() -> str:
+    """写入未批准的 default-5x5 评分档案。幂等：已有就不动，人工校准过的内容不会被覆盖。"""
+    from app.rcsa.profiles import seed_default_profile
+
+    async with session_factory() as session:
+        actor = await session.scalar(
+            select(User).where(User.role == Role.ADMIN).order_by(User.id).limit(1)
+        )
+        if actor is None:
+            raise SystemExit("库中没有 admin 用户；请先执行 create-admin")
+        profile = await seed_default_profile(session, actor=actor)
+        await session.commit()
+        return f"{profile.key} v{profile.revision}: {profile.status}"
+
+
 def main() -> None:
     usage = (
         "用法:\n"
@@ -103,7 +119,8 @@ def main() -> None:
         "  python -m app.cli import-framework <path> <key> <name_zh> <name_en> "
         "<version> <source>\n"
         "  python -m app.cli purge-staging\n"
-        "  python -m app.cli rotate-secret <old APP_SECRET_KEY>"
+        "  python -m app.cli rotate-secret <old APP_SECRET_KEY>\n"
+        "  python -m app.cli seed-rcsa-profile"
     )
     match sys.argv[1:]:
         case ["create-admin", email, name, password]:
@@ -121,6 +138,8 @@ def main() -> None:
             from app.secrets import rotate_cli
 
             print(asyncio.run(rotate_cli(old_key)))
+        case ["seed-rcsa-profile"]:
+            print(asyncio.run(seed_rcsa_profile_cli()))
         case ["purge-staging"]:
             # 平时由 worker 的 cron 跑；这里是「现在就跑一次」的入口。
             from app.ingest import staging

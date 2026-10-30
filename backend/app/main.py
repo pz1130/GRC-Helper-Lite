@@ -111,6 +111,8 @@ def create_app() -> FastAPI:
     from app.matrix.router import router as matrix_router
     from app.maturity.router import router as maturity_router
     from app.packaging.router import router as packaging_router
+    from app.rcsa.router import router as rcsa_router
+    from app.rcsa.router import status_router as rcsa_status_router
     from app.relations.router import router as relations_router
     from app.review.router import router as review_router
     from app.risk.router import router as risk_router
@@ -145,6 +147,8 @@ def create_app() -> FastAPI:
     application.include_router(conflicts_router)
     application.include_router(environment_router)
     application.include_router(evidence_router)
+    application.include_router(rcsa_status_router)
+    application.include_router(rcsa_router)
 
     return application
 
