@@ -11,8 +11,9 @@ import * as THREE from "three";
 import { motionLevel } from "../motion";
 import { useTheme } from "../theme";
 import { cssColor } from "./support";
+import { buildGlobeVariant, type GlobeVariant } from "./globes";
 
-export type HeroConcept = "a" | "b" | "c";
+export type HeroConcept = "a" | "b" | "c" | GlobeVariant;
 export interface RiskPoint { likelihood: number; impact: number; score: number; open: boolean }
 
 interface Built { update: (t: number, px: number, py: number) => void; dispose: () => void }
@@ -47,7 +48,7 @@ export default function HeroV2({ concept, risks, className }: { concept: HeroCon
     };
     const ctx = { scene, camera, isDark, palette };
     const built: Built =
-      concept === "b" ? buildAurora(ctx) : concept === "c" ? buildTerrain(ctx, JSON.parse(riskKey) as RiskPoint[]) : buildGlobe(ctx);
+      concept.startsWith("g") ? buildGlobeVariant(concept as GlobeVariant, ctx) : concept === "b" ? buildAurora(ctx) : concept === "c" ? buildTerrain(ctx, JSON.parse(riskKey) as RiskPoint[]) : buildGlobe(ctx);
 
     const resize = () => {
       const w = Math.max(1, host.clientWidth);
