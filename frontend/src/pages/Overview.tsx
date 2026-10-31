@@ -13,7 +13,8 @@ import { reviewState } from "../reviewDue";
 const HeroV2 = lazy(() => import("../three/HeroV2"));
 import { HomeMotionVisual, MotionTitle, CountUp, HOME_MOTIONS, type HomeMotion } from "../home/HomeMotion";
 /** 首页动效候选：?hero=p1..p4（不带参数仍是原默认）。 */
-function homeMotion(): HomeMotion | null { const q = new URLSearchParams(window.location.search).get("hero"); return (HOME_MOTIONS as readonly string[]).includes(q ?? "") ? (q as HomeMotion) : null; }
+// 首页默认动效 p1（磁吸点阵）；?hero=p2|p3|p4 切换候选，?hero=a|b|c 回到旧版 hero
+function homeMotion(): HomeMotion | null { const q = new URLSearchParams(window.location.search).get("hero"); if (q === "a" || q === "b" || q === "c") return null; return (HOME_MOTIONS as readonly string[]).includes(q ?? "") ? (q as HomeMotion) : "p1"; }
 
 type HeroConcept = "a" | "b" | "c";
 /** hero 概念：开发对比用 `?hero=a|b|c`；不带参数时用默认概念。 */
