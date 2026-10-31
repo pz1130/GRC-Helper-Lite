@@ -1,0 +1,59 @@
+/* 首页 hero 动效候选（?hero=p1..p4）。缓动：弹簧 cubic-bezier(.34,1.56,.64,1)，入场 cubic-bezier(.22,1,.36,1)。 */
+.hm-stage { position: absolute; right: 0; top: 0; width: 58%; height: 300px; pointer-events: none; z-index: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 28%, #000 92%, transparent 100%), linear-gradient(180deg, #000 72%, transparent 100%); -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0%, #000 28%, #000 92%, transparent 100%), linear-gradient(180deg, #000 72%, transparent 100%); mask-composite: intersect; animation: hm-in 900ms cubic-bezier(.22,1,.36,1) both; }
+.hm-stage--p2, .hm-stage--p4 { -webkit-mask-image: none; mask-image: none; }
+@keyframes hm-in { from { opacity: 0; transform: translateY(12px) scale(.985); } }
+.hm-canvas { width: 100%; height: 100%; display: block; }
+
+/* p2 控制卡 */
+.hm-cards { position: absolute; right: 9%; top: 34px; width: 250px; height: 200px; perspective: 900px; }
+.hm-card { position: absolute; inset: 0; padding: 16px 18px; border-radius: 14px; background: var(--stage-card, #fff); border: 1px solid color-mix(in srgb, var(--text-secondary, #5c7f99) 22%, transparent);
+  box-shadow: 0 18px 40px -18px rgba(30, 50, 70, .35), 0 2px 6px rgba(30, 50, 70, .08);
+  transform: translate3d(calc(var(--o) * -34px), calc(var(--o) * -22px), calc(var(--o) * -60px)) rotateY(-14deg) rotateX(4deg);
+  opacity: calc(1 - var(--o) * .22); transition: transform 900ms cubic-bezier(.34,1.56,.64,1), opacity 600ms ease; }
+.hm-card--drop { animation: hm-drop 900ms cubic-bezier(.55,0,.2,1) both; }
+@keyframes hm-drop { 0% { transform: translate3d(0,0,0) rotateY(-14deg) rotateX(4deg); opacity: 1; } 45% { transform: translate3d(10px, 150px, 40px) rotateY(-8deg) rotateX(16deg); opacity: 0; } 46% { opacity: 0; } 100% { opacity: .34; } }
+.hm-card-head { display: flex; justify-content: space-between; align-items: center; }
+.hm-card-fw { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--text-secondary); text-transform: uppercase; }
+.hm-pill { font-size: .68rem; padding: 2px 8px; border-radius: 999px; color: #fff; }
+.hm-pill--ok, .hm-bar--ok { background: #5f9466; } .hm-pill--warn, .hm-bar--warn { background: #c9963f; } .hm-pill--risk, .hm-bar--risk { background: #c26b52; }
+.hm-card-id { margin-top: 14px; font: 700 1.6rem/1.1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text-primary); letter-spacing: -.02em; }
+.hm-card-name { margin-top: 4px; font-size: .85rem; color: var(--text-secondary); }
+.hm-bar { margin-top: 18px; height: 6px; border-radius: 6px; background: color-mix(in srgb, var(--text-secondary) 15%, transparent); overflow: hidden; }
+.hm-bar i { display: block; height: 100%; border-radius: 6px; transition: width 1100ms cubic-bezier(.34,1.56,.64,1) 250ms; }
+.hm-card-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: .72rem; color: var(--text-secondary); } .hm-card-foot b { color: var(--text-primary); }
+
+/* p4 环形刻度 */
+.hm-circle-wrap { position: absolute; right: 12%; top: 12px; width: 260px; height: 260px; }
+.hm-circle { position: absolute; inset: 0; will-change: transform; }
+.hm-circle svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hm-ring-text { animation: hm-spin 28s linear infinite; } .hm-ring-text text { font: 600 11px/1 ui-sans-serif, system-ui, sans-serif; letter-spacing: .28em; fill: var(--text-secondary); }
+.hm-ring-ticks { animation: hm-spin 60s linear infinite reverse; } .hm-ring-ticks line { stroke: var(--text-secondary); stroke-opacity: .35; stroke-width: 1.2; }
+@keyframes hm-spin { to { transform: rotate(360deg); } }
+.hm-gauge { transform: rotate(-90deg); } .hm-gauge-bg { fill: none; stroke: color-mix(in srgb, var(--text-secondary) 15%, transparent); stroke-width: 10; }
+.hm-gauge-fg { fill: none; stroke: #5f9466; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 86 100; animation: hm-gauge 6s cubic-bezier(.34,1.3,.64,1) infinite; }
+@keyframes hm-gauge { 0% { stroke-dasharray: 0 100; } 30%, 85% { stroke-dasharray: 86 100; } 100% { stroke-dasharray: 86 100; } }
+.hm-score { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font: 700 2.6rem/1 ui-sans-serif, system-ui, sans-serif; color: var(--text-primary); letter-spacing: -.04em; }
+.hm-score small { font-size: .72rem; font-weight: 500; color: var(--text-secondary); letter-spacing: .08em; margin-top: 6px; }
+.hm-orbit { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: #5f9466; animation: hm-orbit 9s linear infinite; }
+.hm-orbit--2 { background: #c9963f; animation-duration: 13s; animation-delay: -4s; } .hm-orbit--3 { background: #5c7f99; animation-duration: 17s; animation-delay: -9s; width: 6px; height: 6px; }
+@keyframes hm-orbit { from { transform: rotate(0) translateX(84px); } to { transform: rotate(360deg) translateX(84px); } }
+
+/* 标题入场 */
+.hm-title > span { display: inline-block; white-space: pre; }
+.hm-title--p1 > span { animation: hm-blur 900ms cubic-bezier(.22,1,.36,1) both; animation-delay: calc(var(--i) * 90ms); }
+@keyframes hm-blur { from { filter: blur(10px); opacity: 0; transform: translateY(-8px); } }
+.hm-title--p2 .hm-word > span { display: inline-block;  animation: hm-pop 700ms cubic-bezier(.34,1.56,.64,1) both; animation-delay: calc(var(--i) * 45ms); }
+@keyframes hm-pop { from { opacity: 0; transform: translateY(70%) scale(.9); } }
+.hm-title--p4 { display: inline-block; overflow: hidden; vertical-align: bottom; } .hm-title--p4 > span { animation: hm-rise 1000ms cubic-bezier(.22,1,.36,1) both; }
+@keyframes hm-rise { from { transform: translateY(105%); } }
+
+/* 指标条：错峰弹入 */
+[data-hm] .kn-cockpit-metric { animation: hm-metric 800ms cubic-bezier(.34,1.56,.64,1) both; }
+[data-hm] .kn-cockpit-metric:nth-child(2) { animation-delay: 90ms; } [data-hm] .kn-cockpit-metric:nth-child(3) { animation-delay: 180ms; } [data-hm] .kn-cockpit-metric:nth-child(4) { animation-delay: 270ms; }
+@keyframes hm-metric { from { opacity: 0; transform: translateY(14px) scale(.97); } }
+[data-hm] .kn-cockpit-metric { transition: transform 300ms cubic-bezier(.34,1.56,.64,1); } [data-hm] .kn-cockpit-metric:hover { transform: translateY(-3px); }
+@media (max-width: 700px) { .hm-stage { display: none; } }
+
+.hm-title--p2 .hm-word { display: inline-block; white-space: nowrap; }

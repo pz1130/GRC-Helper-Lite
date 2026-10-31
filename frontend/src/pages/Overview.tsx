@@ -11,6 +11,9 @@ import { reviewState } from "../reviewDue";
 
 // three.js 很大，hero 的 3D 版按需加载；首屏先出 CSS 版，加载完再替换。
 const HeroV2 = lazy(() => import("../three/HeroV2"));
+import { HomeMotionVisual, MotionTitle, CountUp, HOME_MOTIONS, type HomeMotion } from "../home/HomeMotion";
+/** 首页动效候选：?hero=p1..p4（不带参数仍是原默认）。 */
+function homeMotion(): HomeMotion | null { const q = new URLSearchParams(window.location.search).get("hero"); return (HOME_MOTIONS as readonly string[]).includes(q ?? "") ? (q as HomeMotion) : null; }
 
 type HeroConcept = "a" | "b" | "c";
 /** hero 概念：开发对比用 `?hero=a|b|c`；不带参数时用默认概念。 */
@@ -84,6 +87,8 @@ export function Overview() {
   // 只在首次渲染时判定一次：中途切换会让 hero 闪一下，没必要。
   const [hero3d] = useState(wantsHero3d);
   const [concept] = useState(heroConcept);
+  const [hm] = useState(homeMotion);
+  const num = (x: string) => (hm ? <CountUp text={x} /> : x);
   // 风险地形（概念 c）用真实的风险登记数据塑形；其它概念不需要，避免多一个请求。
   const risksQ = useQuery({
     queryKey: ["risks"],
@@ -103,9 +108,11 @@ export function Overview() {
   return (
     <div className="kn-page kn-page-overview" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
       {/* Executive Hero Cockpit Banner */}
-      <div className={`kn-cockpit-hero${hero3d ? " kn-cockpit-hero--v2" : ""}`}>
+      <div className={`kn-cockpit-hero${hero3d || hm ? " kn-cockpit-hero--v2" : ""}`} data-hm={hm ?? undefined}>
         {/* 装饰用的「治理分层」立体示意：有 WebGL 时是真 3D 玻璃板，否则退回纯 CSS 3D；读屏忽略。 */}
-        {hero3d ? (
+        {hm ? (
+          <HomeMotionVisual v={hm} />
+        ) : hero3d ? (
           <Suspense fallback={cssHero}>
             <HeroV2 concept={concept} risks={concept === "c" ? riskPoints : undefined} />
           </Suspense>
@@ -120,7 +127,7 @@ export function Overview() {
                 {t("overview.compliancePosture")}
               </span>
             </div>
-            <h2 className="kn-hero-title">{t("overview.heroTitle")}</h2>
+            <h2 className="kn-hero-title">{hm ? <MotionTitle key={hm} v={hm} text={t("overview.heroTitle")} /> : t("overview.heroTitle")}</h2>
             <p className="kn-hero-subtitle">{t("overview.heroSubtitle")}</p>
             {/* 待审入口放在文案列里：放右上角会压在 hero 画布上。 */}
             {pendingCount > 0 && (
@@ -139,27 +146,27 @@ export function Overview() {
             <span className="kn-eyebrow">
               {t("overview.activeDocuments")}
             </span>
-            <div className="kn-cockpit-metric-num">{governed ?? "—"}</div>
+            <div className="kn-cockpit-metric-num">{governed != null ? num(String(governed)) : "—"}</div>
           </div>
           <div className="kn-cockpit-metric">
             <span className="kn-eyebrow">
               {t("overview.monthCost")}
             </span>
             {/* 没拿到数据时是「—」而不是 $0.00：后者读起来是「本月没花钱」 */}
-            <div className="kn-cockpit-metric-num">{data ? `$${data.month_to_date_cost.toFixed(2)}` : "—"}</div>
+            <div className="kn-cockpit-metric-num">{data ? num(`$${data.month_to_date_cost.toFixed(2)}`) : "—"}</div>
           </div>
           <div className="kn-cockpit-metric">
             <span className="kn-eyebrow">
               {t("overview.totalCalls")}
             </span>
-            <div className="kn-cockpit-metric-num">{data ? totalCalls.toLocaleString() : "—"}</div>
+            <div className="kn-cockpit-metric-num">{data ? num(totalCalls.toLocaleString()) : "—"}</div>
           </div>
           <div className="kn-cockpit-metric">
             <span className="kn-eyebrow">
               {t("overview.reviewAlerts")}
             </span>
             <div className="kn-cockpit-metric-num" style={{ color: overdue > 0 ? "var(--accent-ruby)" : soon > 0 ? "var(--accent-amber)" : undefined }}>
-              {documents.data ? overdue + soon : "—"}
+              {documents.data ? num(String(overdue + soon)) : "—"}
             </div>
           </div>
         </div>
