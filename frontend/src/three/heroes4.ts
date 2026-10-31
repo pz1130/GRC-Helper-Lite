@@ -1,113 +1,158 @@
-// k4「制度文件层叠」的变体（?globe=m1..m4）：
-// m1 环形轮播：卡片围成一圈竖直转盘缓转，转到正面的那张被扫描核对；
-// m2 叠卡翻页：一摞制度卡，顶上一张扫描完打勾后翻到底部，循环；
-// m3 审核流水线：卡片沿斜向传送带穿过扫描闸门，过闸后勾选框依次变绿；
-// m4 条款分层：一张制度卡沿纵深拆成逐条条款悬浮，扫描光穿过后再合拢。
+// k4「制度文件层叠」的变体（?globe=m1..m4），细化版：纸张纹理、烘焙柔和投影、编号条款行、实心勾选，统一缓动。
+// m1 环形轮播：七张卡围成转盘，停驻时正面卡被扫描核对，再平滑转到下一张；
+// m2 叠卡翻页：一摞卡，顶卡扫描打勾后向后翻起压到底部，循环；
+// m3 审核流水线：卡片沿传送带穿过扫描闸门，过闸逐行变绿，两端淡入淡出；
+// m4 条款分层：整卡沿纵深拆成逐条条款，扫描光逐条穿过并打勾，再合拢。
 import * as THREE from "three";
 
 export type HeroVariant4 = "m1" | "m2" | "m3" | "m4";
 type Ctx = { scene: THREE.Scene; camera: THREE.PerspectiveCamera; isDark: boolean; palette: Record<"a" | "b" | "c" | "d", THREE.Color> };
 type Built = { update: (t: number, px: number, py: number) => void; dispose: () => void };
 const pal = (d: boolean) => d
-  ? { line: "#6f8ea3", ok: "#5fae8a", warn: "#d2a24c", card: "#34414b", bg: "#2a333b" }
-  : { line: "#5c7f99", ok: "#6f9a6c", warn: "#d1a04a", card: "#ffffff", bg: "#e6ecef" };
+  ? { line: "#8fa9ba", text: "#c9d6dd", ok: "#5fae8a", warn: "#d2a24c", card: "#36434d", card2: "#2f3b44", shadow: "rgba(0,0,0,.55)" }
+  : { line: "#5c7f99", text: "#46617a", ok: "#5f9466", warn: "#c9963f", card: "#fdfcf8", card2: "#f2efe6", shadow: "rgba(40,60,80,.28)" };
 type P = ReturnType<typeof pal>;
-const ROWS = 10, CW = 2.4, CH = 3.2;
-// 卡片贴图；checked=已核对行数（勾选框填充）
-function cardTex(c: P, checked: number, seed = 0) {
-  const cv = document.createElement("canvas"); cv.width = 240; cv.height = 320; const g = cv.getContext("2d")!;
-  g.fillStyle = c.card; g.fillRect(0, 0, 240, 320); g.strokeStyle = c.line; g.globalAlpha = .35; g.strokeRect(1, 1, 238, 318); g.globalAlpha = 1;
-  g.fillStyle = c.line; g.fillRect(22, 22, 120, 14); g.fillStyle = seed % 3 === 1 ? c.warn : c.ok; g.fillRect(190, 20, 28, 18);
-  for (let r = 0; r < ROWS; r++) { const y = 58 + r * 25; g.fillStyle = c.line; g.globalAlpha = .45; g.fillRect(22, y + 3, 120 + ((r * 37 + seed * 13) % 40), 7); g.globalAlpha = 1;
-    g.strokeStyle = c.ok; g.lineWidth = 2.5; g.strokeRect(196, y, 14, 14);
-    if (r < checked) { g.beginPath(); g.moveTo(199, y + 7); g.lineTo(203, y + 11); g.lineTo(209, y + 3); g.stroke(); } }
-  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+const ROWS = 9, CW = 2.4, CH = 3.2, PAD = .14; // PAD：贴图四周留给投影的边距（世界单位）
+const ease = (x: number) => { x = Math.min(1, Math.max(0, x)); return x < .5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2; };
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+
+function rr(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+// 卡片贴图：checked=已核对行数；shadow=是否烘焙投影；crop 用于条款分层的单行贴图
+function cardTex(c: P, checked: number, seed = 0, shadow = true) {
+  const S = 2, W = 240 * S, H = 320 * S, pad = shadow ? Math.round(PAD / CW * W) : 0;
+  const cv = document.createElement("canvas"); cv.width = W + pad * 2; cv.height = H + pad * 2; const g = cv.getContext("2d")!; g.translate(pad, pad);
+  if (shadow) { g.save(); g.shadowColor = c.shadow; g.shadowBlur = 22 * S; g.shadowOffsetY = 6 * S; rr(g, 0, 0, W, H, 8 * S); g.fillStyle = c.card; g.fill(); g.restore(); }
+  rr(g, 0, 0, W, H, 8 * S); g.save(); g.clip();
+  const grd = g.createLinearGradient(0, 0, W, H); grd.addColorStop(0, c.card); grd.addColorStop(1, c.card2); g.fillStyle = grd; g.fillRect(0, 0, W, H);
+  let s = 11 + seed * 97; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647; // 纸纹噪点
+  for (let i = 0; i < 2600; i++) { g.fillStyle = rnd() > .5 ? "rgba(255,255,255,.05)" : "rgba(0,0,0,.035)"; g.fillRect(rnd() * W, rnd() * H, S, S); }
+  g.fillStyle = c.line; g.globalAlpha = .9; g.fillRect(0, 0, 5 * S, H); g.globalAlpha = 1; // 左侧装订色条
+  g.fillStyle = c.text; g.font = `600 ${15 * S}px "PingFang SC","Noto Sans CJK SC",sans-serif`; g.fillText(["信息安全管理制度", "数据分类分级规范", "供应商风险管理办法", "访问控制策略"][seed % 4], 22 * S, 34 * S);
+  g.font = `${8.5 * S}px sans-serif`; g.globalAlpha = .6; g.fillText(`POL-${String(101 + seed * 7)} · v${2 + (seed % 3)}.${seed % 4}`, 22 * S, 49 * S); g.globalAlpha = 1;
+  g.fillStyle = seed % 3 === 1 ? c.warn : c.ok; rr(g, 182 * S, 22 * S, 38 * S, 15 * S, 7 * S); g.fill(); g.fillStyle = "#fff"; g.font = `600 ${8 * S}px sans-serif`; g.fillText(seed % 3 === 1 ? "复核" : "生效", 191 * S, 32.5 * S);
+  g.strokeStyle = c.line; g.globalAlpha = .25; g.lineWidth = S; g.beginPath(); g.moveTo(22 * S, 58 * S); g.lineTo(220 * S, 58 * S); g.stroke(); g.globalAlpha = 1;
+  for (let r = 0; r < ROWS; r++) { const y = (70 + r * 26) * S, done = r < checked;
+    g.fillStyle = c.text; g.globalAlpha = .55; g.font = `600 ${8 * S}px sans-serif`; g.fillText(`${r + 1}.`, 22 * S, y + 8 * S);
+    g.globalAlpha = done ? .55 : .35; g.fillStyle = c.line; rr(g, 36 * S, y + 1.5 * S, (110 + ((r * 37 + seed * 13) % 46)) * S, 4.5 * S, 2 * S); g.fill(); rr(g, 36 * S, y + 10 * S, (60 + ((r * 53 + seed * 7) % 50)) * S, 3.5 * S, 2 * S); g.globalAlpha *= .7; g.fill(); g.globalAlpha = 1;
+    rr(g, 198 * S, y - 1 * S, 15 * S, 15 * S, 3.5 * S);
+    if (done) { g.fillStyle = c.ok; g.fill(); g.strokeStyle = "#fff"; g.lineWidth = 2.2 * S; g.lineCap = "round"; g.lineJoin = "round"; g.beginPath(); g.moveTo(201.5 * S, y + 6.5 * S); g.lineTo(205 * S, y + 10 * S); g.lineTo(210 * S, y + 3 * S); g.stroke(); }
+    else { g.strokeStyle = c.ok; g.globalAlpha = .7; g.lineWidth = 1.6 * S; g.stroke(); g.globalAlpha = 1; } }
+  g.restore();
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
-// 0..ROWS 每种核对进度一张贴图，按需切换
-function texSet(c: P, seed = 0) { return Array.from({ length: ROWS + 1 }, (_, k) => cardTex(c, k, seed)); }
-const pg = () => new THREE.PlaneGeometry(CW, CH);
-const mat = (map: THREE.Texture, op = .93) => new THREE.MeshBasicMaterial({ map, transparent: true, opacity: op, side: THREE.DoubleSide, depthWrite: false });
-const scanBar = (c: P, w = CW + .1) => new THREE.Mesh(new THREE.PlaneGeometry(w, .05), new THREE.MeshBasicMaterial({ color: c.ok, transparent: true, opacity: .9, depthWrite: false }));
-const rowsDone = (s: number) => Math.max(0, Math.min(ROWS, Math.floor(s * (ROWS + 1)))); // s:0..1 扫描进度
-const scanY = (s: number) => CH / 2 - .1 - s * (CH - .2);
-function cleanup(root: THREE.Object3D, texs: THREE.Texture[]) { root.traverse((m: any) => { m.geometry?.dispose?.(); m.material?.dispose?.(); }); texs.forEach(t => t.dispose()); root.removeFromParent(); }
+const texSet = (c: P, seed = 0, shadow = true) => Array.from({ length: ROWS + 1 }, (_, k) => cardTex(c, k, seed, shadow));
+const pg = (k = 1) => new THREE.PlaneGeometry((CW + PAD * 2) * k, (CH + PAD * 2 * CH / CW) * k);
+const mat = (map: THREE.Texture, op = 1) => new THREE.MeshBasicMaterial({ map, transparent: true, opacity: op, side: THREE.DoubleSide, depthWrite: false });
+// 扫描线：中心亮、两端渐隐 + 下方柔光带
+function scanBar(c: P, w = CW) {
+  const cv = document.createElement("canvas"); cv.width = 256; cv.height = 32; const g = cv.getContext("2d")!;
+  const gx = g.createLinearGradient(0, 0, 256, 0); gx.addColorStop(0, "rgba(255,255,255,0)"); gx.addColorStop(.15, "#fff"); gx.addColorStop(.85, "#fff"); gx.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = gx; g.fillRect(0, 14, 256, 3); g.globalAlpha = .22; g.fillRect(0, 0, 256, 14); g.globalAlpha = 1;
+  const t = new THREE.CanvasTexture(cv);
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w + .2, .26), new THREE.MeshBasicMaterial({ map: t, color: c.ok, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.userData.tex = t; return m;
+}
+const rowsDone = (s: number) => Math.max(0, Math.min(ROWS, Math.floor(s * ROWS + .15)));
+const scanY = (s: number) => CH / 2 - (64 + s * ROWS * 26) / 320 * CH;
+const place = (bar: THREE.Object3D, card: THREE.Object3D, y: number) => { bar.position.copy(card.position); bar.quaternion.copy(card.quaternion); bar.translateY(y); bar.translateZ(.015); };
+function cleanup(root: THREE.Object3D, texs: THREE.Texture[]) { root.traverse((m: any) => { m.geometry?.dispose?.(); m.material?.dispose?.(); m.userData?.tex?.dispose?.(); }); texs.forEach(t => t.dispose()); root.removeFromParent(); }
 
 /* m1 环形轮播 */
 function m1({ scene, camera, isDark }: Ctx): Built {
-  camera.position.set(0, 1.2, 11); camera.lookAt(0, 0, 0);
-  const c = pal(isDark), root = new THREE.Group(); scene.add(root); const T = texSet(c);
-  const N = 8, Rr = 3.6, cards = Array.from({ length: N }, () => { const m = new THREE.Mesh(pg(), mat(T[0])); root.add(m); return m; });
+  camera.position.set(0, 1.4, 12.5); camera.lookAt(0, -.1, 0);
+  const c = pal(isDark), root = new THREE.Group(); scene.add(root);
+  const N = 7, sets = Array.from({ length: N }, (_, i) => texSet(c, i)), T = sets.flat(), Rr = 4.3;
+  const cards = Array.from({ length: N }, (_, i) => { const m = new THREE.Mesh(pg(), mat(sets[i][0])); root.add(m); return m; });
   const bar = scanBar(c); root.add(bar);
+  const per = 3.6, scanF = .55;
   return { update(t, px, py) {
-    root.rotation.x = .06 + py * .08; const step = (Math.PI * 2) / N, per = 3, k = t / per, idx = Math.floor(k), f = k - idx;
-    const ease = f < .35 ? 0 : (1 - Math.cos(((f - .35) / .65) * Math.PI)) / 2; const rot = (idx + ease) * step + px * .2;
-    cards.forEach((m, i) => { const a = i * step - rot; m.position.set(Math.sin(a) * Rr, 0, Math.cos(a) * Rr - Rr * .55); m.rotation.y = a; m.renderOrder = Math.round(m.position.z * 10) + 50;
-      const front = ((i - idx) % N + N) % N === 0; const s = front ? Math.min(1, f / .35) : 0; (m.material as THREE.MeshBasicMaterial).map = T[front ? rowsDone(s) : (((i - idx) % N + N) % N > N / 2 ? ROWS : 0)];
-      (m.material as THREE.MeshBasicMaterial).opacity = .35 + .6 * Math.max(0, Math.cos(a)); });
-    const fc = cards[((idx % N) + N) % N]; const s = Math.min(1, f / .35); bar.visible = f < .35; bar.position.copy(fc.position); bar.rotation.copy(fc.rotation); bar.translateY(scanY(s)); bar.translateZ(.02); bar.renderOrder = 999;
+    root.rotation.x = .05 + py * .06; const step = (Math.PI * 2) / N, k = t / per, idx = Math.floor(k), f = k - idx;
+    const rot = (idx + ease((f - scanF) / (1 - scanF))) * step + px * .15, s = ease(f / scanF * 1.05);
+    cards.forEach((m, i) => { const a = i * step - rot; m.position.set(Math.sin(a) * Rr, 0, Math.cos(a) * Rr - Rr); m.rotation.y = a; m.renderOrder = Math.round(m.position.z * 10) + 100;
+      const ord = ((i - idx) % N + N) % N, mm = m.material as THREE.MeshBasicMaterial;
+      mm.map = sets[i][ord === 0 ? rowsDone(s) : ord >= N - 1 ? ROWS : 0]; mm.opacity = .25 + .75 * Math.max(0, Math.cos(a)) ** 1.5; });
+    const fc = cards[((idx % N) + N) % N]; bar.visible = f < scanF; place(bar, fc, scanY(s)); bar.renderOrder = 999;
+    (bar.material as THREE.MeshBasicMaterial).opacity = Math.min(1, Math.sin(clamp01(f / scanF) * Math.PI) * 3);
   }, dispose() { cleanup(root, T); } };
 }
 
 /* m2 叠卡翻页 */
 function m2({ scene, camera, isDark }: Ctx): Built {
-  camera.position.set(0, 2.6, 7.8); camera.lookAt(0, -.2, 0);
-  const c = pal(isDark), root = new THREE.Group(); root.rotation.x = -.5; scene.add(root);
-  const N = 6, sets = Array.from({ length: N }, (_, i) => texSet(c, i)); const T = sets.flat();
-  const cards = Array.from({ length: N }, (_, i) => { const m = new THREE.Mesh(pg(), mat(sets[i][0], .96)); root.add(m); return m; });
+  camera.position.set(0, 2.2, 10); camera.lookAt(0, -.1, 0);
+  const c = pal(isDark), root = new THREE.Group(); root.rotation.x = -.38; scene.add(root);
+  const N = 6, sets = Array.from({ length: N }, (_, i) => texSet(c, i)), T = sets.flat();
+  const cards = Array.from({ length: N }, (_, i) => { const m = new THREE.Mesh(pg(), mat(sets[i][0])); root.add(m); return m; });
   const bar = scanBar(c); root.add(bar);
+  const per = 3.8, scanF = .62, dz = .12;
   return { update(t, px, py) {
-    root.rotation.z = Math.sin(t * .3) * .05 + px * .1; root.rotation.y = py * .1;
-    const per = 3.2, k = t / per, idx = Math.floor(k), f = k - idx;
-    cards.forEach((m, i) => { const order = ((i - idx) % N + N) % N; const mm = m.material as THREE.MeshBasicMaterial;
-      if (order === 0) { const s = Math.min(1, f / .6); mm.map = sets[i][rowsDone(s)];
-        const fl = f < .6 ? 0 : (f - .6) / .4, e = fl * fl * (3 - 2 * fl);
-        m.position.set(Math.sin(e * Math.PI) * 2.2, 0, N * .14 + Math.sin(e * Math.PI) * 1.4 - e * N * .14); m.rotation.set(0, -e * Math.PI, e * .15); m.renderOrder = e > .5 ? 0 : 100;
-        bar.visible = f < .6; bar.position.copy(m.position); bar.rotation.copy(m.rotation); bar.translateY(scanY(s)); bar.translateZ(.02); bar.renderOrder = 999; }
-      else { const z = (N - order) * .14 + (order === N - 1 ? 0 : 0); m.position.set(order * .06, -order * .05, z); m.rotation.set(0, 0, (order % 2 ? .03 : -.03)); m.renderOrder = 100 - order; mm.map = sets[i][0]; }
-      mm.opacity = order === 0 ? .97 : .97 - order * .1; });
+    root.rotation.z = Math.sin(t * .3) * .03 + px * .06; root.rotation.y = Math.sin(t * .22) * .08 + py * .06;
+    const k = t / per, idx = Math.floor(k), f = k - idx, s = ease(f / scanF * 1.05), e = ease((f - scanF) / (1 - scanF));
+    cards.forEach((m, i) => { const ord = ((i - idx) % N + N) % N, mm = m.material as THREE.MeshBasicMaterial;
+      const settle = ease(e * 1.2); // 其余卡片在翻页时一起前移一格
+      if (ord === 0) { mm.map = sets[i][rowsDone(s)];
+        // 以卡片上沿为轴向后翻起，再沉到最底层
+        const ang = e * Math.PI, lift = Math.sin(e * Math.PI);
+        m.position.set(0, CH * .5 - Math.cos(ang) * CH * .5 + lift * .25, N * dz - e * N * dz + Math.sin(ang) * CH * .5 * .6); m.rotation.set(-ang, 0, 0);
+        m.renderOrder = e > .5 ? 1 : 200; mm.opacity = 1 - lift * .25;
+        bar.visible = f < scanF; place(bar, m, scanY(s)); bar.renderOrder = 999; (bar.material as THREE.MeshBasicMaterial).opacity = Math.min(1, Math.sin(clamp01(f / scanF) * Math.PI) * 3); }
+      else { const o = ord - settle; m.position.set(o * .05, -o * .06, (N - o) * dz); m.rotation.set(0, 0, (i % 2 ? .025 : -.025) * Math.min(1, o)); m.renderOrder = 200 - ord; mm.map = sets[i][0]; mm.opacity = 1 - o * .08; } });
   }, dispose() { cleanup(root, T); } };
 }
 
 /* m3 审核流水线 */
 function m3({ scene, camera, isDark }: Ctx): Built {
-  camera.position.set(0, 0, 12); camera.lookAt(0, 0, 0);
-  const c = pal(isDark), root = new THREE.Group(); root.rotation.set(-.15, .35, 0); scene.add(root);
-  const N = 7, gap = 2.2, sets = Array.from({ length: 3 }, (_, i) => texSet(c, i)); const T = sets.flat();
-  const cards = Array.from({ length: N }, () => { const m = new THREE.Mesh(new THREE.PlaneGeometry(CW * .8, CH * .8), mat(sets[0][0])); root.add(m); return m; });
+  camera.position.set(0, .6, 14); camera.lookAt(0, -.1, 0);
+  const c = pal(isDark), root = new THREE.Group(); scene.add(root);
+  const N = 6, gap = 1.85, K = .66, span = N * gap, sets = Array.from({ length: 3 }, (_, i) => texSet(c, i)), T = sets.flat();
+  const cards = Array.from({ length: N }, () => { const m = new THREE.Mesh(pg(K), mat(sets[0][0])); root.add(m); return m; });
   const gate = new THREE.Group(); root.add(gate);
-  const gm = new THREE.MeshBasicMaterial({ color: c.line, transparent: true, opacity: .7 });
-  [-1, 1].forEach(s => { const p = new THREE.Mesh(new THREE.BoxGeometry(.08, CH * .95, .08), gm); p.position.x = s * CW * .5; gate.add(p); });
-  const top = new THREE.Mesh(new THREE.BoxGeometry(CW + .08, .08, .08), gm); top.position.y = CH * .47; gate.add(top);
-  const beam = new THREE.Mesh(new THREE.PlaneGeometry(CW, CH * .9), new THREE.MeshBasicMaterial({ color: c.ok, transparent: true, opacity: .18, side: THREE.DoubleSide, depthWrite: false })); gate.add(beam);
-  gate.position.z = .05;
-  const belt = new THREE.Mesh(new THREE.PlaneGeometry(N * gap * .8, 1.2), new THREE.MeshBasicMaterial({ color: c.line, transparent: true, opacity: .12, side: THREE.DoubleSide })); belt.rotation.x = -Math.PI / 2; belt.position.y = -CH * .42; root.add(belt);
+  const gm = new THREE.MeshStandardMaterial({ color: c.line, roughness: .4, metalness: .2 });
+  const gh = CH * K + .5, gw = CW * K + .45;
+  [-1, 1].forEach(s => { const p = new THREE.Mesh(new THREE.BoxGeometry(.09, gh, .14), gm); p.position.x = s * gw / 2; gate.add(p); });
+  const top = new THREE.Mesh(new THREE.BoxGeometry(gw + .09, .09, .14), gm); top.position.y = gh / 2; gate.add(top);
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(.07, 16, 12), new THREE.MeshBasicMaterial({ color: c.ok })); lamp.position.set(0, gh / 2 + .1, .05); gate.add(lamp);
+  const beamBar = scanBar(c, gw - .1); beamBar.rotation.z = Math.PI / 2; beamBar.scale.set(gh / (gw + .1), 1, 1); beamBar.position.z = .02; gate.add(beamBar);
+  const L1 = new THREE.HemisphereLight(0xffffff, 0x99aaaa, 2.2); root.add(L1);
+  const belt = new THREE.Mesh(new THREE.PlaneGeometry(span * .85, .9), new THREE.MeshBasicMaterial({ color: c.line, transparent: true, opacity: isDark ? .16 : .1, side: THREE.DoubleSide, depthWrite: false })); belt.rotation.x = -Math.PI / 2; belt.position.y = -gh / 2; root.add(belt);
+  const ticksG = new THREE.Group(); root.add(ticksG);
+  const marks = Array.from({ length: 18 }, (_, i) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(.06, .5), new THREE.MeshBasicMaterial({ color: c.line, transparent: true, opacity: .25, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.position.y = -gh / 2 + .005; m.userData.i = i; ticksG.add(m); return m; });
   return { update(t, px, py) {
-    root.rotation.y = .35 + px * .15; root.rotation.x = -.15 + py * .08;
-    (beam.material as THREE.MeshBasicMaterial).opacity = .14 + .1 * Math.sin(t * 6);
-    cards.forEach((m, i) => { let x = ((i * gap - t * .7) % (N * gap) + N * gap) % (N * gap) - N * gap / 2; m.position.set(x, 0, 0); m.rotation.y = 0; m.position.z = -Math.abs(x) * .25;
-      const s = Math.min(1, Math.max(0, (-x + .6) / 1.6)); (m.material as THREE.MeshBasicMaterial).map = sets[i % 3][rowsDone(s)];
-      (m.material as THREE.MeshBasicMaterial).opacity = Math.min(1, (N * gap / 2 - Math.abs(x)) / 1.5) * .93; m.renderOrder = Math.round(-x * 10) + 100; });
+    root.rotation.y = .22 + px * .12; root.rotation.x = .1 + py * .05;
+    const v = .55, sh = t * v; (lamp.material as THREE.MeshBasicMaterial).color.set(c.ok); lamp.scale.setScalar(1 + .25 * Math.sin(t * 5));
+    marks.forEach(m => { m.position.x = ((m.userData.i * span / 18 - sh) % span + span) % span - span / 2; (m.material as THREE.MeshBasicMaterial).opacity = .25 * clamp01((span * .42 - Math.abs(m.position.x)) / 1.2); });
+    let near = 0;
+    cards.forEach((m, i) => { const x = ((i * gap - sh) % span + span) % span - span / 2; m.position.set(x, 0, 0);
+      const s = clamp01((gw / 2 - x) / gw); (m.material as THREE.MeshBasicMaterial).map = sets[i % 3][rowsDone(ease(s))];
+      (m.material as THREE.MeshBasicMaterial).opacity = ease(clamp01((span / 2 - Math.abs(x)) / 1.8)); m.renderOrder = 100 + i; if (Math.abs(x) < gw / 2) near = 1 - Math.abs(x) / (gw / 2); });
+    (beamBar.material as THREE.MeshBasicMaterial).opacity = .35 + .65 * near;
   }, dispose() { cleanup(root, T); } };
 }
 
 /* m4 条款分层 */
 function m4({ scene, camera, isDark }: Ctx): Built {
-  camera.position.set(0, 0, 10); camera.lookAt(0, 0, 0);
+  camera.position.set(0, 0, 10.5); camera.lookAt(0, 0, 0);
   const c = pal(isDark), root = new THREE.Group(); scene.add(root);
-  const T = texSet(c, 2), full = T[ROWS];
-  const strips: THREE.Mesh[] = []; const H = CH / (ROWS + 2);
-  for (let r = 0; r < ROWS + 2; r++) { const g = new THREE.PlaneGeometry(CW, H); const uv = g.attributes.uv as THREE.BufferAttribute; for (let k = 0; k < uv.count; k++) uv.setY(k, 1 - (r + 1 - uv.getY(k)) / (ROWS + 2)); const m = new THREE.Mesh(g, mat(T[0], .95)); m.userData.r = r; root.add(m); strips.push(m); }
-  const beam = new THREE.Mesh(new THREE.PlaneGeometry(.06, CH * 1.3), new THREE.MeshBasicMaterial({ color: c.ok, transparent: true, opacity: .9, depthWrite: false })); root.add(beam);
+  const T = texSet(c, 2, false); // 无投影边距，方便按行切 uv
+  const head = 64 / 320, rowH = 26 / 320; // 头部与每行占卡片高度的比例
+  const bands: [number, number][] = [[0, head], ...Array.from({ length: ROWS }, (_, r) => [head + r * rowH, head + (r + 1) * rowH] as [number, number]), [head + ROWS * rowH, 1]];
+  const shTex = (() => { const cv = document.createElement("canvas"); cv.width = 64; cv.height = 16; const g = cv.getContext("2d")!; const gr = g.createRadialGradient(32, 8, 1, 32, 8, 30); gr.addColorStop(0, c.shadow); gr.addColorStop(1, "rgba(0,0,0,0)"); g.fillStyle = gr; g.fillRect(0, 0, 64, 16); return new THREE.CanvasTexture(cv); })();
+  const strips = bands.map(([a, b], r) => { const h = (b - a) * CH, g = new THREE.PlaneGeometry(CW, h); const uv = g.attributes.uv as THREE.BufferAttribute; for (let k = 0; k < uv.count; k++) uv.setY(k, 1 - (uv.getY(k) > .5 ? a : b));
+    const m = new THREE.Mesh(g, mat(T[0])); m.userData = { r, y0: CH / 2 - (a + b) / 2 * CH }; root.add(m);
+    const sd = new THREE.Mesh(new THREE.PlaneGeometry(CW * 1.05, h * 1.2 + .1), new THREE.MeshBasicMaterial({ map: shTex, transparent: true, depthWrite: false, opacity: 0 })); root.add(sd); m.userData.sd = sd; return m; });
+  const bar = scanBar(c); root.add(bar);
+  const per = 7.5;
   return { update(t, px, py) {
-    root.rotation.y = -.55 + Math.sin(t * .3) * .12 + px * .2; root.rotation.x = .12 + py * .1;
-    const per = 6, f = (t / per) % 1; const ex = f < .2 ? f / .2 : f < .75 ? 1 : 1 - (f - .75) / .25; const e = ex * ex * (3 - 2 * ex);
-    const s = Math.min(1, Math.max(0, (f - .25) / .45)); const done = f >= .25 && f < .97;
-    strips.forEach(m => { const r = m.userData.r as number; const y = CH / 2 - H * (r + .5);
-      m.position.set(Math.sin(r * 1.3 + t) * .15 * e, y + (y * .35) * e, (r - ROWS / 2) * -.32 * e + Math.sin(t * 1.2 + r) * .05 * e);
-      (m.material as THREE.MeshBasicMaterial).map = done ? T[Math.min(ROWS, rowsDone(s))] : (f >= .97 ? full : T[0]); m.renderOrder = r + 10; });
-    beam.visible = f > .25 && f < .7; beam.position.set(0, 0, CH * .5 - s * CH * 1.4 + 1.6); beam.rotation.y = Math.PI / 2; beam.position.x = 0; beam.renderOrder = 999;
-    beam.position.set(0, (CH / 2 - s * CH) * 1.35, .4);  beam.rotation.set(0, 0, Math.PI / 2); (beam.geometry as THREE.PlaneGeometry);
-  }, dispose() { cleanup(root, T); } };
+    root.rotation.y = -.5 + Math.sin(t * .25) * .08 + px * .15; root.rotation.x = .1 + py * .06;
+    const f = (t / per) % 1, e = ease(f / .18) * (1 - ease((f - .8) / .18)), s = clamp01((f - .22) / .5);
+    const cur = s * (ROWS + 1) - .5; // 当前扫描到的条款（浮点）
+    strips.forEach(m => { const { r, y0, sd } = m.userData as { r: number; y0: number; sd: THREE.Mesh };
+      m.position.set(Math.sin(r * 1.3 + t * .8) * .06 * e, y0 * (1 + .32 * e), (r - (ROWS + 1) / 2) * -.34 * e + Math.sin(t * 1.1 + r) * .03 * e);
+      const near = Math.max(0, 1 - Math.abs(r - cur) * 1.2) * (f > .22 && f < .72 ? 1 : 0); m.position.z += near * .25 * e;
+      (m.material as THREE.MeshBasicMaterial).map = T[f < .22 ? 0 : rowsDone(s)]; m.renderOrder = 10 + r * 2;
+      sd.position.set(m.position.x + .06, m.position.y - .08, m.position.z - .03); (sd.material as THREE.MeshBasicMaterial).opacity = e * .9; sd.renderOrder = 9 + r * 2; });
+    const ri = Math.max(1, Math.min(ROWS, Math.round(cur))), sm = strips[ri];
+    bar.visible = f > .22 && f < .72; bar.position.copy(sm.position); bar.translateZ(.02); bar.position.y = sm.position.y + (cur - Math.round(cur)) * -rowH * CH * 1.3; bar.renderOrder = 999;
+    (bar.material as THREE.MeshBasicMaterial).opacity = Math.min(1, Math.sin(clamp01((f - .22) / .5) * Math.PI) * 3);
+  }, dispose() { cleanup(root, [...T, shTex]); } };
 }
 
 export function buildHeroVariant4(v: HeroVariant4, ctx: Ctx): Built { return ({ m1, m2, m3, m4 } as const)[v](ctx); }
